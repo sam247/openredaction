@@ -1,15 +1,15 @@
 /**
- * PII Shield - Production-ready PII detection and redaction library
+ * OpenRedact - Production-ready PII detection and redaction library
  * @packageDocumentation
  */
 
-export { PIIShield } from './detector';
+export { OpenRedact } from './detector';
 
 export type {
   PIIPattern,
   PIIDetection,
   DetectionResult,
-  PIIShieldOptions,
+  OpenRedactOptions,
   Validator
 } from './types';
 

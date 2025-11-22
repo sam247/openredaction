@@ -60,9 +60,9 @@ export interface DetectionResult {
 }
 
 /**
- * Configuration options for PIIShield
+ * Configuration options for OpenRedact
  */
-export interface PIIShieldOptions {
+export interface OpenRedactOptions {
   /** Include name detection (default: true) */
   includeNames?: boolean;
   /** Include address detection (default: true) */

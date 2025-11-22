@@ -1,21 +1,21 @@
 /**
- * Main PII Shield detector implementation
+ * Main OpenRedact detector implementation
  */
 
 import {
   PIIPattern,
   PIIDetection,
   DetectionResult,
-  PIIShieldOptions
+  OpenRedactOptions
 } from './types';
 import { allPatterns } from './patterns';
 import { generateDeterministicId } from './utils/hash';
 import { getPreset } from './utils/presets';
 
 /**
- * Main PIIShield class for detecting and redacting PII
+ * Main OpenRedact class for detecting and redacting PII
  */
-export class PIIShield {
+export class OpenRedact {
   private patterns: PIIPattern[];
   private options: {
     includeNames: boolean;
@@ -31,7 +31,7 @@ export class PIIShield {
   private valueToPlaceholder: Map<string, string> = new Map();
   private placeholderCounter: Map<string, number> = new Map();
 
-  constructor(options: PIIShieldOptions = {}) {
+  constructor(options: OpenRedactOptions = {}) {
     // Apply preset if specified
     const presetOptions = options.preset ? getPreset(options.preset) : {};
 

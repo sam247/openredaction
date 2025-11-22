@@ -1,6 +1,6 @@
-# PII Shield
+# OpenRedact
 
-[![npm version](https://img.shields.io/npm/v/@pii-shield/core.svg)](https://www.npmjs.com/package/@pii-shield/core)
+[![npm version](https://img.shields.io/npm/v/openredact.svg)](https://www.npmjs.com/package/openredact)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Test Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen.svg)](https://github.com/sam247/redactit)
 
@@ -20,15 +20,15 @@ Production-ready PII detection and redaction library with 20+ built-in patterns,
 ## Installation
 
 ```bash
-npm install @pii-shield/core
+npm install openredact
 ```
 
 ## Quick Start
 
 ```typescript
-import { PIIShield } from '@pii-shield/core';
+import { OpenRedact } from 'openredact';
 
-const shield = new PIIShield();
+const shield = new OpenRedact();
 const result = shield.detect("Email john@example.com or call 07700900123");
 
 console.log(result.redacted);
@@ -50,19 +50,19 @@ console.log(restored);
 
 ```bash
 # Detect and redact PII
-pii-shield detect "Email john@example.com"
+openredact detect "Email john@example.com"
 
 # Scan and show severity breakdown
-pii-shield scan "Contact john@example.com or call 555-123-4567"
+openredact scan "Contact john@example.com or call 555-123-4567"
 
 # Use compliance preset
-pii-shield detect "SSN: 123-45-6789" --preset hipaa
+openredact detect "SSN: 123-45-6789" --preset hipaa
 
 # JSON output
-pii-shield detect "Card: 4532015112830366" --json
+openredact detect "Card: 4532015112830366" --json
 
 # Filter patterns
-pii-shield detect "Text here" --patterns EMAIL,PHONE_US
+openredact detect "Text here" --patterns EMAIL,PHONE_US
 ```
 
 ## Supported PII Types
@@ -111,7 +111,7 @@ pii-shield detect "Text here" --patterns EMAIL,PHONE_US
 ## Configuration Options
 
 ```typescript
-const shield = new PIIShield({
+const shield = new OpenRedact({
   // Category toggles
   includeNames: true,        // Default: true
   includeEmails: true,       // Default: true
@@ -145,19 +145,19 @@ const shield = new PIIShield({
 
 ### GDPR (European Union)
 ```typescript
-const shield = new PIIShield({ preset: 'gdpr' });
+const shield = new OpenRedact({ preset: 'gdpr' });
 ```
 Detects: Email, names, UK/EU phones, addresses, passports, IBAN, credit cards
 
 ### HIPAA (US Healthcare)
 ```typescript
-const shield = new PIIShield({ preset: 'hipaa' });
+const shield = new OpenRedact({ preset: 'hipaa' });
 ```
 Detects: Email, names, SSN, US phones, addresses, dates of birth, medical IDs
 
 ### CCPA (California)
 ```typescript
-const shield = new PIIShield({ preset: 'ccpa' });
+const shield = new OpenRedact({ preset: 'ccpa' });
 ```
 Detects: Email, names, SSN, US phones, addresses, IP addresses, usernames
 
@@ -190,7 +190,7 @@ console.log(`Found ${result.stats.piiCount} PII instances`);
 
 ## Architecture
 
-PII Shield uses a priority-based pattern matching system with built-in validators:
+OpenRedact uses a priority-based pattern matching system with built-in validators:
 
 1. **Patterns** - Each PII type has a regex pattern and priority (higher = checked first)
 2. **Validators** - Optional validation functions (e.g., Luhn for credit cards, mod-97 for IBAN)
@@ -206,10 +206,10 @@ PII Shield uses a priority-based pattern matching system with built-in validator
 
 ## Browser Support
 
-PII Shield works in all modern browsers and Node.js 20+:
+OpenRedact works in all modern browsers and Node.js 20+:
 
 ```typescript
-import { PIIShield } from '@pii-shield/core';
+import { OpenRedact } from 'openredact';
 // Works in both Node.js and browsers
 ```
 
@@ -252,7 +252,7 @@ MIT © 2025
 ## Links
 
 - [GitHub Repository](https://github.com/sam247/redactit)
-- [npm Package](https://www.npmjs.com/package/@pii-shield/core)
+- [npm Package](https://www.npmjs.com/package/openredact)
 - [Report Issues](https://github.com/sam247/redactit/issues)
 
 ---

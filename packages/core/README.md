@@ -1,19 +1,19 @@
-# @pii-shield/core
+# openredact
 
 Production-ready PII detection and redaction library with 20+ built-in patterns, compliance presets, and zero dependencies.
 
 ## Installation
 
 ```bash
-npm install @pii-shield/core
+npm install openredact
 ```
 
 ## Quick Start
 
 ```typescript
-import { PIIShield } from '@pii-shield/core';
+import { OpenRedact } from 'openredact';
 
-const shield = new PIIShield();
+const shield = new OpenRedact();
 const result = shield.detect("Email john@example.com or call 07700900123");
 
 console.log(result.redacted);

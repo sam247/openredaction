@@ -1,15 +1,15 @@
-import { PIIShield } from '../detector';
+import { OpenRedact } from '../detector';
 
 const args = process.argv.slice(2);
 
 function printHelp() {
   console.log(`
-PII Shield CLI - Detect and redact PII from text
+OpenRedact CLI - Detect and redact PII from text
 
 Usage:
-  pii-shield detect <text>     Detect and redact PII
-  pii-shield scan <text>        Scan for PII and show severity breakdown
-  pii-shield --help             Show this help message
+  openredact detect <text>     Detect and redact PII
+  openredact scan <text>        Scan for PII and show severity breakdown
+  openredact --help             Show this help message
 
 Options:
   --preset <name>               Use compliance preset (gdpr, hipaa, ccpa)
@@ -21,10 +21,10 @@ Options:
   --json                        Output as JSON
 
 Examples:
-  pii-shield detect "Email john@example.com"
-  pii-shield detect "SSN: 123-45-6789" --preset hipaa
-  pii-shield scan "Contact john@example.com or call 555-123-4567"
-  pii-shield detect "Card: 4532015112830366" --json
+  openredact detect "Email john@example.com"
+  openredact detect "SSN: 123-45-6789" --preset hipaa
+  openredact scan "Contact john@example.com or call 555-123-4567"
+  openredact detect "Card: 4532015112830366" --json
   `);
 }
 
@@ -72,7 +72,7 @@ function main() {
     }
   }
 
-  const shield = new PIIShield(options);
+  const shield = new OpenRedact(options);
 
   if (command === 'detect') {
     const result = shield.detect(text);

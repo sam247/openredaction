@@ -1,12 +1,12 @@
 {
-  "name": "@pii-shield/core",
+  "name": "openredact",
   "version": "0.1.0",
   "description": "Production-ready PII detection and redaction library",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "pii-shield": "./dist/index.cli.js"
+    "openredact": "./dist/index.cli.js"
   },
   "exports": {
     ".": {
