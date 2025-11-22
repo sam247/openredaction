@@ -1,5 +1,5 @@
 {
-  "name": "pii-shield",
+  "name": "openredact",
   "version": "0.1.0",
   "private": true,
   "description": "Production-ready PII detection and redaction library",
@@ -30,7 +30,11 @@
     "privacy",
     "gdpr",
     "hipaa",
-    "data-protection"
+    "data-protection",
+    "openredact",
+    "redact",
+    "sensitive-data",
+    "anonymization"
   ],
   "license": "MIT"
 }

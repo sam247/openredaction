@@ -34,7 +34,12 @@
     "gdpr",
     "hipaa",
     "data-protection",
-    "sensitive-data"
+    "sensitive-data",
+    "openredact",
+    "redact",
+    "anonymization",
+    "pii-detection",
+    "ccpa"
   ],
   "author": "",
   "license": "MIT",
