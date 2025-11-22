@@ -36,3 +36,16 @@ export {
 } from './validators';
 
 export { gdprPreset, hipaaPreset, ccpaPreset, getPreset } from './utils/presets';
+
+// Feedback and learning system
+export {
+  FeedbackClient,
+  extractContext,
+  createFeedbackFromDetection
+} from './feedback';
+
+export type {
+  FeedbackOptions,
+  FeedbackReport,
+  FeedbackResponse
+} from './feedback';
