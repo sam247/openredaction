@@ -37,15 +37,15 @@ export {
 
 export { gdprPreset, hipaaPreset, ccpaPreset, getPreset } from './utils/presets';
 
-// Feedback and learning system
-export {
-  FeedbackClient,
-  extractContext,
-  createFeedbackFromDetection
-} from './feedback';
-
+// Local learning system
+export { LocalLearningStore } from './learning/LocalLearningStore';
 export type {
-  FeedbackOptions,
-  FeedbackReport,
-  FeedbackResponse
-} from './feedback';
+  WhitelistEntry,
+  PatternAdjustment,
+  LearningStats,
+  LearningData
+} from './learning/LocalLearningStore';
+
+// Config system
+export { ConfigLoader } from './config/ConfigLoader';
+export type { OpenRedactConfig } from './config/ConfigLoader';

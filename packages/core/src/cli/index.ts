@@ -1,4 +1,6 @@
 import { OpenRedact } from '../detector';
+import { ConfigLoader } from '../config/ConfigLoader';
+import * as fs from 'fs';
 
 const args = process.argv.slice(2);
 
@@ -7,35 +9,118 @@ function printHelp() {
 OpenRedact CLI - Detect and redact PII from text
 
 Usage:
-  openredact detect <text>     Detect and redact PII
-  openredact scan <text>        Scan for PII and show severity breakdown
-  openredact --help             Show this help message
+  openredact detect <text>              Detect and redact PII
+  openredact scan <text>                Scan for PII and show severity breakdown
+  openredact feedback <type> <text>     Record feedback (false-positive, false-negative)
+  openredact stats                      Show learning statistics
+  openredact export                     Export learned patterns
+  openredact import <file>              Import learned patterns from file
+  openredact init                       Create default config file
+  openredact --help                     Show this help message
 
-Options:
-  --preset <name>               Use compliance preset (gdpr, hipaa, ccpa)
-  --patterns <types>            Comma-separated list of pattern types to use
-  --no-names                    Exclude name detection
-  --no-emails                   Exclude email detection
-  --no-phones                   Exclude phone detection
-  --no-addresses                Exclude address detection
-  --json                        Output as JSON
+Detection Options:
+  --preset <name>                       Use compliance preset (gdpr, hipaa, ccpa)
+  --patterns <types>                    Comma-separated list of pattern types to use
+  --no-names                            Exclude name detection
+  --no-emails                           Exclude email detection
+  --no-phones                           Exclude phone detection
+  --no-addresses                        Exclude address detection
+  --json                                Output as JSON
+
+Feedback Options:
+  --type <pattern-type>                 Pattern type (EMAIL, SSN, etc.)
+  --context <text>                      Surrounding context
 
 Examples:
   openredact detect "Email john@example.com"
   openredact detect "SSN: 123-45-6789" --preset hipaa
   openredact scan "Contact john@example.com or call 555-123-4567"
-  openredact detect "Card: 4532015112830366" --json
+  openredact feedback false-positive "API" --type NAME --context "Call the API"
+  openredact stats
+  openredact export > learned-patterns.json
+  openredact init
   `);
 }
 
-function main() {
+async function main() {
   if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
     printHelp();
     process.exit(0);
   }
 
   const command = args[0];
-  if (!['detect', 'scan'].includes(command)) {
+
+  // Handle commands that don't need text
+  if (command === 'init') {
+    ConfigLoader.createDefaultConfig();
+    return;
+  }
+
+  if (command === 'stats') {
+    const redactor = new OpenRedact();
+    const stats = redactor.getLearningStats();
+
+    if (!stats) {
+      console.log('No learning data available yet.');
+      return;
+    }
+
+    console.log('\n=== Learning Statistics ===\n');
+    console.log(`Total Detections:   ${stats.totalDetections}`);
+    console.log(`False Positives:    ${stats.falsePositives}`);
+    console.log(`False Negatives:    ${stats.falseNegatives}`);
+    console.log(`Accuracy:           ${(stats.accuracy * 100).toFixed(2)}%`);
+    console.log(`Last Updated:       ${new Date(stats.lastUpdated).toLocaleString()}\n`);
+
+    const whitelist = redactor.getLearnedWhitelist();
+    if (whitelist.length > 0) {
+      console.log(`Learned Whitelist (${whitelist.length} entries):`);
+      whitelist.slice(0, 10).forEach(entry => {
+        console.log(`  - "${entry.pattern}" (confidence: ${(entry.confidence * 100).toFixed(0)}%, occurrences: ${entry.occurrences})`);
+      });
+      if (whitelist.length > 10) {
+        console.log(`  ... and ${whitelist.length - 10} more`);
+      }
+    }
+
+    return;
+  }
+
+  if (command === 'export') {
+    const redactor = new OpenRedact();
+    const learnings = redactor.exportLearnings({ minConfidence: 0.7 });
+
+    if (!learnings) {
+      console.error('No learning data to export');
+      process.exit(1);
+    }
+
+    console.log(JSON.stringify(learnings, null, 2));
+    return;
+  }
+
+  if (command === 'import') {
+    const filePath = args[1];
+    if (!filePath) {
+      console.error('Error: No file path provided');
+      console.log('Usage: openredact import <file>');
+      process.exit(1);
+    }
+
+    if (!fs.existsSync(filePath)) {
+      console.error(`Error: File not found: ${filePath}`);
+      process.exit(1);
+    }
+
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    const redactor = new OpenRedact();
+    redactor.importLearnings(data, true);
+
+    console.log(`Successfully imported learnings from ${filePath}`);
+    return;
+  }
+
+  if (!['detect', 'scan', 'feedback'].includes(command)) {
     console.error(`Unknown command: ${command}`);
     printHelp();
     process.exit(1);
@@ -73,6 +158,59 @@ function main() {
   }
 
   const shield = new OpenRedact(options);
+
+  if (command === 'feedback') {
+    const feedbackType = text; // false-positive or false-negative
+    const feedbackText = args[2];
+
+    if (!feedbackText) {
+      console.error('Error: No feedback text provided');
+      console.log('Usage: openredact feedback <false-positive|false-negative> <text> [--type TYPE] [--context CONTEXT]');
+      process.exit(1);
+    }
+
+    if (!['false-positive', 'false-negative'].includes(feedbackType)) {
+      console.error('Error: Feedback type must be "false-positive" or "false-negative"');
+      process.exit(1);
+    }
+
+    // Parse feedback options
+    let patternType = 'UNKNOWN';
+    let context = '';
+
+    for (let i = 3; i < args.length; i++) {
+      if (args[i] === '--type' && args[i + 1]) {
+        patternType = args[i + 1];
+        i++;
+      } else if (args[i] === '--context' && args[i + 1]) {
+        context = args[i + 1];
+        i++;
+      }
+    }
+
+    if (feedbackType === 'false-positive') {
+      shield.recordFalsePositive(
+        { type: patternType, value: feedbackText, placeholder: '', position: [0, 0], severity: 'medium' },
+        context
+      );
+      console.log(`\nRecorded false positive: "${feedbackText}" (${patternType})`);
+
+      const confidence = shield.getLearningStore()?.getConfidence(feedbackText) || 0;
+      console.log(`Current confidence: ${(confidence * 100).toFixed(0)}%`);
+
+      if (confidence >= 0.85) {
+        console.log('✓ Auto-added to whitelist (confidence >= 85%)');
+      } else {
+        console.log(`  Need ${Math.ceil((0.85 - confidence) * 20)} more occurrence(s) for auto-whitelist`);
+      }
+    } else {
+      shield.recordFalseNegative(feedbackText, patternType, context);
+      console.log(`\nRecorded false negative: "${feedbackText}" (expected type: ${patternType})`);
+      console.log('This will be considered for pattern adjustments.');
+    }
+
+    return;
+  }
 
   if (command === 'detect') {
     const result = shield.detect(text);
@@ -120,4 +258,7 @@ function main() {
   }
 }
 
-main();
+main().catch(error => {
+  console.error('Error:', error.message);
+  process.exit(1);
+});

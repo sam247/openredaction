@@ -12,10 +12,12 @@ Production-ready PII detection and redaction library with 20+ built-in patterns,
 - 🎯 **20+ PII Patterns** - Email, SSN, credit cards, phone numbers, addresses, and more
 - ✅ **Validators Built-in** - Luhn algorithm, IBAN checksum, NHS numbers, and more
 - 🔒 **Compliance Presets** - GDPR, HIPAA, and CCPA configurations
+- 🧠 **Local Learning System** - Improves accuracy over time, no backend required
 - 🎭 **Deterministic** - Same input always produces same placeholders
 - 🌳 **Zero Dependencies** - No external dependencies, works in Node.js and browsers
 - 📝 **TypeScript Native** - Full type definitions included
 - 🧪 **Well Tested** - 98%+ test coverage with comprehensive test suite
+- 🔧 **Config File Support** - Persistent configuration with .openredact.config.js
 
 ## Installation
 
@@ -63,6 +65,182 @@ openredact detect "Card: 4532015112830366" --json
 
 # Filter patterns
 openredact detect "Text here" --patterns EMAIL,PHONE_US
+```
+
+## Local Learning System
+
+OpenRedact includes a local learning system that improves accuracy over time by learning from your feedback - no backend required!
+
+### Features
+
+- **Privacy-First** - All learning data stays local on your machine
+- **Auto-Whitelisting** - High-confidence false positives are automatically whitelisted
+- **Pattern Adjustments** - Tracks missed detections for pattern improvements
+- **Import/Export** - Share learned patterns across teams or projects
+- **Config File Support** - Persistent configuration with `.openredact.config.js`
+
+### Quick Start with Learning
+
+```typescript
+import { OpenRedact } from 'openredact';
+
+const redactor = new OpenRedact({
+  enableLearning: true,  // Default: true
+  learningStorePath: '.openredact/learnings.json'
+});
+
+// Use as normal
+const result = redactor.detect("Contact API support");
+
+// Record false positive (incorrectly flagged as PII)
+const apiDetection = result.detections.find(d => d.value === 'API');
+if (apiDetection) {
+  redactor.recordFalsePositive(apiDetection, "in API documentation");
+  // After 5+ similar reports, "API" is auto-whitelisted!
+}
+
+// Record false negative (missed PII)
+redactor.recordFalseNegative("secret123", "INTERNAL_ID", "password context");
+
+// View learning statistics
+const stats = redactor.getLearningStats();
+console.log(`Accuracy: ${(stats.accuracy * 100).toFixed(2)}%`);
+console.log(`False Positives: ${stats.falsePositives}`);
+
+// Export learned patterns for sharing
+const learnings = redactor.exportLearnings({ minConfidence: 0.8 });
+fs.writeFileSync('learned-patterns.json', JSON.stringify(learnings));
+
+// Import learned patterns
+const sharedLearnings = JSON.parse(fs.readFileSync('team-patterns.json'));
+redactor.importLearnings(sharedLearnings, true); // merge=true
+```
+
+### CLI Learning Commands
+
+```bash
+# Initialize config file
+openredact init
+
+# Record false positive
+openredact feedback false-positive "API" --type NAME --context "Call the API"
+
+# Record false negative
+openredact feedback false-negative "EMP-123456" --type EMPLOYEE_ID
+
+# View statistics
+openredact stats
+
+# Export learned patterns
+openredact export > learned-patterns.json
+
+# Import learned patterns
+openredact import team-patterns.json
+```
+
+### Config File
+
+Create `.openredact.config.js` for persistent configuration:
+
+```javascript
+export default {
+  // Extend built-in presets
+  extends: ['openredact:recommended'],
+
+  // Detection options
+  includeNames: true,
+  includeAddresses: true,
+  includePhones: true,
+  includeEmails: true,
+  deterministic: true,
+
+  // Whitelist
+  whitelist: [
+    'Example Corp',
+    'API',
+    'CEO'
+  ],
+
+  // Custom patterns
+  customPatterns: [
+    {
+      name: 'INTERNAL_ID',
+      regex: /INT-\d{6}/g,
+      category: 'personal',
+      priority: 90
+    }
+  ],
+
+  // Learning configuration
+  learnedPatterns: '.openredact/learnings.json',
+  learningOptions: {
+    autoSave: true,
+    confidenceThreshold: 0.85
+  }
+};
+```
+
+Then load it:
+
+```typescript
+import { OpenRedact } from 'openredact';
+
+// Auto-loads from .openredact.config.js
+const redactor = await OpenRedact.fromConfig();
+```
+
+### Available Presets
+
+- `openredact:recommended` - Balanced detection with all categories
+- `openredact:strict` - Maximum detection (GDPR mode)
+- `openredact:minimal` - Only emails and phones
+- `openredact:gdpr` - GDPR compliance preset
+- `openredact:hipaa` - HIPAA compliance preset
+- `openredact:ccpa` - CCPA compliance preset
+
+### Integration with Disclosurely
+
+Perfect for building a private learning loop:
+
+```typescript
+// In your Disclosurely backend
+import { OpenRedact, LocalLearningStore } from 'openredact';
+
+const learningStore = new LocalLearningStore('./data/pii-learnings.json');
+const redactor = new OpenRedact({
+  enableLearning: true,
+  learningStorePath: './data/pii-learnings.json'
+});
+
+// Process documents
+app.post('/api/documents/process', async (req, res) => {
+  const result = redactor.detect(req.body.text);
+  res.json(result);
+});
+
+// User feedback endpoint
+app.post('/api/pii/feedback', async (req, res) => {
+  const { detection, isFalsePositive, context } = req.body;
+
+  if (isFalsePositive) {
+    redactor.recordFalsePositive(detection, context);
+  } else {
+    redactor.recordFalseNegative(detection.value, detection.type, context);
+  }
+
+  res.json({ success: true });
+});
+
+// Periodic: export generic learnings to contribute back
+setInterval(async () => {
+  const learnings = redactor.exportLearnings({
+    minConfidence: 0.9,
+    includeContexts: false // privacy
+  });
+
+  // Create PR to OpenRedact with improvements
+  await contributeLearnings(learnings);
+}, 7 * 24 * 60 * 60 * 1000); // Weekly
 ```
 
 ## Supported PII Types

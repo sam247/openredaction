@@ -11,6 +11,8 @@ import {
 import { allPatterns } from './patterns';
 import { generateDeterministicId } from './utils/hash';
 import { getPreset } from './utils/presets';
+import { LocalLearningStore } from './learning/LocalLearningStore.js';
+import { ConfigLoader } from './config/ConfigLoader.js';
 
 /**
  * Main OpenRedact class for detecting and redacting PII
@@ -30,8 +32,14 @@ export class OpenRedact {
   };
   private valueToPlaceholder: Map<string, string> = new Map();
   private placeholderCounter: Map<string, number> = new Map();
+  private learningStore?: LocalLearningStore;
+  private enableLearning: boolean;
 
-  constructor(options: OpenRedactOptions = {}) {
+  constructor(options: OpenRedactOptions & {
+    configPath?: string;
+    enableLearning?: boolean;
+    learningStorePath?: string;
+  } = {}) {
     // Apply preset if specified
     const presetOptions = options.preset ? getPreset(options.preset) : {};
 
@@ -49,11 +57,47 @@ export class OpenRedact {
       ...options
     };
 
+    // Enable learning by default
+    this.enableLearning = options.enableLearning ?? true;
+
+    // Initialize learning store if enabled
+    if (this.enableLearning) {
+      const learningPath = options.learningStorePath || '.openredact/learnings.json';
+      this.learningStore = new LocalLearningStore(learningPath, {
+        autoSave: true,
+        confidenceThreshold: 0.85
+      });
+
+      // Merge learned whitelist with user whitelist
+      const learnedWhitelist = this.learningStore.getWhitelist();
+      this.options.whitelist = [...this.options.whitelist, ...learnedWhitelist];
+    }
+
     // Build pattern list
     this.patterns = this.buildPatternList();
 
     // Sort by priority (highest first)
     this.patterns.sort((a, b) => b.priority - a.priority);
+  }
+
+  /**
+   * Create OpenRedact instance from config file
+   */
+  static async fromConfig(configPath?: string): Promise<OpenRedact> {
+    const loader = new ConfigLoader(configPath);
+    const config = await loader.load();
+
+    if (!config) {
+      return new OpenRedact();
+    }
+
+    const resolved = loader.resolveConfig(config);
+
+    return new OpenRedact({
+      ...resolved,
+      enableLearning: true,
+      learningStorePath: config.learnedPatterns
+    });
   }
 
   /**
@@ -286,5 +330,141 @@ export class OpenRedact {
       low: result.detections.filter(d => d.severity === 'low'),
       total: result.detections.length
     };
+  }
+
+  /**
+   * Record a false positive (incorrectly detected as PII)
+   */
+  recordFalsePositive(detection: PIIDetection, context?: string): void {
+    if (!this.learningStore) {
+      console.warn('Learning is disabled. Enable it by setting enableLearning: true');
+      return;
+    }
+
+    const ctx = context || '';
+    this.learningStore.recordFalsePositive(detection.value, detection.type, ctx);
+
+    // Update whitelist if confidence is high enough
+    if (this.learningStore.getConfidence(detection.value) >= 0.85) {
+      this.options.whitelist.push(detection.value);
+    }
+  }
+
+  /**
+   * Record a false negative (missed PII that should have been detected)
+   */
+  recordFalseNegative(text: string, expectedType: string, context?: string): void {
+    if (!this.learningStore) {
+      console.warn('Learning is disabled. Enable it by setting enableLearning: true');
+      return;
+    }
+
+    const ctx = context || '';
+    this.learningStore.recordFalseNegative(text, expectedType, ctx);
+  }
+
+  /**
+   * Record a correct detection (for accuracy tracking)
+   */
+  recordCorrectDetection(): void {
+    if (!this.learningStore) {
+      return;
+    }
+
+    this.learningStore.recordCorrectDetection();
+  }
+
+  /**
+   * Get learning statistics
+   */
+  getLearningStats() {
+    if (!this.learningStore) {
+      return null;
+    }
+
+    return this.learningStore.getStats();
+  }
+
+  /**
+   * Get learned whitelist entries
+   */
+  getLearnedWhitelist() {
+    if (!this.learningStore) {
+      return [];
+    }
+
+    return this.learningStore.getWhitelistEntries();
+  }
+
+  /**
+   * Get pattern adjustment suggestions
+   */
+  getPatternAdjustments() {
+    if (!this.learningStore) {
+      return [];
+    }
+
+    return this.learningStore.getPatternAdjustments();
+  }
+
+  /**
+   * Export learned patterns for sharing
+   */
+  exportLearnings(options?: {
+    includeContexts?: boolean;
+    minConfidence?: number;
+  }) {
+    if (!this.learningStore) {
+      return null;
+    }
+
+    return this.learningStore.export(options);
+  }
+
+  /**
+   * Import learned patterns from another source
+   */
+  importLearnings(data: any, merge: boolean = true): void {
+    if (!this.learningStore) {
+      console.warn('Learning is disabled. Enable it by setting enableLearning: true');
+      return;
+    }
+
+    this.learningStore.import(data, merge);
+
+    // Update whitelist with newly learned patterns
+    const learnedWhitelist = this.learningStore.getWhitelist();
+    this.options.whitelist = [...new Set([...this.options.whitelist, ...learnedWhitelist])];
+  }
+
+  /**
+   * Manually add a term to the whitelist
+   */
+  addToWhitelist(pattern: string, confidence: number = 0.9): void {
+    if (!this.learningStore) {
+      this.options.whitelist.push(pattern);
+      return;
+    }
+
+    this.learningStore.addToWhitelist(pattern, confidence);
+    this.options.whitelist.push(pattern);
+  }
+
+  /**
+   * Remove a term from the whitelist
+   */
+  removeFromWhitelist(pattern: string): void {
+    if (this.learningStore) {
+      this.learningStore.removeFromWhitelist(pattern);
+    }
+
+    this.options.whitelist = this.options.whitelist.filter(w => w !== pattern);
+  }
+
+  /**
+   * Get the learning store instance
+   */
+  getLearningStore(): LocalLearningStore | undefined {
+    return this.learningStore;
   }
 }
