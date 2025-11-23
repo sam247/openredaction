@@ -59,9 +59,9 @@ export class OpenRedact {
       customPatterns: [],
       whitelist: [],
       deterministic: true,
-      enableContextAnalysis: false, // Disabled by default until fine-tuned
-      confidenceThreshold: 0.3, // Lower threshold for when enabled
-      enableFalsePositiveFilter: false, // Disabled by default until fine-tuned
+      enableContextAnalysis: true, // Enabled by default (fine-tuned)
+      confidenceThreshold: 0.5, // Balanced threshold (filters <50% confidence)
+      enableFalsePositiveFilter: false, // Disabled by default (experimental)
       falsePositiveThreshold: 0.7,
       ...presetOptions,
       ...options

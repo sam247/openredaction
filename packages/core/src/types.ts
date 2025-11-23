@@ -83,9 +83,9 @@ export interface OpenRedactOptions {
   deterministic?: boolean;
   /** Compliance preset */
   preset?: 'gdpr' | 'hipaa' | 'ccpa';
-  /** Enable context-aware detection (default: false, experimental) */
+  /** Enable context-aware detection (default: true) */
   enableContextAnalysis?: boolean;
-  /** Minimum confidence threshold for detections (0-1, default: 0.3) */
+  /** Minimum confidence threshold for detections (0-1, default: 0.5) */
   confidenceThreshold?: number;
   /** Enable false positive filtering (default: false, experimental) */
   enableFalsePositiveFilter?: boolean;

@@ -146,7 +146,7 @@ describe('Context Analysis', () => {
       expect(confidence).toBeGreaterThanOrEqual(0.7); // At or above base confidence
     });
 
-    it('should heavily penalize example context', () => {
+    it('should penalize example context', () => {
       const confidence = calculateContextConfidence('test@example.com', 'EMAIL', {
         before: 'sample',
         after: 'dummy',
@@ -162,7 +162,8 @@ describe('Context Analysis', () => {
         }
       });
 
-      expect(confidence).toBeLessThan(0.5); // Heavily reduced
+      expect(confidence).toBeLessThan(0.7); // Reduced (0.8 - 0.15 = 0.65)
+      expect(confidence).toBeGreaterThan(0.6);
     });
 
     it('should boost confidence for positive indicators', () => {
@@ -204,8 +205,19 @@ describe('Context Analysis', () => {
   });
 
   describe('Integration with OpenRedact', () => {
-    it('should work when context analysis is disabled (default)', () => {
+    it('should work when context analysis is enabled (default)', () => {
       const redactor = new OpenRedact();
+      const result = redactor.detect('Contact john@example.com for info');
+
+      expect(result.detections).toHaveLength(1);
+      expect(result.detections[0].type).toBe('EMAIL');
+      expect(result.detections[0].confidence).toBeDefined();
+      expect(result.detections[0].confidence).toBeGreaterThan(0.5); // Context-aware confidence
+      expect(result.detections[0].confidence).toBeLessThanOrEqual(1.0);
+    });
+
+    it('should work when context analysis is disabled', () => {
+      const redactor = new OpenRedact({ enableContextAnalysis: false });
       const result = redactor.detect('Contact john@example.com for info');
 
       expect(result.detections).toHaveLength(1);

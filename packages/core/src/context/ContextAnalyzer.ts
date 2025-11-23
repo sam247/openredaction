@@ -152,9 +152,23 @@ export function analyzeContextFeatures(fullContext: string): ContextFeatures {
   const financialTerms = /\b(bank|account|payment|transaction|transfer|wire|credit|debit|balance|deposit|withdrawal|loan|mortgage|investment|trading|stock|bond)\b/g;
   const hasFinancialContext = (lower.match(financialTerms) || []).length > 0;
 
-  // Example/test indicators
-  const exampleTerms = /\b(example|sample|test|demo|fake|placeholder|dummy|mock|xxx|todo|fixme)\b/g;
-  const hasExampleContext = (lower.match(exampleTerms) || []).length > 0;
+  // Example/test indicators - more precise detection
+  // Strong test indicators (very likely to be test data)
+  const strongTestPatterns = [
+    /\b(test|testing|dummy|mock|fake)\s+(data|value|example|user|account|email|phone)/i,
+    /\bfor\s+(testing|demonstration|example)\s+purposes/i,
+    /\b(this|here)\s+is\s+(an?\s+)?(example|sample|test)/i,
+    /\bxxx+|000+|111+|123+/i, // Obvious placeholder patterns
+    /\blorem\s+ipsum/i
+  ];
+
+  // Weak test indicators (might just be normal text mentioning "example")
+  const weakTestTerms = /\b(example|sample|test|demo|placeholder|dummy|mock)\b/g;
+  const weakMatches = (lower.match(weakTestTerms) || []).length;
+  const strongMatch = strongTestPatterns.some(pattern => pattern.test(fullContext));
+
+  // Only flag as example context if strong indicators or multiple weak indicators
+  const hasExampleContext = strongMatch || weakMatches >= 2;
 
   return {
     hasTechnicalContext,
@@ -180,13 +194,14 @@ export function calculateContextConfidence(
     features: ContextFeatures;
   }
 ): number {
-  let confidence = 0.7; // Base confidence
+  let confidence = 0.8; // Base confidence (increased from 0.7)
 
   // Document type adjustments
   if (context.documentType === 'code') {
     // Lower confidence for most PII in code
-    if (!['API_KEY', 'JWT', 'BEARER_TOKEN', 'AWS_ACCESS_KEY'].includes(patternType)) {
-      confidence -= 0.2;
+    const credentialPatterns = ['API_KEY', 'JWT', 'BEARER_TOKEN', 'AWS_ACCESS_KEY', 'GITHUB_TOKEN', 'SECRET'];
+    if (!credentialPatterns.some(p => patternType.includes(p))) {
+      confidence -= 0.15; // Reduced penalty from 0.2
     }
   } else if (context.documentType === 'email') {
     // Higher confidence for PII in emails
@@ -197,8 +212,8 @@ export function calculateContextConfidence(
 
   // Feature-based adjustments
   if (context.features.hasExampleContext) {
-    // Strong penalty for example/test context
-    confidence -= 0.4;
+    // Moderate penalty for example/test context (reduced from 0.4)
+    confidence -= 0.15;
   }
 
   // Medical context boost
@@ -218,8 +233,8 @@ export function calculateContextConfidence(
   // Technical context - reduce confidence for non-credentials
   const credentialPatterns = ['API_KEY', 'TOKEN', 'SECRET', 'AWS', 'GITHUB', 'STRIPE', 'JWT'];
   if (context.features.hasTechnicalContext && !credentialPatterns.some(p => patternType.includes(p))) {
-    // Reduce confidence for non-credential PII in technical context
-    confidence -= 0.1;
+    // Reduce confidence for non-credential PII in technical context (reduced from 0.1)
+    confidence -= 0.05;
   }
 
   // Context word analysis
