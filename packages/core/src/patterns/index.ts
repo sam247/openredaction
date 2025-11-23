@@ -16,6 +16,12 @@ import { technologyPatterns } from './industries/technology';
 import { legalPatterns } from './industries/legal';
 import { educationPatterns } from './industries/education';
 import { hrPatterns } from './industries/hr';
+import { insurancePatterns } from './industries/insurance';
+import { retailPatterns } from './industries/retail';
+import { telecomsPatterns } from './industries/telecoms';
+import { manufacturingPatterns } from './industries/manufacturing';
+import { transportationPatterns } from './industries/transportation';
+import { mediaPatterns } from './industries/media';
 
 // International patterns
 import { internationalPatterns } from './international';
@@ -35,6 +41,12 @@ export const allPatterns: PIIPattern[] = [
   ...legalPatterns,
   ...educationPatterns,
   ...hrPatterns,
+  ...insurancePatterns,
+  ...retailPatterns,
+  ...telecomsPatterns,
+  ...manufacturingPatterns,
+  ...transportationPatterns,
+  ...mediaPatterns,
   ...internationalPatterns
 ];
 
@@ -65,6 +77,24 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
     case 'credentials':
     case 'technology':
       return technologyPatterns;
+    case 'insurance':
+      return insurancePatterns;
+    case 'retail':
+    case 'ecommerce':
+      return retailPatterns;
+    case 'telecoms':
+    case 'telecommunications':
+    case 'utilities':
+      return telecomsPatterns;
+    case 'manufacturing':
+    case 'supply-chain':
+      return manufacturingPatterns;
+    case 'transportation':
+    case 'automotive':
+      return transportationPatterns;
+    case 'media':
+    case 'publishing':
+      return mediaPatterns;
     default:
       return [];
   }
@@ -82,5 +112,11 @@ export {
   legalPatterns,
   educationPatterns,
   hrPatterns,
+  insurancePatterns,
+  retailPatterns,
+  telecomsPatterns,
+  manufacturingPatterns,
+  transportationPatterns,
+  mediaPatterns,
   internationalPatterns
 };

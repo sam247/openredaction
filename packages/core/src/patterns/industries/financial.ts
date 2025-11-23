@@ -286,6 +286,35 @@ export const TERMINAL_ID: PIIPattern = {
   }
 };
 
+/**
+ * UK Bank Account Number (IBAN format)
+ * Format: GB followed by 2 check digits, 4-letter bank code, and 14-digit account number
+ */
+export const UK_BANK_ACCOUNT_IBAN: PIIPattern = {
+  type: 'UK_BANK_ACCOUNT_IBAN',
+  regex: /\b(GB\d{2}[A-Z]{4}\d{14})\b/g,
+  placeholder: '[UK_IBAN_{n}]',
+  priority: 95,
+  severity: 'high',
+  description: 'UK bank account numbers in IBAN format',
+  validator: (value: string) => {
+    return value.startsWith('GB') && value.length === 22;
+  }
+};
+
+/**
+ * UK Sort Code and Account Number Combined
+ * Format: XX-XX-XX followed by 8-digit account number
+ */
+export const UK_SORT_CODE_ACCOUNT: PIIPattern = {
+  type: 'UK_SORT_CODE_ACCOUNT',
+  regex: /\b(\d{2}[-]\d{2}[-]\d{2}\s?\d{8})\b/g,
+  placeholder: '[UK_ACCOUNT_{n}]',
+  priority: 95,
+  severity: 'high',
+  description: 'UK sort code and account number combination'
+};
+
 // Export all financial patterns
 export const financialPatterns: PIIPattern[] = [
   SWIFT_BIC,
@@ -307,5 +336,7 @@ export const financialPatterns: PIIPattern[] = [
   PAYMENT_REFERENCE,
   CARD_AUTH_CODE,
   MERCHANT_ID,
-  TERMINAL_ID
+  TERMINAL_ID,
+  UK_BANK_ACCOUNT_IBAN,
+  UK_SORT_CODE_ACCOUNT
 ];

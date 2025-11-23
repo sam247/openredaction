@@ -230,6 +230,18 @@ export const NDA_ID: PIIPattern = {
   description: 'Non-disclosure and confidentiality agreement numbers'
 };
 
+/**
+ * Contract Reference Code
+ */
+export const CONTRACT_REFERENCE: PIIPattern = {
+  type: 'CONTRACT_REFERENCE',
+  regex: /\bCNTR[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{8})\b/gi,
+  placeholder: '[CONTRACT_{n}]',
+  priority: 85,
+  severity: 'high',
+  description: 'Contract reference codes'
+};
+
 // Export all legal patterns
 export const legalPatterns: PIIPattern[] = [
   CASE_NUMBER,
@@ -248,5 +260,6 @@ export const legalPatterns: PIIPattern[] = [
   NOTARY_LICENSE,
   BANKRUPTCY_CASE,
   PROBATE_CASE,
-  NDA_ID
+  NDA_ID,
+  CONTRACT_REFERENCE
 ];
