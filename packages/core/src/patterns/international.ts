@@ -376,6 +376,42 @@ export const JAPANESE_MY_NUMBER: PIIPattern = {
   }
 };
 
+/**
+ * South Korean RRN (Resident Registration Number)
+ * Format: 6 digits (YYMMDD) + 7 digits (region + gender + serial + checksum)
+ */
+export const SOUTH_KOREAN_RRN: PIIPattern = {
+  type: 'SOUTH_KOREAN_RRN',
+  regex: /\b(\d{6}[-\s]?[1-4]\d{6})\b/g,
+  placeholder: '[KR_RRN_{n}]',
+  priority: 95,
+  severity: 'high',
+  description: 'South Korean Resident Registration Number',
+  validator: (value: string, context: string) => {
+    const cleaned = value.replace(/[-\s]/g, '');
+
+    // Must be in Korean context
+    const relevantContext = /rrn|korean|korea|주민등록번호/i.test(context);
+    if (!relevantContext) return false;
+
+    // Gender digit must be 1-4
+    const genderDigit = parseInt(cleaned[6]);
+    if (genderDigit < 1 || genderDigit > 4) return false;
+
+    // Checksum validation
+    const weights = [2, 3, 4, 5, 6, 7, 8, 9, 2, 3, 4, 5];
+    const digits = cleaned.split('').map(Number);
+
+    let sum = 0;
+    for (let i = 0; i < 12; i++) {
+      sum += digits[i] * weights[i];
+    }
+
+    const checkDigit = (11 - (sum % 11)) % 10;
+    return checkDigit === digits[12];
+  }
+};
+
 // ==================== AMERICAS ====================
 
 /**
@@ -492,6 +528,69 @@ export const BRAZILIAN_CNPJ: PIIPattern = {
   }
 };
 
+/**
+ * Mexican CURP (Clave Única de Registro de Población)
+ * Format: 18 characters (4 letters + 6 digits (YYMMDD) + 1 letter + 6 alphanumeric + 1 digit)
+ */
+export const MEXICAN_CURP: PIIPattern = {
+  type: 'MEXICAN_CURP',
+  regex: /\b([A-Z]{4}\d{6}[HM][A-Z]{5}[0-9A-Z]\d)\b/gi,
+  placeholder: '[MX_CURP_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'Mexican CURP (Population Registry Code)',
+  validator: (value: string, _context: string) => {
+    const curp = value.toUpperCase();
+
+    // Gender must be H (Hombre/Male) or M (Mujer/Female)
+    const gender = curp[10];
+    if (gender !== 'H' && gender !== 'M') return false;
+
+    // State code (positions 11-12) must be valid
+    const validStates = [
+      'AS', 'BC', 'BS', 'CC', 'CL', 'CM', 'CS', 'CH', 'DF', 'DG',
+      'GT', 'GR', 'HG', 'JC', 'MC', 'MN', 'MS', 'NT', 'NL', 'OC',
+      'PL', 'QT', 'QR', 'SP', 'SL', 'SR', 'TC', 'TS', 'TL', 'VZ',
+      'YN', 'ZS', 'NE' // NE = Nacido en el Extranjero (Born abroad)
+    ];
+    const stateCode = curp.substring(11, 13);
+    return validStates.includes(stateCode);
+  }
+};
+
+/**
+ * Mexican RFC (Registro Federal de Contribuyentes)
+ * Format: 12-13 characters (4 letters + 6 digits + 2-3 alphanumeric)
+ */
+export const MEXICAN_RFC: PIIPattern = {
+  type: 'MEXICAN_RFC',
+  regex: /\b([A-Z&Ñ]{3,4}\d{6}[A-Z0-9]{2,3})\b/gi,
+  placeholder: '[MX_RFC_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'Mexican RFC (Tax ID)',
+  validator: (value: string, context: string) => {
+    const rfc = value.toUpperCase();
+
+    // Must be in Mexican/tax context
+    const relevantContext = /rfc|mexican|mexico|impuesto|contribuyente/i.test(context);
+    if (!relevantContext) return false;
+
+    // Length must be 12 (individuals) or 13 (legal entities)
+    if (rfc.length !== 12 && rfc.length !== 13) return false;
+
+    // Date part (positions 4-9) should be valid YYMMDD
+    // Year (positions 4-5) not validated as 00-99 are all potentially valid
+    const month = parseInt(rfc.substring(6, 8));
+    const day = parseInt(rfc.substring(8, 10));
+
+    if (month < 1 || month > 12) return false;
+    if (day < 1 || day > 31) return false;
+
+    return true;
+  }
+};
+
 // Export all international patterns
 export const internationalPatterns: PIIPattern[] = [
   // Europe
@@ -508,9 +607,12 @@ export const internationalPatterns: PIIPattern[] = [
   AUSTRALIAN_TFN,
   SINGAPORE_NRIC,
   JAPANESE_MY_NUMBER,
+  SOUTH_KOREAN_RRN,
 
   // Americas
   CANADIAN_SIN,
   BRAZILIAN_CPF,
-  BRAZILIAN_CNPJ
+  BRAZILIAN_CNPJ,
+  MEXICAN_CURP,
+  MEXICAN_RFC
 ];

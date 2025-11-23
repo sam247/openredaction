@@ -37,7 +37,7 @@ export const POLICY_NUMBER: PIIPattern = {
  */
 export const POLICY_HOLDER_ID: PIIPattern = {
   type: 'POLICY_HOLDER_ID',
-  regex: /\b(?:POLICY[-\s]?HOLDER|INSURED|POLICYHOLDER)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:POLICY[-\s]?HOLDER|INSURED|POLICYHOLDER)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9-]{8,14})\b/gi,
   placeholder: '[HOLDER_{n}]',
   priority: 85,
   severity: 'high',

@@ -17,11 +17,11 @@ export const personalPatterns: PIIPattern[] = [
   },
   {
     type: 'NAME',
-    regex: /\b([A-Z][a-z]+ (?:[A-Z][a-z]+ )?[A-Z][a-z]+)\b/g,
+    regex: /\b(?:(?:Mr|Mrs|Ms|Miss|Dr|Prof|Professor|Sir|Madam|Lady|Lord|Rev|Father|Sister|Brother)\.?\s+)?([A-Z][a-z]+(?:-[A-Z][a-z]+)? (?:[A-Z][a-z]+(?:-[A-Z][a-z]+)? )?[A-Z][a-z]+(?:-[A-Z][a-z]+)?)(?:\s+(?:Jr|Sr|II|III|IV|PhD|MD|Esq|DDS|DVM|MBA|CPA)\.?)?\b/g,
     priority: 50,
     validator: validateName,
     placeholder: '[NAME_{n}]',
-    description: 'Person name (2-3 parts)',
+    description: 'Person name with salutations/suffixes',
     severity: 'high'
   },
   {

@@ -78,5 +78,70 @@ export const governmentPatterns: PIIPattern[] = [
     placeholder: '[TAX_ID_{n}]',
     description: 'Tax identification number',
     severity: 'high'
+  },
+  {
+    type: 'PASSPORT_MRZ_TD3',
+    regex: /P<[A-Z]{3}[A-Z<]{39}\n[A-Z0-9<]{9}[0-9][A-Z]{3}[0-9]{6}[0-9][MF<][0-9]{6}[0-9][A-Z0-9<]{14}[0-9]/g,
+    priority: 98,
+    placeholder: '[PASSPORT_MRZ_{n}]',
+    description: 'Passport Machine Readable Zone (TD3 - 2 lines x 44 chars)',
+    severity: 'high'
+  },
+  {
+    type: 'PASSPORT_MRZ_TD1',
+    regex: /[A-Z]{1}[A-Z<][A-Z]{3}[A-Z0-9<]{9}[0-9][A-Z0-9<]{15}\n[0-9]{6}[0-9][MF<][0-9]{6}[0-9][A-Z]{3}[A-Z0-9<]{11}[0-9]\n[A-Z<]{30}/g,
+    priority: 98,
+    placeholder: '[ID_MRZ_{n}]',
+    description: 'ID Card Machine Readable Zone (TD1 - 3 lines x 30 chars)',
+    severity: 'high'
+  },
+  {
+    type: 'VISA_MRZ',
+    regex: /V<[A-Z]{3}[A-Z<]{39}\n[A-Z0-9<]{9}[0-9][A-Z]{3}[0-9]{6}[0-9][MF<][0-9]{6}[0-9][A-Z0-9<]{14}[0-9]/g,
+    priority: 98,
+    placeholder: '[VISA_MRZ_{n}]',
+    description: 'Visa Machine Readable Zone',
+    severity: 'high'
+  },
+  {
+    type: 'TRAVEL_DOCUMENT_NUMBER',
+    regex: /\b(?:TRAVEL\s+DOC(?:UMENT)?|TD)[:\s#]*([A-Z0-9]{6,15})\b/gi,
+    priority: 92,
+    placeholder: '[TRAVEL_DOC_{n}]',
+    description: 'Travel document numbers',
+    severity: 'high',
+    validator: (_value: string, context: string) => {
+      return /travel|document|visa|passport|border|immigration/i.test(context);
+    }
+  },
+  {
+    type: 'VISA_NUMBER',
+    regex: /\b(?:VISA)[:\s#]*([A-Z0-9]{8,12})\b/gi,
+    priority: 92,
+    placeholder: '[VISA_{n}]',
+    description: 'Visa numbers',
+    severity: 'high',
+    validator: (_value: string, context: string) => {
+      return /visa|travel|entry|immigration|consulate|embassy/i.test(context);
+    }
+  },
+  {
+    type: 'IMMIGRATION_NUMBER',
+    regex: /\b(?:IMMIGRATION|ALIEN|A-NUMBER|A#)[:\s#]*([A-Z]?\d{8,10})\b/gi,
+    priority: 92,
+    placeholder: '[IMMIGRATION_{n}]',
+    description: 'Immigration and alien registration numbers',
+    severity: 'high'
+  },
+  {
+    type: 'BORDER_CROSSING_CARD',
+    regex: /\b(?:BCC|BORDER\s+CROSSING)[:\s#]*([A-Z0-9]{10,15})\b/gi,
+    priority: 90,
+    placeholder: '[BCC_{n}]',
+    description: 'Border crossing card numbers',
+    severity: 'high',
+    validator: (_value: string, context: string) => {
+      return /border|crossing|card|entry|bcc/i.test(context);
+    }
   }
 ];
