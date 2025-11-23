@@ -13,6 +13,9 @@ import { networkPatterns } from './network';
 import { healthcarePatterns } from './industries/healthcare';
 import { financialPatterns as financeIndustryPatterns } from './industries/financial';
 import { technologyPatterns } from './industries/technology';
+import { legalPatterns } from './industries/legal';
+import { educationPatterns } from './industries/education';
+import { hrPatterns } from './industries/hr';
 
 // International patterns
 import { internationalPatterns } from './international';
@@ -29,6 +32,9 @@ export const allPatterns: PIIPattern[] = [
   ...healthcarePatterns,
   ...financeIndustryPatterns,
   ...technologyPatterns,
+  ...legalPatterns,
+  ...educationPatterns,
+  ...hrPatterns,
   ...internationalPatterns
 ];
 
@@ -49,6 +55,13 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
       return networkPatterns;
     case 'healthcare':
       return healthcarePatterns;
+    case 'legal':
+      return legalPatterns;
+    case 'education':
+      return educationPatterns;
+    case 'hr':
+    case 'recruitment':
+      return hrPatterns;
     case 'credentials':
     case 'technology':
       return technologyPatterns;
@@ -66,5 +79,8 @@ export {
   healthcarePatterns,
   financeIndustryPatterns,
   technologyPatterns,
+  legalPatterns,
+  educationPatterns,
+  hrPatterns,
   internationalPatterns
 };
