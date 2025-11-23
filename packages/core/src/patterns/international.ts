@@ -49,7 +49,7 @@ export const FRENCH_SOCIAL_SECURITY: PIIPattern = {
   priority: 90,
   severity: 'high',
   description: 'French Social Security Number',
-  validator: (value: string, context: string) => {
+  validator: (value: string, _context: string) => {
     const cleaned = value.replace(/\s/g, '');
 
     // Must start with 1 or 2 (sex)
@@ -78,7 +78,7 @@ export const SPANISH_DNI: PIIPattern = {
   priority: 90,
   severity: 'high',
   description: 'Spanish National ID (DNI) or Foreigner ID (NIE)',
-  validator: (value: string, context: string) => {
+  validator: (value: string, _context: string) => {
     const cleaned = value.replace(/[-\s]/g, '').toUpperCase();
     const letters = 'TRWAGMYFPDXBNJZSQVHLCKE';
 
@@ -116,7 +116,7 @@ export const ITALIAN_FISCAL_CODE: PIIPattern = {
   priority: 90,
   severity: 'high',
   description: 'Italian Fiscal Code (Codice Fiscale)',
-  validator: (value: string, context: string) => {
+  validator: (value: string, _context: string) => {
     const code = value.toUpperCase();
 
     // Month code must be valid (A-H = Jan-Aug, L-T = Sep-Dec, skipping I)
@@ -250,7 +250,7 @@ export const AUSTRALIAN_MEDICARE: PIIPattern = {
   priority: 90,
   severity: 'high',
   description: 'Australian Medicare Number',
-  validator: (value: string, context: string) => {
+  validator: (value: string, _context: string) => {
     const cleaned = value.replace(/\s/g, '');
 
     // Must start with 2-6
@@ -312,7 +312,7 @@ export const SINGAPORE_NRIC: PIIPattern = {
   priority: 90,
   severity: 'high',
   description: 'Singapore NRIC/FIN',
-  validator: (value: string, context: string) => {
+  validator: (value: string, _context: string) => {
     const code = value.toUpperCase();
     const prefix = code[0];
     const digits = code.substring(1, 8).split('').map(Number);
@@ -424,7 +424,7 @@ export const BRAZILIAN_CPF: PIIPattern = {
   priority: 90,
   severity: 'high',
   description: 'Brazilian CPF (Individual Taxpayer ID)',
-  validator: (value: string, context: string) => {
+  validator: (value: string, _context: string) => {
     const cleaned = value.replace(/[.\-]/g, '');
     const digits = cleaned.split('').map(Number);
 
@@ -464,7 +464,7 @@ export const BRAZILIAN_CNPJ: PIIPattern = {
   priority: 85,
   severity: 'high',
   description: 'Brazilian CNPJ (Company Tax ID)',
-  validator: (value: string, context: string) => {
+  validator: (value: string, _context: string) => {
     const cleaned = value.replace(/[.\-\/]/g, '');
     const digits = cleaned.split('').map(Number);
 

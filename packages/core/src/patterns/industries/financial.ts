@@ -16,7 +16,7 @@ export const SWIFT_BIC: PIIPattern = {
   priority: 85,
   severity: 'high',
   description: 'SWIFT/BIC codes for international transfers',
-  validator: (_value: string, context: string) => {
+  validator: (value: string, context: string) => {
     // Must be in financial context
     const financialContext = /swift|bic|bank|transfer|wire|international|payment/i.test(context);
     // Validate format
@@ -125,7 +125,7 @@ export const BITCOIN_ADDRESS: PIIPattern = {
   priority: 90,
   severity: 'high',
   description: 'Bitcoin cryptocurrency addresses',
-  validator: (_value: string, context: string) => {
+  validator: (value: string, _context: string) => {
     // Basic format validation
     if (value.startsWith('bc1')) {
       // Bech32 format

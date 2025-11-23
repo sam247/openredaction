@@ -114,7 +114,7 @@ export const GENERIC_SECRET: PIIPattern = {
   priority: 90,
   severity: 'high',
   description: 'Generic passwords and secrets',
-  validator: (value: string, context: string) => {
+  validator: (value: string, _context: string) => {
     // Exclude obvious placeholders
     const excluded = /example|sample|test|fake|demo|placeholder|xxx|password|secret|\*+/i;
     return !excluded.test(value) && value.length >= 8;
