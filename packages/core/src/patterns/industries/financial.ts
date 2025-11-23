@@ -154,6 +154,70 @@ export const ETHEREUM_ADDRESS: PIIPattern = {
 };
 
 /**
+ * Litecoin Addresses
+ * Format: L or M + 26-34 base58 chars (legacy), ltc1 + 39-59 chars (bech32)
+ */
+export const LITECOIN_ADDRESS: PIIPattern = {
+  type: 'LITECOIN_ADDRESS',
+  regex: /\b([LM][a-km-zA-HJ-NP-Z1-9]{26,33}|ltc1[a-z0-9]{39,59})\b/g,
+  placeholder: '[LTC_ADDR_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'Litecoin cryptocurrency addresses',
+  validator: (value: string, context: string) => {
+    const cryptoContext = /crypto|litecoin|ltc|wallet|address/i.test(context);
+    return cryptoContext || value.startsWith('ltc1');
+  }
+};
+
+/**
+ * Monero Addresses
+ * Format: 4 or 8 + 94 base58 chars
+ */
+export const MONERO_ADDRESS: PIIPattern = {
+  type: 'MONERO_ADDRESS',
+  regex: /\b([48][a-km-zA-HJ-NP-Z1-9]{94})\b/g,
+  placeholder: '[XMR_ADDR_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'Monero cryptocurrency addresses',
+  validator: (value: string, context: string) => {
+    const cryptoContext = /crypto|monero|xmr|wallet|address/i.test(context);
+    return cryptoContext && value.length === 95;
+  }
+};
+
+/**
+ * Ripple (XRP) Addresses
+ * Format: r + 24-34 base58 chars
+ */
+export const RIPPLE_ADDRESS: PIIPattern = {
+  type: 'RIPPLE_ADDRESS',
+  regex: /\b(r[a-km-zA-HJ-NP-Z1-9]{24,34})\b/g,
+  placeholder: '[XRP_ADDR_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'Ripple (XRP) cryptocurrency addresses',
+  validator: (value: string, context: string) => {
+    const cryptoContext = /crypto|ripple|xrp|wallet|address/i.test(context);
+    return cryptoContext && value.length >= 25 && value.length <= 35;
+  }
+};
+
+/**
+ * Cardano Addresses
+ * Format: addr1 + 58-104 bech32 chars
+ */
+export const CARDANO_ADDRESS: PIIPattern = {
+  type: 'CARDANO_ADDRESS',
+  regex: /\b(addr1[a-z0-9]{58,104})\b/g,
+  placeholder: '[ADA_ADDR_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'Cardano (ADA) cryptocurrency addresses'
+};
+
+/**
  * Crypto Transaction Hashes
  * Bitcoin/Ethereum: 64 hex characters
  */
@@ -166,6 +230,103 @@ export const CRYPTO_TX_HASH: PIIPattern = {
   description: 'Cryptocurrency transaction hashes',
   validator: (_value: string, context: string) => {
     return /crypto|bitcoin|ethereum|blockchain|transaction|tx|txid/i.test(context);
+  }
+};
+
+/**
+ * Payment Card Track 1 Data
+ * Format: %B + PAN + ^ + Name + ^ + Expiry + Service Code + Discretionary Data + ?
+ */
+export const CARD_TRACK1_DATA: PIIPattern = {
+  type: 'CARD_TRACK1_DATA',
+  regex: /%B\d{13,19}\^[^^]+\^\d{4}\d{3}[^?]+\?/g,
+  placeholder: '[TRACK1_{n}]',
+  priority: 95,
+  severity: 'high',
+  description: 'Payment card Track 1 magnetic stripe data'
+};
+
+/**
+ * Payment Card Track 2 Data
+ * Format: ;PAN=Expiry+Service Code+Discretionary Data+?
+ */
+export const CARD_TRACK2_DATA: PIIPattern = {
+  type: 'CARD_TRACK2_DATA',
+  regex: /;\d{13,19}=\d{4}\d{3}[^?]+\?/g,
+  placeholder: '[TRACK2_{n}]',
+  priority: 95,
+  severity: 'high',
+  description: 'Payment card Track 2 magnetic stripe data'
+};
+
+/**
+ * CVV/CVC in Payment Context
+ * 3-4 digits when mentioned with card/payment keywords
+ */
+export const CVV_IN_CONTEXT: PIIPattern = {
+  type: 'CVV_CODE',
+  regex: /\b(?:CVV|CVC|CVV2|CID|CSC)[:\s]+(\d{3,4})\b/gi,
+  placeholder: '[CVV_{n}]',
+  priority: 95,
+  severity: 'high',
+  description: 'Card verification value (CVV/CVC) codes',
+  validator: (value: string, _context: string) => {
+    return value.length >= 3 && value.length <= 4;
+  }
+};
+
+/**
+ * Card Expiration Dates in Payment Context
+ * Formats: MM/YY, MM/YYYY, MM-YY, MMYY
+ */
+export const CARD_EXPIRY_IN_CONTEXT: PIIPattern = {
+  type: 'CARD_EXPIRY',
+  regex: /\b(?:EXP(?:IRY|IRATION)?|VALID\s+THRU)[:\s]+(\d{2}[\/\-]\d{2,4}|\d{4})\b/gi,
+  placeholder: '[EXPIRY_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'Card expiration dates',
+  validator: (value: string, context: string) => {
+    const cardContext = /card|payment|credit|debit|visa|mastercard|amex/i.test(context);
+    // Validate month if in MM/YY format
+    if (value.includes('/') || value.includes('-')) {
+      const parts = value.split(/[\/\-]/);
+      const month = parseInt(parts[0]);
+      return cardContext && month >= 1 && month <= 12;
+    }
+    return cardContext;
+  }
+};
+
+/**
+ * Stock/Security Ticker Symbols with Trade Details
+ * Format: Ticker symbol followed by trade info
+ */
+export const STOCK_TRADE: PIIPattern = {
+  type: 'STOCK_TRADE',
+  regex: /\b([A-Z]{1,5})\s+(?:BUY|SELL|SOLD|BOUGHT)\s+(\d+(?:,\d{3})*(?:\.\d{2})?)\s+(?:@|at)\s+\$?(\d+(?:\.\d{2,4})?)\b/gi,
+  placeholder: '[TRADE_{n}]',
+  priority: 85,
+  severity: 'high',
+  description: 'Stock trade details with ticker, quantity, and price',
+  validator: (_value: string, context: string) => {
+    return /stock|trade|buy|sell|shares|equity|portfolio/i.test(context);
+  }
+};
+
+/**
+ * Bank Wire Transfer Details
+ * Captures wire transfer instructions with account details
+ */
+export const WIRE_TRANSFER_DETAILS: PIIPattern = {
+  type: 'WIRE_TRANSFER_DETAILS',
+  regex: /\b(?:WIRE\s+TO|TRANSFER\s+TO|BENEFICIARY)[:\s]+([A-Z0-9\s,.-]{20,100})/gi,
+  placeholder: '[WIRE_DETAILS_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'Bank wire transfer beneficiary details',
+  validator: (_value: string, context: string) => {
+    return /wire|transfer|beneficiary|recipient|iban|swift|aba|routing/i.test(context);
   }
 };
 
@@ -321,13 +482,23 @@ export const financialPatterns: PIIPattern[] = [
   TRANSACTION_ID,
   INVESTMENT_ACCOUNT,
   WIRE_TRANSFER_REF,
+  WIRE_TRANSFER_DETAILS,
   DD_MANDATE,
   CHEQUE_NUMBER,
   TRADING_ACCOUNT,
   LOAN_ACCOUNT,
   BITCOIN_ADDRESS,
   ETHEREUM_ADDRESS,
+  LITECOIN_ADDRESS,
+  MONERO_ADDRESS,
+  RIPPLE_ADDRESS,
+  CARDANO_ADDRESS,
   CRYPTO_TX_HASH,
+  CARD_TRACK1_DATA,
+  CARD_TRACK2_DATA,
+  CVV_IN_CONTEXT,
+  CARD_EXPIRY_IN_CONTEXT,
+  STOCK_TRADE,
   PAYMENT_TOKEN,
   PAYMENT_CUSTOMER_ID,
   SUBSCRIPTION_ID,
