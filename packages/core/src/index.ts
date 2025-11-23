@@ -114,3 +114,14 @@ export type {
   PatternMatchResult,
   TextExplanation
 } from './explain/ExplainAPI';
+
+// Report generation
+export {
+  ReportGenerator,
+  createReportGenerator
+} from './reports/ReportGenerator';
+export type {
+  ReportOptions,
+  ReportFormat,
+  ReportType
+} from './reports/ReportGenerator';

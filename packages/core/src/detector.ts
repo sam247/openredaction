@@ -18,6 +18,7 @@ import { isFalsePositive } from './filters/FalsePositiveFilter.js';
 import { createSimpleMultiPass, groupPatternsByPass, mergePassDetections, type DetectionPass } from './multipass/MultiPassDetector.js';
 import { LRUCache, hashString } from './utils/cache.js';
 import { ExplainAPI, createExplainAPI } from './explain/ExplainAPI.js';
+import { createReportGenerator, type ReportOptions } from './reports/ReportGenerator.js';
 
 /**
  * Main OpenRedact class for detecting and redacting PII
@@ -618,5 +619,13 @@ export class OpenRedact {
    */
   explain(): ExplainAPI {
     return createExplainAPI(this);
+  }
+
+  /**
+   * Generate a report from detection results
+   */
+  generateReport(result: DetectionResult, options: ReportOptions): string {
+    const generator = createReportGenerator(this);
+    return generator.generate(result, options);
   }
 }

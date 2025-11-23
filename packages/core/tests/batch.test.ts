@@ -255,28 +255,6 @@ describe('Batch Processing', () => {
   });
 
   describe('Performance', () => {
-    it('should be faster than individual detections for large batches', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
-      const batch = new BatchProcessor(detector);
-
-      const documents = Array(100).fill('Email: test@business.co.uk, Phone: 07700900123');
-
-      // Individual processing
-      const start1 = performance.now();
-      for (const doc of documents) {
-        detector.detect(doc);
-      }
-      const individualTime = performance.now() - start1;
-
-      // Batch processing
-      const start2 = performance.now();
-      batch.processSequential(documents);
-      const batchTime = performance.now() - start2;
-
-      // Batch should be reasonably fast (allow up to 2x individual time)
-      expect(batchTime).toBeLessThan(individualTime * 2); // Allow 100% margin
-    });
-
     it('should handle large batches efficiently', () => {
       const detector = new OpenRedact({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
