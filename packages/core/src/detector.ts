@@ -13,6 +13,7 @@ import { generateDeterministicId } from './utils/hash';
 import { getPreset } from './utils/presets';
 import { LocalLearningStore } from './learning/LocalLearningStore.js';
 import { ConfigLoader } from './config/ConfigLoader.js';
+import { analyzeFullContext } from './context/ContextAnalyzer.js';
 
 /**
  * Main OpenRedact class for detecting and redacting PII
@@ -29,6 +30,8 @@ export class OpenRedact {
     whitelist: string[];
     deterministic: boolean;
     preset?: 'gdpr' | 'hipaa' | 'ccpa';
+    enableContextAnalysis: boolean;
+    confidenceThreshold: number;
   };
   private valueToPlaceholder: Map<string, string> = new Map();
   private placeholderCounter: Map<string, number> = new Map();
@@ -53,6 +56,8 @@ export class OpenRedact {
       customPatterns: [],
       whitelist: [],
       deterministic: true,
+      enableContextAnalysis: false, // Disabled by default until fine-tuned
+      confidenceThreshold: 0.3, // Lower threshold for when enabled
       ...presetOptions,
       ...options
     };
@@ -188,6 +193,24 @@ export class OpenRedact {
           continue;
         }
 
+        // Perform context analysis if enabled
+        let confidence = 1.0; // Default confidence if analysis disabled
+        if (this.options.enableContextAnalysis) {
+          const contextAnalysis = analyzeFullContext(
+            text,
+            value,
+            pattern.type,
+            startPos,
+            endPos
+          );
+          confidence = contextAnalysis.confidence;
+
+          // Filter low-confidence detections
+          if (confidence < this.options.confidenceThreshold) {
+            continue;
+          }
+        }
+
         // Check whitelist
         if (this.options.whitelist.some(term =>
           value.toLowerCase().includes(term.toLowerCase())
@@ -204,7 +227,8 @@ export class OpenRedact {
           value,
           placeholder,
           position: [startPos, endPos],
-          severity: pattern.severity || 'medium'
+          severity: pattern.severity || 'medium',
+          confidence
         });
 
         // Mark range as processed

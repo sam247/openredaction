@@ -36,6 +36,8 @@ export interface PIIDetection {
   position: [number, number];
   /** Severity level */
   severity: 'high' | 'medium' | 'low';
+  /** Confidence score (0-1) based on context analysis */
+  confidence?: number;
 }
 
 /**
@@ -81,6 +83,10 @@ export interface OpenRedactOptions {
   deterministic?: boolean;
   /** Compliance preset */
   preset?: 'gdpr' | 'hipaa' | 'ccpa';
+  /** Enable context-aware detection (default: false, experimental) */
+  enableContextAnalysis?: boolean;
+  /** Minimum confidence threshold for detections (0-1, default: 0.3) */
+  confidenceThreshold?: number;
 }
 
 /**

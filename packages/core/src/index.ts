@@ -49,3 +49,16 @@ export type {
 // Config system
 export { ConfigLoader } from './config/ConfigLoader';
 export type { OpenRedactConfig } from './config/ConfigLoader';
+
+// Context analysis system
+export {
+  extractContext,
+  inferDocumentType,
+  analyzeContextFeatures,
+  calculateContextConfidence,
+  analyzeFullContext
+} from './context/ContextAnalyzer';
+export type {
+  ContextAnalysis,
+  ContextFeatures
+} from './context/ContextAnalyzer';
