@@ -22,6 +22,8 @@ import { telecomsPatterns } from './industries/telecoms';
 import { manufacturingPatterns } from './industries/manufacturing';
 import { transportationPatterns } from './industries/transportation';
 import { mediaPatterns } from './industries/media';
+import { charitablePatterns } from './industries/charitable';
+import { procurementPatterns } from './industries/procurement';
 
 // International patterns
 import { internationalPatterns } from './international';
@@ -47,6 +49,8 @@ export const allPatterns: PIIPattern[] = [
   ...manufacturingPatterns,
   ...transportationPatterns,
   ...mediaPatterns,
+  ...charitablePatterns,
+  ...procurementPatterns,
   ...internationalPatterns
 ];
 
@@ -87,7 +91,6 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
     case 'utilities':
       return telecomsPatterns;
     case 'manufacturing':
-    case 'supply-chain':
       return manufacturingPatterns;
     case 'transportation':
     case 'automotive':
@@ -95,6 +98,15 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
     case 'media':
     case 'publishing':
       return mediaPatterns;
+    case 'charitable':
+    case 'charity':
+    case 'nonprofit':
+    case 'ngo':
+      return charitablePatterns;
+    case 'procurement':
+    case 'purchasing':
+    case 'supply-chain':
+      return procurementPatterns;
     default:
       return [];
   }
@@ -118,5 +130,7 @@ export {
   manufacturingPatterns,
   transportationPatterns,
   mediaPatterns,
+  charitablePatterns,
+  procurementPatterns,
   internationalPatterns
 };
