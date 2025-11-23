@@ -95,6 +95,10 @@ export interface OpenRedactOptions {
   enableMultiPass?: boolean;
   /** Number of detection passes (2-5, default: 3) */
   multiPassCount?: number;
+  /** Enable result caching for repeated inputs (default: false) */
+  enableCache?: boolean;
+  /** Maximum cache size (default: 100) */
+  cacheSize?: number;
 }
 
 /**

@@ -84,3 +84,23 @@ export type {
   DetectionPass,
   MultiPassStats
 } from './multipass/MultiPassDetector';
+
+// Streaming API
+export {
+  StreamingDetector,
+  createStreamingDetector
+} from './streaming/StreamingDetector';
+export type {
+  ChunkResult,
+  StreamingOptions
+} from './streaming/StreamingDetector';
+
+// Batch processing
+export {
+  BatchProcessor,
+  createBatchProcessor
+} from './batch/BatchProcessor';
+export type {
+  BatchOptions,
+  BatchResult
+} from './batch/BatchProcessor';

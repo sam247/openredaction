@@ -16,6 +16,7 @@ import { ConfigLoader } from './config/ConfigLoader.js';
 import { analyzeFullContext } from './context/ContextAnalyzer.js';
 import { isFalsePositive } from './filters/FalsePositiveFilter.js';
 import { createSimpleMultiPass, groupPatternsByPass, mergePassDetections, type DetectionPass } from './multipass/MultiPassDetector.js';
+import { LRUCache, hashString } from './utils/cache.js';
 
 /**
  * Main OpenRedact class for detecting and redacting PII
@@ -38,8 +39,11 @@ export class OpenRedact {
     falsePositiveThreshold: number;
     enableMultiPass: boolean;
     multiPassCount: number;
+    enableCache: boolean;
+    cacheSize: number;
   };
   private multiPassConfig?: DetectionPass[];
+  private resultCache?: LRUCache<string, DetectionResult>;
   private valueToPlaceholder: Map<string, string> = new Map();
   private placeholderCounter: Map<string, number> = new Map();
   private learningStore?: LocalLearningStore;
@@ -69,9 +73,16 @@ export class OpenRedact {
       falsePositiveThreshold: 0.7,
       enableMultiPass: false, // Disabled by default (opt-in for better accuracy)
       multiPassCount: 3, // Default: 3 passes when enabled
+      enableCache: false, // Disabled by default (opt-in for high-volume usage)
+      cacheSize: 100, // Default: cache up to 100 results
       ...presetOptions,
       ...options
     };
+
+    // Initialize result cache if enabled
+    if (this.options.enableCache) {
+      this.resultCache = new LRUCache<string, DetectionResult>(this.options.cacheSize);
+    }
 
     // Initialize multi-pass configuration if enabled
     if (this.options.enableMultiPass) {
@@ -269,6 +280,15 @@ export class OpenRedact {
   detect(text: string): DetectionResult {
     const startTime = performance.now();
 
+    // Check cache if enabled
+    if (this.resultCache) {
+      const cacheKey = hashString(text);
+      const cached = this.resultCache.get(cacheKey);
+      if (cached) {
+        return cached;
+      }
+    }
+
     // Reset counters for this detection run if not deterministic
     if (!this.options.deterministic) {
       this.placeholderCounter.clear();
@@ -326,7 +346,7 @@ export class OpenRedact {
 
     const endTime = performance.now();
 
-    return {
+    const result: DetectionResult = {
       original: text,
       redacted,
       detections: detections.reverse(), // Return in original order
@@ -336,6 +356,14 @@ export class OpenRedact {
         piiCount: detections.length
       }
     };
+
+    // Store in cache if enabled
+    if (this.resultCache) {
+      const cacheKey = hashString(text);
+      this.resultCache.set(cacheKey, result);
+    }
+
+    return result;
   }
 
   /**
@@ -562,5 +590,25 @@ export class OpenRedact {
    */
   getLearningStore(): LocalLearningStore | undefined {
     return this.learningStore;
+  }
+
+  /**
+   * Clear the result cache (if caching is enabled)
+   */
+  clearCache(): void {
+    if (this.resultCache) {
+      this.resultCache.clear();
+    }
+  }
+
+  /**
+   * Get cache statistics
+   */
+  getCacheStats(): { size: number; maxSize: number; enabled: boolean } {
+    return {
+      size: this.resultCache?.size || 0,
+      maxSize: this.options.cacheSize,
+      enabled: this.options.enableCache
+    };
   }
 }
