@@ -104,3 +104,13 @@ export type {
   BatchOptions,
   BatchResult
 } from './batch/BatchProcessor';
+
+// Explain API
+export {
+  ExplainAPI,
+  createExplainAPI
+} from './explain/ExplainAPI';
+export type {
+  PatternMatchResult,
+  TextExplanation
+} from './explain/ExplainAPI';

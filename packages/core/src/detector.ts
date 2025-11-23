@@ -17,6 +17,7 @@ import { analyzeFullContext } from './context/ContextAnalyzer.js';
 import { isFalsePositive } from './filters/FalsePositiveFilter.js';
 import { createSimpleMultiPass, groupPatternsByPass, mergePassDetections, type DetectionPass } from './multipass/MultiPassDetector.js';
 import { LRUCache, hashString } from './utils/cache.js';
+import { ExplainAPI, createExplainAPI } from './explain/ExplainAPI.js';
 
 /**
  * Main OpenRedact class for detecting and redacting PII
@@ -610,5 +611,12 @@ export class OpenRedact {
       maxSize: this.options.cacheSize,
       enabled: this.options.enableCache
     };
+  }
+
+  /**
+   * Create an explain API for debugging detections
+   */
+  explain(): ExplainAPI {
+    return createExplainAPI(this);
   }
 }

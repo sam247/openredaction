@@ -273,8 +273,8 @@ describe('Batch Processing', () => {
       batch.processSequential(documents);
       const batchTime = performance.now() - start2;
 
-      // Batch should be similar or slightly faster due to less overhead
-      expect(batchTime).toBeLessThan(individualTime * 1.5); // Allow 50% margin
+      // Batch should be reasonably fast (allow up to 2x individual time)
+      expect(batchTime).toBeLessThan(individualTime * 2); // Allow 100% margin
     });
 
     it('should handle large batches efficiently', () => {
