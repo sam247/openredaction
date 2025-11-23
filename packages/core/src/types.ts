@@ -91,6 +91,10 @@ export interface OpenRedactOptions {
   enableFalsePositiveFilter?: boolean;
   /** False positive confidence threshold (0-1, default: 0.7) */
   falsePositiveThreshold?: number;
+  /** Enable multi-pass detection for better accuracy (default: false, experimental) */
+  enableMultiPass?: boolean;
+  /** Number of detection passes (2-5, default: 3) */
+  multiPassCount?: number;
 }
 
 /**

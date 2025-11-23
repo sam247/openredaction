@@ -72,3 +72,15 @@ export {
 export type {
   FalsePositiveRule
 } from './filters/FalsePositiveFilter';
+
+// Multi-pass detection
+export {
+  groupPatternsByPass,
+  mergePassDetections,
+  createSimpleMultiPass,
+  defaultPasses
+} from './multipass/MultiPassDetector';
+export type {
+  DetectionPass,
+  MultiPassStats
+} from './multipass/MultiPassDetector';

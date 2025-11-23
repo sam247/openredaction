@@ -15,6 +15,7 @@ import { LocalLearningStore } from './learning/LocalLearningStore.js';
 import { ConfigLoader } from './config/ConfigLoader.js';
 import { analyzeFullContext } from './context/ContextAnalyzer.js';
 import { isFalsePositive } from './filters/FalsePositiveFilter.js';
+import { createSimpleMultiPass, groupPatternsByPass, mergePassDetections, type DetectionPass } from './multipass/MultiPassDetector.js';
 
 /**
  * Main OpenRedact class for detecting and redacting PII
@@ -35,7 +36,10 @@ export class OpenRedact {
     confidenceThreshold: number;
     enableFalsePositiveFilter: boolean;
     falsePositiveThreshold: number;
+    enableMultiPass: boolean;
+    multiPassCount: number;
   };
+  private multiPassConfig?: DetectionPass[];
   private valueToPlaceholder: Map<string, string> = new Map();
   private placeholderCounter: Map<string, number> = new Map();
   private learningStore?: LocalLearningStore;
@@ -63,9 +67,19 @@ export class OpenRedact {
       confidenceThreshold: 0.5, // Balanced threshold (filters <50% confidence)
       enableFalsePositiveFilter: false, // Disabled by default (experimental)
       falsePositiveThreshold: 0.7,
+      enableMultiPass: false, // Disabled by default (opt-in for better accuracy)
+      multiPassCount: 3, // Default: 3 passes when enabled
       ...presetOptions,
       ...options
     };
+
+    // Initialize multi-pass configuration if enabled
+    if (this.options.enableMultiPass) {
+      this.multiPassConfig = createSimpleMultiPass({
+        numPasses: this.options.multiPassCount,
+        prioritizeCredentials: true
+      });
+    }
 
     // Enable learning by default
     this.enableLearning = options.enableLearning ?? true;
@@ -145,22 +159,18 @@ export class OpenRedact {
   }
 
   /**
-   * Detect PII in text
+   * Process patterns and detect PII
+   * Used by both single-pass and multi-pass detection
    */
-  detect(text: string): DetectionResult {
-    const startTime = performance.now();
-
+  private processPatterns(
+    text: string,
+    patterns: PIIPattern[],
+    processedRanges: Array<[number, number]>
+  ): PIIDetection[] {
     const detections: PIIDetection[] = [];
-    const processedRanges: Array<[number, number]> = [];
-
-    // Reset counters for this detection run if not deterministic
-    if (!this.options.deterministic) {
-      this.placeholderCounter.clear();
-      this.valueToPlaceholder.clear();
-    }
 
     // Process each pattern
-    for (const pattern of this.patterns) {
+    for (const pattern of patterns) {
       const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
       let match: RegExpExecArray | null;
 
@@ -248,6 +258,54 @@ export class OpenRedact {
         // Mark range as processed
         processedRanges.push([startPos, endPos]);
       }
+    }
+
+    return detections;
+  }
+
+  /**
+   * Detect PII in text
+   */
+  detect(text: string): DetectionResult {
+    const startTime = performance.now();
+
+    // Reset counters for this detection run if not deterministic
+    if (!this.options.deterministic) {
+      this.placeholderCounter.clear();
+      this.valueToPlaceholder.clear();
+    }
+
+    let detections: PIIDetection[];
+    const processedRanges: Array<[number, number]> = [];
+
+    // Use multi-pass detection if enabled
+    if (this.options.enableMultiPass && this.multiPassConfig) {
+      // Group patterns by pass
+      const patternGroups = groupPatternsByPass(this.patterns, this.multiPassConfig);
+      const passDetections = new Map<string, PIIDetection[]>();
+
+      // Process each pass in order
+      for (const pass of this.multiPassConfig) {
+        const passPatterns = patternGroups.get(pass.name) || [];
+        if (passPatterns.length === 0) continue;
+
+        // Process this pass
+        const currentDetections = this.processPatterns(text, passPatterns, processedRanges);
+
+        // Store detections for this pass
+        passDetections.set(pass.name, currentDetections);
+
+        // Update processed ranges for next pass
+        for (const detection of currentDetections) {
+          processedRanges.push(detection.position);
+        }
+      }
+
+      // Merge detections from all passes
+      detections = mergePassDetections(passDetections, this.multiPassConfig);
+    } else {
+      // Single-pass detection (original behavior)
+      detections = this.processPatterns(text, this.patterns, processedRanges);
     }
 
     // Sort detections by position (descending) for proper replacement
