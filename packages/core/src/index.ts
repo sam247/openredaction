@@ -62,3 +62,13 @@ export type {
   ContextAnalysis,
   ContextFeatures
 } from './context/ContextAnalyzer';
+
+// False positive filtering
+export {
+  isFalsePositive,
+  filterFalsePositives,
+  commonFalsePositives
+} from './filters/FalsePositiveFilter';
+export type {
+  FalsePositiveRule
+} from './filters/FalsePositiveFilter';

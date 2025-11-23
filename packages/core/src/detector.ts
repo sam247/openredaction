@@ -14,6 +14,7 @@ import { getPreset } from './utils/presets';
 import { LocalLearningStore } from './learning/LocalLearningStore.js';
 import { ConfigLoader } from './config/ConfigLoader.js';
 import { analyzeFullContext } from './context/ContextAnalyzer.js';
+import { isFalsePositive } from './filters/FalsePositiveFilter.js';
 
 /**
  * Main OpenRedact class for detecting and redacting PII
@@ -32,6 +33,8 @@ export class OpenRedact {
     preset?: 'gdpr' | 'hipaa' | 'ccpa';
     enableContextAnalysis: boolean;
     confidenceThreshold: number;
+    enableFalsePositiveFilter: boolean;
+    falsePositiveThreshold: number;
   };
   private valueToPlaceholder: Map<string, string> = new Map();
   private placeholderCounter: Map<string, number> = new Map();
@@ -58,6 +61,8 @@ export class OpenRedact {
       deterministic: true,
       enableContextAnalysis: false, // Disabled by default until fine-tuned
       confidenceThreshold: 0.3, // Lower threshold for when enabled
+      enableFalsePositiveFilter: false, // Disabled by default until fine-tuned
+      falsePositiveThreshold: 0.7,
       ...presetOptions,
       ...options
     };
@@ -191,6 +196,15 @@ export class OpenRedact {
         // Run validator if present
         if (pattern.validator && !pattern.validator(value, context)) {
           continue;
+        }
+
+        // Check for false positives if enabled
+        if (this.options.enableFalsePositiveFilter) {
+          const fpResult = isFalsePositive(value, pattern.type, context);
+          if (fpResult.isFalsePositive && fpResult.confidence >= this.options.falsePositiveThreshold) {
+            // Skip this detection - likely a false positive
+            continue;
+          }
         }
 
         // Perform context analysis if enabled

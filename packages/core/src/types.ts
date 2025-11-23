@@ -87,6 +87,10 @@ export interface OpenRedactOptions {
   enableContextAnalysis?: boolean;
   /** Minimum confidence threshold for detections (0-1, default: 0.3) */
   confidenceThreshold?: number;
+  /** Enable false positive filtering (default: false, experimental) */
+  enableFalsePositiveFilter?: boolean;
+  /** False positive confidence threshold (0-1, default: 0.7) */
+  falsePositiveThreshold?: number;
 }
 
 /**
