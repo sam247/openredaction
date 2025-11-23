@@ -125,3 +125,23 @@ export type {
   ReportFormat,
   ReportType
 } from './reports/ReportGenerator';
+
+// Express integration
+export {
+  openRedactMiddleware,
+  detectPII,
+  generateReport
+} from './integrations/express';
+export type {
+  OpenRedactMiddlewareOptions,
+  OpenRedactRequest
+} from './integrations/express';
+
+// React integration
+export {
+  useOpenRedact,
+  usePIIDetector,
+  useFormFieldValidator,
+  useBatchDetector,
+  useAutoRedact
+} from './integrations/react';

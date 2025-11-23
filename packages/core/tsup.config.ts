@@ -8,7 +8,8 @@ export default defineConfig([
     dts: true,
     clean: true,
     sourcemap: true,
-    outDir: 'dist'
+    outDir: 'dist',
+    external: ['react', 'express']
   },
   // CLI build
   {
