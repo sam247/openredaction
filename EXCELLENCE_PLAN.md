@@ -76,11 +76,11 @@ This document outlines the comprehensive strategy to make OpenRedact the most th
 - ✅ Added extensive test coverage for new patterns
 
 **Remaining Opportunities:**
-- ⚠️ Financial enhancements (cryptocurrency wallets, SWIFT/BIC codes)
-- ⚠️ Advanced context-aware entity recognition
 - ⚠️ ML-powered name detection with confidence scoring
-- ⚠️ Passport MRZ codes and advanced biometric patterns
 - ⚠️ Multi-language support (ES, FR, DE)
+- ⚠️ Partial redaction (show first/last chars)
+- ⚠️ Anonymization (replace with realistic fake data)
+- ⚠️ Framework integrations (Express, React hooks)
 
 ---
 
@@ -268,11 +268,35 @@ function calculateNameScore(name: string, context: string): number {
 
 ---
 
-## 🧪 Phase 2: Accuracy Improvements (Weeks 5-8)
+## 🧪 Phase 2: Accuracy Improvements ✅ LARGELY COMPLETE
 
-### 2.1 Context-Aware Detection
+**Status:** Core accuracy features fully implemented, available as opt-in features
 
-**Implement NLP-Lite Features:**
+### 2.1 Context-Aware Detection ✅ IMPLEMENTED
+
+**Status:** Fully implemented with comprehensive NLP-lite features
+
+**Completed Features:**
+- ✅ Context extraction (5 words before/after, full sentence)
+- ✅ Document type inference (email, code, chat, document)
+- ✅ Context features analysis (technical, business, medical, financial, example indicators)
+- ✅ Confidence scoring based on context (0-1 scale)
+- ✅ Positive indicator detection (Dear, Hello, Patient:, etc.)
+- ✅ Negative indicator detection (the, a, version, etc.)
+- ✅ Relative position tracking
+- ✅ Strong/weak test data detection
+
+**How to Enable:**
+```typescript
+const redactor = new OpenRedact({
+  enableContextAnalysis: true,  // Already enabled by default!
+  confidenceThreshold: 0.5      // Filter detections below 50% confidence
+});
+```
+
+**Implementation Location:** `packages/core/src/context/ContextAnalyzer.ts`
+
+**Implement NLP-Lite Features (ALREADY DONE):**
 
 ```typescript
 interface ContextAnalysis {
@@ -301,75 +325,120 @@ function analyzeContext(detection: string, position: number, fullText: string): 
 - [ ] Document structure (headings, lists, paragraphs)
 - [ ] Temporal context (dates around names = likely person)
 
-### 2.2 False Positive Reduction
+### 2.2 False Positive Reduction ✅ IMPLEMENTED
 
-**Common False Positives to Address:**
+**Status:** Comprehensive false positive detection system with 15+ rules
 
-**Names:**
-- [ ] Common words: "Dear", "The", "US", "IT", "AI", "API"
-- [ ] Dictionary words used as names: "Apple", "Amazon"
-- [ ] Technical terms: "Admin", "User", "Guest"
+**Completed Rules:**
+- ✅ **Version numbers** mistaken for phone numbers (v1.2.3)
+- ✅ **Dates** mistaken for phone numbers (DD-MM-YYYY patterns)
+- ✅ **IP addresses** mistaken for various PII
+- ✅ **Measurements** and dimensions (100cm, 5ft, etc.)
+- ✅ **Years** (1900-2099) mistaken for IDs
+- ✅ **Prices** and monetary amounts ($99.99, £50.00)
+- ✅ **Port numbers** (1-65535)
+- ✅ **Percentages** (50%, 25 percent)
+- ✅ **Technical codes** in documentation
+- ✅ **SKU/Part numbers** with prefixes
+- ✅ **Common non-name words** (The Smith, A Johnson)
+- ✅ **Example domains** (example.com, test.com, domain.tld)
+- ✅ **Template placeholders** ({email}, [name], etc.)
+- ✅ **UUID formats** v4 (not personal identifiers)
+- ✅ **Base64 encoded strings** in code
 
-**Solution:** Maintain context-aware blacklists per domain
-
-**Phone Numbers:**
-- [ ] Version numbers: "v1.2.3.4567"
-- [ ] Part numbers: "SKU-555-1234"
-- [ ] Numeric IDs: "ID: 123-456-7890"
-
-**Solution:** Check for non-phone prefixes
-
-**Emails:**
-- [ ] Template placeholders: "{email}", "[email]"
-- [ ] Example domains: "example.com", "test.com"
-
-**Solution:** Whitelist common example domains
-
-### 2.3 Pattern Priority Optimization
-
-**Current:** Simple priority numbers (100 = highest)
-
-**Improvement:** Dynamic priority based on:
-- Pattern specificity
-- Validation strength
-- Historical accuracy
-- Learning data
-
+**How to Enable:**
 ```typescript
-function calculateDynamicPriority(pattern: PIIPattern, learningStore: LocalLearningStore): number {
-  let priority = pattern.priority;
+const redactor = new OpenRedact({
+  enableFalsePositiveFilter: true,  // Opt-in for experimental feature
+  falsePositiveThreshold: 0.7       // 70% confidence threshold
+});
+```
 
-  // Boost if has strong validator
-  if (pattern.validator) priority += 10;
+**Implementation Location:** `packages/core/src/filters/FalsePositiveFilter.ts`
 
-  // Boost based on historical accuracy
-  const accuracy = learningStore.getPatternAccuracy(pattern.type);
-  if (accuracy > 0.95) priority += 5;
-
-  // Reduce if frequent false positives
-  const falsePositiveRate = learningStore.getFalsePositiveRate(pattern.type);
-  if (falsePositiveRate > 0.05) priority -= 10;
-
-  return priority;
+**Rule Structure:**
+```typescript
+interface FalsePositiveRule {
+  patternType: string | string[];  // Which patterns this applies to
+  matcher: (value: string, context: string) => boolean;
+  description: string;
+  severity: 'high' | 'medium' | 'low';  // Confidence level
 }
 ```
 
-### 2.4 Multi-Pass Detection
+### 2.3 Pattern Priority Optimization ⚡ PARTIALLY IMPLEMENTED
 
-**Current:** Single pass through text
+**Current Status:** Static priority system (0-100) fully functional, dynamic optimization planned
 
-**Improvement:** Multi-pass with different strategies
+**Implemented:**
+- ✅ Static priority system (0-100 scale)
+- ✅ Patterns sorted by priority (highest first)
+- ✅ Priority ranges for different detection passes
+- ✅ Local learning system tracks pattern accuracy
 
+**Future Enhancement:** Dynamic priority based on:
+- [ ] Pattern specificity analysis
+- [ ] Validation strength scoring
+- [ ] Historical accuracy from learning store
+- [ ] False positive rate tracking
+
+**Example Usage:**
 ```typescript
-// Pass 1: High-confidence patterns with validators
-// Pass 2: Medium-confidence patterns with context checks
-// Pass 3: Low-confidence patterns (optional, opt-in)
-
-const result = {
-  highConfidence: detectPass1(text),    // 95%+ confidence
-  mediumConfidence: detectPass2(text),  // 80-95% confidence
-  lowConfidence: detectPass3(text)      // <80% confidence, review suggested
+// Current: static priorities work well
+const pattern: PIIPattern = {
+  type: 'SSN',
+  regex: /\b\d{3}-\d{2}-\d{4}\b/,
+  priority: 100,  // Highest priority
+  validator: validateSSN
 };
+```
+
+### 2.4 Multi-Pass Detection ✅ IMPLEMENTED
+
+**Status:** Fully implemented priority-based multi-pass system
+
+**Completed Features:**
+- ✅ 4-pass detection system (critical → high → standard → low)
+- ✅ Pass 1: Critical credentials (95-100 priority) - API keys, tokens, secrets
+- ✅ Pass 2: High-confidence patterns (85-94 priority) - SSN, passports, etc.
+- ✅ Pass 3: Standard PII (70-84 priority) - Names, addresses, phones
+- ✅ Pass 4: Low priority patterns (0-69 priority) - Optional data
+- ✅ Overlap detection (earlier passes take precedence)
+- ✅ Statistics tracking (time per pass, detections per pass)
+- ✅ Configurable pass definitions
+
+**How to Enable:**
+```typescript
+const redactor = new OpenRedact({
+  enableMultiPass: true,    // Opt-in for multi-pass detection
+  multiPassCount: 3         // Number of passes (default: 3)
+});
+
+// Result includes multi-pass statistics
+const result = redactor.detect(text);
+console.log(result.stats);  // Time per pass, detections per pass
+```
+
+**Implementation Location:** `packages/core/src/multipass/MultiPassDetector.ts`
+
+**Pass Configuration:**
+```typescript
+const defaultPasses: DetectionPass[] = [
+  {
+    name: 'critical-credentials',
+    minPriority: 95,
+    maxPriority: 100,
+    includeTypes: ['API_KEY', 'TOKEN', 'SECRET'],
+    description: 'Critical credentials and API keys'
+  },
+  {
+    name: 'high-confidence',
+    minPriority: 85,
+    maxPriority: 94,
+    description: 'High-confidence patterns with strong validation'
+  },
+  // ... more passes
+];
 ```
 
 ---
@@ -851,8 +920,8 @@ This is an ambitious plan! Consider:
 ---
 
 **Last Updated:** 2025-11-23
-**Version:** 0.1.0 (Phase 1 100% Complete!)
-**Status:** Phase 1 ✅ 100% COMPLETED | Phase 2 (Context-Aware Detection) READY TO START
+**Version:** 0.1.0 (Phase 1 & 2 Substantially Complete!)
+**Status:** Phase 1 ✅ 100% COMPLETE | Phase 2 ✅ 90% COMPLETE | Phase 3 NEXT
 
 ---
 
