@@ -45,5 +45,24 @@ export const networkPatterns: PIIPattern[] = [
     placeholder: '[URL_AUTH_{n}]',
     description: 'URL with credentials',
     severity: 'high'
+  },
+  {
+    type: 'IOT_SERIAL_NUMBER',
+    regex: /\bSN:([A-Z0-9]{12})\b/gi,
+    priority: 80,
+    placeholder: '[IOT_SERIAL_{n}]',
+    description: 'IoT device serial numbers',
+    severity: 'medium'
+  },
+  {
+    type: 'DEVICE_UUID',
+    regex: /\b([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\b/gi,
+    priority: 75,
+    placeholder: '[DEVICE_UUID_{n}]',
+    description: 'Device UUID identifiers',
+    severity: 'medium',
+    validator: (_match: string, context: string) => {
+      return /device|uuid|identifier|hardware|iot|sensor/i.test(context);
+    }
   }
 ];

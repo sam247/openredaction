@@ -157,6 +157,18 @@ export const EXAM_ID: PIIPattern = {
 };
 
 /**
+ * Exam Registration Numbers (standardized format)
+ */
+export const EXAM_REGISTRATION_NUMBER: PIIPattern = {
+  type: 'EXAM_REGISTRATION_NUMBER',
+  regex: /\bEXAM[-\s]?(\d{4}[-]\d{4})\b/gi,
+  placeholder: '[EXAM_REG_{n}]',
+  priority: 80,
+  severity: 'high',
+  description: 'Exam registration numbers (standardized format)'
+};
+
+/**
  * Dorm/Housing Assignment
  */
 export const HOUSING_ASSIGNMENT: PIIPattern = {
@@ -294,6 +306,7 @@ export const educationPatterns: PIIPattern[] = [
   FINANCIAL_AID_ID,
   DEGREE_NUMBER,
   EXAM_ID,
+  EXAM_REGISTRATION_NUMBER,
   HOUSING_ASSIGNMENT,
   MEAL_PLAN_ID,
   PARKING_PERMIT,

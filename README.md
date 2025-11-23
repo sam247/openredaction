@@ -285,11 +285,109 @@ setInterval(async () => {
 - **ADDRESS_STREET** - Street addresses
 - **ADDRESS_PO_BOX** - PO Box addresses
 
-### Network
+### Network & IoT
 - **IPV4** - IPv4 addresses (excluding private IPs)
 - **IPV6** - IPv6 addresses (excluding local)
 - **MAC_ADDRESS** - MAC addresses
 - **URL_WITH_AUTH** - URLs with embedded credentials
+- **IOT_SERIAL_NUMBER** - IoT device serial numbers
+- **DEVICE_UUID** - Device UUID identifiers
+
+## Industry-Specific Identifiers
+
+OpenRedact supports 180+ industry-specific PII patterns across multiple sectors:
+
+### Education & Academia
+| Identifier Type | Example Format | Description |
+|----------------|----------------|-------------|
+| STUDENT_ID | S1234567 | Student identification numbers |
+| EXAM_REGISTRATION_NUMBER | EXAM-2024-5678 | Exam registration numbers |
+| UNIVERSITY_ID | UNI-ABC123456 | University and college IDs |
+| TRANSCRIPT_ID | TRANSCRIPT-2024001 | Academic transcript identifiers |
+| FACULTY_ID | F1234567 | Faculty and teacher IDs |
+
+### Insurance & Claims
+| Identifier Type | Example Format | Description |
+|----------------|----------------|-------------|
+| CLAIM_ID | CLAIM-12345678 | Insurance claim IDs |
+| POLICY_NUMBER | POLICY-ABC123456 | Insurance policy numbers |
+| POLICY_HOLDER_ID | PH-A12345678 | Policy holder identifiers |
+| QUOTE_REFERENCE | QTE-REF-2024001 | Insurance quote references |
+| ADJUSTER_ID | ADJ-123456 | Insurance adjuster IDs |
+
+### Retail & E-Commerce
+| Identifier Type | Example Format | Description |
+|----------------|----------------|-------------|
+| ORDER_NUMBER | ORD-1234567890 | E-commerce order numbers |
+| LOYALTY_CARD_NUMBER | LOYALTY-1234567890123 | Customer loyalty card numbers |
+| DEVICE_ID_TAG | DEVID:1234567890ABCDEF | Device identification tags |
+| GIFT_CARD_NUMBER | GC-1234567890123 | Gift card numbers |
+| RMA_NUMBER | RMA-ABC123456 | Return merchandise authorization |
+
+### Telecommunications & Utilities
+| Identifier Type | Example Format | Description |
+|----------------|----------------|-------------|
+| TELECOMS_ACCOUNT_NUMBER | ACC-123456789 | Customer account numbers |
+| METER_SERIAL_NUMBER | MTR-1234567890 | Utility meter serial numbers |
+| IMSI_NUMBER | IMSI-123456789012345 | International Mobile Subscriber Identity |
+| IMEI_NUMBER | IMEI-123456789012345 | Mobile equipment identity numbers |
+| SIM_CARD_NUMBER | SIM-12345678901234567890 | SIM card identification |
+
+### Legal & Professional Services
+| Identifier Type | Example Format | Description |
+|----------------|----------------|-------------|
+| CASE_NUMBER | CASE-AB-2024-123456 | Court case and docket numbers |
+| CONTRACT_REFERENCE | CNTR-12345678 | Contract reference codes |
+| MATTER_NUMBER | MATTER-ABC123456 | Law firm matter numbers |
+| BAR_NUMBER | BAR-123456 | Attorney bar registration |
+| CLIENT_ID | CLIENT-ABC123 | Law firm client identifiers |
+
+### Manufacturing & Supply Chain
+| Identifier Type | Example Format | Description |
+|----------------|----------------|-------------|
+| SUPPLIER_ID | SUPP-AB12345 | Supplier identification |
+| PART_NUMBER | PN-ABC12345 | Part numbers with sensitive pricing |
+| PURCHASE_ORDER_NUMBER | PO-ABC123456 | Purchase order numbers |
+| BATCH_LOT_NUMBER | BATCH-2024001 | Batch and lot numbers |
+| CONTAINER_NUMBER | ABCD1234567 | Shipping container numbers |
+
+### Finance & Banking
+| Identifier Type | Example Format | Description |
+|----------------|----------------|-------------|
+| UK_BANK_ACCOUNT_IBAN | GB82WEST12345698765432 | UK bank account (IBAN format) |
+| UK_SORT_CODE_ACCOUNT | 12-34-56 12345678 | UK sort code + account combo |
+| SWIFT_BIC | ABCDGB2L | SWIFT/BIC codes |
+| BITCOIN_ADDRESS | 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa | Bitcoin cryptocurrency addresses |
+| ETHEREUM_ADDRESS | 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb | Ethereum addresses |
+
+### Transportation & Automotive
+| Identifier Type | Example Format | Description |
+|----------------|----------------|-------------|
+| VIN | VIN-1HGBH41JXMN109186 | Vehicle Identification Number |
+| LICENSE_PLATE | LICENSE-ABC123 | Vehicle license plate numbers |
+| FLEET_VEHICLE_ID | FLEET-V12345 | Fleet vehicle IDs |
+| DRIVER_ID | DRIVER-D12345 | Driver identification numbers |
+| TRIP_ID | TRIP-ABC123456789 | Trip and ride IDs |
+
+### Media & Publishing
+| Identifier Type | Example Format | Description |
+|----------------|----------------|-------------|
+| INTERVIEWEE_ID | INTV-A12345 | Interviewee identification for anonymity |
+| SOURCE_ID | SOURCE-ABC123 | Confidential source identifiers |
+| MANUSCRIPT_ID | MS-2024001 | Manuscript identification |
+| PRESS_PASS_ID | PRESS-ABC123 | Press pass and media credentials |
+| SUBSCRIBER_ID | SUBSCRIBER-ABC12345 | Subscriber identification |
+
+### Human Resources & Recruitment
+| Identifier Type | Example Format | Description |
+|----------------|----------------|-------------|
+| EMPLOYEE_ID | EMP-123456 | Employee identification numbers |
+| PAYROLL_NUMBER | PAYROLL-ABC123 | Payroll identification |
+| SALARY_AMOUNT | Salary: £45,000 | Salary and compensation amounts |
+| BENEFITS_PLAN_NUMBER | BENEFITS-ABC12345 | Employee benefits plan numbers |
+| RETIREMENT_ACCOUNT | 401K-ABC12345678 | Retirement account numbers |
+
+> 📖 See [examples/industry-examples.md](examples/industry-examples.md) for comprehensive usage examples.
 
 ## Configuration Options
 

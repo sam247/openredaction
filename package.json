@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Production-ready PII detection and redaction library",
+  "packageManager": "npm@10.0.0",
   "workspaces": [
     "packages/*"
   ],
