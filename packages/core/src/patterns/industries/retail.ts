@@ -10,11 +10,15 @@ import { PIIPattern } from '../../types';
  */
 export const ORDER_NUMBER: PIIPattern = {
   type: 'ORDER_NUMBER',
-  regex: /\bORD(?:ER)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{8,14})\b/gi,
+  regex: /\b(?:ORD(?:ER)?[-\s](?:NO|NUM(?:BER)?)?[-\s:#]?\s*|ORDER\s+(?:NO|NUM(?:BER)?)?[:\s]+)([A-Z0-9-]{8,14})\b/gi,
   placeholder: '[ORDER_{n}]',
   priority: 85,
   severity: 'medium',
-  description: 'E-commerce order numbers'
+  description: 'E-commerce order numbers',
+  validator: (value: string, _context: string) => {
+    // Must contain at least one digit
+    return /\d/.test(value);
+  }
 };
 
 /**

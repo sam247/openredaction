@@ -278,6 +278,162 @@ export const BEARER_TOKEN: PIIPattern = {
   description: 'Bearer authentication tokens'
 };
 
+/**
+ * Azure Resource ID
+ * Format: /subscriptions/{guid}/resourceGroups/{name}/...
+ */
+export const AZURE_RESOURCE_ID: PIIPattern = {
+  type: 'AZURE_RESOURCE_ID',
+  regex: /\/subscriptions\/[a-f0-9\-]{36}\/resourceGroups\/[a-zA-Z0-9\-_]+\/providers\/[a-zA-Z0-9\.\-_\/]+/gi,
+  placeholder: '[AZURE_RES_{n}]',
+  priority: 75,
+  severity: 'medium',
+  description: 'Azure Resource IDs',
+  validator: (_value: string, context: string) => {
+    return /azure|microsoft|cloud|resource/i.test(context);
+  }
+};
+
+/**
+ * Azure Storage Account Key
+ */
+export const AZURE_STORAGE_KEY: PIIPattern = {
+  type: 'AZURE_STORAGE_KEY',
+  regex: /\b(?:DefaultEndpointsProtocol|AccountKey)=([a-zA-Z0-9+/=]{88})/g,
+  placeholder: '[AZURE_KEY_{n}]',
+  priority: 95,
+  severity: 'high',
+  description: 'Azure Storage Account Keys',
+  validator: (_value: string, context: string) => {
+    return /azure|storage|account|connection/i.test(context);
+  }
+};
+
+/**
+ * GCP Service Account Key
+ */
+export const GCP_SERVICE_ACCOUNT: PIIPattern = {
+  type: 'GCP_SERVICE_ACCOUNT',
+  regex: /\{[^}]*"type"\s*:\s*"service_account"[^}]*"private_key_id"\s*:\s*"([a-z0-9]{40})"[^}]*\}/gi,
+  placeholder: '[GCP_SA_{n}]',
+  priority: 95,
+  severity: 'high',
+  description: 'GCP Service Account Keys'
+};
+
+/**
+ * Kubernetes Secret
+ */
+export const KUBERNETES_SECRET: PIIPattern = {
+  type: 'KUBERNETES_SECRET',
+  regex: /\b(?:kind:\s*Secret|apiVersion:\s*v1)\s[\s\S]{0,500}?data:\s*\n\s+[a-zA-Z0-9\-_]+:\s*([A-Za-z0-9+/=]{20,})/g,
+  placeholder: '[K8S_SECRET_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'Kubernetes Secret data',
+  validator: (_value: string, context: string) => {
+    return /kubernetes|k8s|secret|configmap/i.test(context);
+  }
+};
+
+/**
+ * Cookie Session Token
+ */
+export const COOKIE_SESSION: PIIPattern = {
+  type: 'COOKIE_SESSION',
+  regex: /\b(?:set-cookie|cookie):\s*(?:session|sessid|sid|auth)=([a-zA-Z0-9_\-\.]{20,})/gi,
+  placeholder: '[COOKIE_{n}]',
+  priority: 85,
+  severity: 'medium',
+  description: 'HTTP session cookies'
+};
+
+/**
+ * NPM Token
+ */
+export const NPM_TOKEN: PIIPattern = {
+  type: 'NPM_TOKEN',
+  regex: /\b(npm_[A-Za-z0-9]{36})\b/g,
+  placeholder: '[NPM_TOKEN_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'NPM authentication tokens'
+};
+
+/**
+ * PyPI Token
+ */
+export const PYPI_TOKEN: PIIPattern = {
+  type: 'PYPI_TOKEN',
+  regex: /\b(pypi-[A-Za-z0-9_\-]{100,})\b/g,
+  placeholder: '[PYPI_TOKEN_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'Python PyPI tokens'
+};
+
+/**
+ * Heroku API Key
+ */
+export const HEROKU_API_KEY: PIIPattern = {
+  type: 'HEROKU_API_KEY',
+  regex: /\b([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/g,
+  placeholder: '[HEROKU_KEY_{n}]',
+  priority: 80,
+  severity: 'high',
+  description: 'Heroku API keys',
+  validator: (_value: string, context: string) => {
+    return /heroku|api.key|auth/i.test(context);
+  }
+};
+
+/**
+ * Firebase API Key
+ */
+export const FIREBASE_API_KEY: PIIPattern = {
+  type: 'FIREBASE_API_KEY',
+  regex: /\b(AIza[0-9A-Za-z\-_]{35})\b/g,
+  placeholder: '[FIREBASE_KEY_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'Firebase API keys',
+  validator: (_value: string, context: string) => {
+    return /firebase|google|cloud/i.test(context);
+  }
+};
+
+/**
+ * OAuth Client Secret
+ */
+export const OAUTH_CLIENT_SECRET: PIIPattern = {
+  type: 'OAUTH_CLIENT_SECRET',
+  regex: /\b(?:client.?secret|consumer.?secret)[:=\s]+([a-zA-Z0-9_\-]{20,})/gi,
+  placeholder: '[OAUTH_SECRET_{n}]',
+  priority: 95,
+  severity: 'high',
+  description: 'OAuth client secrets',
+  validator: (value: string, _context: string) => {
+    const excluded = /example|sample|test|fake|demo|placeholder/i;
+    return !excluded.test(value);
+  }
+};
+
+/**
+ * Generic OAuth Token
+ */
+export const OAUTH_TOKEN: PIIPattern = {
+  type: 'OAUTH_TOKEN',
+  regex: /\b(?:oauth.?token|access.?token)[:=\s]+([a-zA-Z0-9_\-\.]{20,})/gi,
+  placeholder: '[OAUTH_TOKEN_{n}]',
+  priority: 85,
+  severity: 'high',
+  description: 'OAuth access tokens',
+  validator: (value: string, _context: string) => {
+    const excluded = /example|sample|test|fake|demo|placeholder/i;
+    return !excluded.test(value) && value.length >= 20;
+  }
+};
+
 // Export all technology patterns
 export const technologyPatterns: PIIPattern[] = [
   AWS_ACCESS_KEY,
@@ -299,5 +455,16 @@ export const technologyPatterns: PIIPattern[] = [
   MAILGUN_API_KEY,
   SENDGRID_API_KEY,
   SESSION_ID,
-  BEARER_TOKEN
+  BEARER_TOKEN,
+  AZURE_RESOURCE_ID,
+  AZURE_STORAGE_KEY,
+  GCP_SERVICE_ACCOUNT,
+  KUBERNETES_SECRET,
+  COOKIE_SESSION,
+  NPM_TOKEN,
+  PYPI_TOKEN,
+  HEROKU_API_KEY,
+  FIREBASE_API_KEY,
+  OAUTH_CLIENT_SECRET,
+  OAUTH_TOKEN
 ];

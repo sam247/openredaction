@@ -304,6 +304,109 @@ export const EMERGENCY_CONTACT_MARKER: PIIPattern = {
   description: 'Emergency contact person names'
 };
 
+/**
+ * Biometric Identifier References
+ * Detects mentions of biometric data (fingerprints, retinal scans, etc.)
+ */
+export const BIOMETRIC_ID: PIIPattern = {
+  type: 'BIOMETRIC_ID',
+  regex: /\b(?:FINGERPRINT|RETINAL?[-\s]?SCAN|IRIS[-\s]?SCAN|VOICE[-\s]?PRINT|FACIAL[-\s]?RECOGNITION|BIOMETRIC)[-\s]?(?:ID|DATA|TEMPLATE|HASH)?[-\s]?[:#]?\s*([A-Z0-9]{8,40})\b/gi,
+  placeholder: '[BIOMETRIC_{n}]',
+  priority: 95,
+  severity: 'high',
+  description: 'Biometric identifier references'
+};
+
+/**
+ * DNA/Genetic Sequence Patterns
+ * Short nucleotide sequences that might identify individuals
+ */
+export const DNA_SEQUENCE: PIIPattern = {
+  type: 'DNA_SEQUENCE',
+  regex: /\b([ATCG]{20,})\b/g,
+  placeholder: '[DNA_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'DNA sequence patterns',
+  validator: (value: string, context: string) => {
+    // Must be in genetic context
+    const geneticContext = /dna|genetic|sequence|genome|nucleotide|gene/i.test(context);
+    // Must be long enough to be meaningful
+    const longEnough = value.length >= 20;
+    // Should be mostly ATCG (allow some ambiguity codes)
+    const validChars = /^[ATCGRYSWKMBDHVN]+$/i.test(value);
+    return geneticContext && longEnough && validChars;
+  }
+};
+
+/**
+ * Drug Names with Dosages
+ * Common pattern: DrugName + dosage + unit
+ */
+export const DRUG_DOSAGE: PIIPattern = {
+  type: 'DRUG_DOSAGE',
+  regex: /\b([A-Z][a-z]+(?:ine|ol|azole|mycin|cillin|pril|olol|mab|pam|tab|pine|done|ide|tide|ase|statin))\s+(\d+(?:\.\d+)?)\s?(mg|mcg|g|ml|units?|IU)\b/gi,
+  placeholder: '[DRUG_DOSAGE_{n}]',
+  priority: 75,
+  severity: 'medium',
+  description: 'Drug names with dosages',
+  validator: (_value: string, context: string) => {
+    return /medication|prescription|drug|dose|treatment|therapy/i.test(context);
+  }
+};
+
+/**
+ * Medical Image References
+ * References to medical imaging files (X-rays, MRIs, etc.)
+ */
+export const MEDICAL_IMAGE_REF: PIIPattern = {
+  type: 'MEDICAL_IMAGE_REF',
+  regex: /\b(?:X[-\s]?RAY|MRI|CT[-\s]?SCAN|PET[-\s]?SCAN|ULTRASOUND|MAMMOGRAM)[-\s]?(?:IMAGE|FILE|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
+  placeholder: '[IMAGE_{n}]',
+  priority: 80,
+  severity: 'high',
+  description: 'Medical imaging file references'
+};
+
+/**
+ * Blood Type with Patient Context
+ */
+export const BLOOD_TYPE_PATIENT: PIIPattern = {
+  type: 'BLOOD_TYPE',
+  regex: /\b(?:blood\s+type|blood\s+group)[:\s]+(A|B|AB|O)[+-]?\b/gi,
+  placeholder: '[BLOOD_TYPE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Patient blood type information'
+};
+
+/**
+ * Allergy Information Pattern
+ */
+export const ALLERGY_INFO: PIIPattern = {
+  type: 'ALLERGY_INFO',
+  regex: /\b(?:allergic\s+to|allergy)[:\s]+([A-Za-z\s,]+(?:penicillin|peanuts|latex|aspirin|shellfish|eggs|dairy|soy|wheat))/gi,
+  placeholder: '[ALLERGY_{n}]',
+  priority: 85,
+  severity: 'high',
+  description: 'Patient allergy information'
+};
+
+/**
+ * Vaccination Record IDs
+ */
+export const VACCINATION_ID: PIIPattern = {
+  type: 'VACCINATION_ID',
+  regex: /\b(?:VACCINE|VACCINATION|IMMUNIZATION)[-\s]?(?:ID|RECORD|NO)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  placeholder: '[VAX_{n}]',
+  priority: 80,
+  severity: 'high',
+  description: 'Vaccination record identifiers',
+  validator: (_value: string, context: string) => {
+    return /vaccine|vaccination|immunization|shot|dose/i.test(context);
+  }
+};
+
 // Export all healthcare patterns
 export const healthcarePatterns: PIIPattern[] = [
   MEDICAL_RECORD_NUMBER,
@@ -324,5 +427,12 @@ export const healthcarePatterns: PIIPattern[] = [
   NPI_NUMBER,
   DEA_NUMBER,
   HOSPITAL_ACCOUNT,
-  EMERGENCY_CONTACT_MARKER
+  EMERGENCY_CONTACT_MARKER,
+  BIOMETRIC_ID,
+  DNA_SEQUENCE,
+  DRUG_DOSAGE,
+  MEDICAL_IMAGE_REF,
+  BLOOD_TYPE_PATIENT,
+  ALLERGY_INFO,
+  VACCINATION_ID
 ];
