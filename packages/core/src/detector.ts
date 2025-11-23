@@ -19,6 +19,7 @@ import { createSimpleMultiPass, groupPatternsByPass, mergePassDetections, type D
 import { LRUCache, hashString } from './utils/cache.js';
 import { ExplainAPI, createExplainAPI } from './explain/ExplainAPI.js';
 import { createReportGenerator, type ReportOptions } from './reports/ReportGenerator.js';
+import { PriorityOptimizer, createPriorityOptimizer, type OptimizerOptions } from './optimizer/PriorityOptimizer.js';
 
 /**
  * Main OpenRedact class for detecting and redacting PII
@@ -43,24 +44,29 @@ export class OpenRedact {
     multiPassCount: number;
     enableCache: boolean;
     cacheSize: number;
+    enablePriorityOptimization: boolean;
+    optimizerOptions: OptimizerOptions;
   };
   private multiPassConfig?: DetectionPass[];
   private resultCache?: LRUCache<string, DetectionResult>;
   private valueToPlaceholder: Map<string, string> = new Map();
   private placeholderCounter: Map<string, number> = new Map();
   private learningStore?: LocalLearningStore;
+  private priorityOptimizer?: PriorityOptimizer;
   private enableLearning: boolean;
 
   constructor(options: OpenRedactOptions & {
     configPath?: string;
     enableLearning?: boolean;
     learningStorePath?: string;
+    enablePriorityOptimization?: boolean;
+    optimizerOptions?: Partial<OptimizerOptions>;
   } = {}) {
     // Apply preset if specified
     const presetOptions = options.preset ? getPreset(options.preset) : {};
 
     // Merge options with defaults
-    this.options = {
+    const mergedOptions = {
       includeNames: true,
       includeAddresses: true,
       includePhones: true,
@@ -77,8 +83,18 @@ export class OpenRedact {
       multiPassCount: 3, // Default: 3 passes when enabled
       enableCache: false, // Disabled by default (opt-in for high-volume usage)
       cacheSize: 100, // Default: cache up to 100 results
+      enablePriorityOptimization: false, // Disabled by default (opt-in)
       ...presetOptions,
       ...options
+    };
+
+    this.options = {
+      ...mergedOptions,
+      optimizerOptions: {
+        learningWeight: options.optimizerOptions?.learningWeight ?? 0.3,
+        minSampleSize: options.optimizerOptions?.minSampleSize ?? 10,
+        maxPriorityAdjustment: options.optimizerOptions?.maxPriorityAdjustment ?? 15
+      }
     };
 
     // Initialize result cache if enabled
@@ -108,10 +124,23 @@ export class OpenRedact {
       // Merge learned whitelist with user whitelist
       const learnedWhitelist = this.learningStore.getWhitelist();
       this.options.whitelist = [...this.options.whitelist, ...learnedWhitelist];
+
+      // Initialize priority optimizer if enabled
+      if (this.options.enablePriorityOptimization) {
+        this.priorityOptimizer = createPriorityOptimizer(
+          this.learningStore,
+          this.options.optimizerOptions
+        );
+      }
     }
 
     // Build pattern list
     this.patterns = this.buildPatternList();
+
+    // Apply priority optimization if enabled
+    if (this.priorityOptimizer) {
+      this.patterns = this.priorityOptimizer.optimizePatterns(this.patterns);
+    }
 
     // Sort by priority (highest first)
     this.patterns.sort((a, b) => b.priority - a.priority);
@@ -592,6 +621,46 @@ export class OpenRedact {
    */
   getLearningStore(): LocalLearningStore | undefined {
     return this.learningStore;
+  }
+
+  /**
+   * Get the priority optimizer instance
+   */
+  getPriorityOptimizer(): PriorityOptimizer | undefined {
+    return this.priorityOptimizer;
+  }
+
+  /**
+   * Optimize pattern priorities based on learning data
+   * Call this to re-optimize priorities after accumulating new learning data
+   */
+  optimizePriorities(): void {
+    if (!this.priorityOptimizer) {
+      console.warn('Priority optimization is disabled. Enable it by setting enablePriorityOptimization: true');
+      return;
+    }
+
+    // Re-optimize patterns
+    this.patterns = this.priorityOptimizer.optimizePatterns(this.patterns);
+
+    // Re-sort by new priorities
+    this.patterns.sort((a, b) => b.priority - a.priority);
+
+    // Clear cache if enabled (priorities changed, cached results may be invalid)
+    if (this.resultCache) {
+      this.resultCache.clear();
+    }
+  }
+
+  /**
+   * Get pattern statistics with learning data
+   */
+  getPatternStats() {
+    if (!this.priorityOptimizer) {
+      return null;
+    }
+
+    return this.priorityOptimizer.getPatternStats(this.patterns);
   }
 
   /**

@@ -85,6 +85,16 @@ export type {
   MultiPassStats
 } from './multipass/MultiPassDetector';
 
+// Priority optimization
+export {
+  PriorityOptimizer,
+  createPriorityOptimizer
+} from './optimizer/PriorityOptimizer';
+export type {
+  PatternStats,
+  OptimizerOptions
+} from './optimizer/PriorityOptimizer';
+
 // Streaming API
 export {
   StreamingDetector,
