@@ -3,12 +3,12 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 
 describe('Result Caching', () => {
   describe('Cache disabled (default)', () => {
     it('should not use cache by default', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
       const stats = redactor.getCacheStats();
 
       expect(stats.enabled).toBe(false);
@@ -16,7 +16,7 @@ describe('Result Caching', () => {
     });
 
     it('should work normally without cache', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
       const text = 'Contact john.smith@company.com';
 
       const result1 = redactor.detect(text);
@@ -29,7 +29,7 @@ describe('Result Caching', () => {
 
   describe('Cache enabled', () => {
     it('should enable cache when requested', () => {
-      const redactor = new OpenRedact({ enableCache: true });
+      const redactor = new OpenRedaction({ enableCache: true });
       const stats = redactor.getCacheStats();
 
       expect(stats.enabled).toBe(true);
@@ -37,7 +37,7 @@ describe('Result Caching', () => {
     });
 
     it('should respect custom cache size', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableCache: true,
         cacheSize: 50
       });
@@ -47,7 +47,7 @@ describe('Result Caching', () => {
     });
 
     it('should return same result for identical input', () => {
-      const redactor = new OpenRedact({ enableCache: true });
+      const redactor = new OpenRedaction({ enableCache: true });
       const text = 'Email: john.smith@company.com, Phone: 07700900123';
 
       const result1 = redactor.detect(text);
@@ -58,7 +58,7 @@ describe('Result Caching', () => {
     });
 
     it('should cache multiple different inputs', () => {
-      const redactor = new OpenRedact({ enableCache: true });
+      const redactor = new OpenRedaction({ enableCache: true });
 
       const text1 = 'Email: user1@company.com';
       const text2 = 'Email: user2@company.com';
@@ -73,7 +73,7 @@ describe('Result Caching', () => {
     });
 
     it('should improve performance on cache hits', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableCache: true,
         enableContextAnalysis: true,
         enableMultiPass: true
@@ -98,7 +98,7 @@ describe('Result Caching', () => {
     });
 
     it('should evict oldest entries when cache is full', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableCache: true,
         cacheSize: 3 // Small cache for testing
       });
@@ -123,7 +123,7 @@ describe('Result Caching', () => {
     });
 
     it('should clear cache when requested', () => {
-      const redactor = new OpenRedact({ enableCache: true });
+      const redactor = new OpenRedaction({ enableCache: true });
 
       redactor.detect('Email: user1@company.com');
       redactor.detect('Email: user2@company.com');
@@ -138,7 +138,7 @@ describe('Result Caching', () => {
     });
 
     it('should work correctly with deterministic placeholders', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableCache: true,
         deterministic: true
       });
@@ -154,7 +154,7 @@ describe('Result Caching', () => {
     });
 
     it('should handle cache with different text correctly', () => {
-      const redactor = new OpenRedact({ enableCache: true });
+      const redactor = new OpenRedaction({ enableCache: true });
 
       const text1 = 'Email: user1@company.com';
       const text2 = 'Email: user2@company.com';
@@ -177,7 +177,7 @@ describe('Result Caching', () => {
 
   describe('Cache with high-volume scenarios', () => {
     it('should handle batch processing efficiently', () => {
-      const redactor = new OpenRedact({ enableCache: true });
+      const redactor = new OpenRedaction({ enableCache: true });
 
       const texts = [
         'Email: user@company.com',
@@ -201,7 +201,7 @@ describe('Result Caching', () => {
     });
 
     it('should maintain performance with frequent cache hits', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableCache: true,
         enableContextAnalysis: true
       });

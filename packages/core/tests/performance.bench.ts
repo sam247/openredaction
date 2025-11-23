@@ -4,7 +4,7 @@
  */
 
 import { describe, bench } from 'vitest';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 
 // Test data of various sizes
 const smallText = 'Contact john.smith@company.com or call +44 7700 900123';
@@ -177,19 +177,19 @@ Jane Manager:
 describe('Performance Benchmarks', () => {
   describe('Small text (< 100 chars)', () => {
     bench('default configuration', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
       redactor.detect(smallText);
     });
 
     bench('with context analysis', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true
       });
       redactor.detect(smallText);
     });
 
     bench('with multi-pass (3 passes)', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableMultiPass: true,
         multiPassCount: 3
       });
@@ -197,7 +197,7 @@ describe('Performance Benchmarks', () => {
     });
 
     bench('all features enabled', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true,
         enableFalsePositiveFilter: true,
         enableMultiPass: true
@@ -208,19 +208,19 @@ describe('Performance Benchmarks', () => {
 
   describe('Medium text (~500 chars)', () => {
     bench('default configuration', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
       redactor.detect(mediumText);
     });
 
     bench('with context analysis', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true
       });
       redactor.detect(mediumText);
     });
 
     bench('with multi-pass (3 passes)', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableMultiPass: true,
         multiPassCount: 3
       });
@@ -228,7 +228,7 @@ describe('Performance Benchmarks', () => {
     });
 
     bench('all features enabled', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true,
         enableFalsePositiveFilter: true,
         enableMultiPass: true
@@ -239,19 +239,19 @@ describe('Performance Benchmarks', () => {
 
   describe('Target: 2KB text (production benchmark)', () => {
     bench('default configuration (target: <10ms)', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
       redactor.detect(twoKbText);
     });
 
     bench('with context analysis', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true
       });
       redactor.detect(twoKbText);
     });
 
     bench('with multi-pass (3 passes)', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableMultiPass: true,
         multiPassCount: 3
       });
@@ -259,7 +259,7 @@ describe('Performance Benchmarks', () => {
     });
 
     bench('all features enabled', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true,
         enableFalsePositiveFilter: true,
         enableMultiPass: true
@@ -270,19 +270,19 @@ describe('Performance Benchmarks', () => {
 
   describe('Large text (>2KB)', () => {
     bench('default configuration', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
       redactor.detect(largeText);
     });
 
     bench('with context analysis', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true
       });
       redactor.detect(largeText);
     });
 
     bench('with multi-pass (3 passes)', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableMultiPass: true,
         multiPassCount: 3
       });
@@ -290,7 +290,7 @@ describe('Performance Benchmarks', () => {
     });
 
     bench('all features enabled', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true,
         enableFalsePositiveFilter: true,
         enableMultiPass: true
@@ -303,14 +303,14 @@ describe('Performance Benchmarks', () => {
     const documents = [smallText, mediumText, twoKbText];
 
     bench('sequential processing (3 documents)', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
       for (const doc of documents) {
         redactor.detect(doc);
       }
     });
 
     bench('with reused instance', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true
       });
       for (const doc of documents) {
@@ -321,12 +321,12 @@ describe('Performance Benchmarks', () => {
 
   describe('Pattern compilation overhead', () => {
     bench('new instance per detection (worst case)', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
       redactor.detect(smallText);
     });
 
     bench('reused instance (best case)', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
       redactor.detect(smallText);
     });
   });

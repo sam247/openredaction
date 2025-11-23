@@ -1,20 +1,20 @@
 /**
  * React Form Example
- * Demonstrates OpenRedact hooks for real-time PII detection
+ * Demonstrates OpenRedaction hooks for real-time PII detection
  */
 
 import React, { useState } from 'react';
 import {
-  useOpenRedact,
+  useOpenRedaction,
   usePIIDetector,
   useFormFieldValidator,
   useBatchDetector,
   useAutoRedact
-} from 'openredact';
+} from 'openredaction';
 
 // Example 1: Basic detection with manual control
 export function BasicDetectionExample() {
-  const { detect, result, hasPII, count } = useOpenRedact({
+  const { detect, result, hasPII, count } = useOpenRedaction({
     enableContextAnalysis: true
   });
   const [input, setInput] = useState('');
@@ -257,7 +257,7 @@ export function App() {
   return (
     <div className="app">
       <header>
-        <h1>🔒 OpenRedact React Examples</h1>
+        <h1>🔒 OpenRedaction React Examples</h1>
         <p>Real-time, client-side PII detection with React hooks</p>
       </header>
 

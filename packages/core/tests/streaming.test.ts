@@ -3,13 +3,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 import { StreamingDetector, createStreamingDetector } from '../src/streaming/StreamingDetector';
 
 describe('Streaming API', () => {
   describe('StreamingDetector creation', () => {
     it('should create streaming detector with default options', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector);
 
       expect(streaming).toBeDefined();
@@ -17,7 +17,7 @@ describe('Streaming API', () => {
     });
 
     it('should create streaming detector with custom options', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, {
         chunkSize: 1024,
         overlap: 50,
@@ -28,7 +28,7 @@ describe('Streaming API', () => {
     });
 
     it('should create using helper function', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = createStreamingDetector(detector);
 
       expect(streaming).toBeDefined();
@@ -38,7 +38,7 @@ describe('Streaming API', () => {
 
   describe('Chunk processing', () => {
     it('should process small text in single chunk', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, { chunkSize: 1000 });
 
       const text = 'Email: john.smith@company.com, Phone: 07700900123';
@@ -55,7 +55,7 @@ describe('Streaming API', () => {
     });
 
     it('should process large text in multiple chunks', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, { chunkSize: 100, overlap: 20 });
 
       const text = 'Email: user1@company.com. '.repeat(20); // ~540 chars
@@ -71,7 +71,7 @@ describe('Streaming API', () => {
     });
 
     it('should handle overlapping patterns correctly', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, {
         chunkSize: 50,
         overlap: 30
@@ -94,7 +94,7 @@ describe('Streaming API', () => {
     });
 
     it('should provide correct byte offsets', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const streaming = new StreamingDetector(detector, { chunkSize: 100, overlap: 20 });
 
       const text = 'a'.repeat(100) + 'Email: user@business.co.uk' + 'b'.repeat(100);
@@ -114,7 +114,7 @@ describe('Streaming API', () => {
     });
 
     it('should redact chunks progressively', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, {
         chunkSize: 100,
         progressiveRedaction: true
@@ -133,7 +133,7 @@ describe('Streaming API', () => {
     });
 
     it('should preserve original chunks', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       const text = 'Email: user@company.com, Phone: 07700900123';
@@ -150,7 +150,7 @@ describe('Streaming API', () => {
 
   describe('Complete processing', () => {
     it('should process and return complete result', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       const text = `
@@ -169,7 +169,7 @@ describe('Streaming API', () => {
     });
 
     it('should produce same result as non-streaming for small text', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector);
 
       const text = 'Email: user@company.com, Phone: 07700900123';
@@ -182,7 +182,7 @@ describe('Streaming API', () => {
     });
 
     it('should handle empty text', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector);
 
       const result = await streaming.processComplete('');
@@ -192,7 +192,7 @@ describe('Streaming API', () => {
     });
 
     it('should handle text with no PII', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector);
 
       const text = 'This is plain text with no sensitive information.';
@@ -203,7 +203,7 @@ describe('Streaming API', () => {
     });
 
     it('should handle large documents efficiently', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, { chunkSize: 2048 });
 
       // Create a large document (~10KB)
@@ -229,7 +229,7 @@ describe('Streaming API', () => {
 
   describe('Chunk statistics', () => {
     it('should calculate chunk statistics correctly', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, {
         chunkSize: 1000,
         overlap: 100
@@ -244,7 +244,7 @@ describe('Streaming API', () => {
     });
 
     it('should handle edge cases in chunk calculation', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, { chunkSize: 1000 });
 
       // Exact multiple
@@ -263,7 +263,7 @@ describe('Streaming API', () => {
 
   describe('Edge cases', () => {
     it('should handle PII near chunk boundaries with sufficient overlap', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const streaming = new StreamingDetector(detector, {
         chunkSize: 50,
         overlap: 30 // Sufficient overlap to catch most patterns
@@ -285,7 +285,7 @@ describe('Streaming API', () => {
     });
 
     it('should handle unicode characters', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       const text = '测试 Email: user@company.com 🎉 Phone: 07700900123';
@@ -297,7 +297,7 @@ describe('Streaming API', () => {
     });
 
     it('should handle very long documents', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       // Create a long document with PII in the middle
@@ -313,7 +313,7 @@ describe('Streaming API', () => {
     });
 
     it('should work with context analysis enabled', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: true });
+      const detector = new OpenRedaction({ enableContextAnalysis: true });
       const streaming = new StreamingDetector(detector, { chunkSize: 200 });
 
       const text = `
@@ -331,7 +331,7 @@ describe('Streaming API', () => {
     });
 
     it('should work with caching enabled', async () => {
-      const detector = new OpenRedact({ enableCache: true });
+      const detector = new OpenRedaction({ enableCache: true });
       const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       const text = 'Email: user@company.com. '.repeat(10);
@@ -346,7 +346,7 @@ describe('Streaming API', () => {
 
   describe('Memory efficiency', () => {
     it('should not load entire document into memory for streaming', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, { chunkSize: 1024 });
 
       // Create large text (100KB)
@@ -363,7 +363,7 @@ describe('Streaming API', () => {
     });
 
     it('should process chunks incrementally', async () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       const text = 'Email: user@company.com. '.repeat(20);

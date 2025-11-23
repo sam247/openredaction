@@ -1,4 +1,4 @@
-# OpenRedact Production Roadmap
+# OpenRedaction Production Roadmap
 
 ## Phase 1: API Infrastructure (Week 1-2)
 
@@ -162,7 +162,7 @@ false_positives (
 
 ### 4.1 Developer Experience
 - **SDKs:**
-  - Python SDK (`pip install openredact`)
+  - Python SDK (`pip install openredaction`)
   - JavaScript/Node.js (already done ✅)
   - Go SDK
   - Ruby SDK
@@ -246,7 +246,7 @@ cursor packages/api/supabase/migrations/001_initial_schema.sql
 ### For Lovable (Frontend):
 ```
 1. Go to lovable.dev
-2. Create new project: "OpenRedact Landing Page"
+2. Create new project: "OpenRedaction Landing Page"
 3. Describe: "Landing page for PII redaction API with:
    - Hero with live demo
    - Features grid

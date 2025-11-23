@@ -146,9 +146,9 @@ Social Security Number: SSN: 123-45-6789
 ## Usage Example
 
 ```javascript
-import { OpenRedact } from 'openredact';
+import { OpenRedaction } from 'openredaction';
 
-const shield = new OpenRedact();
+const shield = new OpenRedaction();
 
 // Education example
 const educationText = "Student S1234567 submitted exam registration EXAM-2024-5678";

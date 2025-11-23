@@ -3,27 +3,27 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 import { createExplainAPI } from '../src/explain/ExplainAPI';
 
 describe('Explain API', () => {
   describe('Basic explain functionality', () => {
     it('should create explain API from detector', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const explainAPI = detector.explain();
 
       expect(explainAPI).toBeDefined();
     });
 
     it('should create explain API using helper', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const explainAPI = createExplainAPI(detector);
 
       expect(explainAPI).toBeDefined();
     });
 
     it('should explain detected PII', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Contact: user@business.co.uk';
@@ -36,7 +36,7 @@ describe('Explain API', () => {
     });
 
     it('should explain why text has no PII', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const explainAPI = detector.explain();
 
       const text = 'This is plain text with no sensitive information';
@@ -51,7 +51,7 @@ describe('Explain API', () => {
 
   describe('Pattern matching details', () => {
     it('should list all patterns checked', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: test@business.co.uk';
@@ -62,7 +62,7 @@ describe('Explain API', () => {
     });
 
     it('should separate matched and unmatched patterns', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: user@business.co.uk';
@@ -84,7 +84,7 @@ describe('Explain API', () => {
     });
 
     it('should show filtered patterns', () => {
-      const detector = new OpenRedact({
+      const detector = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.9 // High threshold to filter some
       });
@@ -98,7 +98,7 @@ describe('Explain API', () => {
     });
 
     it('should include pattern details', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: admin@business.co.uk';
@@ -114,7 +114,7 @@ describe('Explain API', () => {
 
   describe('Context analysis in explanations', () => {
     it('should include context analysis results', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: true });
+      const detector = new OpenRedaction({ enableContextAnalysis: true });
       const explainAPI = detector.explain();
 
       const text = 'Email address: john.smith@company.com';
@@ -127,7 +127,7 @@ describe('Explain API', () => {
     });
 
     it('should explain low confidence filtering', () => {
-      const detector = new OpenRedact({
+      const detector = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.6
       });
@@ -149,7 +149,7 @@ describe('Explain API', () => {
 
   describe('Validation results', () => {
     it('should show validator failures', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: invalid-email-format'; // Won't pass email validator
@@ -167,7 +167,7 @@ describe('Explain API', () => {
 
   describe('Explain specific detections', () => {
     it('should explain a specific detection', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Contact: admin@business.co.uk, Phone: 07700900123';
@@ -184,7 +184,7 @@ describe('Explain API', () => {
     });
 
     it('should include pattern information in detection explanation', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: test@business.co.uk';
@@ -200,7 +200,7 @@ describe('Explain API', () => {
 
   describe('Suggest why not detected', () => {
     it('should suggest why text wasn\'t detected', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'invalid-email'; // Not a valid email
@@ -213,7 +213,7 @@ describe('Explain API', () => {
     });
 
     it('should show patterns that matched but were filtered', () => {
-      const detector = new OpenRedact({
+      const detector = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.8
       });
@@ -226,7 +226,7 @@ describe('Explain API', () => {
     });
 
     it('should handle unknown types', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const explainAPI = detector.explain();
 
       const suggestion = explainAPI.suggestWhy('anything', 'UNKNOWN_TYPE');
@@ -238,7 +238,7 @@ describe('Explain API', () => {
 
   describe('Debug mode', () => {
     it('should provide comprehensive debug information', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: true });
+      const detector = new OpenRedaction({ enableContextAnalysis: true });
       const explainAPI = detector.explain();
 
       const text = 'Email: user@business.co.uk, Phone: 07700900123';
@@ -255,7 +255,7 @@ describe('Explain API', () => {
     });
 
     it('should list enabled features', () => {
-      const detector = new OpenRedact({
+      const detector = new OpenRedaction({
         enableContextAnalysis: true,
         enableFalsePositiveFilter: true
       });
@@ -270,7 +270,7 @@ describe('Explain API', () => {
     });
 
     it('should include performance metrics', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const explainAPI = detector.explain();
 
       const debug = explainAPI.debug('Email: test@business.co.uk');
@@ -282,7 +282,7 @@ describe('Explain API', () => {
 
   describe('Real-world debugging scenarios', () => {
     it('should help debug why email wasn\'t detected', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Contact me at: not-an-email';
@@ -294,7 +294,7 @@ describe('Explain API', () => {
     });
 
     it('should help understand filtering decisions', () => {
-      const detector = new OpenRedact({
+      const detector = new OpenRedaction({
         enableContextAnalysis: true,
         whitelist: ['company']
       });
@@ -314,7 +314,7 @@ describe('Explain API', () => {
     });
 
     it('should explain complex detection scenarios', () => {
-      const detector = new OpenRedact({
+      const detector = new OpenRedaction({
         enableContextAnalysis: true,
         enableMultiPass: true
       });
@@ -336,7 +336,7 @@ describe('Explain API', () => {
 
   describe('Summary statistics', () => {
     it('should provide accurate summary', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: admin@business.co.uk, Phone: 07700900123';
@@ -348,7 +348,7 @@ describe('Explain API', () => {
     });
 
     it('should count filtered patterns correctly', () => {
-      const detector = new OpenRedact({
+      const detector = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.9 // High threshold
       });

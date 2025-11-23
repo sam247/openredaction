@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { OpenRedactOptions } from '../types.js';
+import { OpenRedactionOptions } from '../types.js';
 
-export interface OpenRedactConfig extends OpenRedactOptions {
+export interface OpenRedactionConfig extends OpenRedactionOptions {
   extends?: string | string[];
   learnedPatterns?: string;
   learningOptions?: {
@@ -12,7 +12,7 @@ export interface OpenRedactConfig extends OpenRedactOptions {
 }
 
 /**
- * Load configuration from .openredact.config.js
+ * Load configuration from .openredaction.config.js
  */
 export class ConfigLoader {
   private configPath: string;
@@ -22,8 +22,8 @@ export class ConfigLoader {
     this.configPath = configPath || '';
     this.searchPaths = [
       cwd,
-      path.join(cwd, '.openredact'),
-      path.join(process.env.HOME || '~', '.openredact')
+      path.join(cwd, '.openredaction'),
+      path.join(process.env.HOME || '~', '.openredaction')
     ];
   }
 
@@ -36,12 +36,12 @@ export class ConfigLoader {
     }
 
     const configNames = [
-      '.openredact.config.js',
-      '.openredact.config.mjs',
-      '.openredact.config.json',
-      'openredact.config.js',
-      'openredact.config.mjs',
-      'openredact.config.json'
+      '.openredaction.config.js',
+      '.openredaction.config.mjs',
+      '.openredaction.config.json',
+      'openredaction.config.js',
+      'openredaction.config.mjs',
+      'openredaction.config.json'
     ];
 
     for (const searchPath of this.searchPaths) {
@@ -59,7 +59,7 @@ export class ConfigLoader {
   /**
    * Load config file
    */
-  async load(): Promise<OpenRedactConfig | null> {
+  async load(): Promise<OpenRedactionConfig | null> {
     const configFile = this.findConfigFile();
 
     if (!configFile) {
@@ -84,8 +84,8 @@ export class ConfigLoader {
   /**
    * Resolve presets and extends
    */
-  resolveConfig(config: OpenRedactConfig): OpenRedactOptions {
-    const resolved: OpenRedactOptions = { ...config };
+  resolveConfig(config: OpenRedactionConfig): OpenRedactionOptions {
+    const resolved: OpenRedactionOptions = { ...config };
 
     // Handle extends
     if (config.extends) {
@@ -105,9 +105,9 @@ export class ConfigLoader {
   /**
    * Load built-in preset
    */
-  private loadPreset(preset: string): OpenRedactOptions | null {
+  private loadPreset(preset: string): OpenRedactionOptions | null {
     // Handle built-in presets
-    if (preset === 'openredact:recommended') {
+    if (preset === 'openredaction:recommended') {
       return {
         includeNames: true,
         includeAddresses: true,
@@ -117,7 +117,7 @@ export class ConfigLoader {
       };
     }
 
-    if (preset === 'openredact:strict') {
+    if (preset === 'openredaction:strict') {
       return {
         includeNames: true,
         includeAddresses: true,
@@ -128,7 +128,7 @@ export class ConfigLoader {
       };
     }
 
-    if (preset === 'openredact:minimal') {
+    if (preset === 'openredaction:minimal') {
       return {
         includeNames: false,
         includeAddresses: false,
@@ -139,8 +139,8 @@ export class ConfigLoader {
     }
 
     // Handle compliance presets
-    if (preset.startsWith('openredact:')) {
-      const complianceType = preset.replace('openredact:', '') as 'gdpr' | 'hipaa' | 'ccpa';
+    if (preset.startsWith('openredaction:')) {
+      const complianceType = preset.replace('openredaction:', '') as 'gdpr' | 'hipaa' | 'ccpa';
       if (['gdpr', 'hipaa', 'ccpa'].includes(complianceType)) {
         return { preset: complianceType };
       }
@@ -152,16 +152,16 @@ export class ConfigLoader {
   /**
    * Create a default config file
    */
-  static createDefaultConfig(outputPath: string = '.openredact.config.js'): void {
+  static createDefaultConfig(outputPath: string = '.openredaction.config.js'): void {
     const defaultConfig = `/**
- * OpenRedact Configuration
+ * OpenRedaction Configuration
  * @see https://github.com/openredact/openredact
  */
 export default {
   // Extend built-in presets
-  // Options: 'openredact:recommended', 'openredact:strict', 'openredact:minimal'
-  // Or compliance: 'openredact:gdpr', 'openredact:hipaa', 'openredact:ccpa'
-  extends: ['openredact:recommended'],
+  // Options: 'openredaction:recommended', 'openredaction:strict', 'openredaction:minimal'
+  // Or compliance: 'openredaction:gdpr', 'openredaction:hipaa', 'openredaction:ccpa'
+  extends: ['openredaction:recommended'],
 
   // Detection options
   includeNames: true,
@@ -191,7 +191,7 @@ export default {
   ],
 
   // Learning options
-  learnedPatterns: '.openredact/learnings.json',
+  learnedPatterns: '.openredaction/learnings.json',
   learningOptions: {
     autoSave: true,
     confidenceThreshold: 0.85

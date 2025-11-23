@@ -1,4 +1,4 @@
-import { OpenRedact } from '../detector';
+import { OpenRedaction } from '../detector';
 import { ConfigLoader } from '../config/ConfigLoader';
 import * as fs from 'fs';
 
@@ -6,17 +6,17 @@ const args = process.argv.slice(2);
 
 function printHelp() {
   console.log(`
-OpenRedact CLI - Detect and redact PII from text
+OpenRedaction CLI - Detect and redact PII from text
 
 Usage:
-  openredact detect <text>              Detect and redact PII
-  openredact scan <text>                Scan for PII and show severity breakdown
-  openredact feedback <type> <text>     Record feedback (false-positive, false-negative)
-  openredact stats                      Show learning statistics
-  openredact export                     Export learned patterns
-  openredact import <file>              Import learned patterns from file
-  openredact init                       Create default config file
-  openredact --help                     Show this help message
+  openredaction detect <text>              Detect and redact PII
+  openredaction scan <text>                Scan for PII and show severity breakdown
+  openredaction feedback <type> <text>     Record feedback (false-positive, false-negative)
+  openredaction stats                      Show learning statistics
+  openredaction export                     Export learned patterns
+  openredaction import <file>              Import learned patterns from file
+  openredaction init                       Create default config file
+  openredaction --help                     Show this help message
 
 Detection Options:
   --preset <name>                       Use compliance preset (gdpr, hipaa, ccpa)
@@ -32,13 +32,13 @@ Feedback Options:
   --context <text>                      Surrounding context
 
 Examples:
-  openredact detect "Email john@example.com"
-  openredact detect "SSN: 123-45-6789" --preset hipaa
-  openredact scan "Contact john@example.com or call 555-123-4567"
-  openredact feedback false-positive "API" --type NAME --context "Call the API"
-  openredact stats
-  openredact export > learned-patterns.json
-  openredact init
+  openredaction detect "Email john@example.com"
+  openredaction detect "SSN: 123-45-6789" --preset hipaa
+  openredaction scan "Contact john@example.com or call 555-123-4567"
+  openredaction feedback false-positive "API" --type NAME --context "Call the API"
+  openredaction stats
+  openredaction export > learned-patterns.json
+  openredaction init
   `);
 }
 
@@ -57,7 +57,7 @@ async function main() {
   }
 
   if (command === 'stats') {
-    const redactor = new OpenRedact();
+    const redactor = new OpenRedaction();
     const stats = redactor.getLearningStats();
 
     if (!stats) {
@@ -87,7 +87,7 @@ async function main() {
   }
 
   if (command === 'export') {
-    const redactor = new OpenRedact();
+    const redactor = new OpenRedaction();
     const learnings = redactor.exportLearnings({ minConfidence: 0.7 });
 
     if (!learnings) {
@@ -113,7 +113,7 @@ async function main() {
     }
 
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    const redactor = new OpenRedact();
+    const redactor = new OpenRedaction();
     redactor.importLearnings(data, true);
 
     console.log(`Successfully imported learnings from ${filePath}`);
@@ -157,7 +157,7 @@ async function main() {
     }
   }
 
-  const shield = new OpenRedact(options);
+  const shield = new OpenRedaction(options);
 
   if (command === 'feedback') {
     const feedbackType = text; // false-positive or false-negative

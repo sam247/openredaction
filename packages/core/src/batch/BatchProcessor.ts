@@ -4,7 +4,7 @@
  */
 
 import { DetectionResult } from '../types';
-import { OpenRedact } from '../detector';
+import { OpenRedaction } from '../detector';
 
 /**
  * Batch processing options
@@ -41,9 +41,9 @@ export interface BatchResult {
  * Batch processor for processing multiple documents
  */
 export class BatchProcessor {
-  private detector: OpenRedact;
+  private detector: OpenRedaction;
 
-  constructor(detector: OpenRedact) {
+  constructor(detector: OpenRedaction) {
     this.detector = detector;
   }
 
@@ -200,6 +200,6 @@ export class BatchProcessor {
 /**
  * Helper to create a batch processor
  */
-export function createBatchProcessor(detector: OpenRedact): BatchProcessor {
+export function createBatchProcessor(detector: OpenRedaction): BatchProcessor {
   return new BatchProcessor(detector);
 }

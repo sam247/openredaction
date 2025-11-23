@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 
 describe('OpenRedact', () => {
   let shield: OpenRedact;
 
   beforeEach(() => {
-    shield = new OpenRedact();
+    shield = new OpenRedaction();
   });
 
   describe('Basic detection', () => {
@@ -89,7 +89,7 @@ describe('OpenRedact', () => {
 
   describe('Deterministic placeholders', () => {
     it('should generate same placeholder for same value', () => {
-      const shield = new OpenRedact({ deterministic: true });
+      const shield = new OpenRedaction({ deterministic: true });
       const text = 'john@example.com and john@example.com';
       const result = shield.detect(text);
 
@@ -98,7 +98,7 @@ describe('OpenRedact', () => {
     });
 
     it('should generate different placeholders for different values', () => {
-      const shield = new OpenRedact({ deterministic: true });
+      const shield = new OpenRedaction({ deterministic: true });
       const text = 'john@example.com and jane@example.com';
       const result = shield.detect(text);
 
@@ -107,7 +107,7 @@ describe('OpenRedact', () => {
     });
 
     it('should use incremental counters in non-deterministic mode', () => {
-      const shield = new OpenRedact({ deterministic: false });
+      const shield = new OpenRedaction({ deterministic: false });
       const text = 'john@example.com and john@example.com';
       const result = shield.detect(text);
 
@@ -118,14 +118,14 @@ describe('OpenRedact', () => {
 
   describe('Options', () => {
     it('should respect includeEmails option', () => {
-      const shieldNoEmails = new OpenRedact({ includeEmails: false });
+      const shieldNoEmails = new OpenRedaction({ includeEmails: false });
       const result = shieldNoEmails.detect('Email: john@example.com');
 
       expect(result.detections.find(d => d.type === 'EMAIL')).toBeUndefined();
     });
 
     it('should respect pattern whitelist', () => {
-      const shieldEmailOnly = new OpenRedact({ patterns: ['EMAIL'] });
+      const shieldEmailOnly = new OpenRedaction({ patterns: ['EMAIL'] });
       const result = shieldEmailOnly.detect('Email john@example.com call 07700900123');
 
       expect(result.detections).toHaveLength(1);
@@ -133,14 +133,14 @@ describe('OpenRedact', () => {
     });
 
     it('should respect whitelist option', () => {
-      const shieldWithWhitelist = new OpenRedact({ whitelist: ['example.com'] });
+      const shieldWithWhitelist = new OpenRedaction({ whitelist: ['example.com'] });
       const result = shieldWithWhitelist.detect('Email john@example.com');
 
       expect(result.detections).toHaveLength(0);
     });
 
     it('should support custom patterns', () => {
-      const shieldWithCustom = new OpenRedact({
+      const shieldWithCustom = new OpenRedaction({
         customPatterns: [{
           type: 'CUSTOM_ID',
           regex: /CUSTOM-\d{6}/g,
@@ -200,7 +200,7 @@ describe('OpenRedact', () => {
 
   describe('Presets', () => {
     it('should apply GDPR preset', () => {
-      const gdprShield = new OpenRedact({ preset: 'gdpr' });
+      const gdprShield = new OpenRedaction({ preset: 'gdpr' });
       const patterns = gdprShield.getPatterns();
 
       expect(patterns.some(p => p.type === 'EMAIL')).toBe(true);
@@ -208,7 +208,7 @@ describe('OpenRedact', () => {
     });
 
     it('should apply HIPAA preset', () => {
-      const hipaaShield = new OpenRedact({ preset: 'hipaa' });
+      const hipaaShield = new OpenRedaction({ preset: 'hipaa' });
       const patterns = hipaaShield.getPatterns();
 
       expect(patterns.some(p => p.type === 'SSN')).toBe(true);
@@ -216,7 +216,7 @@ describe('OpenRedact', () => {
     });
 
     it('should apply CCPA preset', () => {
-      const ccpaShield = new OpenRedact({ preset: 'ccpa' });
+      const ccpaShield = new OpenRedaction({ preset: 'ccpa' });
       const patterns = ccpaShield.getPatterns();
 
       expect(patterns.some(p => p.type === 'EMAIL')).toBe(true);

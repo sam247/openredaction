@@ -1,4 +1,4 @@
-# 🚀 OpenRedact: Next Steps to Production
+# 🚀 OpenRedaction: Next Steps to Production
 
 You now have a production-ready PII detection library! Here's exactly what to do next:
 
@@ -22,16 +22,16 @@ npm login
 npm publish
 
 # Check it's live
-npm view openredact
+npm view openredaction
 ```
 
-Your package will be available at: `https://www.npmjs.com/package/openredact`
+Your package will be available at: `https://www.npmjs.com/package/openredaction`
 
 ### 2. Create GitHub Release (2 minutes)
 
 ```bash
 # Tag the release
-git tag -a v0.1.0 -m "Initial release: OpenRedact v0.1.0"
+git tag -a v0.1.0 -m "Initial release: OpenRedaction v0.1.0"
 git push origin v0.1.0
 
 # Go to GitHub and create release from tag
@@ -48,7 +48,7 @@ git push origin v0.1.0
 
 #### Prompt for Lovable:
 ```
-Create a landing page for OpenRedact - an open-source PII detection and redaction library.
+Create a landing page for OpenRedaction - an open-source PII detection and redaction library.
 
 Include:
 
@@ -57,7 +57,7 @@ Include:
    - Subheadline: "Production-ready library with 20+ patterns, GDPR/HIPAA compliance, and zero dependencies"
    - Interactive demo: Text input that live-redacts PII as you type
    - CTA buttons: "Try Demo" and "View Docs"
-   - Show npm install command: npm install openredact
+   - Show npm install command: npm install openredaction
 
 2. FEATURES GRID (3 columns)
    - ⚡ Fast (10-20ms processing)
@@ -82,8 +82,8 @@ Include:
 4. CODE EXAMPLES (Tabbed)
    - TypeScript tab:
      ```typescript
-     import { OpenRedact } from 'openredact';
-     const redactor = new OpenRedact();
+     import { OpenRedaction } from 'openredaction';
+     const redactor = new OpenRedaction();
      const result = redactor.detect("Email: john@example.com");
      ```
    - Python tab (coming soon)
@@ -161,7 +161,7 @@ supabase db push
 Help me complete the detect edge function in packages/api/supabase/functions/detect/index.ts
 
 It should:
-1. Import and use the OpenRedact library from ../../core
+1. Import and use the OpenRedaction library from ../../core
 2. Implement proper SHA-256 API key hashing
 3. Add request logging with Sentry
 4. Return OpenAPI-compliant responses
@@ -249,7 +249,7 @@ Create these Edge Functions for the dashboard:
 
 **In Lovable:**
 ```
-Create a dashboard for OpenRedact with these pages:
+Create a dashboard for OpenRedaction with these pages:
 
 1. OVERVIEW PAGE
    - Usage graph (line chart, last 30 days)
@@ -359,17 +359,17 @@ Implement Stripe billing:
 
 5. **Twitter/X thread**
    ```
-   🚀 Launching OpenRedact - an open-source PII detection library
+   🚀 Launching OpenRedaction - an open-source PII detection library
 
    Thread 🧵
 
    1/ Most companies accidentally leak PII in logs, analytics, and databases
 
-   2/ We built OpenRedact to solve this...
+   2/ We built OpenRedaction to solve this...
 
    [Continue with features, tech stack, examples]
 
-   10/ Try it now: npm install openredact
+   10/ Try it now: npm install openredaction
        Docs: https://...
        ⭐ Star on GitHub: https://...
    ```
@@ -422,9 +422,9 @@ Implement Stripe billing:
 ### Python SDK (1-2 hours)
 **Ask Cursor:**
 ```
-Create a Python SDK for OpenRedact:
+Create a Python SDK for OpenRedaction:
 
-Package: openredact (PyPI)
+Package: openredaction (PyPI)
 Structure:
 - openredact/
   - __init__.py
@@ -445,7 +445,7 @@ Publish to PyPI
 
 ### LangChain Integration (1 hour)
 ```
-Create @openredact/langchain package:
+Create @openredaction/langchain package:
 - PIIRedactionTransformer
 - Integration guide
 - Examples
@@ -511,12 +511,12 @@ Create middleware for Vercel AI SDK:
 - Supabase docs: https://supabase.com/docs
 - Lovable docs: https://docs.lovable.dev
 - Stripe docs: https://stripe.com/docs
-- OpenRedact issues: https://github.com/sam247/redactit/issues
+- OpenRedaction issues: https://github.com/sam247/redactit/issues
 
 **Communities:**
 - Supabase Discord
 - Indie Hackers
-- Twitter/X (@openredact)
+- Twitter/X (@openredaction)
 
 ---
 

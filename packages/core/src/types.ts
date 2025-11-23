@@ -62,9 +62,9 @@ export interface DetectionResult {
 }
 
 /**
- * Configuration options for OpenRedact
+ * Configuration options for OpenRedaction
  */
-export interface OpenRedactOptions {
+export interface OpenRedactionOptions {
   /** Include name detection (default: true) */
   includeNames?: boolean;
   /** Include address detection (default: true) */

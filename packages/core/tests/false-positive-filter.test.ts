@@ -4,7 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { isFalsePositive } from '../src/filters/FalsePositiveFilter';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 
 describe('False Positive Filter', () => {
   describe('Version numbers', () => {
@@ -234,7 +234,7 @@ describe('False Positive Filter', () => {
 
   describe('Integration with OpenRedact', () => {
     it('should filter version numbers when enabled', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableFalsePositiveFilter: true
       });
       const result = redactor.detect('App version 1.2.3 released');
@@ -245,7 +245,7 @@ describe('False Positive Filter', () => {
     });
 
     it('should filter test emails when enabled', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableFalsePositiveFilter: true
       });
       const result = redactor.detect('Contact test@example.com for support');
@@ -255,7 +255,7 @@ describe('False Positive Filter', () => {
     });
 
     it('should filter dates mistaken for phones when enabled', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableFalsePositiveFilter: true
       });
       const result = redactor.detect('Born on 01-02-1990');
@@ -266,7 +266,7 @@ describe('False Positive Filter', () => {
     });
 
     it('should not filter by default (disabled)', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
 
       // With filtering disabled (default), should detect example.com email
       const result = redactor.detect('Contact test@example.com');
@@ -277,7 +277,7 @@ describe('False Positive Filter', () => {
     });
 
     it('should still detect real PII with filter enabled', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableFalsePositiveFilter: true
       });
       const result = redactor.detect('Call John at 07700-900-123 for details');

@@ -2,12 +2,12 @@
  * Compliance preset configurations
  */
 
-import { OpenRedactOptions } from '../types';
+import { OpenRedactionOptions } from '../types';
 
 /**
  * GDPR compliance preset - European Union data protection
  */
-export const gdprPreset: Partial<OpenRedactOptions> = {
+export const gdprPreset: Partial<OpenRedactionOptions> = {
   includeNames: true,
   includeEmails: true,
   includePhones: true,
@@ -34,7 +34,7 @@ export const gdprPreset: Partial<OpenRedactOptions> = {
 /**
  * HIPAA compliance preset - US healthcare data protection
  */
-export const hipaaPreset: Partial<OpenRedactOptions> = {
+export const hipaaPreset: Partial<OpenRedactionOptions> = {
   includeNames: true,
   includeEmails: true,
   includePhones: true,
@@ -60,7 +60,7 @@ export const hipaaPreset: Partial<OpenRedactOptions> = {
 /**
  * CCPA compliance preset - California consumer privacy
  */
-export const ccpaPreset: Partial<OpenRedactOptions> = {
+export const ccpaPreset: Partial<OpenRedactionOptions> = {
   includeNames: true,
   includeEmails: true,
   includePhones: true,
@@ -84,7 +84,7 @@ export const ccpaPreset: Partial<OpenRedactOptions> = {
 /**
  * Get preset configuration by name
  */
-export function getPreset(name: string): Partial<OpenRedactOptions> {
+export function getPreset(name: string): Partial<OpenRedactionOptions> {
   switch (name.toLowerCase()) {
     case 'gdpr':
       return gdprPreset;

@@ -13,7 +13,7 @@
 | **Private AI** | SaaS | $$$$ | API-based | Expensive, requires internet, privacy concerns |
 | **RegexGuard** | Library | Free | Regex-only | No context awareness, high false positives |
 
-## 🚀 OpenRedact Unique Value Propositions
+## 🚀 OpenRedaction Unique Value Propositions
 
 ### 1. **100% Local-First Architecture**
 - **No data leaves your infrastructure** - Critical for compliance
@@ -47,7 +47,7 @@
 
 ## 📊 Competitive Matrix
 
-| Feature | OpenRedact | Presidio | Cloud APIs | SaaS Solutions |
+| Feature | OpenRedaction | Presidio | Cloud APIs | SaaS Solutions |
 |---------|------------|----------|------------|----------------|
 | **Privacy (Local-first)** | ✅ | ✅ | ❌ | ❌ |
 | **Bundle Size** | ~100KB | 50MB+ | N/A | N/A |
@@ -71,7 +71,7 @@
 **Solution**: Local machine learning that learns from corrections
 
 ```typescript
-const detector = new OpenRedact({
+const detector = new OpenRedaction({
   enableLocalLearning: true,
   learningMode: 'adaptive'
 });
@@ -99,7 +99,7 @@ detector.detect(text).then(result => {
 **Solution**: Support 50+ languages with locale-aware detection
 
 ```typescript
-const detector = new OpenRedact({
+const detector = new OpenRedaction({
   languages: ['en', 'es', 'fr', 'de', 'ja', 'zh'],
   autoDetectLanguage: true
 });
@@ -119,21 +119,21 @@ const result = detector.detect('名前: 田中太郎, メール: tanaka@example.
 
 ```typescript
 // Healthcare mode
-const healthDetector = new OpenRedact({
+const healthDetector = new OpenRedaction({
   industry: 'healthcare',
   standards: ['HIPAA', 'HL7', 'FHIR']
 });
 // Detects: MRN, ICD codes, medication names, provider IDs
 
 // Financial mode
-const finDetector = new OpenRedact({
+const finDetector = new OpenRedaction({
   industry: 'finance',
   standards: ['PCI-DSS', 'SOX', 'GLBA']
 });
 // Detects: Account numbers, SWIFT codes, portfolio IDs
 
 // Legal mode
-const legalDetector = new OpenRedact({
+const legalDetector = new OpenRedaction({
   industry: 'legal',
   standards: ['GDPR', 'CCPA', 'Attorney-Client Privilege']
 });
@@ -163,7 +163,7 @@ const result = detector.classify(text);
 **Solution**: Custom redaction policies per use case
 
 ```typescript
-const detector = new OpenRedact({
+const detector = new OpenRedaction({
   policy: {
     'public-facing': {
       redact: ['EMAIL', 'PHONE', 'SSN', 'CREDIT_CARD'],
@@ -189,7 +189,7 @@ const detector = new OpenRedact({
 **Solution**: Pre-built templates for major regulations
 
 ```typescript
-const detector = new OpenRedact({
+const detector = new OpenRedaction({
   compliance: ['GDPR', 'HIPAA', 'CCPA', 'SOC2', 'ISO27001'],
   generateAuditLog: true,
   reportingFormat: 'compliance-report'
@@ -214,7 +214,7 @@ const report = detector.generateComplianceReport({
 **Solution**: Extract and detect from any format
 
 ```typescript
-const detector = new OpenRedact({
+const detector = new OpenRedaction({
   formats: ['pdf', 'docx', 'xlsx', 'pptx', 'html', 'markdown']
 });
 
@@ -267,7 +267,7 @@ console.log(analytics.topTopics); // ['support', 'billing', 'technical']
 **Solution**: Real-time PII detection in any web form
 
 ```typescript
-// OpenRedact Browser Extension
+// OpenRedaction Browser Extension
 // Highlights PII as you type in any web form
 // Works on Gmail, Slack, Google Docs, etc.
 // 100% client-side, no data sent anywhere
@@ -275,7 +275,7 @@ console.log(analytics.topTopics); // ['support', 'billing', 'technical']
 
 ### Phase 9: Ecosystem (2026+)
 
-#### 11. **OpenRedact Cloud (Optional)** ☁️
+#### 11. **OpenRedaction Cloud (Optional)** ☁️
 For teams that want managed infrastructure:
 - Shared learning across team
 - Centralized policy management
@@ -294,7 +294,7 @@ For teams that want managed infrastructure:
 - Intelligent suggestion engine
 - Anomaly detection
 
-## 💎 Why OpenRedact Will Stay Ahead
+## 💎 Why OpenRedaction Will Stay Ahead
 
 ### 1. **Architecture Moat**
 Local-first is our DNA. Competitors can't easily switch:
@@ -337,7 +337,7 @@ Open source creates network effects:
 1. **SaaS Applications** ($50B market)
    - Every SaaS handles user data
    - GDPR/CCPA compliance required
-   - OpenRedact = instant compliance layer
+   - OpenRedaction = instant compliance layer
 
 2. **Healthcare** ($8B market)
    - HIPAA compliance mandatory
@@ -363,7 +363,7 @@ Open source creates network effects:
 
 ### Competitive Advantages = 10x Better
 
-| Metric | Traditional Solutions | OpenRedact |
+| Metric | Traditional Solutions | OpenRedaction |
 |--------|---------------------|-----------|
 | Setup time | Hours/Days | 30 seconds |
 | Cost per 1M calls | $50-500 | $0 |
@@ -394,7 +394,7 @@ Open source creates network effects:
 - Industry-specific editions
 - Compliance certification
 - Global expansion (multi-language)
-- OpenRedact Cloud (optional hosted)
+- OpenRedaction Cloud (optional hosted)
 - Ecosystem & marketplace
 - Acquisition/partnership offers
 
@@ -403,10 +403,10 @@ Open source creates network effects:
 Core library: **Free & Open Source (MIT)**
 
 Revenue streams:
-1. **OpenRedact Enterprise** - Advanced features for large orgs
+1. **OpenRedaction Enterprise** - Advanced features for large orgs
 2. **Professional Support** - SLA, priority fixes, custom features
 3. **Training & Certification** - Teach developers/compliance teams
-4. **OpenRedact Cloud** - Managed infrastructure (optional)
+4. **OpenRedaction Cloud** - Managed infrastructure (optional)
 5. **Consulting** - Implementation services for enterprises
 
 ## 🏆 Success Metrics
@@ -446,14 +446,14 @@ Revenue streams:
 1. Compliance templates (Phase 7.6)
 2. Document format support (Phase 7.7)
 3. Browser extension (Phase 8.10)
-4. OpenRedact Cloud beta
+4. OpenRedaction Cloud beta
 5. Series A funding (if applicable)
 
 ---
 
 ## 💡 Key Insight
 
-**OpenRedact isn't just faster or cheaper than competitors—it's architected differently.**
+**OpenRedaction isn't just faster or cheaper than competitors—it's architected differently.**
 
 Local-first isn't a feature; it's a fundamental advantage that compounds over time. Every feature we add (ML learning, multi-language, compliance) works *better* because it's local. Our competitors can't copy this without abandoning their business models.
 

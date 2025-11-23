@@ -3,13 +3,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 import { createReportGenerator } from '../src/reports/ReportGenerator';
 
 describe('Report Generation', () => {
   describe('Basic report generation', () => {
     it('should generate HTML report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk, Phone: 07700900123';
       const result = detector.detect(text);
 
@@ -26,7 +26,7 @@ describe('Report Generation', () => {
     });
 
     it('should generate Markdown report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk, Phone: 07700900123';
       const result = detector.detect(text);
 
@@ -43,7 +43,7 @@ describe('Report Generation', () => {
     });
 
     it('should use helper to create report generator', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const generator = createReportGenerator(detector);
 
       expect(generator).toBeDefined();
@@ -58,7 +58,7 @@ describe('Report Generation', () => {
 
   describe('HTML report content', () => {
     it('should include statistics in HTML report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk, Phone: 07700900123, Card: 4532015112830366';
       const result = detector.detect(text);
 
@@ -73,7 +73,7 @@ describe('Report Generation', () => {
     });
 
     it('should include detection details in HTML report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk';
       const result = detector.detect(text);
 
@@ -88,7 +88,7 @@ describe('Report Generation', () => {
     });
 
     it('should include redacted text in HTML report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk';
       const result = detector.detect(text);
 
@@ -102,7 +102,7 @@ describe('Report Generation', () => {
     });
 
     it('should include original text when requested', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk';
       const result = detector.detect(text);
 
@@ -116,7 +116,7 @@ describe('Report Generation', () => {
     });
 
     it('should not include original text by default', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Secret: admin@business.co.uk';
       const result = detector.detect(text);
 
@@ -129,7 +129,7 @@ describe('Report Generation', () => {
     });
 
     it('should include metadata in HTML report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: test@business.co.uk';
       const result = detector.detect(text);
 
@@ -148,7 +148,7 @@ describe('Report Generation', () => {
     });
 
     it('should escape HTML in content', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: <script>alert("xss")</script>@business.co.uk';
       const result = detector.detect(text);
 
@@ -165,7 +165,7 @@ describe('Report Generation', () => {
 
   describe('Markdown report content', () => {
     it('should include statistics in Markdown report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk, Phone: 07700900123';
       const result = detector.detect(text);
 
@@ -180,7 +180,7 @@ describe('Report Generation', () => {
     });
 
     it('should include detection breakdown in Markdown', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk, Phone: 07700900123';
       const result = detector.detect(text);
 
@@ -193,7 +193,7 @@ describe('Report Generation', () => {
     });
 
     it('should include redacted text in code blocks', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk';
       const result = detector.detect(text);
 
@@ -208,7 +208,7 @@ describe('Report Generation', () => {
     });
 
     it('should include warning for original text', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Secret: admin@business.co.uk';
       const result = detector.detect(text);
 
@@ -222,7 +222,7 @@ describe('Report Generation', () => {
     });
 
     it('should include metadata in Markdown report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: test@business.co.uk';
       const result = detector.detect(text);
 
@@ -244,7 +244,7 @@ describe('Report Generation', () => {
 
   describe('Report types', () => {
     it('should generate summary report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk';
       const result = detector.detect(text);
 
@@ -257,7 +257,7 @@ describe('Report Generation', () => {
     });
 
     it('should generate detailed report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk';
       const result = detector.detect(text);
 
@@ -270,7 +270,7 @@ describe('Report Generation', () => {
     });
 
     it('should generate compliance report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk';
       const result = detector.detect(text);
 
@@ -287,7 +287,7 @@ describe('Report Generation', () => {
 
   describe('Statistics calculations', () => {
     it('should calculate correct statistics', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = `
         Email: user1@business.co.uk
         Email: user2@business.co.uk
@@ -308,7 +308,7 @@ describe('Report Generation', () => {
     });
 
     it('should show type breakdown', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = `
         Email: user1@business.co.uk
         Email: user2@business.co.uk
@@ -328,7 +328,7 @@ describe('Report Generation', () => {
 
   describe('Edge cases', () => {
     it('should handle empty detection results', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const text = 'This text has no PII';
       const result = detector.detect(text);
 
@@ -341,7 +341,7 @@ describe('Report Generation', () => {
     });
 
     it('should handle very long text', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const longText = 'a'.repeat(10000) + ' Email: test@business.co.uk ' + 'b'.repeat(10000);
       const result = detector.detect(longText);
 
@@ -355,7 +355,7 @@ describe('Report Generation', () => {
     });
 
     it('should handle special characters in metadata', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: test@business.co.uk';
       const result = detector.detect(text);
 
@@ -374,7 +374,7 @@ describe('Report Generation', () => {
 
   describe('Real-world scenarios', () => {
     it('should generate compliance audit report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = `
         Customer Support Ticket #12345
 
@@ -413,7 +413,7 @@ describe('Report Generation', () => {
     });
 
     it('should generate development debug report', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: true });
+      const detector = new OpenRedaction({ enableContextAnalysis: true });
       const text = 'Dev test: test@example.com, Real: admin@business.co.uk';
       const result = detector.detect(text);
 

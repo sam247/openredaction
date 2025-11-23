@@ -261,9 +261,9 @@ src/patterns/industries/__tests__/all-industries.test.ts
 
 **Integration Steps:**
 ```typescript
-import { OpenRedact } from 'openredact';
+import { OpenRedaction } from 'openredaction';
 
-const redactor = new OpenRedact({
+const redactor = new OpenRedaction({
   enableLearning: true,
   learningStorePath: './disclosurely-learnings.json',
   // Only load needed categories for performance

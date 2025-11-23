@@ -1,12 +1,12 @@
 /**
- * Main OpenRedact detector implementation
+ * Main OpenRedaction detector implementation
  */
 
 import {
   PIIPattern,
   PIIDetection,
   DetectionResult,
-  OpenRedactOptions
+  OpenRedactionOptions
 } from './types';
 import { allPatterns } from './patterns';
 import { generateDeterministicId } from './utils/hash';
@@ -22,9 +22,9 @@ import { createReportGenerator, type ReportOptions } from './reports/ReportGener
 import { PriorityOptimizer, createPriorityOptimizer, type OptimizerOptions } from './optimizer/PriorityOptimizer.js';
 
 /**
- * Main OpenRedact class for detecting and redacting PII
+ * Main OpenRedaction class for detecting and redacting PII
  */
-export class OpenRedact {
+export class OpenRedaction {
   private patterns: PIIPattern[];
   private options: {
     includeNames: boolean;
@@ -55,7 +55,7 @@ export class OpenRedact {
   private priorityOptimizer?: PriorityOptimizer;
   private enableLearning: boolean;
 
-  constructor(options: OpenRedactOptions & {
+  constructor(options: OpenRedactionOptions & {
     configPath?: string;
     enableLearning?: boolean;
     learningStorePath?: string;
@@ -115,7 +115,7 @@ export class OpenRedact {
 
     // Initialize learning store if enabled
     if (this.enableLearning) {
-      const learningPath = options.learningStorePath || '.openredact/learnings.json';
+      const learningPath = options.learningStorePath || '.openredaction/learnings.json';
       this.learningStore = new LocalLearningStore(learningPath, {
         autoSave: true,
         confidenceThreshold: 0.85
@@ -147,19 +147,19 @@ export class OpenRedact {
   }
 
   /**
-   * Create OpenRedact instance from config file
+   * Create OpenRedaction instance from config file
    */
-  static async fromConfig(configPath?: string): Promise<OpenRedact> {
+  static async fromConfig(configPath?: string): Promise<OpenRedaction> {
     const loader = new ConfigLoader(configPath);
     const config = await loader.load();
 
     if (!config) {
-      return new OpenRedact();
+      return new OpenRedaction();
     }
 
     const resolved = loader.resolveConfig(config);
 
-    return new OpenRedact({
+    return new OpenRedaction({
       ...resolved,
       enableLearning: true,
       learningStorePath: config.learnedPatterns

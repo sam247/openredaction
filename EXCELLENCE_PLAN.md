@@ -1,7 +1,7 @@
-# OpenRedact Excellence Plan
+# OpenRedaction Excellence Plan
 ## Making the BEST PII Redaction Library
 
-This document outlines the comprehensive strategy to make OpenRedact the most thorough, accurate, and developer-friendly PII redaction library available.
+This document outlines the comprehensive strategy to make OpenRedaction the most thorough, accurate, and developer-friendly PII redaction library available.
 
 ---
 
@@ -288,7 +288,7 @@ function calculateNameScore(name: string, context: string): number {
 
 **How to Enable:**
 ```typescript
-const redactor = new OpenRedact({
+const redactor = new OpenRedaction({
   enableContextAnalysis: true,  // Already enabled by default!
   confidenceThreshold: 0.5      // Filter detections below 50% confidence
 });
@@ -348,7 +348,7 @@ function analyzeContext(detection: string, position: number, fullText: string): 
 
 **How to Enable:**
 ```typescript
-const redactor = new OpenRedact({
+const redactor = new OpenRedaction({
   enableFalsePositiveFilter: true,  // Opt-in for experimental feature
   falsePositiveThreshold: 0.7       // 70% confidence threshold
 });
@@ -384,7 +384,7 @@ interface FalsePositiveRule {
 
 **How to Enable:**
 ```typescript
-const redactor = new OpenRedact({
+const redactor = new OpenRedaction({
   enablePriorityOptimization: true,  // Opt-in for dynamic optimization
   optimizerOptions: {
     learningWeight: 0.3,        // 30% weight to learning data
@@ -429,7 +429,7 @@ const stats = redactor.getPatternStats();
 
 **How to Enable:**
 ```typescript
-const redactor = new OpenRedact({
+const redactor = new OpenRedaction({
   enableMultiPass: true,    // Opt-in for multi-pass detection
   multiPassCount: 3         // Number of passes (default: 3)
 });
@@ -484,7 +484,7 @@ const defaultPasses: DetectionPass[] = [
 **For Large Documents:**
 
 ```typescript
-import { OpenRedactStream } from 'openredact';
+import { OpenRedactStream } from 'openredaction';
 
 const stream = new OpenRedactStream();
 
@@ -543,7 +543,7 @@ throw new OpenRedactError(
 
 ```typescript
 // Debug mode with detailed logging
-const redactor = new OpenRedact({ debug: true });
+const redactor = new OpenRedaction({ debug: true });
 
 // Explain why something was detected
 const explanation = redactor.explain(
@@ -584,9 +584,9 @@ const markdown = redactor.generateReport(text, result, {
 
 **Express.js Middleware:**
 ```typescript
-import { openredactMiddleware } from 'openredact/express';
+import { openredactionMiddleware } from 'openredaction/express';
 
-app.use(openredactMiddleware({
+app.use(openredactionMiddleware({
   scanBody: true,
   autoRedact: true,
   logDetections: true
@@ -595,10 +595,10 @@ app.use(openredactMiddleware({
 
 **React Hook:**
 ```typescript
-import { useOpenRedact } from 'openredact/react';
+import { useOpenRedaction } from 'openredaction/react';
 
 function MyComponent() {
-  const { detect, result } = useOpenRedact();
+  const { detect, result } = useOpenRedaction();
 
   return (
     <input
@@ -659,10 +659,10 @@ function MyComponent() {
 **Allow Custom ML Models:**
 
 ```typescript
-import { OpenRedact } from 'openredact';
+import { OpenRedaction } from 'openredaction';
 import * as tf from '@tensorflow/tfjs-node';
 
-const redactor = new OpenRedact({
+const redactor = new OpenRedaction({
   customDetectors: [
     {
       name: 'ML_NAME_DETECTOR',
@@ -679,7 +679,7 @@ const redactor = new OpenRedact({
 ### 6.2 Audit Logging
 
 ```typescript
-const redactor = new OpenRedact({
+const redactor = new OpenRedaction({
   auditLog: {
     enabled: true,
     path: './audit.log',
@@ -776,7 +776,7 @@ const result = redactor.detectWithRelationships(text);
 **Multi-language Detection:**
 
 ```typescript
-const redactor = new OpenRedact({
+const redactor = new OpenRedaction({
   languages: ['en', 'es', 'fr', 'de'],
   autoDetectLanguage: true
 });
@@ -880,25 +880,25 @@ const redactor = new OpenRedact({
 
 ## 💡 Innovation Ideas
 
-### 1. OpenRedact Studio (VS Code Extension)
+### 1. OpenRedaction Studio (VS Code Extension)
 - Real-time PII detection as you type
 - Inline warnings
 - Quick-fix suggestions
 - Pattern tester
 
-### 2. OpenRedact Playground (Web App)
+### 2. OpenRedaction Playground (Web App)
 - Try patterns live
 - Test custom regex
 - Compare before/after
 - Generate code snippets
 
-### 3. OpenRedact Cloud (Optional SaaS)
+### 3. OpenRedaction Cloud (Optional SaaS)
 - For teams that want managed service
 - Centralized learning
 - Team dashboards
 - API access
 
-### 4. OpenRedact Marketplace
+### 4. OpenRedaction Marketplace
 - Paid pattern packs for niche industries
 - Professional support packages
 - Enterprise licenses
@@ -921,7 +921,7 @@ const redactor = new OpenRedact({
 This is an ambitious plan! Consider:
 
 **For Disclosurely Integration:**
-- Start using OpenRedact in production
+- Start using OpenRedaction in production
 - Collect real-world feedback via learning system
 - Contribute improvements back to open source
 

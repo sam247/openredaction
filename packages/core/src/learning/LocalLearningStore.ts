@@ -48,7 +48,7 @@ export class LocalLearningStore {
   private autoSave: boolean;
   private confidenceThreshold: number;
 
-  constructor(filePath: string = '.openredact/learnings.json', options: {
+  constructor(filePath: string = '.openredaction/learnings.json', options: {
     autoSave?: boolean;
     confidenceThreshold?: number;
   } = {}) {

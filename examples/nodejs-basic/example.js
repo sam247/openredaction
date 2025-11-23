@@ -3,15 +3,15 @@
  * Demonstrates core PII detection without any framework
  */
 
-const { OpenRedact } = require('openredact');
+const { OpenRedaction } = require('openredact');
 
 // Initialize detector
-const detector = new OpenRedact({
+const detector = new OpenRedaction({
   enableContextAnalysis: true,
   enableCache: true
 });
 
-console.log('🔍 OpenRedact - Basic Detection Example\n');
+console.log('🔍 OpenRedaction - Basic Detection Example\n');
 
 // Example 1: Simple detection
 console.log('Example 1: Simple Detection');
