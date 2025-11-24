@@ -8,6 +8,7 @@ import { financialPatterns } from './financial';
 import { governmentPatterns } from './government';
 import { contactPatterns } from './contact';
 import { networkPatterns } from './network';
+import { cryptoExtendedPatterns } from './financial/crypto-extended';
 
 // Industry-specific patterns
 import { healthcarePatterns } from './industries/healthcare';
@@ -25,6 +26,8 @@ import { mediaPatterns } from './industries/media';
 import { charitablePatterns } from './industries/charitable';
 import { procurementPatterns } from './industries/procurement';
 import { emergencyServicesPatterns } from './industries/emergency-services';
+import { realEstatePatterns } from './industries/real-estate';
+import { gigEconomyPatterns } from './industries/gig-economy';
 
 // International patterns
 import { internationalPatterns } from './international';
@@ -38,6 +41,7 @@ import { digitalIdentityPatterns } from './digital-identity';
 export const allPatterns: PIIPattern[] = [
   ...personalPatterns,
   ...financialPatterns,
+  ...cryptoExtendedPatterns,
   ...governmentPatterns,
   ...contactPatterns,
   ...networkPatterns,
@@ -49,6 +53,8 @@ export const allPatterns: PIIPattern[] = [
   ...hrPatterns,
   ...insurancePatterns,
   ...retailPatterns,
+  ...realEstatePatterns,
+  ...gigEconomyPatterns,
   ...telecomsPatterns,
   ...manufacturingPatterns,
   ...transportationPatterns,
@@ -68,7 +74,9 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
     case 'personal':
       return personalPatterns;
     case 'financial':
-      return [...financialPatterns, ...financeIndustryPatterns];
+    case 'crypto':
+    case 'cryptocurrency':
+      return [...financialPatterns, ...cryptoExtendedPatterns, ...financeIndustryPatterns];
     case 'government':
       return [...governmentPatterns, ...internationalPatterns];
     case 'contact':
@@ -124,6 +132,16 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
     case 'gaming':
     case 'online-identity':
       return digitalIdentityPatterns;
+    case 'real-estate':
+    case 'property':
+    case 'realestate':
+      return realEstatePatterns;
+    case 'gig-economy':
+    case 'gig':
+    case 'rideshare':
+    case 'delivery':
+    case 'freelance':
+      return gigEconomyPatterns;
     default:
       return [];
   }
@@ -132,6 +150,7 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
 export {
   personalPatterns,
   financialPatterns,
+  cryptoExtendedPatterns,
   governmentPatterns,
   contactPatterns,
   networkPatterns,
@@ -143,6 +162,8 @@ export {
   hrPatterns,
   insurancePatterns,
   retailPatterns,
+  realEstatePatterns,
+  gigEconomyPatterns,
   telecomsPatterns,
   manufacturingPatterns,
   transportationPatterns,
