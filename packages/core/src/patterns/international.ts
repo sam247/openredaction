@@ -4,6 +4,7 @@
  */
 
 import { PIIPattern } from '../types';
+import { middleEastPatterns } from './international/middle-east';
 
 // ==================== EUROPE ====================
 
@@ -614,5 +615,8 @@ export const internationalPatterns: PIIPattern[] = [
   BRAZILIAN_CPF,
   BRAZILIAN_CNPJ,
   MEXICAN_CURP,
-  MEXICAN_RFC
+  MEXICAN_RFC,
+
+  // Middle East
+  ...middleEastPatterns
 ];
