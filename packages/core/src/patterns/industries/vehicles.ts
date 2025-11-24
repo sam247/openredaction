@@ -437,6 +437,422 @@ export const ALABAMA_LICENSE_PLATE: PIIPattern = {
 };
 
 /**
+ * Louisiana License Plate
+ * Format: 123ABC (3 digits + 3 letters)
+ */
+export const LOUISIANA_LICENSE_PLATE: PIIPattern = {
+  type: 'LOUISIANA_LICENSE_PLATE',
+  regex: /\b(\d{3}[A-Z]{3})\b/g,
+  placeholder: '[LA_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Louisiana License Plate',
+  validator: (_value: string, context: string) => {
+    return /louisiana|la\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Kentucky License Plate
+ * Format: ABC123 (3 letters + 3 digits)
+ */
+export const KENTUCKY_LICENSE_PLATE: PIIPattern = {
+  type: 'KENTUCKY_LICENSE_PLATE',
+  regex: /\b([A-Z]{3}\d{3})\b/g,
+  placeholder: '[KY_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Kentucky License Plate',
+  validator: (_value: string, context: string) => {
+    return /kentucky|ky\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Oregon License Plate
+ * Format: ABC123 (3 letters + 3 digits)
+ */
+export const OREGON_LICENSE_PLATE: PIIPattern = {
+  type: 'OREGON_LICENSE_PLATE',
+  regex: /\b([A-Z]{3}\d{3})\b/g,
+  placeholder: '[OR_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Oregon License Plate',
+  validator: (_value: string, context: string) => {
+    return /oregon|or\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Oklahoma License Plate
+ * Format: ABC123 (3 letters + 3 digits)
+ */
+export const OKLAHOMA_LICENSE_PLATE: PIIPattern = {
+  type: 'OKLAHOMA_LICENSE_PLATE',
+  regex: /\b([A-Z]{3}\d{3})\b/g,
+  placeholder: '[OK_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Oklahoma License Plate',
+  validator: (_value: string, context: string) => {
+    return /oklahoma|ok\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Connecticut License Plate
+ * Format: 123ABC or ABC123
+ */
+export const CONNECTICUT_LICENSE_PLATE: PIIPattern = {
+  type: 'CONNECTICUT_LICENSE_PLATE',
+  regex: /\b(\d{3}[A-Z]{3}|[A-Z]{3}\d{3})\b/g,
+  placeholder: '[CT_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Connecticut License Plate',
+  validator: (_value: string, context: string) => {
+    return /connecticut|ct\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Utah License Plate
+ * Format: A12BCD (letter + 2 digits + 3 letters)
+ */
+export const UTAH_LICENSE_PLATE: PIIPattern = {
+  type: 'UTAH_LICENSE_PLATE',
+  regex: /\b([A-Z]\d{2}[A-Z]{3})\b/g,
+  placeholder: '[UT_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Utah License Plate',
+  validator: (_value: string, context: string) => {
+    return /utah|ut\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Iowa License Plate
+ * Format: ABC123 (3 letters + 3 digits)
+ */
+export const IOWA_LICENSE_PLATE: PIIPattern = {
+  type: 'IOWA_LICENSE_PLATE',
+  regex: /\b([A-Z]{3}\d{3})\b/g,
+  placeholder: '[IA_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Iowa License Plate',
+  validator: (_value: string, context: string) => {
+    return /iowa|ia\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Nevada License Plate
+ * Format: 12A345 (2 digits + letter + 3 digits)
+ */
+export const NEVADA_LICENSE_PLATE: PIIPattern = {
+  type: 'NEVADA_LICENSE_PLATE',
+  regex: /\b(\d{2}[A-Z]\d{3})\b/g,
+  placeholder: '[NV_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Nevada License Plate',
+  validator: (_value: string, context: string) => {
+    return /nevada|nv\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Arkansas License Plate
+ * Format: 123ABC (3 digits + 3 letters)
+ */
+export const ARKANSAS_LICENSE_PLATE: PIIPattern = {
+  type: 'ARKANSAS_LICENSE_PLATE',
+  regex: /\b(\d{3}[A-Z]{3})\b/g,
+  placeholder: '[AR_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Arkansas License Plate',
+  validator: (_value: string, context: string) => {
+    return /arkansas|ar\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Mississippi License Plate
+ * Format: ABC123 (3 letters + 3 digits)
+ */
+export const MISSISSIPPI_LICENSE_PLATE: PIIPattern = {
+  type: 'MISSISSIPPI_LICENSE_PLATE',
+  regex: /\b([A-Z]{3}\d{3})\b/g,
+  placeholder: '[MS_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Mississippi License Plate',
+  validator: (_value: string, context: string) => {
+    return /mississippi|ms\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Kansas License Plate
+ * Format: 123ABC (3 digits + 3 letters)
+ */
+export const KANSAS_LICENSE_PLATE: PIIPattern = {
+  type: 'KANSAS_LICENSE_PLATE',
+  regex: /\b(\d{3}[A-Z]{3})\b/g,
+  placeholder: '[KS_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Kansas License Plate',
+  validator: (_value: string, context: string) => {
+    return /kansas|ks\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * New Mexico License Plate
+ * Format: ABC123 (3 letters + 3 digits)
+ */
+export const NEW_MEXICO_LICENSE_PLATE: PIIPattern = {
+  type: 'NEW_MEXICO_LICENSE_PLATE',
+  regex: /\b([A-Z]{3}\d{3})\b/g,
+  placeholder: '[NM_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'New Mexico License Plate',
+  validator: (_value: string, context: string) => {
+    return /new\s?mexico|nm\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Nebraska License Plate
+ * Format: A12345 (letter + 5 digits)
+ */
+export const NEBRASKA_LICENSE_PLATE: PIIPattern = {
+  type: 'NEBRASKA_LICENSE_PLATE',
+  regex: /\b([A-Z]\d{5})\b/g,
+  placeholder: '[NE_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Nebraska License Plate',
+  validator: (_value: string, context: string) => {
+    return /nebraska|ne\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * West Virginia License Plate
+ * Format: 1AB234 (digit + 2 letters + 3 digits)
+ */
+export const WEST_VIRGINIA_LICENSE_PLATE: PIIPattern = {
+  type: 'WEST_VIRGINIA_LICENSE_PLATE',
+  regex: /\b(\d[A-Z]{2}\d{3})\b/g,
+  placeholder: '[WV_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'West Virginia License Plate',
+  validator: (_value: string, context: string) => {
+    return /west\s?virginia|wv\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Idaho License Plate
+ * Format: 1A12345 (digit + letter + 5 digits)
+ */
+export const IDAHO_LICENSE_PLATE: PIIPattern = {
+  type: 'IDAHO_LICENSE_PLATE',
+  regex: /\b(\d[A-Z]\d{5})\b/g,
+  placeholder: '[ID_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Idaho License Plate',
+  validator: (_value: string, context: string) => {
+    return /idaho|id\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Hawaii License Plate
+ * Format: ABC123 (3 letters + 3 digits)
+ */
+export const HAWAII_LICENSE_PLATE: PIIPattern = {
+  type: 'HAWAII_LICENSE_PLATE',
+  regex: /\b([A-Z]{3}\d{3})\b/g,
+  placeholder: '[HI_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Hawaii License Plate',
+  validator: (_value: string, context: string) => {
+    return /hawaii|hi\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * New Hampshire License Plate
+ * Format: 123AB or 1234AB
+ */
+export const NEW_HAMPSHIRE_LICENSE_PLATE: PIIPattern = {
+  type: 'NEW_HAMPSHIRE_LICENSE_PLATE',
+  regex: /\b(\d{3,4}[A-Z]{2})\b/g,
+  placeholder: '[NH_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'New Hampshire License Plate',
+  validator: (_value: string, context: string) => {
+    return /new\s?hampshire|nh\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Maine License Plate
+ * Format: 1234AB (4 digits + 2 letters)
+ */
+export const MAINE_LICENSE_PLATE: PIIPattern = {
+  type: 'MAINE_LICENSE_PLATE',
+  regex: /\b(\d{4}[A-Z]{2})\b/g,
+  placeholder: '[ME_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Maine License Plate',
+  validator: (_value: string, context: string) => {
+    return /maine|me\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Montana License Plate
+ * Format: 1-12345A (digit dash 5 digits letter)
+ */
+export const MONTANA_LICENSE_PLATE: PIIPattern = {
+  type: 'MONTANA_LICENSE_PLATE',
+  regex: /\b(\d-\d{5}[A-Z])\b/g,
+  placeholder: '[MT_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Montana License Plate',
+  validator: (_value: string, context: string) => {
+    return /montana|mt\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Rhode Island License Plate
+ * Format: 123456 (6 digits)
+ */
+export const RHODE_ISLAND_LICENSE_PLATE: PIIPattern = {
+  type: 'RHODE_ISLAND_LICENSE_PLATE',
+  regex: /\b(\d{6})\b/g,
+  placeholder: '[RI_PLATE_{n}]',
+  priority: 75,
+  severity: 'medium',
+  description: 'Rhode Island License Plate',
+  validator: (_value: string, context: string) => {
+    return /rhode\s?island|ri\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Delaware License Plate
+ * Format: 123456 (6 digits)
+ */
+export const DELAWARE_LICENSE_PLATE: PIIPattern = {
+  type: 'DELAWARE_LICENSE_PLATE',
+  regex: /\b(\d{6})\b/g,
+  placeholder: '[DE_PLATE_{n}]',
+  priority: 75,
+  severity: 'medium',
+  description: 'Delaware License Plate',
+  validator: (_value: string, context: string) => {
+    return /delaware|de\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * South Dakota License Plate
+ * Format: 12A345 (2 digits + letter + 3 digits)
+ */
+export const SOUTH_DAKOTA_LICENSE_PLATE: PIIPattern = {
+  type: 'SOUTH_DAKOTA_LICENSE_PLATE',
+  regex: /\b(\d{2}[A-Z]\d{3})\b/g,
+  placeholder: '[SD_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'South Dakota License Plate',
+  validator: (_value: string, context: string) => {
+    return /south\s?dakota|sd\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * North Dakota License Plate
+ * Format: ABC123 (3 letters + 3 digits)
+ */
+export const NORTH_DAKOTA_LICENSE_PLATE: PIIPattern = {
+  type: 'NORTH_DAKOTA_LICENSE_PLATE',
+  regex: /\b([A-Z]{3}\d{3})\b/g,
+  placeholder: '[ND_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'North Dakota License Plate',
+  validator: (_value: string, context: string) => {
+    return /north\s?dakota|nd\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Alaska License Plate
+ * Format: ABC123 (3 letters + 3 digits)
+ */
+export const ALASKA_LICENSE_PLATE: PIIPattern = {
+  type: 'ALASKA_LICENSE_PLATE',
+  regex: /\b([A-Z]{3}\d{3})\b/g,
+  placeholder: '[AK_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Alaska License Plate',
+  validator: (_value: string, context: string) => {
+    return /alaska|ak\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Vermont License Plate
+ * Format: ABC123 (3 letters + 3 digits)
+ */
+export const VERMONT_LICENSE_PLATE: PIIPattern = {
+  type: 'VERMONT_LICENSE_PLATE',
+  regex: /\b([A-Z]{3}\d{3})\b/g,
+  placeholder: '[VT_PLATE_{n}]',
+  priority: 80,
+  severity: 'medium',
+  description: 'Vermont License Plate',
+  validator: (_value: string, context: string) => {
+    return /vermont|vt\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
+ * Wyoming License Plate
+ * Format: 12345 (5 digits)
+ */
+export const WYOMING_LICENSE_PLATE: PIIPattern = {
+  type: 'WYOMING_LICENSE_PLATE',
+  regex: /\b(\d{5})\b/g,
+  placeholder: '[WY_PLATE_{n}]',
+  priority: 75,
+  severity: 'medium',
+  description: 'Wyoming License Plate',
+  validator: (_value: string, context: string) => {
+    return /wyoming|wy\s|plate|license|dmv|vehicle/i.test(context);
+  }
+};
+
+/**
  * UK Vehicle Registration (License Plate)
  * Format: AB12 CDE or AB12CDE
  */
@@ -575,6 +991,32 @@ export const vehiclePatterns: PIIPattern[] = [
   MINNESOTA_LICENSE_PLATE,
   SOUTH_CAROLINA_LICENSE_PLATE,
   ALABAMA_LICENSE_PLATE,
+  LOUISIANA_LICENSE_PLATE,
+  KENTUCKY_LICENSE_PLATE,
+  OREGON_LICENSE_PLATE,
+  OKLAHOMA_LICENSE_PLATE,
+  CONNECTICUT_LICENSE_PLATE,
+  UTAH_LICENSE_PLATE,
+  IOWA_LICENSE_PLATE,
+  NEVADA_LICENSE_PLATE,
+  ARKANSAS_LICENSE_PLATE,
+  MISSISSIPPI_LICENSE_PLATE,
+  KANSAS_LICENSE_PLATE,
+  NEW_MEXICO_LICENSE_PLATE,
+  NEBRASKA_LICENSE_PLATE,
+  WEST_VIRGINIA_LICENSE_PLATE,
+  IDAHO_LICENSE_PLATE,
+  HAWAII_LICENSE_PLATE,
+  NEW_HAMPSHIRE_LICENSE_PLATE,
+  MAINE_LICENSE_PLATE,
+  MONTANA_LICENSE_PLATE,
+  RHODE_ISLAND_LICENSE_PLATE,
+  DELAWARE_LICENSE_PLATE,
+  SOUTH_DAKOTA_LICENSE_PLATE,
+  NORTH_DAKOTA_LICENSE_PLATE,
+  ALASKA_LICENSE_PLATE,
+  VERMONT_LICENSE_PLATE,
+  WYOMING_LICENSE_PLATE,
   UK_LICENSE_PLATE,
   GERMAN_LICENSE_PLATE,
   FRENCH_LICENSE_PLATE,

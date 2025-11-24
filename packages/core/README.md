@@ -1,6 +1,6 @@
 # OpenRedaction
 
-Production-ready PII detection and redaction library with 530+ built-in patterns, multiple redaction modes, compliance presets, and zero dependencies.
+Production-ready PII detection and redaction library with 558+ built-in patterns, multiple redaction modes, compliance presets, and zero dependencies.
 
 ## Installation
 
@@ -27,7 +27,7 @@ Full documentation available at [GitHub](https://github.com/sam247/openredaction
 ## Features
 
 - 🚀 **Fast & Accurate** - 10-20ms for 2-3KB text
-- 🎯 **530+ PII Patterns** - Comprehensive coverage across multiple categories:
+- 🎯 **558+ PII Patterns** - Comprehensive coverage across multiple categories:
   - Personal Data (Email, Phone, SSN, Passports, Driver's Licenses)
   - Financial (Credit Cards, IBANs, Cryptocurrencies)
   - Government IDs (National IDs for 40+ countries globally)
@@ -75,7 +75,7 @@ Credit Cards, IBANs, Bank Accounts, Swift Codes, Routing Numbers, Cryptocurrenci
 Medical Record Numbers, NHS Numbers, Health Insurance, Prescription Numbers, DEA Numbers, Biometric Data, Genetic Markers
 
 ### Vehicles & Transportation
-VIN Numbers, License Plates (24 US States + International), Tracking Numbers (16 carriers: FedEx, UPS, USPS, DHL, Amazon, TNT, China/Japan/Royal Mail, Canada/Australia Post, Purolator, OnTrac, GLS, Aramex)
+VIN Numbers, License Plates (All 50 US States + International), Tracking Numbers (16 carriers: FedEx, UPS, USPS, DHL, Amazon, TNT, China/Japan/Royal Mail, Canada/Australia Post, Purolator, OnTrac, GLS, Aramex)
 
 ### Aviation
 Flight Numbers, IATA Airport Codes, Aircraft Registration, Tail Numbers, FAA Certificates, Booking References

@@ -7,14 +7,14 @@
 
 **Production-ready PII detection and redaction for JavaScript/TypeScript**
 
-Local-first • Zero dependencies • 10-20ms latency • 100% offline • 530+ patterns
+Local-first • Zero dependencies • 10-20ms latency • 100% offline • 558+ patterns
 
 > ⚠️ **Pre-release**: Not yet published to npm. Coming soon!
 
 ## Features
 
 - 🚀 **Lightning Fast** - 10-20ms processing for 2-3KB text, 100x faster than cloud APIs
-- 🎯 **530+ PII Patterns** - Comprehensive coverage across 20+ industries and 40+ countries
+- 🎯 **558+ PII Patterns** - Comprehensive coverage across 20+ industries and 40+ countries
 - 🧠 **Context-Aware** - 90%+ accuracy with false positive reduction and confidence scoring
 - 🔒 **Compliance Ready** - GDPR, HIPAA, CCPA presets with customizable rulesets
 - 🌍 **100% Local** - Your data never leaves your infrastructure, fully offline-capable
@@ -668,7 +668,9 @@ MIT © 2025
 ## Roadmap
 
 ### Completed ✅
-- [x] 530+ PII patterns across 20+ industries and 40+ countries
+- [x] 558+ PII patterns across 20+ industries and 40+ countries
+- [x] All 50 US state license plates with format-specific validation
+- [x] 16 international carrier tracking numbers (global coverage)
 - [x] Multiple redaction modes (5 modes: placeholder, mask-middle, mask-all, format-preserving, token-replace)
 - [x] Audit logging system with JSON/CSV export
 - [x] Local learning system with feedback loop
@@ -679,7 +681,6 @@ MIT © 2025
 - [x] Framework integrations (React hooks, Express middleware)
 
 ### In Progress 🚧
-- [ ] Enhanced pattern expansion (remaining US states, more international coverage)
 - [ ] Metrics export API (Prometheus, StatsD)
 - [ ] RBAC (role-based access control) for enterprise
 
