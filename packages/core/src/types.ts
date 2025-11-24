@@ -62,6 +62,16 @@ export interface DetectionResult {
 }
 
 /**
+ * Redaction mode - controls how PII is replaced
+ */
+export type RedactionMode =
+  | 'placeholder'        // Default: [EMAIL_1234]
+  | 'mask-middle'        // Partial: j***@example.com, 555-**-1234
+  | 'mask-all'           // Full: ***************
+  | 'format-preserving'  // Keep structure: XXX-XX-XXXX
+  | 'token-replace';     // Fake data: john.doe@example.com
+
+/**
  * Configuration options for OpenRedaction
  */
 export interface OpenRedactionOptions {
@@ -81,6 +91,8 @@ export interface OpenRedactionOptions {
   whitelist?: string[];
   /** Enable deterministic placeholders (default: true) */
   deterministic?: boolean;
+  /** Redaction mode (default: 'placeholder') */
+  redactionMode?: RedactionMode;
   /** Compliance preset */
   preset?: 'gdpr' | 'hipaa' | 'ccpa';
   /** Enable context-aware detection (default: true) */

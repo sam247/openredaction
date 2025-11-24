@@ -10,6 +10,7 @@ export type {
   PIIDetection,
   DetectionResult,
   OpenRedactionOptions,
+  RedactionMode,
   Validator
 } from './types';
 

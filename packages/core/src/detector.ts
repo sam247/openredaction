@@ -11,6 +11,7 @@ import {
 import { allPatterns } from './patterns';
 import { generateDeterministicId } from './utils/hash';
 import { getPreset } from './utils/presets';
+import { applyRedactionMode } from './utils/redaction-strategies';
 import { LocalLearningStore } from './learning/LocalLearningStore.js';
 import { ConfigLoader } from './config/ConfigLoader.js';
 import { analyzeFullContext } from './context/ContextAnalyzer.js';
@@ -29,6 +30,8 @@ import {
 /**
  * Main OpenRedaction class for detecting and redacting PII
  */
+import type { RedactionMode } from './types';
+
 export class OpenRedaction {
   private patterns: PIIPattern[];
   private options: {
@@ -40,6 +43,7 @@ export class OpenRedaction {
     customPatterns: PIIPattern[];
     whitelist: string[];
     deterministic: boolean;
+    redactionMode: RedactionMode;
     preset?: 'gdpr' | 'hipaa' | 'ccpa';
     enableContextAnalysis: boolean;
     confidenceThreshold: number;
@@ -81,6 +85,7 @@ export class OpenRedaction {
       customPatterns: [],
       whitelist: [],
       deterministic: true,
+      redactionMode: 'placeholder' as RedactionMode, // Default: [EMAIL_1234]
       enableContextAnalysis: true, // Enabled by default (fine-tuned)
       confidenceThreshold: 0.5, // Balanced threshold (filters <50% confidence)
       enableFalsePositiveFilter: false, // Disabled by default (experimental)
@@ -462,6 +467,20 @@ export class OpenRedaction {
 
     let placeholder: string;
 
+    // For non-placeholder modes, use redaction strategies directly
+    if (this.options.redactionMode !== 'placeholder') {
+      placeholder = applyRedactionMode(
+        value,
+        pattern.type,
+        this.options.redactionMode,
+        pattern.placeholder
+      );
+      // Still store mapping for consistency
+      this.valueToPlaceholder.set(value, placeholder);
+      return placeholder;
+    }
+
+    // Placeholder mode (default behavior)
     if (this.options.deterministic) {
       // Generate deterministic ID based on value
       const id = generateDeterministicId(value, pattern.type);
