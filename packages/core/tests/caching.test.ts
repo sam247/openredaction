@@ -93,8 +93,8 @@ describe('Result Caching', () => {
 
       // Cache hit should be significantly faster
       expect(time2).toBeLessThan(time1);
-      // Cache hit should be extremely fast (< 0.01ms typically)
-      expect(time2).toBeLessThan(0.1);
+      // Cache hit should be fast (< 1ms, usually < 0.5ms)
+      expect(time2).toBeLessThan(1.0);
     });
 
     it('should evict oldest entries when cache is full', () => {

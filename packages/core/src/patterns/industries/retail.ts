@@ -12,7 +12,7 @@ export const ORDER_NUMBER: PIIPattern = {
   type: 'ORDER_NUMBER',
   regex: /\b(?:ORD(?:ER)?[-\s](?:NO|NUM(?:BER)?)?[-\s:#]?\s*|ORDER\s+(?:NO|NUM(?:BER)?)?[:\s]+)([A-Z0-9-]{8,14})\b/gi,
   placeholder: '[ORDER_{n}]',
-  priority: 85,
+  priority: 90, // Higher priority than phones (85) to match "ORD-1234567890" correctly
   severity: 'medium',
   description: 'E-commerce order numbers',
   validator: (value: string, _context: string) => {
