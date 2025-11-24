@@ -105,6 +105,198 @@ export const AMAZON_TRACKING: PIIPattern = {
 };
 
 /**
+ * TNT Express Tracking Number
+ * Format: 9 digits or 13 alphanumeric
+ */
+export const TNT_TRACKING: PIIPattern = {
+  type: 'TNT_TRACKING',
+  regex: /\b(?:TNT[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{9}|[A-Z0-9]{13})\b/gi,
+  placeholder: '[TNT_TRACK_{n}]',
+  priority: 85,
+  severity: 'low',
+  description: 'TNT Express tracking number',
+  validator: (value: string, context: string) => {
+    const len = value.length;
+    if (len !== 9 && len !== 13) return false;
+
+    return /tnt|tracking|shipment|package|delivery|express/i.test(context);
+  }
+};
+
+/**
+ * China Post Tracking Number
+ * Format: 13 characters (starts with R or C, ends with CN)
+ */
+export const CHINA_POST_TRACKING: PIIPattern = {
+  type: 'CHINA_POST_TRACKING',
+  regex: /\b(?:CHINA\s?POST[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([RC][A-Z]\d{9}CN)\b/gi,
+  placeholder: '[CHINA_POST_{n}]',
+  priority: 85,
+  severity: 'low',
+  description: 'China Post tracking number',
+  validator: (value: string, context: string) => {
+    if (value.length !== 13) return false;
+    if (!value.endsWith('CN')) return false;
+    if (!/^[RC]/.test(value)) return false;
+
+    return /china\s?post|tracking|shipment|package|delivery/i.test(context);
+  }
+};
+
+/**
+ * Japan Post Tracking Number
+ * Format: 13 characters (2 letters + 9 digits + JP)
+ */
+export const JAPAN_POST_TRACKING: PIIPattern = {
+  type: 'JAPAN_POST_TRACKING',
+  regex: /\b(?:JAPAN\s?POST[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2}\d{9}JP)\b/gi,
+  placeholder: '[JAPAN_POST_{n}]',
+  priority: 85,
+  severity: 'low',
+  description: 'Japan Post tracking number',
+  validator: (value: string, context: string) => {
+    if (value.length !== 13) return false;
+    if (!value.endsWith('JP')) return false;
+
+    return /japan\s?post|tracking|shipment|package|delivery/i.test(context);
+  }
+};
+
+/**
+ * Royal Mail Tracking Number (UK)
+ * Format: 13 characters (2 letters + 9 digits + GB)
+ */
+export const ROYAL_MAIL_TRACKING: PIIPattern = {
+  type: 'ROYAL_MAIL_TRACKING',
+  regex: /\b(?:ROYAL\s?MAIL[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2}\d{9}GB)\b/gi,
+  placeholder: '[ROYAL_MAIL_{n}]',
+  priority: 85,
+  severity: 'low',
+  description: 'Royal Mail tracking number',
+  validator: (value: string, context: string) => {
+    if (value.length !== 13) return false;
+    if (!value.endsWith('GB')) return false;
+
+    return /royal\s?mail|tracking|shipment|package|delivery|post\s?office/i.test(context);
+  }
+};
+
+/**
+ * Canada Post Tracking Number
+ * Format: 16 digits
+ */
+export const CANADA_POST_TRACKING: PIIPattern = {
+  type: 'CANADA_POST_TRACKING',
+  regex: /\b(?:CANADA\s?POST[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{16})\b/gi,
+  placeholder: '[CANADA_POST_{n}]',
+  priority: 85,
+  severity: 'low',
+  description: 'Canada Post tracking number',
+  validator: (value: string, context: string) => {
+    if (value.length !== 16) return false;
+
+    return /canada\s?post|tracking|shipment|package|delivery|postes|canada/i.test(context);
+  }
+};
+
+/**
+ * Australia Post Tracking Number
+ * Format: 13 characters (2 letters + 9 digits + AU)
+ */
+export const AUSTRALIA_POST_TRACKING: PIIPattern = {
+  type: 'AUSTRALIA_POST_TRACKING',
+  regex: /\b(?:AUSTRALIA\s?POST[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2}\d{9}AU)\b/gi,
+  placeholder: '[AUSTRALIA_POST_{n}]',
+  priority: 85,
+  severity: 'low',
+  description: 'Australia Post tracking number',
+  validator: (value: string, context: string) => {
+    if (value.length !== 13) return false;
+    if (!value.endsWith('AU')) return false;
+
+    return /australia\s?post|aus\s?post|tracking|shipment|package|delivery/i.test(context);
+  }
+};
+
+/**
+ * Purolator Tracking Number (Canada)
+ * Format: 12 digits or PIN format
+ */
+export const PUROLATOR_TRACKING: PIIPattern = {
+  type: 'PUROLATOR_TRACKING',
+  regex: /\b(?:PUROLATOR[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER|PIN)?[-\s]?[:#]?\s*(\d{12}|P\d{10})\b/gi,
+  placeholder: '[PUROLATOR_{n}]',
+  priority: 85,
+  severity: 'low',
+  description: 'Purolator tracking number',
+  validator: (value: string, context: string) => {
+    if (value.startsWith('P')) {
+      return value.length === 11;
+    }
+    if (value.length !== 12) return false;
+
+    return /purolator|tracking|shipment|package|delivery/i.test(context);
+  }
+};
+
+/**
+ * OnTrac Tracking Number
+ * Format: C + 14 digits
+ */
+export const ONTRAC_TRACKING: PIIPattern = {
+  type: 'ONTRAC_TRACKING',
+  regex: /\b(?:ONTRAC|ON\s?TRAC|LASERSHIP)[-\s]?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(C\d{14})\b/gi,
+  placeholder: '[ONTRAC_{n}]',
+  priority: 85,
+  severity: 'low',
+  description: 'OnTrac/LaserShip tracking number',
+  validator: (value: string, context: string) => {
+    if (!value.startsWith('C')) return false;
+    if (value.length !== 15) return false;
+
+    return /ontrac|on\s?trac|lasership|tracking|shipment|package|delivery/i.test(context);
+  }
+};
+
+/**
+ * GLS Tracking Number (Europe)
+ * Format: Various formats, typically 11-13 digits
+ */
+export const GLS_TRACKING: PIIPattern = {
+  type: 'GLS_TRACKING',
+  regex: /\b(?:GLS[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{11,13})\b/gi,
+  placeholder: '[GLS_{n}]',
+  priority: 80,
+  severity: 'low',
+  description: 'GLS tracking number (Europe)',
+  validator: (value: string, context: string) => {
+    const len = value.length;
+    if (len < 11 || len > 13) return false;
+
+    return /gls|general\s?logistics|tracking|shipment|package|delivery/i.test(context);
+  }
+};
+
+/**
+ * Aramex Tracking Number (Middle East)
+ * Format: 11-12 digits
+ */
+export const ARAMEX_TRACKING: PIIPattern = {
+  type: 'ARAMEX_TRACKING',
+  regex: /\b(?:ARAMEX[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{11,12})\b/gi,
+  placeholder: '[ARAMEX_{n}]',
+  priority: 85,
+  severity: 'low',
+  description: 'Aramex tracking number',
+  validator: (value: string, context: string) => {
+    const len = value.length;
+    if (len !== 11 && len !== 12) return false;
+
+    return /aramex|tracking|shipment|package|delivery|express/i.test(context);
+  }
+};
+
+/**
  * Generic Tracking Number
  * Fallback for other carriers
  */
@@ -225,6 +417,16 @@ export const logisticsPatterns: PIIPattern[] = [
   USPS_TRACKING,
   DHL_TRACKING,
   AMAZON_TRACKING,
+  TNT_TRACKING,
+  CHINA_POST_TRACKING,
+  JAPAN_POST_TRACKING,
+  ROYAL_MAIL_TRACKING,
+  CANADA_POST_TRACKING,
+  AUSTRALIA_POST_TRACKING,
+  PUROLATOR_TRACKING,
+  ONTRAC_TRACKING,
+  GLS_TRACKING,
+  ARAMEX_TRACKING,
   GENERIC_TRACKING_NUMBER,
   BILL_OF_LADING,
   SHIPPING_CONTAINER_NUMBER,
