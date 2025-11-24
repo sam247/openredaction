@@ -35,6 +35,7 @@ import { vehiclePatterns } from './industries/vehicles';
 import { logisticsPatterns } from './industries/logistics';
 import { aviationPatterns } from './industries/aviation';
 import { maritimePatterns } from './industries/maritime';
+import { environmentalPatterns } from './industries/environmental';
 
 // International patterns
 import { internationalPatterns } from './international';
@@ -69,6 +70,7 @@ export const allPatterns: PIIPattern[] = [
   ...logisticsPatterns,
   ...aviationPatterns,
   ...maritimePatterns,
+  ...environmentalPatterns,
   ...telecomsPatterns,
   ...manufacturingPatterns,
   ...transportationPatterns,
@@ -190,6 +192,12 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
     case 'marine':
     case 'ship':
       return maritimePatterns;
+    case 'environmental':
+    case 'regulatory':
+    case 'epa':
+    case 'compliance':
+    case 'permits':
+      return environmentalPatterns;
     default:
       return [];
   }
@@ -219,6 +227,7 @@ export {
   logisticsPatterns,
   aviationPatterns,
   maritimePatterns,
+  environmentalPatterns,
   telecomsPatterns,
   manufacturingPatterns,
   transportationPatterns,

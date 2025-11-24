@@ -9,6 +9,8 @@ import { africaPatterns } from './international/africa';
 import { southeastAsiaPatterns } from './international/southeast-asia';
 import { latinAmericaPatterns } from './international/latin-america';
 import { easternEuropePatterns } from './international/eastern-europe';
+import { oceaniaPatterns } from './international/oceania';
+import { centralAsiaPatterns } from './international/central-asia';
 
 // ==================== EUROPE ====================
 
@@ -634,5 +636,11 @@ export const internationalPatterns: PIIPattern[] = [
   ...latinAmericaPatterns,
 
   // Eastern Europe
-  ...easternEuropePatterns
+  ...easternEuropePatterns,
+
+  // Oceania & Pacific
+  ...oceaniaPatterns,
+
+  // Central Asia
+  ...centralAsiaPatterns
 ];

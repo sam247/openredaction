@@ -1,6 +1,6 @@
 # OpenRedaction
 
-Production-ready PII detection and redaction library with 477+ built-in patterns, multiple redaction modes, compliance presets, and zero dependencies.
+Production-ready PII detection and redaction library with 502+ built-in patterns, multiple redaction modes, compliance presets, and zero dependencies.
 
 ## Installation
 
@@ -27,7 +27,7 @@ Full documentation available at [GitHub](https://github.com/sam247/openredaction
 ## Features
 
 - 🚀 **Fast & Accurate** - 10-20ms for 2-3KB text
-- 🎯 **477+ PII Patterns** - Comprehensive coverage across multiple categories:
+- 🎯 **502+ PII Patterns** - Comprehensive coverage across multiple categories:
   - Personal Data (Email, Phone, SSN, Passports, Driver's Licenses)
   - Financial (Credit Cards, IBANs, Cryptocurrencies)
   - Government IDs (National IDs for 40+ countries globally)
@@ -37,7 +37,7 @@ Full documentation available at [GitHub](https://github.com/sam247/openredaction
   - Vehicles & Transportation (VIN, License Plates, Tracking Numbers)
   - Aviation (Flight Numbers, IATA Codes, Aircraft Registration)
   - Maritime (IMO Numbers, MMSI, Ship Registration)
-  - Industry-Specific (20+ industries including Retail, Legal, Real Estate, Logistics, Hospitality)
+  - Industry-Specific (20+ industries including Retail, Legal, Real Estate, Logistics, Hospitality, Environmental & Regulatory)
 - 🎨 **Multiple Redaction Modes** - Choose how PII is replaced:
   - Placeholder: `[EMAIL_1234]` (default, fully reversible)
   - Mask Middle: `j***@example.com`, `555-**-4567` (partial visibility)
@@ -47,7 +47,7 @@ Full documentation available at [GitHub](https://github.com/sam247/openredaction
 - ✅ **Built-in Validators** - Luhn, IBAN, NHS, National ID checksums
 - 🔒 **Compliance Presets** - GDPR, HIPAA, CCPA, PCI-DSS
 - 🎭 **Deterministic Placeholders** - Consistent redaction for same values
-- 🌍 **Global Coverage** - 40+ countries across Europe, Middle East, Asia-Pacific, Americas, Africa
+- 🌍 **Global Coverage** - 40+ countries across Europe, Middle East, Asia-Pacific, Americas, Africa, Oceania, Central Asia
 - 🌳 **Zero Dependencies** - No external packages required
 - 📝 **TypeScript Native** - Full type safety and IntelliSense
 - 🧪 **99%+ Test Coverage** - 415+ passing tests
@@ -63,6 +63,8 @@ Email, Phone Numbers (US, UK, International), Names, Social Security Numbers, Pa
 - **Eastern Europe**: Russia, Ukraine
 - **Middle East**: UAE, Saudi Arabia, Israel, Turkey, Qatar, Kuwait, Bahrain, Oman, Jordan, Lebanon
 - **Asia-Pacific**: India, China, Japan, South Korea, Singapore, Australia, Indonesia, Thailand, Malaysia, Philippines, Vietnam, Myanmar
+- **Oceania & Pacific**: New Zealand, Fiji, Papua New Guinea, Samoa, Tonga
+- **Central Asia**: Kazakhstan, Uzbekistan, Kyrgyzstan, Tajikistan, Turkmenistan
 - **Latin America**: Argentina, Chile, Colombia, Peru, Venezuela, Ecuador, Uruguay, Brazil, Mexico
 - **Africa**: South Africa, Nigeria, Kenya, Egypt, Ghana, Morocco
 
@@ -85,7 +87,7 @@ IMO Numbers, MMSI, Ship Registration, Maritime Callsigns, Seafarer IDs, Lloyd's 
 Discord, Steam, Twitter/X, Facebook, Instagram, TikTok, YouTube, Riot Games, Twitch, Esports IDs
 
 ### Industries (20+)
-Retail, Legal, Real Estate, Logistics, Insurance, Healthcare, Emergency Response, Hospitality, Professional Certifications, Gig Economy, Gaming, Finance, Technology, Education, HR, Manufacturing, Transportation, Media, Charitable, Procurement
+Retail, Legal, Real Estate, Logistics, Insurance, Healthcare, Emergency Response, Hospitality, Professional Certifications, Gig Economy, Gaming, Finance, Technology, Education, HR, Manufacturing, Transportation, Media, Charitable, Procurement, Environmental & Regulatory
 
 ## License
 
