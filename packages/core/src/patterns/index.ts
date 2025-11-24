@@ -33,6 +33,8 @@ import { professionalCertificationPatterns } from './industries/professional-cer
 import { gamingPatterns } from './industries/gaming';
 import { vehiclePatterns } from './industries/vehicles';
 import { logisticsPatterns } from './industries/logistics';
+import { aviationPatterns } from './industries/aviation';
+import { maritimePatterns } from './industries/maritime';
 
 // International patterns
 import { internationalPatterns } from './international';
@@ -65,6 +67,8 @@ export const allPatterns: PIIPattern[] = [
   ...gamingPatterns,
   ...vehiclePatterns,
   ...logisticsPatterns,
+  ...aviationPatterns,
+  ...maritimePatterns,
   ...telecomsPatterns,
   ...manufacturingPatterns,
   ...transportationPatterns,
@@ -176,6 +180,16 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
     case 'tracking':
     case 'freight':
       return logisticsPatterns;
+    case 'aviation':
+    case 'flight':
+    case 'airline':
+    case 'aircraft':
+      return aviationPatterns;
+    case 'maritime':
+    case 'vessel':
+    case 'marine':
+    case 'ship':
+      return maritimePatterns;
     default:
       return [];
   }
@@ -203,6 +217,8 @@ export {
   gamingPatterns,
   vehiclePatterns,
   logisticsPatterns,
+  aviationPatterns,
+  maritimePatterns,
   telecomsPatterns,
   manufacturingPatterns,
   transportationPatterns,
