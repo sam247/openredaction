@@ -6,8 +6,10 @@ import {
   PIIPattern,
   PIIDetection,
   DetectionResult,
-  OpenRedactionOptions
+  OpenRedactionOptions,
+  IAuditLogger
 } from './types';
+import { InMemoryAuditLogger } from './audit';
 import { allPatterns } from './patterns';
 import { generateDeterministicId } from './utils/hash';
 import { getPreset } from './utils/presets';
@@ -64,6 +66,10 @@ export class OpenRedaction {
   private learningStore?: LocalLearningStore;
   private priorityOptimizer?: PriorityOptimizer;
   private enableLearning: boolean;
+  private auditLogger?: IAuditLogger;
+  private auditUser?: string;
+  private auditSessionId?: string;
+  private auditMetadata?: Record<string, unknown>;
 
   constructor(options: OpenRedactionOptions & {
     configPath?: string;
@@ -156,6 +162,14 @@ export class OpenRedaction {
 
     // Sort by priority (highest first)
     this.patterns.sort((a, b) => b.priority - a.priority);
+
+    // Initialize audit logging if enabled
+    if (options.enableAuditLog) {
+      this.auditLogger = options.auditLogger || new InMemoryAuditLogger();
+      this.auditUser = options.auditUser;
+      this.auditSessionId = options.auditSessionId;
+      this.auditMetadata = options.auditMetadata;
+    }
   }
 
   /**
@@ -431,6 +445,30 @@ export class OpenRedaction {
       }
     }
 
+    // Log audit entry if enabled
+    if (this.auditLogger) {
+      try {
+        const piiTypes = [...new Set(detections.map(d => d.type))];
+        this.auditLogger.log({
+          operation: 'redact',
+          piiCount: detections.length,
+          piiTypes,
+          textLength: text.length,
+          processingTimeMs: processingTime,
+          redactionMode: this.options.redactionMode,
+          success: true,
+          user: this.auditUser,
+          sessionId: this.auditSessionId,
+          metadata: this.auditMetadata
+        });
+      } catch (error) {
+        // Don't fail the redaction if audit logging fails
+        if (this.options.debug) {
+          console.error('[OpenRedaction] Audit logging failed:', error);
+        }
+      }
+    }
+
     // Store in cache if enabled
     if (this.resultCache) {
       const cacheKey = hashString(text);
@@ -447,10 +485,36 @@ export class OpenRedaction {
    * Restore redacted text using redaction map
    */
   restore(redactedText: string, redactionMap: Record<string, string>): string {
+    const startTime = performance.now();
     let restored = redactedText;
 
     for (const [placeholder, value] of Object.entries(redactionMap)) {
       restored = restored.replace(new RegExp(this.escapeRegex(placeholder), 'g'), value);
+    }
+
+    const endTime = performance.now();
+    const processingTime = Math.round((endTime - startTime) * 100) / 100;
+
+    // Log audit entry if enabled
+    if (this.auditLogger) {
+      try {
+        this.auditLogger.log({
+          operation: 'restore',
+          piiCount: Object.keys(redactionMap).length,
+          piiTypes: [], // Types not available in restore context
+          textLength: redactedText.length,
+          processingTimeMs: processingTime,
+          success: true,
+          user: this.auditUser,
+          sessionId: this.auditSessionId,
+          metadata: this.auditMetadata
+        });
+      } catch (error) {
+        // Don't fail the restore if audit logging fails
+        if (this.options.debug) {
+          console.error('[OpenRedaction] Audit logging failed:', error);
+        }
+      }
     }
 
     return restored;
@@ -737,6 +801,13 @@ export class OpenRedaction {
       maxSize: this.options.cacheSize,
       enabled: this.options.enableCache
     };
+  }
+
+  /**
+   * Get the audit logger instance (if audit logging is enabled)
+   */
+  getAuditLogger(): IAuditLogger | undefined {
+    return this.auditLogger;
   }
 
   /**

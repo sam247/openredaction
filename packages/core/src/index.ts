@@ -11,8 +11,14 @@ export type {
   DetectionResult,
   OpenRedactionOptions,
   RedactionMode,
-  Validator
+  Validator,
+  IAuditLogger,
+  AuditLogEntry,
+  AuditStats
 } from './types';
+
+// Audit logging
+export { InMemoryAuditLogger, ConsoleAuditLogger } from './audit';
 
 export {
   allPatterns,
