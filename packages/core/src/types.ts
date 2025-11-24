@@ -99,6 +99,8 @@ export interface OpenRedactionOptions {
   enableCache?: boolean;
   /** Maximum cache size (default: 100) */
   cacheSize?: number;
+  /** Enable debug logging (default: false) */
+  debug?: boolean;
 }
 
 /**

@@ -155,3 +155,19 @@ export {
   useBatchDetector,
   useAutoRedact
 } from './integrations/react';
+
+// Error handling
+export {
+  OpenRedactionError,
+  createInvalidPatternError,
+  createValidationError,
+  createHighMemoryError,
+  createConfigLoadError,
+  createLearningDisabledError,
+  createOptimizationDisabledError,
+  createMultiPassDisabledError,
+  createCacheDisabledError
+} from './errors/OpenRedactionError';
+export type {
+  ErrorSuggestion
+} from './errors/OpenRedactionError';

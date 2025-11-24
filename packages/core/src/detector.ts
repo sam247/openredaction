@@ -20,6 +20,11 @@ import { LRUCache, hashString } from './utils/cache.js';
 import { ExplainAPI, createExplainAPI } from './explain/ExplainAPI.js';
 import { createReportGenerator, type ReportOptions } from './reports/ReportGenerator.js';
 import { PriorityOptimizer, createPriorityOptimizer, type OptimizerOptions } from './optimizer/PriorityOptimizer.js';
+import {
+  createLearningDisabledError,
+  createOptimizationDisabledError,
+  createHighMemoryError
+} from './errors/OpenRedactionError.js';
 
 /**
  * Main OpenRedaction class for detecting and redacting PII
@@ -46,6 +51,7 @@ export class OpenRedaction {
     cacheSize: number;
     enablePriorityOptimization: boolean;
     optimizerOptions: OptimizerOptions;
+    debug: boolean;
   };
   private multiPassConfig?: DetectionPass[];
   private resultCache?: LRUCache<string, DetectionResult>;
@@ -84,6 +90,7 @@ export class OpenRedaction {
       enableCache: false, // Disabled by default (opt-in for high-volume usage)
       cacheSize: 100, // Default: cache up to 100 results
       enablePriorityOptimization: false, // Disabled by default (opt-in)
+      debug: false, // Disabled by default (opt-in for debugging)
       ...presetOptions,
       ...options
     };
@@ -311,11 +318,30 @@ export class OpenRedaction {
   detect(text: string): DetectionResult {
     const startTime = performance.now();
 
+    // Warn about large documents (> 5MB)
+    const textSize = new Blob([text]).size;
+    if (textSize > 5 * 1024 * 1024) {
+      const error = createHighMemoryError(textSize);
+      if (this.options.debug) {
+        console.warn(error.getFormattedMessage());
+      }
+    }
+
+    if (this.options.debug) {
+      console.log(`[OpenRedaction] Detecting PII in ${textSize} byte text`);
+      console.log(`[OpenRedaction] Active patterns: ${this.patterns.length}`);
+      console.log(`[OpenRedaction] Multi-pass: ${this.options.enableMultiPass ? 'enabled' : 'disabled'}`);
+      console.log(`[OpenRedaction] Cache: ${this.options.enableCache ? 'enabled' : 'disabled'}`);
+    }
+
     // Check cache if enabled
     if (this.resultCache) {
       const cacheKey = hashString(text);
       const cached = this.resultCache.get(cacheKey);
       if (cached) {
+        if (this.options.debug) {
+          console.log('[OpenRedaction] Cache hit, returning cached result');
+        }
         return cached;
       }
     }
@@ -376,6 +402,7 @@ export class OpenRedaction {
     }
 
     const endTime = performance.now();
+    const processingTime = Math.round((endTime - startTime) * 100) / 100;
 
     const result: DetectionResult = {
       original: text,
@@ -383,15 +410,29 @@ export class OpenRedaction {
       detections: detections.reverse(), // Return in original order
       redactionMap,
       stats: {
-        processingTime: Math.round((endTime - startTime) * 100) / 100,
+        processingTime,
         piiCount: detections.length
       }
     };
+
+    if (this.options.debug) {
+      console.log(`[OpenRedaction] Detection complete: ${detections.length} PII found in ${processingTime}ms`);
+      if (detections.length > 0) {
+        const typeCounts: Record<string, number> = {};
+        for (const detection of detections) {
+          typeCounts[detection.type] = (typeCounts[detection.type] || 0) + 1;
+        }
+        console.log(`[OpenRedaction] Detection breakdown:`, typeCounts);
+      }
+    }
 
     // Store in cache if enabled
     if (this.resultCache) {
       const cacheKey = hashString(text);
       this.resultCache.set(cacheKey, result);
+      if (this.options.debug) {
+        console.log('[OpenRedaction] Result cached');
+      }
     }
 
     return result;
@@ -492,8 +533,7 @@ export class OpenRedaction {
    */
   recordFalsePositive(detection: PIIDetection, context?: string): void {
     if (!this.learningStore) {
-      console.warn('Learning is disabled. Enable it by setting enableLearning: true');
-      return;
+      throw createLearningDisabledError();
     }
 
     const ctx = context || '';
@@ -510,8 +550,7 @@ export class OpenRedaction {
    */
   recordFalseNegative(text: string, expectedType: string, context?: string): void {
     if (!this.learningStore) {
-      console.warn('Learning is disabled. Enable it by setting enableLearning: true');
-      return;
+      throw createLearningDisabledError();
     }
 
     const ctx = context || '';
@@ -581,8 +620,7 @@ export class OpenRedaction {
    */
   importLearnings(data: any, merge: boolean = true): void {
     if (!this.learningStore) {
-      console.warn('Learning is disabled. Enable it by setting enableLearning: true');
-      return;
+      throw createLearningDisabledError();
     }
 
     this.learningStore.import(data, merge);
@@ -636,8 +674,7 @@ export class OpenRedaction {
    */
   optimizePriorities(): void {
     if (!this.priorityOptimizer) {
-      console.warn('Priority optimization is disabled. Enable it by setting enablePriorityOptimization: true');
-      return;
+      throw createOptimizationDisabledError();
     }
 
     // Re-optimize patterns
