@@ -28,6 +28,9 @@ import { procurementPatterns } from './industries/procurement';
 import { emergencyServicesPatterns } from './industries/emergency-services';
 import { realEstatePatterns } from './industries/real-estate';
 import { gigEconomyPatterns } from './industries/gig-economy';
+import { hospitalityPatterns } from './industries/hospitality';
+import { professionalCertificationPatterns } from './industries/professional-certifications';
+import { gamingPatterns } from './industries/gaming';
 
 // International patterns
 import { internationalPatterns } from './international';
@@ -55,6 +58,9 @@ export const allPatterns: PIIPattern[] = [
   ...retailPatterns,
   ...realEstatePatterns,
   ...gigEconomyPatterns,
+  ...hospitalityPatterns,
+  ...professionalCertificationPatterns,
+  ...gamingPatterns,
   ...telecomsPatterns,
   ...manufacturingPatterns,
   ...transportationPatterns,
@@ -142,6 +148,20 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
     case 'delivery':
     case 'freelance':
       return gigEconomyPatterns;
+    case 'hospitality':
+    case 'tourism':
+    case 'travel':
+    case 'hotel':
+    case 'airline':
+      return hospitalityPatterns;
+    case 'certifications':
+    case 'professional-certifications':
+    case 'licenses':
+      return professionalCertificationPatterns;
+    case 'esports':
+    case 'videogames':
+    case 'gamers':
+      return gamingPatterns;
     default:
       return [];
   }
@@ -164,6 +184,9 @@ export {
   retailPatterns,
   realEstatePatterns,
   gigEconomyPatterns,
+  hospitalityPatterns,
+  professionalCertificationPatterns,
+  gamingPatterns,
   telecomsPatterns,
   manufacturingPatterns,
   transportationPatterns,

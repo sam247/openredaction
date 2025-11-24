@@ -6,6 +6,7 @@
 import { PIIPattern } from '../types';
 import { middleEastPatterns } from './international/middle-east';
 import { africaPatterns } from './international/africa';
+import { southeastAsiaPatterns } from './international/southeast-asia';
 
 // ==================== EUROPE ====================
 
@@ -622,5 +623,8 @@ export const internationalPatterns: PIIPattern[] = [
   ...middleEastPatterns,
 
   // Africa
-  ...africaPatterns
+  ...africaPatterns,
+
+  // Southeast Asia
+  ...southeastAsiaPatterns
 ];
