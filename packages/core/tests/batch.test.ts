@@ -3,13 +3,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 import { BatchProcessor, createBatchProcessor } from '../src/batch/BatchProcessor';
 
 describe('Batch Processing', () => {
   describe('BatchProcessor creation', () => {
     it('should create batch processor', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const batch = new BatchProcessor(detector);
 
       expect(batch).toBeDefined();
@@ -17,7 +17,7 @@ describe('Batch Processing', () => {
     });
 
     it('should create using helper function', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const batch = createBatchProcessor(detector);
 
       expect(batch).toBeDefined();
@@ -27,7 +27,7 @@ describe('Batch Processing', () => {
 
   describe('Sequential processing', () => {
     it('should process multiple documents sequentially', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = [
@@ -46,7 +46,7 @@ describe('Batch Processing', () => {
     });
 
     it('should call progress callback', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = ['Email: test1@business.co.uk', 'Email: test2@business.co.uk'];
@@ -64,7 +64,7 @@ describe('Batch Processing', () => {
     });
 
     it('should handle empty array', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const batch = new BatchProcessor(detector);
 
       const result = batch.processSequential([]);
@@ -75,7 +75,7 @@ describe('Batch Processing', () => {
     });
 
     it('should handle documents with no PII', () => {
-      const detector = new OpenRedact();
+      const detector = new OpenRedaction();
       const batch = new BatchProcessor(detector);
 
       const documents = [
@@ -93,7 +93,7 @@ describe('Batch Processing', () => {
 
   describe('Parallel processing', () => {
     it('should process multiple documents in parallel', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = [
@@ -111,7 +111,7 @@ describe('Batch Processing', () => {
     });
 
     it('should respect max concurrency', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = Array(10).fill('Email: test@business.co.uk');
@@ -125,7 +125,7 @@ describe('Batch Processing', () => {
     });
 
     it('should call progress callback in parallel mode', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = ['Email: test1@business.co.uk', 'Email: test2@business.co.uk'];
@@ -144,7 +144,7 @@ describe('Batch Processing', () => {
 
   describe('Automatic processing', () => {
     it('should use sequential by default', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = ['Email: user@business.co.uk', 'Phone: 07700900123'];
@@ -155,7 +155,7 @@ describe('Batch Processing', () => {
     });
 
     it('should use parallel when requested', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = ['Email: user@business.co.uk', 'Phone: 07700900123'];
@@ -168,7 +168,7 @@ describe('Batch Processing', () => {
 
   describe('Stream processing', () => {
     it('should process documents as stream', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = [
@@ -187,7 +187,7 @@ describe('Batch Processing', () => {
     });
 
     it('should respect batch size in stream', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = Array(25).fill('Email: test@business.co.uk');
@@ -204,7 +204,7 @@ describe('Batch Processing', () => {
 
   describe('Aggregated statistics', () => {
     it('should provide aggregated stats', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = [
@@ -223,7 +223,7 @@ describe('Batch Processing', () => {
     });
 
     it('should calculate average confidence', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: true });
+      const detector = new OpenRedaction({ enableContextAnalysis: true });
       const batch = new BatchProcessor(detector);
 
       const documents = [
@@ -239,7 +239,7 @@ describe('Batch Processing', () => {
     });
 
     it('should group by severity', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = [
@@ -256,7 +256,7 @@ describe('Batch Processing', () => {
 
   describe('Performance', () => {
     it('should handle large batches efficiently', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = Array(1000).fill('Email: test@business.co.uk');
@@ -272,7 +272,7 @@ describe('Batch Processing', () => {
 
   describe('Integration with caching', () => {
     it('should benefit from caching for duplicate documents', () => {
-      const detector = new OpenRedact({
+      const detector = new OpenRedaction({
         enableCache: true,
         enableContextAnalysis: false
       });
@@ -291,7 +291,7 @@ describe('Batch Processing', () => {
 
   describe('Real-world scenarios', () => {
     it('should handle mixed document types', async () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = [
@@ -309,7 +309,7 @@ describe('Batch Processing', () => {
     });
 
     it('should provide useful statistics for compliance reporting', () => {
-      const detector = new OpenRedact({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = [

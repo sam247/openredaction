@@ -4,7 +4,7 @@
  */
 
 import { describe, bench } from 'vitest';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 
 const commonText = `
 Application Security Audit Report
@@ -21,18 +21,18 @@ Contact Information:
 describe('Cache Performance', () => {
   describe('Single repeated detection', () => {
     bench('without cache', () => {
-      const redactor = new OpenRedact({ enableCache: false });
+      const redactor = new OpenRedaction({ enableCache: false });
       redactor.detect(commonText);
     });
 
     bench('with cache (first call - cache miss)', () => {
-      const redactor = new OpenRedact({ enableCache: true });
+      const redactor = new OpenRedaction({ enableCache: true });
       redactor.clearCache();
       redactor.detect(commonText);
     });
 
     bench('with cache (subsequent calls - cache hit)', () => {
-      const redactor = new OpenRedact({ enableCache: true });
+      const redactor = new OpenRedaction({ enableCache: true });
       redactor.detect(commonText); // Prime cache
       redactor.detect(commonText); // Benchmark this
     });
@@ -48,14 +48,14 @@ describe('Cache Performance', () => {
     ];
 
     bench('without cache', () => {
-      const redactor = new OpenRedact({ enableCache: false });
+      const redactor = new OpenRedaction({ enableCache: false });
       for (const text of texts) {
         redactor.detect(text);
       }
     });
 
     bench('with cache', () => {
-      const redactor = new OpenRedact({ enableCache: true });
+      const redactor = new OpenRedaction({ enableCache: true });
       for (const text of texts) {
         redactor.detect(text);
       }
@@ -66,14 +66,14 @@ describe('Cache Performance', () => {
     const text = 'Contact support@company.com or call 07700900123';
 
     bench('100 calls without cache', () => {
-      const redactor = new OpenRedact({ enableCache: false });
+      const redactor = new OpenRedaction({ enableCache: false });
       for (let i = 0; i < 100; i++) {
         redactor.detect(text);
       }
     });
 
     bench('100 calls with cache', () => {
-      const redactor = new OpenRedact({ enableCache: true });
+      const redactor = new OpenRedaction({ enableCache: true });
       for (let i = 0; i < 100; i++) {
         redactor.detect(text);
       }
@@ -82,7 +82,7 @@ describe('Cache Performance', () => {
 
   describe('Cache with all features enabled', () => {
     bench('without cache - all features', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableCache: false,
         enableContextAnalysis: true,
         enableFalsePositiveFilter: true,
@@ -92,7 +92,7 @@ describe('Cache Performance', () => {
     });
 
     bench('with cache - all features (cache hit)', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableCache: true,
         enableContextAnalysis: true,
         enableFalsePositiveFilter: true,

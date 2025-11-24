@@ -1,12 +1,12 @@
 /**
  * Express API Example
- * Demonstrates OpenRedact middleware and route handlers
+ * Demonstrates OpenRedaction middleware and route handlers
  */
 
 const express = require('express');
 const {
-  OpenRedact,
-  openRedactMiddleware,
+  OpenRedaction,
+  openredactionMiddleware,
   detectPII,
   generateReport
 } = require('openredact');
@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json());
 
 // Example 1: Global middleware with auto-redaction
-app.use('/api/secure', openRedactMiddleware({
+app.use('/api/secure', openredactionMiddleware({
   autoRedact: true,
   enableContextAnalysis: true,
   addHeaders: true,
@@ -25,7 +25,7 @@ app.use('/api/secure', openRedactMiddleware({
 }));
 
 // Example 2: Middleware that fails on PII
-app.use('/api/strict', openRedactMiddleware({
+app.use('/api/strict', openredactionMiddleware({
   failOnPII: true,
   fields: ['message', 'content'], // Only check specific fields
   skipRoutes: [/^\/api\/strict\/public/] // Skip certain routes
@@ -79,7 +79,7 @@ app.post('/api/analyze', async (req, res) => {
     return res.status(400).json({ error: 'Text is required' });
   }
 
-  const detector = new OpenRedact({
+  const detector = new OpenRedaction({
     enableContextAnalysis: true,
     ...options
   });
@@ -115,7 +115,7 @@ app.post('/api/batch', async (req, res) => {
   }
 
   const { createBatchProcessor } = require('openredact');
-  const detector = new OpenRedact({ enableContextAnalysis: true });
+  const detector = new OpenRedaction({ enableContextAnalysis: true });
   const batch = createBatchProcessor(detector);
 
   const result = parallel
@@ -137,7 +137,7 @@ app.post('/api/batch', async (req, res) => {
 
 // Example 10: Health check with PII detection status
 app.get('/api/health', (req, res) => {
-  const detector = new OpenRedact();
+  const detector = new OpenRedaction();
   const testResult = detector.detect('test@example.com');
 
   res.json({
@@ -160,7 +160,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 OpenRedact Express API Example`);
+  console.log(`🚀 OpenRedaction Express API Example`);
   console.log(`📍 Server running on http://localhost:${PORT}`);
   console.log(`\nAvailable endpoints:`);
   console.log(`  POST /api/secure/submit      - Auto-redact PII`);

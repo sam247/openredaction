@@ -1,12 +1,12 @@
 /**
- * Main OpenRedact detector implementation
+ * Main OpenRedaction detector implementation
  */
 
 import {
   PIIPattern,
   PIIDetection,
   DetectionResult,
-  OpenRedactOptions
+  OpenRedactionOptions
 } from './types';
 import { allPatterns } from './patterns';
 import { generateDeterministicId } from './utils/hash';
@@ -19,11 +19,17 @@ import { createSimpleMultiPass, groupPatternsByPass, mergePassDetections, type D
 import { LRUCache, hashString } from './utils/cache.js';
 import { ExplainAPI, createExplainAPI } from './explain/ExplainAPI.js';
 import { createReportGenerator, type ReportOptions } from './reports/ReportGenerator.js';
+import { PriorityOptimizer, createPriorityOptimizer, type OptimizerOptions } from './optimizer/PriorityOptimizer.js';
+import {
+  createLearningDisabledError,
+  createOptimizationDisabledError,
+  createHighMemoryError
+} from './errors/OpenRedactionError.js';
 
 /**
- * Main OpenRedact class for detecting and redacting PII
+ * Main OpenRedaction class for detecting and redacting PII
  */
-export class OpenRedact {
+export class OpenRedaction {
   private patterns: PIIPattern[];
   private options: {
     includeNames: boolean;
@@ -43,24 +49,30 @@ export class OpenRedact {
     multiPassCount: number;
     enableCache: boolean;
     cacheSize: number;
+    enablePriorityOptimization: boolean;
+    optimizerOptions: OptimizerOptions;
+    debug: boolean;
   };
   private multiPassConfig?: DetectionPass[];
   private resultCache?: LRUCache<string, DetectionResult>;
   private valueToPlaceholder: Map<string, string> = new Map();
   private placeholderCounter: Map<string, number> = new Map();
   private learningStore?: LocalLearningStore;
+  private priorityOptimizer?: PriorityOptimizer;
   private enableLearning: boolean;
 
-  constructor(options: OpenRedactOptions & {
+  constructor(options: OpenRedactionOptions & {
     configPath?: string;
     enableLearning?: boolean;
     learningStorePath?: string;
+    enablePriorityOptimization?: boolean;
+    optimizerOptions?: Partial<OptimizerOptions>;
   } = {}) {
     // Apply preset if specified
     const presetOptions = options.preset ? getPreset(options.preset) : {};
 
     // Merge options with defaults
-    this.options = {
+    const mergedOptions = {
       includeNames: true,
       includeAddresses: true,
       includePhones: true,
@@ -77,8 +89,19 @@ export class OpenRedact {
       multiPassCount: 3, // Default: 3 passes when enabled
       enableCache: false, // Disabled by default (opt-in for high-volume usage)
       cacheSize: 100, // Default: cache up to 100 results
+      enablePriorityOptimization: false, // Disabled by default (opt-in)
+      debug: false, // Disabled by default (opt-in for debugging)
       ...presetOptions,
       ...options
+    };
+
+    this.options = {
+      ...mergedOptions,
+      optimizerOptions: {
+        learningWeight: options.optimizerOptions?.learningWeight ?? 0.3,
+        minSampleSize: options.optimizerOptions?.minSampleSize ?? 10,
+        maxPriorityAdjustment: options.optimizerOptions?.maxPriorityAdjustment ?? 15
+      }
     };
 
     // Initialize result cache if enabled
@@ -99,7 +122,7 @@ export class OpenRedact {
 
     // Initialize learning store if enabled
     if (this.enableLearning) {
-      const learningPath = options.learningStorePath || '.openredact/learnings.json';
+      const learningPath = options.learningStorePath || '.openredaction/learnings.json';
       this.learningStore = new LocalLearningStore(learningPath, {
         autoSave: true,
         confidenceThreshold: 0.85
@@ -108,29 +131,42 @@ export class OpenRedact {
       // Merge learned whitelist with user whitelist
       const learnedWhitelist = this.learningStore.getWhitelist();
       this.options.whitelist = [...this.options.whitelist, ...learnedWhitelist];
+
+      // Initialize priority optimizer if enabled
+      if (this.options.enablePriorityOptimization) {
+        this.priorityOptimizer = createPriorityOptimizer(
+          this.learningStore,
+          this.options.optimizerOptions
+        );
+      }
     }
 
     // Build pattern list
     this.patterns = this.buildPatternList();
+
+    // Apply priority optimization if enabled
+    if (this.priorityOptimizer) {
+      this.patterns = this.priorityOptimizer.optimizePatterns(this.patterns);
+    }
 
     // Sort by priority (highest first)
     this.patterns.sort((a, b) => b.priority - a.priority);
   }
 
   /**
-   * Create OpenRedact instance from config file
+   * Create OpenRedaction instance from config file
    */
-  static async fromConfig(configPath?: string): Promise<OpenRedact> {
+  static async fromConfig(configPath?: string): Promise<OpenRedaction> {
     const loader = new ConfigLoader(configPath);
     const config = await loader.load();
 
     if (!config) {
-      return new OpenRedact();
+      return new OpenRedaction();
     }
 
     const resolved = loader.resolveConfig(config);
 
-    return new OpenRedact({
+    return new OpenRedaction({
       ...resolved,
       enableLearning: true,
       learningStorePath: config.learnedPatterns
@@ -282,11 +318,30 @@ export class OpenRedact {
   detect(text: string): DetectionResult {
     const startTime = performance.now();
 
+    // Warn about large documents (> 5MB)
+    const textSize = new Blob([text]).size;
+    if (textSize > 5 * 1024 * 1024) {
+      const error = createHighMemoryError(textSize);
+      if (this.options.debug) {
+        console.warn(error.getFormattedMessage());
+      }
+    }
+
+    if (this.options.debug) {
+      console.log(`[OpenRedaction] Detecting PII in ${textSize} byte text`);
+      console.log(`[OpenRedaction] Active patterns: ${this.patterns.length}`);
+      console.log(`[OpenRedaction] Multi-pass: ${this.options.enableMultiPass ? 'enabled' : 'disabled'}`);
+      console.log(`[OpenRedaction] Cache: ${this.options.enableCache ? 'enabled' : 'disabled'}`);
+    }
+
     // Check cache if enabled
     if (this.resultCache) {
       const cacheKey = hashString(text);
       const cached = this.resultCache.get(cacheKey);
       if (cached) {
+        if (this.options.debug) {
+          console.log('[OpenRedaction] Cache hit, returning cached result');
+        }
         return cached;
       }
     }
@@ -347,6 +402,7 @@ export class OpenRedact {
     }
 
     const endTime = performance.now();
+    const processingTime = Math.round((endTime - startTime) * 100) / 100;
 
     const result: DetectionResult = {
       original: text,
@@ -354,15 +410,29 @@ export class OpenRedact {
       detections: detections.reverse(), // Return in original order
       redactionMap,
       stats: {
-        processingTime: Math.round((endTime - startTime) * 100) / 100,
+        processingTime,
         piiCount: detections.length
       }
     };
+
+    if (this.options.debug) {
+      console.log(`[OpenRedaction] Detection complete: ${detections.length} PII found in ${processingTime}ms`);
+      if (detections.length > 0) {
+        const typeCounts: Record<string, number> = {};
+        for (const detection of detections) {
+          typeCounts[detection.type] = (typeCounts[detection.type] || 0) + 1;
+        }
+        console.log(`[OpenRedaction] Detection breakdown:`, typeCounts);
+      }
+    }
 
     // Store in cache if enabled
     if (this.resultCache) {
       const cacheKey = hashString(text);
       this.resultCache.set(cacheKey, result);
+      if (this.options.debug) {
+        console.log('[OpenRedaction] Result cached');
+      }
     }
 
     return result;
@@ -463,8 +533,7 @@ export class OpenRedact {
    */
   recordFalsePositive(detection: PIIDetection, context?: string): void {
     if (!this.learningStore) {
-      console.warn('Learning is disabled. Enable it by setting enableLearning: true');
-      return;
+      throw createLearningDisabledError();
     }
 
     const ctx = context || '';
@@ -481,8 +550,7 @@ export class OpenRedact {
    */
   recordFalseNegative(text: string, expectedType: string, context?: string): void {
     if (!this.learningStore) {
-      console.warn('Learning is disabled. Enable it by setting enableLearning: true');
-      return;
+      throw createLearningDisabledError();
     }
 
     const ctx = context || '';
@@ -552,8 +620,7 @@ export class OpenRedact {
    */
   importLearnings(data: any, merge: boolean = true): void {
     if (!this.learningStore) {
-      console.warn('Learning is disabled. Enable it by setting enableLearning: true');
-      return;
+      throw createLearningDisabledError();
     }
 
     this.learningStore.import(data, merge);
@@ -592,6 +659,45 @@ export class OpenRedact {
    */
   getLearningStore(): LocalLearningStore | undefined {
     return this.learningStore;
+  }
+
+  /**
+   * Get the priority optimizer instance
+   */
+  getPriorityOptimizer(): PriorityOptimizer | undefined {
+    return this.priorityOptimizer;
+  }
+
+  /**
+   * Optimize pattern priorities based on learning data
+   * Call this to re-optimize priorities after accumulating new learning data
+   */
+  optimizePriorities(): void {
+    if (!this.priorityOptimizer) {
+      throw createOptimizationDisabledError();
+    }
+
+    // Re-optimize patterns
+    this.patterns = this.priorityOptimizer.optimizePatterns(this.patterns);
+
+    // Re-sort by new priorities
+    this.patterns.sort((a, b) => b.priority - a.priority);
+
+    // Clear cache if enabled (priorities changed, cached results may be invalid)
+    if (this.resultCache) {
+      this.resultCache.clear();
+    }
+  }
+
+  /**
+   * Get pattern statistics with learning data
+   */
+  getPatternStats() {
+    if (!this.priorityOptimizer) {
+      return null;
+    }
+
+    return this.priorityOptimizer.getPatternStats(this.patterns);
   }
 
   /**

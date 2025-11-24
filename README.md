@@ -1,4 +1,4 @@
-# OpenRedact
+# OpenRedaction
 
 [![Version](https://img.shields.io/badge/version-0.1.0--pre--release-orange.svg)](https://github.com/sam247/openredact)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -27,15 +27,15 @@ Local-first • Zero dependencies • <2ms latency • 100% offline • 151+ pat
 ## Installation
 
 ```bash
-npm install openredact
+npm install openredaction
 ```
 
 ## Quick Start
 
 ```typescript
-import { OpenRedact } from 'openredact';
+import { OpenRedaction } from 'openredaction';
 
-const shield = new OpenRedact();
+const shield = new OpenRedaction();
 const result = shield.detect("Email john@example.com or call 07700900123");
 
 console.log(result.redacted);
@@ -57,24 +57,24 @@ console.log(restored);
 
 ```bash
 # Detect and redact PII
-openredact detect "Email john@example.com"
+openredaction detect "Email john@example.com"
 
 # Scan and show severity breakdown
-openredact scan "Contact john@example.com or call 555-123-4567"
+openredaction scan "Contact john@example.com or call 555-123-4567"
 
 # Use compliance preset
-openredact detect "SSN: 123-45-6789" --preset hipaa
+openredaction detect "SSN: 123-45-6789" --preset hipaa
 
 # JSON output
-openredact detect "Card: 4532015112830366" --json
+openredaction detect "Card: 4532015112830366" --json
 
 # Filter patterns
-openredact detect "Text here" --patterns EMAIL,PHONE_US
+openredaction detect "Text here" --patterns EMAIL,PHONE_US
 ```
 
 ## Local Learning System
 
-OpenRedact includes a local learning system that improves accuracy over time by learning from your feedback - no backend required!
+OpenRedaction includes a local learning system that improves accuracy over time by learning from your feedback - no backend required!
 
 ### Features
 
@@ -82,16 +82,16 @@ OpenRedact includes a local learning system that improves accuracy over time by 
 - **Auto-Whitelisting** - High-confidence false positives are automatically whitelisted
 - **Pattern Adjustments** - Tracks missed detections for pattern improvements
 - **Import/Export** - Share learned patterns across teams or projects
-- **Config File Support** - Persistent configuration with `.openredact.config.js`
+- **Config File Support** - Persistent configuration with `.openredaction.config.js`
 
 ### Quick Start with Learning
 
 ```typescript
-import { OpenRedact } from 'openredact';
+import { OpenRedaction } from 'openredaction';
 
-const redactor = new OpenRedact({
+const redactor = new OpenRedaction({
   enableLearning: true,  // Default: true
-  learningStorePath: '.openredact/learnings.json'
+  learningStorePath: '.openredaction/learnings.json'
 });
 
 // Use as normal
@@ -125,32 +125,32 @@ redactor.importLearnings(sharedLearnings, true); // merge=true
 
 ```bash
 # Initialize config file
-openredact init
+openredaction init
 
 # Record false positive
-openredact feedback false-positive "API" --type NAME --context "Call the API"
+openredaction feedback false-positive "API" --type NAME --context "Call the API"
 
 # Record false negative
-openredact feedback false-negative "EMP-123456" --type EMPLOYEE_ID
+openredaction feedback false-negative "EMP-123456" --type EMPLOYEE_ID
 
 # View statistics
-openredact stats
+openredaction stats
 
 # Export learned patterns
-openredact export > learned-patterns.json
+openredaction export > learned-patterns.json
 
 # Import learned patterns
-openredact import team-patterns.json
+openredaction import team-patterns.json
 ```
 
 ### Config File
 
-Create `.openredact.config.js` for persistent configuration:
+Create `.openredaction.config.js` for persistent configuration:
 
 ```javascript
 export default {
   // Extend built-in presets
-  extends: ['openredact:recommended'],
+  extends: ['openredaction:recommended'],
 
   // Detection options
   includeNames: true,
@@ -177,7 +177,7 @@ export default {
   ],
 
   // Learning configuration
-  learnedPatterns: '.openredact/learnings.json',
+  learnedPatterns: '.openredaction/learnings.json',
   learningOptions: {
     autoSave: true,
     confidenceThreshold: 0.85
@@ -188,20 +188,20 @@ export default {
 Then load it:
 
 ```typescript
-import { OpenRedact } from 'openredact';
+import { OpenRedaction } from 'openredaction';
 
-// Auto-loads from .openredact.config.js
-const redactor = await OpenRedact.fromConfig();
+// Auto-loads from .openredaction.config.js
+const redactor = await OpenRedaction.fromConfig();
 ```
 
 ### Available Presets
 
-- `openredact:recommended` - Balanced detection with all categories
-- `openredact:strict` - Maximum detection (GDPR mode)
-- `openredact:minimal` - Only emails and phones
-- `openredact:gdpr` - GDPR compliance preset
-- `openredact:hipaa` - HIPAA compliance preset
-- `openredact:ccpa` - CCPA compliance preset
+- `openredaction:recommended` - Balanced detection with all categories
+- `openredaction:strict` - Maximum detection (GDPR mode)
+- `openredaction:minimal` - Only emails and phones
+- `openredaction:gdpr` - GDPR compliance preset
+- `openredaction:hipaa` - HIPAA compliance preset
+- `openredaction:ccpa` - CCPA compliance preset
 
 ### Integration with Disclosurely
 
@@ -209,10 +209,10 @@ Perfect for building a private learning loop:
 
 ```typescript
 // In your Disclosurely backend
-import { OpenRedact, LocalLearningStore } from 'openredact';
+import { OpenRedaction, LocalLearningStore } from 'openredaction';
 
 const learningStore = new LocalLearningStore('./data/pii-learnings.json');
-const redactor = new OpenRedact({
+const redactor = new OpenRedaction({
   enableLearning: true,
   learningStorePath: './data/pii-learnings.json'
 });
@@ -243,7 +243,7 @@ setInterval(async () => {
     includeContexts: false // privacy
   });
 
-  // Create PR to OpenRedact with improvements
+  // Create PR to OpenRedaction with improvements
   await contributeLearnings(learnings);
 }, 7 * 24 * 60 * 60 * 1000); // Weekly
 ```
@@ -295,7 +295,7 @@ setInterval(async () => {
 
 ## Industry-Specific Identifiers
 
-OpenRedact supports 180+ industry-specific PII patterns across multiple sectors:
+OpenRedaction supports 180+ industry-specific PII patterns across multiple sectors:
 
 ### Education & Academia
 | Identifier Type | Example Format | Description |
@@ -392,7 +392,7 @@ OpenRedact supports 180+ industry-specific PII patterns across multiple sectors:
 ## Configuration Options
 
 ```typescript
-const shield = new OpenRedact({
+const shield = new OpenRedaction({
   // Category toggles
   includeNames: true,        // Default: true
   includeEmails: true,       // Default: true
@@ -426,19 +426,19 @@ const shield = new OpenRedact({
 
 ### GDPR (European Union)
 ```typescript
-const shield = new OpenRedact({ preset: 'gdpr' });
+const shield = new OpenRedaction({ preset: 'gdpr' });
 ```
 Detects: Email, names, UK/EU phones, addresses, passports, IBAN, credit cards
 
 ### HIPAA (US Healthcare)
 ```typescript
-const shield = new OpenRedact({ preset: 'hipaa' });
+const shield = new OpenRedaction({ preset: 'hipaa' });
 ```
 Detects: Email, names, SSN, US phones, addresses, dates of birth, medical IDs
 
 ### CCPA (California)
 ```typescript
-const shield = new OpenRedact({ preset: 'ccpa' });
+const shield = new OpenRedaction({ preset: 'ccpa' });
 ```
 Detects: Email, names, SSN, US phones, addresses, IP addresses, usernames
 
@@ -471,7 +471,7 @@ console.log(`Found ${result.stats.piiCount} PII instances`);
 
 ## Architecture
 
-OpenRedact uses a priority-based pattern matching system with built-in validators:
+OpenRedaction uses a priority-based pattern matching system with built-in validators:
 
 1. **Patterns** - Each PII type has a regex pattern and priority (higher = checked first)
 2. **Validators** - Optional validation functions (e.g., Luhn for credit cards, mod-97 for IBAN)
@@ -487,10 +487,10 @@ OpenRedact uses a priority-based pattern matching system with built-in validator
 
 ## Browser Support
 
-OpenRedact works in all modern browsers and Node.js 20+:
+OpenRedaction works in all modern browsers and Node.js 20+:
 
 ```typescript
-import { OpenRedact } from 'openredact';
+import { OpenRedaction } from 'openredaction';
 // Works in both Node.js and browsers
 ```
 

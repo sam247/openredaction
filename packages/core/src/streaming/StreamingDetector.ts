@@ -4,7 +4,7 @@
  */
 
 import { PIIDetection, DetectionResult } from '../types';
-import { OpenRedact } from '../detector';
+import { OpenRedaction } from '../detector';
 
 /**
  * Chunk result for streaming detection
@@ -38,10 +38,10 @@ export interface StreamingOptions {
  * Streaming detector for large documents
  */
 export class StreamingDetector {
-  private detector: OpenRedact;
+  private detector: OpenRedaction;
   private options: Required<StreamingOptions>;
 
-  constructor(detector: OpenRedact, options: StreamingOptions = {}) {
+  constructor(detector: OpenRedaction, options: StreamingOptions = {}) {
     this.detector = detector;
     this.options = {
       chunkSize: options.chunkSize || 2048,
@@ -72,7 +72,7 @@ export class StreamingDetector {
       const result = this.detector.detect(chunk);
 
       // Filter out detections we've already processed
-      const newDetections = result.detections.filter(detection => {
+      const newDetections = result.detections.filter((detection: PIIDetection) => {
         const absoluteStart = byteOffset + detection.position[0];
         const absoluteEnd = byteOffset + detection.position[1];
         const rangeKey = `${absoluteStart}-${absoluteEnd}`;
@@ -97,7 +97,7 @@ export class StreamingDetector {
       });
 
       // Adjust positions to be relative to the full document
-      const adjustedDetections = newDetections.map(detection => ({
+      const adjustedDetections = newDetections.map((detection: PIIDetection) => ({
         ...detection,
         position: [
           byteOffset + detection.position[0],
@@ -266,10 +266,10 @@ export class StreamingDetector {
 }
 
 /**
- * Helper to create a streaming detector from OpenRedact instance
+ * Helper to create a streaming detector from OpenRedaction instance
  */
 export function createStreamingDetector(
-  detector: OpenRedact,
+  detector: OpenRedaction,
   options?: StreamingOptions
 ): StreamingDetector {
   return new StreamingDetector(detector, options);

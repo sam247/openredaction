@@ -10,7 +10,7 @@ import {
   calculateContextConfidence,
   analyzeFullContext
 } from '../src/context/ContextAnalyzer';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 
 describe('Context Analysis', () => {
   describe('extractContext', () => {
@@ -206,7 +206,7 @@ describe('Context Analysis', () => {
 
   describe('Integration with OpenRedact', () => {
     it('should work when context analysis is enabled (default)', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
       const result = redactor.detect('Contact john@example.com for info');
 
       expect(result.detections).toHaveLength(1);
@@ -217,7 +217,7 @@ describe('Context Analysis', () => {
     });
 
     it('should work when context analysis is disabled', () => {
-      const redactor = new OpenRedact({ enableContextAnalysis: false });
+      const redactor = new OpenRedaction({ enableContextAnalysis: false });
       const result = redactor.detect('Contact john@example.com for info');
 
       expect(result.detections).toHaveLength(1);
@@ -227,7 +227,7 @@ describe('Context Analysis', () => {
     });
 
     it('should filter low-confidence detections when enabled', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.8
       });
@@ -242,7 +242,7 @@ describe('Context Analysis', () => {
     });
 
     it('should include confidence scores when enabled', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.3
       });
@@ -256,7 +256,7 @@ describe('Context Analysis', () => {
     });
 
     it('should pass high-confidence detections', () => {
-      const redactor = new OpenRedact({
+      const redactor = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.5
       });

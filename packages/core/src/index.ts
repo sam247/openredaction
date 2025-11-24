@@ -1,15 +1,15 @@
 /**
- * OpenRedact - Production-ready PII detection and redaction library
+ * OpenRedaction - Production-ready PII detection and redaction library
  * @packageDocumentation
  */
 
-export { OpenRedact } from './detector';
+export { OpenRedaction } from './detector';
 
 export type {
   PIIPattern,
   PIIDetection,
   DetectionResult,
-  OpenRedactOptions,
+  OpenRedactionOptions,
   Validator
 } from './types';
 
@@ -48,7 +48,7 @@ export type {
 
 // Config system
 export { ConfigLoader } from './config/ConfigLoader';
-export type { OpenRedactConfig } from './config/ConfigLoader';
+export type { OpenRedactionConfig } from './config/ConfigLoader';
 
 // Context analysis system
 export {
@@ -84,6 +84,16 @@ export type {
   DetectionPass,
   MultiPassStats
 } from './multipass/MultiPassDetector';
+
+// Priority optimization
+export {
+  PriorityOptimizer,
+  createPriorityOptimizer
+} from './optimizer/PriorityOptimizer';
+export type {
+  PatternStats,
+  OptimizerOptions
+} from './optimizer/PriorityOptimizer';
 
 // Streaming API
 export {
@@ -128,20 +138,36 @@ export type {
 
 // Express integration
 export {
-  openRedactMiddleware,
+  openredactionMiddleware,
   detectPII,
   generateReport
 } from './integrations/express';
 export type {
-  OpenRedactMiddlewareOptions,
-  OpenRedactRequest
+  OpenRedactionMiddlewareOptions,
+  OpenRedactionRequest
 } from './integrations/express';
 
 // React integration
 export {
-  useOpenRedact,
+  useOpenRedaction,
   usePIIDetector,
   useFormFieldValidator,
   useBatchDetector,
   useAutoRedact
 } from './integrations/react';
+
+// Error handling
+export {
+  OpenRedactionError,
+  createInvalidPatternError,
+  createValidationError,
+  createHighMemoryError,
+  createConfigLoadError,
+  createLearningDisabledError,
+  createOptimizationDisabledError,
+  createMultiPassDisabledError,
+  createCacheDisabledError
+} from './errors/OpenRedactionError';
+export type {
+  ErrorSuggestion
+} from './errors/OpenRedactionError';

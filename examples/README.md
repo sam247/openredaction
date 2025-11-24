@@ -1,6 +1,6 @@
-# OpenRedact Examples
+# OpenRedaction Examples
 
-Practical examples demonstrating how to integrate OpenRedact into your applications.
+Practical examples demonstrating how to integrate OpenRedaction into your applications.
 
 ## 📁 Examples
 
@@ -61,7 +61,7 @@ npm run dev
 - Auto-redaction with live preview
 
 **Five React Hooks:**
-- `useOpenRedact()` - Manual detection
+- `useOpenRedaction()` - Manual detection
 - `usePIIDetector()` - Real-time detection
 - `useFormFieldValidator()` - Form validation
 - `useBatchDetector()` - Batch processing
@@ -76,9 +76,9 @@ npm install openredact
 
 Basic usage:
 ```javascript
-const { OpenRedact } = require('openredact');
+const { OpenRedaction } = require('openredact');
 
-const detector = new OpenRedact();
+const detector = new OpenRedaction();
 const result = detector.detect('Contact john@example.com');
 
 console.log(result.redacted); // "Contact [EMAIL_1]"

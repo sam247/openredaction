@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 
 describe('Pattern Detection', () => {
   describe('Personal patterns', () => {
     it('should detect email addresses', () => {
-      const shield = new OpenRedact({ patterns: ['EMAIL'] });
+      const shield = new OpenRedaction({ patterns: ['EMAIL'] });
 
       const tests = [
         'john@example.com',
@@ -19,14 +19,14 @@ describe('Pattern Detection', () => {
     });
 
     it('should detect names', () => {
-      const shield = new OpenRedact({ patterns: ['NAME'] });
+      const shield = new OpenRedaction({ patterns: ['NAME'] });
 
       const result = shield.detect('Contact John Smith for details');
       expect(result.detections.some(d => d.type === 'NAME')).toBe(true);
     });
 
     it('should detect employee IDs', () => {
-      const shield = new OpenRedact({ patterns: ['EMPLOYEE_ID'] });
+      const shield = new OpenRedaction({ patterns: ['EMPLOYEE_ID'] });
 
       const tests = [
         'EMP-12345',
@@ -43,7 +43,7 @@ describe('Pattern Detection', () => {
 
   describe('Financial patterns', () => {
     it('should detect credit cards with Luhn validation', () => {
-      const shield = new OpenRedact({ patterns: ['CREDIT_CARD'] });
+      const shield = new OpenRedaction({ patterns: ['CREDIT_CARD'] });
 
       // Valid cards
       const validCards = [
@@ -63,21 +63,21 @@ describe('Pattern Detection', () => {
     });
 
     it('should detect IBAN', () => {
-      const shield = new OpenRedact({ patterns: ['IBAN'] });
+      const shield = new OpenRedaction({ patterns: ['IBAN'] });
 
       const result = shield.detect('Account: GB82WEST12345698765432');
       expect(result.detections.some(d => d.type === 'IBAN')).toBe(true);
     });
 
     it('should detect UK bank accounts', () => {
-      const shield = new OpenRedact({ patterns: ['BANK_ACCOUNT_UK'] });
+      const shield = new OpenRedaction({ patterns: ['BANK_ACCOUNT_UK'] });
 
       const result = shield.detect('Account: 12345678');
       expect(result.detections.some(d => d.type === 'BANK_ACCOUNT_UK')).toBe(true);
     });
 
     it('should detect UK sort codes', () => {
-      const shield = new OpenRedact({ patterns: ['SORT_CODE_UK'] });
+      const shield = new OpenRedaction({ patterns: ['SORT_CODE_UK'] });
 
       const tests = [
         'Sort code: 12-34-56',
@@ -93,7 +93,7 @@ describe('Pattern Detection', () => {
 
   describe('Government patterns', () => {
     it('should detect US SSN', () => {
-      const shield = new OpenRedact({ patterns: ['SSN'] });
+      const shield = new OpenRedaction({ patterns: ['SSN'] });
 
       const tests = [
         'SSN: 123-45-6789',
@@ -107,28 +107,28 @@ describe('Pattern Detection', () => {
     });
 
     it('should detect UK National Insurance', () => {
-      const shield = new OpenRedact({ patterns: ['NATIONAL_INSURANCE_UK'] });
+      const shield = new OpenRedaction({ patterns: ['NATIONAL_INSURANCE_UK'] });
 
       const result = shield.detect('NINO: AB123456C');
       expect(result.detections.some(d => d.type === 'NATIONAL_INSURANCE_UK')).toBe(true);
     });
 
     it('should detect NHS numbers', () => {
-      const shield = new OpenRedact({ patterns: ['NHS_NUMBER'] });
+      const shield = new OpenRedaction({ patterns: ['NHS_NUMBER'] });
 
       const result = shield.detect('NHS: 4505577104');
       expect(result.detections.some(d => d.type === 'NHS_NUMBER')).toBe(true);
     });
 
     it('should detect UK passports', () => {
-      const shield = new OpenRedact({ patterns: ['PASSPORT_UK'] });
+      const shield = new OpenRedaction({ patterns: ['PASSPORT_UK'] });
 
       const result = shield.detect('Passport: 123456789');
       expect(result.detections.some(d => d.type === 'PASSPORT_UK')).toBe(true);
     });
 
     it('should detect UK driving licenses', () => {
-      const shield = new OpenRedact({ patterns: ['DRIVING_LICENSE_UK'] });
+      const shield = new OpenRedaction({ patterns: ['DRIVING_LICENSE_UK'] });
 
       const result = shield.detect('License: SMITH901234AB1CD');
       expect(result.detections.some(d => d.type === 'DRIVING_LICENSE_UK')).toBe(true);
@@ -137,7 +137,7 @@ describe('Pattern Detection', () => {
 
   describe('Contact patterns', () => {
     it('should detect UK mobile phones', () => {
-      const shield = new OpenRedact({ patterns: ['PHONE_UK_MOBILE'] });
+      const shield = new OpenRedaction({ patterns: ['PHONE_UK_MOBILE'] });
 
       const tests = [
         '07700900123',
@@ -151,7 +151,7 @@ describe('Pattern Detection', () => {
     });
 
     it('should detect US phones', () => {
-      const shield = new OpenRedact({ patterns: ['PHONE_US'] });
+      const shield = new OpenRedaction({ patterns: ['PHONE_US'] });
 
       const tests = [
         '(555) 123-4567',
@@ -166,7 +166,7 @@ describe('Pattern Detection', () => {
     });
 
     it('should detect UK postcodes', () => {
-      const shield = new OpenRedact({ patterns: ['POSTCODE_UK'] });
+      const shield = new OpenRedaction({ patterns: ['POSTCODE_UK'] });
 
       const tests = [
         'SW1A 1AA',
@@ -181,7 +181,7 @@ describe('Pattern Detection', () => {
     });
 
     it('should detect US ZIP codes', () => {
-      const shield = new OpenRedact({ patterns: ['ZIP_CODE_US'] });
+      const shield = new OpenRedaction({ patterns: ['ZIP_CODE_US'] });
 
       const tests = [
         '12345',
@@ -195,7 +195,7 @@ describe('Pattern Detection', () => {
     });
 
     it('should detect street addresses', () => {
-      const shield = new OpenRedact({ patterns: ['ADDRESS_STREET'] });
+      const shield = new OpenRedaction({ patterns: ['ADDRESS_STREET'] });
 
       const tests = [
         '123 Main Street',
@@ -212,14 +212,14 @@ describe('Pattern Detection', () => {
 
   describe('Network patterns', () => {
     it('should detect IPv4 addresses', () => {
-      const shield = new OpenRedact({ patterns: ['IPV4'] });
+      const shield = new OpenRedaction({ patterns: ['IPV4'] });
 
       const result = shield.detect('Server: 203.0.113.42');
       expect(result.detections.some(d => d.type === 'IPV4')).toBe(true);
     });
 
     it('should not detect private IPv4 addresses', () => {
-      const shield = new OpenRedact({ patterns: ['IPV4'] });
+      const shield = new OpenRedaction({ patterns: ['IPV4'] });
 
       const privateIPs = [
         '192.168.1.1',
@@ -234,14 +234,14 @@ describe('Pattern Detection', () => {
     });
 
     it('should detect IPv6 addresses', () => {
-      const shield = new OpenRedact({ patterns: ['IPV6'] });
+      const shield = new OpenRedaction({ patterns: ['IPV6'] });
 
       const result = shield.detect('Server: 2001:0db8:85a3:0000:0000:8a2e:0370:7334');
       expect(result.detections.some(d => d.type === 'IPV6')).toBe(true);
     });
 
     it('should detect MAC addresses', () => {
-      const shield = new OpenRedact({ patterns: ['MAC_ADDRESS'] });
+      const shield = new OpenRedaction({ patterns: ['MAC_ADDRESS'] });
 
       const tests = [
         '00:1B:44:11:3A:B7',
@@ -255,7 +255,7 @@ describe('Pattern Detection', () => {
     });
 
     it('should detect URLs with credentials', () => {
-      const shield = new OpenRedact({ patterns: ['URL_WITH_AUTH'] });
+      const shield = new OpenRedaction({ patterns: ['URL_WITH_AUTH'] });
 
       const result = shield.detect('Connect: https://user:pass@example.com/path');
       expect(result.detections.some(d => d.type === 'URL_WITH_AUTH')).toBe(true);
@@ -264,7 +264,7 @@ describe('Pattern Detection', () => {
 
   describe('Real-world scenarios', () => {
     it('should handle mixed PII in email text', () => {
-      const shield = new OpenRedact();
+      const shield = new OpenRedaction();
       const text = `
         Hi John Smith,
 
@@ -280,7 +280,7 @@ describe('Pattern Detection', () => {
     });
 
     it('should handle financial document', () => {
-      const shield = new OpenRedact();
+      const shield = new OpenRedaction();
       const text = `
         Card Number: 4532015112830366
         Sort Code: 12-34-56
@@ -295,7 +295,7 @@ describe('Pattern Detection', () => {
     });
 
     it('should handle government form', () => {
-      const shield = new OpenRedact();
+      const shield = new OpenRedaction();
       const text = `
         Name: John Smith
         SSN: 123-45-6789

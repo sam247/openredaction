@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { OpenRedact } from '../src/detector';
+import { OpenRedaction } from '../src/detector';
 import {
   groupPatternsByPass,
   mergePassDetections,
@@ -156,7 +156,7 @@ describe('Multi-pass Detection', () => {
 
   describe('Integration with OpenRedact', () => {
     it('should work when multi-pass is disabled (default)', () => {
-      const redactor = new OpenRedact();
+      const redactor = new OpenRedaction();
       const result = redactor.detect('API Key: AKIA1234567890ABCDEF, Email: user@company.com');
 
       expect(result.detections.length).toBeGreaterThan(0);
@@ -165,7 +165,7 @@ describe('Multi-pass Detection', () => {
     });
 
     it('should work when multi-pass is enabled', () => {
-      const redactor = new OpenRedact({ enableMultiPass: true });
+      const redactor = new OpenRedaction({ enableMultiPass: true });
       const result = redactor.detect('API Key: AKIA1234567890ABCDEF, Email: user@company.com');
 
       expect(result.detections.length).toBeGreaterThan(0);
@@ -174,7 +174,7 @@ describe('Multi-pass Detection', () => {
     });
 
     it('should prioritize credentials in multi-pass mode', () => {
-      const redactor = new OpenRedact({ enableMultiPass: true });
+      const redactor = new OpenRedaction({ enableMultiPass: true });
       const text = 'GitHub token: ghp_1234567890abcdefghij1234567890abcd and email user@company.com';
       const result = redactor.detect(text);
 
@@ -192,7 +192,7 @@ describe('Multi-pass Detection', () => {
     });
 
     it('should handle mixed priority patterns correctly', () => {
-      const redactor = new OpenRedact({ enableMultiPass: true });
+      const redactor = new OpenRedaction({ enableMultiPass: true });
       const text = `
         Credit Card: 4532015112830366
         Email: john.smith@company.com
@@ -209,12 +209,12 @@ describe('Multi-pass Detection', () => {
     });
 
     it('should support custom number of passes', () => {
-      const redactor2Pass = new OpenRedact({
+      const redactor2Pass = new OpenRedaction({
         enableMultiPass: true,
         multiPassCount: 2
       });
 
-      const redactor5Pass = new OpenRedact({
+      const redactor5Pass = new OpenRedaction({
         enableMultiPass: true,
         multiPassCount: 5
       });
@@ -229,8 +229,8 @@ describe('Multi-pass Detection', () => {
     });
 
     it('should maintain consistency between single and multi-pass', () => {
-      const singlePass = new OpenRedact({ enableMultiPass: false });
-      const multiPass = new OpenRedact({ enableMultiPass: true });
+      const singlePass = new OpenRedaction({ enableMultiPass: false });
+      const multiPass = new OpenRedaction({ enableMultiPass: true });
 
       const text = 'API Key: AKIA1234567890ABCDEF';
 
@@ -248,7 +248,7 @@ describe('Multi-pass Detection', () => {
     });
 
     it('should not break with no detections', () => {
-      const redactor = new OpenRedact({ enableMultiPass: true });
+      const redactor = new OpenRedaction({ enableMultiPass: true });
       const result = redactor.detect('This is plain text with no PII');
 
       expect(result.detections.length).toBe(0);

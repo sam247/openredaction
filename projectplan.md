@@ -1,4 +1,4 @@
-# OpenRedact Project Plan
+# OpenRedaction Project Plan
 
 ## Vision
 Build the most thorough, accurate, and developer-friendly PII redaction library - the go-to solution for privacy-conscious developers across all industries.
@@ -434,11 +434,11 @@ Build the most thorough, accurate, and developer-friendly PII redaction library 
 - [ ] Industry-specific packs (as npm packages)
 
 **Industry Packs:**
-- [ ] `@openredact/healthcare` - Medical patterns
-- [ ] `@openredact/finance` - Banking/fintech patterns
-- [ ] `@openredact/legal` - Legal industry patterns
-- [ ] `@openredact/education` - Education patterns
-- [ ] `@openredact/government` - Public sector patterns
+- [ ] `@openredaction/healthcare` - Medical patterns
+- [ ] `@openredaction/finance` - Banking/fintech patterns
+- [ ] `@openredaction/legal` - Legal industry patterns
+- [ ] `@openredaction/education` - Education patterns
+- [ ] `@openredaction/government` - Public sector patterns
 
 #### 5.3 Benchmarks & Comparisons
 

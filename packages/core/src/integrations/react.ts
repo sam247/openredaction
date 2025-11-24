@@ -6,8 +6,8 @@
  * React is a peer dependency - users must install React separately.
  */
 
-import { OpenRedact } from '../detector';
-import type { DetectionResult, OpenRedactOptions } from '../types';
+import { OpenRedaction } from '../detector';
+import type { DetectionResult, OpenRedactionOptions } from '../types';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 
 /**
@@ -16,7 +16,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
  * @example
  * ```tsx
  * function MyForm() {
- *   const { detect, result, isDetecting } = useOpenRedact();
+ *   const { detect, result, isDetecting } = useOpenRedaction();
  *
  *   const handleSubmit = (text: string) => {
  *     const detection = detect(text);
@@ -27,8 +27,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
  * }
  * ```
  */
-export function useOpenRedact(options?: OpenRedactOptions) {
-  const detector = useMemo(() => new OpenRedact(options), [options]);
+export function useOpenRedaction(options?: OpenRedactionOptions) {
+  const detector = useMemo(() => new OpenRedaction(options), [options]);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
 
@@ -75,10 +75,10 @@ export function useOpenRedact(options?: OpenRedactOptions) {
  */
 export function usePIIDetector(
   text: string,
-  options?: OpenRedactOptions & { debounce?: number }
+  options?: OpenRedactionOptions & { debounce?: number }
 ) {
   const { debounce = 300, ...redactOptions } = options || {};
-  const detector = useMemo(() => new OpenRedact(redactOptions), [redactOptions]);
+  const detector = useMemo(() => new OpenRedaction(redactOptions), [redactOptions]);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
 
@@ -130,13 +130,13 @@ export function usePIIDetector(
  * }
  * ```
  */
-export function useFormFieldValidator(options?: OpenRedactOptions & {
+export function useFormFieldValidator(options?: OpenRedactionOptions & {
   failOnPII?: boolean;
   types?: string[];
   onPIIDetected?: (result: DetectionResult) => void;
 }) {
   const { failOnPII = false, types = [], onPIIDetected, ...redactOptions } = options || {};
-  const detector = useMemo(() => new OpenRedact(redactOptions), [redactOptions]);
+  const detector = useMemo(() => new OpenRedaction(redactOptions), [redactOptions]);
   const [value, setValue] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DetectionResult | null>(null);
@@ -206,8 +206,8 @@ export function useFormFieldValidator(options?: OpenRedactOptions & {
  * }
  * ```
  */
-export function useBatchDetector(options?: OpenRedactOptions) {
-  const detector = useMemo(() => new OpenRedact(options), [options]);
+export function useBatchDetector(options?: OpenRedactionOptions) {
+  const detector = useMemo(() => new OpenRedaction(options), [options]);
   const [results, setResults] = useState<DetectionResult[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -270,9 +270,9 @@ export function useBatchDetector(options?: OpenRedactOptions) {
  * }
  * ```
  */
-export function useAutoRedact(options?: OpenRedactOptions & { debounce?: number }) {
+export function useAutoRedact(options?: OpenRedactionOptions & { debounce?: number }) {
   const { debounce = 300, ...redactOptions } = options || {};
-  const detector = useMemo(() => new OpenRedact(redactOptions), [redactOptions]);
+  const detector = useMemo(() => new OpenRedaction(redactOptions), [redactOptions]);
   const [text, setText] = useState('');
   const [result, setResult] = useState<DetectionResult | null>(null);
 

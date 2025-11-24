@@ -3,14 +3,14 @@
  * Local-first server-side PII detection and redaction
  */
 
-import { OpenRedact } from '../detector';
-import type { DetectionResult, OpenRedactOptions } from '../types';
+import { OpenRedaction } from '../detector';
+import type { DetectionResult, OpenRedactionOptions } from '../types';
 import type { Request, Response, NextFunction } from 'express';
 
 /**
  * Middleware options
  */
-export interface OpenRedactMiddlewareOptions extends OpenRedactOptions {
+export interface OpenRedactionMiddlewareOptions extends OpenRedactionOptions {
   /** Auto-redact request body (default: false) */
   autoRedact?: boolean;
   /** Fields to check in request body (default: all) */
@@ -30,7 +30,7 @@ export interface OpenRedactMiddlewareOptions extends OpenRedactOptions {
 /**
  * Extended Express Request with PII detection results
  */
-export interface OpenRedactRequest extends Request {
+export interface OpenRedactionRequest extends Request {
   pii?: {
     detected: boolean;
     count: number;
@@ -42,7 +42,7 @@ export interface OpenRedactRequest extends Request {
 /**
  * Create Express middleware for PII detection
  */
-export function openRedactMiddleware(options: OpenRedactMiddlewareOptions = {}) {
+export function openredactionMiddleware(options: OpenRedactionMiddlewareOptions = {}) {
   // Extract middleware-specific options
   const {
     autoRedact = false,
@@ -55,8 +55,8 @@ export function openRedactMiddleware(options: OpenRedactMiddlewareOptions = {}) 
     ...detectorOptions
   } = options;
 
-  // Create detector with only OpenRedactOptions
-  const detector = new OpenRedact(detectorOptions);
+  // Create detector with only OpenRedactionOptions
+  const detector = new OpenRedaction(detectorOptions);
 
   return (req: Request, res: Response, next: NextFunction) => {
     // Skip if route matches skip pattern
@@ -106,7 +106,7 @@ export function openRedactMiddleware(options: OpenRedactMiddlewareOptions = {}) 
 
       // Attach results to request
       if (attachResults) {
-        const extReq = req as OpenRedactRequest;
+        const extReq = req as OpenRedactionRequest;
         extReq.pii = {
           detected: totalDetections > 0,
           count: totalDetections,
@@ -157,8 +157,8 @@ export function openRedactMiddleware(options: OpenRedactMiddlewareOptions = {}) 
 /**
  * Express route handler for PII detection
  */
-export function detectPII(options: OpenRedactOptions = {}) {
-  const detector = new OpenRedact(options);
+export function detectPII(options: OpenRedactionOptions = {}) {
+  const detector = new OpenRedaction(options);
 
   return (req: Request, res: Response): void => {
     const text = req.body?.text || req.query.text as string;
@@ -186,8 +186,8 @@ export function detectPII(options: OpenRedactOptions = {}) {
 /**
  * Express route handler for generating reports
  */
-export function generateReport(options: OpenRedactOptions = {}) {
-  const detector = new OpenRedact(options);
+export function generateReport(options: OpenRedactionOptions = {}) {
+  const detector = new OpenRedaction(options);
 
   return (req: Request, res: Response): void => {
     const text = req.body?.text;
