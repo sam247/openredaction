@@ -300,29 +300,31 @@ export class OpenRedaction {
 
   /**
    * Validate all patterns to prevent malicious regex injection
-   * Especially important for custom patterns
+   * ONLY validates custom patterns - built-in patterns are already vetted
+   * Timeout protection in safeExec() is the primary defense against ReDoS
    */
   private validatePatterns(): void {
-    for (const pattern of this.patterns) {
+    // Only validate custom patterns (user-provided)
+    // Built-in patterns are already vetted and safe
+    if (!this.options.customPatterns || this.options.customPatterns.length === 0) {
+      if (this.options.debug) {
+        console.log(`[OpenRedaction] No custom patterns to validate. ${this.patterns.length} built-in patterns loaded.`);
+      }
+      return;
+    }
+
+    // Validate each custom pattern
+    for (const customPattern of this.options.customPatterns) {
       try {
-        validatePattern(pattern.regex);
+        validatePattern(customPattern.regex);
       } catch (error) {
-        const errorMsg = `[OpenRedaction] Invalid pattern '${pattern.type}': ${(error as Error).message}`;
-
-        // If it's a custom pattern, throw error (security issue)
-        if (this.options.customPatterns?.some(p => p.type === pattern.type)) {
-          throw new Error(errorMsg);
-        }
-
-        // If it's a built-in pattern, warn and remove (shouldn't happen in production)
-        console.warn(errorMsg);
-        console.warn('[OpenRedaction] Removing invalid built-in pattern. This is a bug, please report it.');
-        this.patterns = this.patterns.filter(p => p.type !== pattern.type);
+        const errorMsg = `[OpenRedaction] Invalid custom pattern '${customPattern.type}': ${(error as Error).message}`;
+        throw new Error(errorMsg); // Security issue - reject invalid custom patterns
       }
     }
 
     if (this.options.debug) {
-      console.log(`[OpenRedaction] Validated ${this.patterns.length} patterns`);
+      console.log(`[OpenRedaction] Validated ${this.options.customPatterns.length} custom patterns. Total patterns: ${this.patterns.length}`);
     }
   }
 

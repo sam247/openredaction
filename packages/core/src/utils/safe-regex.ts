@@ -25,6 +25,8 @@ export class RegexMaxMatchesError extends Error {
 /**
  * Safely execute regex with timeout protection
  * Uses periodic time checks to prevent catastrophic backtracking
+ *
+ * Note: Does NOT reset lastIndex - caller is responsible for managing state
  */
 export function safeExec(
   regex: RegExp,
@@ -34,8 +36,8 @@ export function safeExec(
   const timeout = options.timeout ?? 100; // Default 100ms
   const startTime = performance.now();
 
-  // Reset regex lastIndex for safety
-  regex.lastIndex = 0;
+  // Do NOT reset lastIndex - let the regex maintain state for global matching
+  // The caller should reset it before starting a new search
 
   try {
     const result = regex.exec(text);
