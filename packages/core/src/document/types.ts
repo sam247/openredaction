@@ -7,7 +7,7 @@ import type { DetectionResult } from '../types';
 /**
  * Supported document formats
  */
-export type DocumentFormat = 'pdf' | 'docx' | 'txt' | 'image';
+export type DocumentFormat = 'pdf' | 'docx' | 'txt' | 'image' | 'json' | 'csv' | 'xlsx';
 
 /**
  * Supported image formats for OCR
