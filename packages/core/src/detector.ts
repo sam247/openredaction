@@ -23,6 +23,10 @@ import { ConfigLoader } from './config/ConfigLoader.js';
 import { analyzeFullContext } from './context/ContextAnalyzer.js';
 import { isFalsePositive } from './filters/FalsePositiveFilter.js';
 import { createSimpleMultiPass, groupPatternsByPass, mergePassDetections, type DetectionPass } from './multipass/MultiPassDetector.js';
+import { NERDetector } from './ml/NERDetector.js';
+import { ContextRulesEngine, type ContextRulesConfig } from './context/ContextRules.js';
+import { SeverityClassifier } from './severity/SeverityClassifier.js';
+import type { PIIMatch } from './types';
 import { LRUCache, hashString } from './utils/cache.js';
 import { ExplainAPI, createExplainAPI } from './explain/ExplainAPI.js';
 import { createReportGenerator, type ReportOptions } from './reports/ReportGenerator.js';
@@ -76,6 +80,9 @@ export class OpenRedaction {
   private auditMetadata?: Record<string, unknown>;
   private metricsCollector?: IMetricsCollector;
   private rbacManager?: IRBACManager;
+  private nerDetector?: NERDetector;
+  private contextRulesEngine?: ContextRulesEngine;
+  private severityClassifier: SeverityClassifier;
 
   constructor(options: OpenRedactionOptions & {
     configPath?: string;
@@ -83,6 +90,9 @@ export class OpenRedaction {
     learningStorePath?: string;
     enablePriorityOptimization?: boolean;
     optimizerOptions?: Partial<OptimizerOptions>;
+    enableNER?: boolean;
+    enableContextRules?: boolean;
+    contextRulesConfig?: ContextRulesConfig;
   } = {}) {
     // Apply preset if specified
     const presetOptions = options.preset ? getPreset(options.preset) : {};
@@ -166,6 +176,12 @@ export class OpenRedaction {
       this.patterns = this.priorityOptimizer.optimizePatterns(this.patterns);
     }
 
+    // Initialize severity classifier (always enabled)
+    this.severityClassifier = new SeverityClassifier();
+
+    // Ensure all patterns have severity assigned
+    this.patterns = this.severityClassifier.ensureAllSeverity(this.patterns);
+
     // Sort by priority (highest first)
     this.patterns.sort((a, b) => b.priority - a.priority);
 
@@ -196,6 +212,22 @@ export class OpenRedaction {
         // Default to admin role
         this.rbacManager = new RBACManager();
       }
+    }
+
+    // Initialize NER detector if enabled (requires compromise.js peer dependency)
+    if (options.enableNER) {
+      this.nerDetector = new NERDetector();
+      if (!this.nerDetector.isAvailable()) {
+        console.warn('[OpenRedaction] NER enabled but compromise.js not installed. Install with: npm install compromise');
+        console.warn('[OpenRedaction] Falling back to regex-only detection.');
+        this.nerDetector = undefined;
+      }
+    }
+
+    // Initialize context rules engine if enabled
+    if (options.enableContextRules !== false) {
+      // Enabled by default for better accuracy
+      this.contextRulesEngine = new ContextRulesEngine(options.contextRulesConfig);
     }
   }
 
@@ -323,11 +355,29 @@ export class OpenRedaction {
             endPos
           );
           confidence = contextAnalysis.confidence;
+        }
 
-          // Filter low-confidence detections
-          if (confidence < this.options.confidenceThreshold) {
-            continue;
-          }
+        // Apply context rules for proximity-based confidence adjustment
+        if (this.contextRulesEngine) {
+          const piiMatch: PIIMatch = {
+            type: pattern.type,
+            value,
+            start: startPos,
+            end: endPos,
+            confidence,
+            context: {
+              before: text.substring(Math.max(0, startPos - 250), startPos),
+              after: text.substring(endPos, Math.min(text.length, endPos + 250))
+            }
+          };
+
+          const adjusted = this.contextRulesEngine.applyProximityRules(piiMatch, text);
+          confidence = adjusted.confidence;
+        }
+
+        // Filter low-confidence detections
+        if (confidence < this.options.confidenceThreshold) {
+          continue;
         }
 
         // Check whitelist
@@ -353,6 +403,56 @@ export class OpenRedaction {
         // Mark range as processed
         processedRanges.push([startPos, endPos]);
       }
+    }
+
+    // Apply NER hybrid detection for confidence boosting
+    if (this.nerDetector && detections.length > 0) {
+      // Convert detections to PIIMatch format
+      const piiMatches: PIIMatch[] = detections.map(det => ({
+        type: det.type,
+        value: det.value,
+        start: det.position[0],
+        end: det.position[1],
+        confidence: det.confidence || 1.0,
+        context: {
+          before: text.substring(Math.max(0, det.position[0] - 50), det.position[0]),
+          after: text.substring(det.position[1], Math.min(text.length, det.position[1] + 50))
+        }
+      }));
+
+      // Apply hybrid detection
+      const hybridMatches = this.nerDetector.hybridDetection(piiMatches, text);
+
+      // Update detections with NER-boosted confidence
+      detections = detections.map((det, index) => ({
+        ...det,
+        confidence: hybridMatches[index].confidence
+      }));
+    }
+
+    // Apply domain-based confidence boosting
+    if (this.contextRulesEngine && detections.length > 0) {
+      // Convert detections to PIIMatch format
+      const piiMatches: PIIMatch[] = detections.map(det => ({
+        type: det.type,
+        value: det.value,
+        start: det.position[0],
+        end: det.position[1],
+        confidence: det.confidence || 1.0,
+        context: {
+          before: text.substring(Math.max(0, det.position[0] - 50), det.position[0]),
+          after: text.substring(det.position[1], Math.min(text.length, det.position[1] + 50))
+        }
+      }));
+
+      // Apply domain boosting
+      const boostedMatches = this.contextRulesEngine.applyDomainBoosting(piiMatches, text);
+
+      // Update detections with domain-boosted confidence
+      detections = detections.map((det, index) => ({
+        ...det,
+        confidence: boostedMatches[index].confidence
+      }));
     }
 
     return detections;

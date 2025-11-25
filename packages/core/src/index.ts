@@ -8,6 +8,7 @@ export { OpenRedaction } from './detector';
 export type {
   PIIPattern,
   PIIDetection,
+  PIIMatch,
   DetectionResult,
   OpenRedactionOptions,
   RedactionMode,
@@ -25,10 +26,32 @@ export type {
 } from './types';
 
 // Audit logging
-export { InMemoryAuditLogger, ConsoleAuditLogger } from './audit';
+export {
+  InMemoryAuditLogger,
+  ConsoleAuditLogger,
+  PersistentAuditLogger,
+  createPersistentAuditLogger
+} from './audit';
+export type {
+  AuditBackend,
+  AuditDatabaseConfig,
+  RetentionPolicy,
+  PersistentAuditLoggerOptions,
+  HashedAuditLogEntry,
+  IAuditDatabaseAdapter,
+  AuditQueryFilter
+} from './audit';
 
 // Metrics collection
-export { InMemoryMetricsCollector } from './metrics';
+export {
+  InMemoryMetricsCollector,
+  PrometheusServer,
+  createPrometheusServer,
+  GRAFANA_DASHBOARD_TEMPLATE
+} from './metrics';
+export type {
+  PrometheusServerOptions
+} from './metrics';
 
 // RBAC (Role-Based Access Control)
 export {
@@ -48,7 +71,13 @@ export {
   DocumentProcessor,
   createDocumentProcessor,
   OCRProcessor,
-  createOCRProcessor
+  createOCRProcessor,
+  JsonProcessor,
+  createJsonProcessor,
+  CsvProcessor,
+  createCsvProcessor,
+  XlsxProcessor,
+  createXlsxProcessor
 } from './document';
 export type {
   DocumentFormat,
@@ -60,7 +89,16 @@ export type {
   OCRLanguage,
   OCROptions,
   IOCRProcessor,
-  OCRResult
+  OCRResult,
+  JsonProcessorOptions,
+  JsonDetectionResult,
+  CsvProcessorOptions,
+  CsvDetectionResult,
+  ColumnStats,
+  CellMatch,
+  XlsxProcessorOptions,
+  XlsxDetectionResult,
+  SheetDetectionResult
 } from './document';
 
 export {
@@ -112,6 +150,45 @@ export type {
   ContextAnalysis,
   ContextFeatures
 } from './context/ContextAnalyzer';
+
+// Context rules engine (Phase 2)
+export {
+  ContextRulesEngine,
+  createContextRulesEngine,
+  DEFAULT_PROXIMITY_RULES,
+  DEFAULT_DOMAIN_VOCABULARIES
+} from './context/ContextRules';
+export type {
+  ProximityRule,
+  DomainVocabulary,
+  ContextRulesConfig
+} from './context/ContextRules';
+
+// NER detection (Phase 2 - requires compromise.js peer dependency)
+export {
+  NERDetector,
+  createNERDetector
+} from './ml/NERDetector';
+export type {
+  NEREntityType,
+  NERMatch,
+  HybridMatch
+} from './ml/NERDetector';
+
+// Severity classification (Phase 2)
+export {
+  SeverityClassifier,
+  createSeverityClassifier,
+  getSeverity,
+  calculateRisk,
+  DEFAULT_SEVERITY_MAP,
+  SEVERITY_SCORES
+} from './severity/SeverityClassifier';
+export type {
+  SeverityLevel,
+  SeverityClassification,
+  RiskScore
+} from './severity/SeverityClassifier';
 
 // False positive filtering
 export {
@@ -235,3 +312,44 @@ export {
 export type {
   ErrorSuggestion
 } from './errors/OpenRedactionError';
+
+// Multi-tenancy (Phase 3)
+export {
+  TenantManager,
+  createTenantManager,
+  TenantQuotaExceededError,
+  TenantNotFoundError,
+  TenantSuspendedError,
+  DEFAULT_TIER_QUOTAS
+} from './tenancy';
+export type {
+  TenantConfig,
+  TenantQuotas,
+  TenantUsage
+} from './tenancy';
+
+// Webhooks and alerts (Phase 3)
+export {
+  WebhookManager,
+  createWebhookManager,
+  verifyWebhookSignature
+} from './webhooks';
+export type {
+  WebhookEventType,
+  WebhookEvent,
+  WebhookConfig,
+  WebhookDeliveryStatus,
+  WebhookDelivery,
+  WebhookStats
+} from './webhooks';
+
+// REST API Server (Phase 3)
+export {
+  APIServer,
+  createAPIServer
+} from './api';
+export type {
+  APIServerConfig,
+  APIRequest,
+  APIResponse
+} from './api';
