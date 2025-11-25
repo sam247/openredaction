@@ -2964,43 +2964,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 MIT © 2025
 
-## Roadmap
-
-### Completed ✅
-- [x] 571+ PII patterns across 25+ industries and 50+ countries
-- [x] All 50 US state license plates with format-specific validation
-- [x] 16 international carrier tracking numbers (global coverage)
-- [x] Multiple redaction modes (5 modes: placeholder, mask-middle, mask-all, format-preserving, token-replace)
-- [x] Audit logging system with JSON/CSV export
-- [x] Metrics export API (Prometheus, StatsD) for monitoring
-- [x] RBAC (role-based access control) for enterprise multi-tenancy
-- [x] Document processing (PDF, DOCX, TXT, JSON, CSV, XLSX) with text extraction
-- [x] **Structured data support (JSON, CSV, XLSX)** with path/cell tracking - Phase 1 ✨
-- [x] **Semantic detection (NER + contextual rules)** - Phase 2 ✨
-- [x] **Severity classification & risk scoring** (4-tier system) - Phase 2 ✨
-- [x] **40+ proximity rules for confidence boosting** - Phase 2 ✨
-- [x] **Domain-specific vocabulary detection** (medical, legal, financial, HR, tech) - Phase 2 ✨
-- [x] **Persistent audit logging with cryptographic hashing** (SQLite, SHA-256, tamper detection) - Phase 3 🚀
-- [x] **Multi-tenancy support** (tenant isolation, quotas, usage tracking, API keys) - Phase 3 🚀
-- [x] **Prometheus metrics exporter** (HTTP server, Grafana dashboard template) - Phase 3 🚀
-- [x] **Webhook & alert system** (event-driven, retry logic, circuit breaker, HMAC signatures) - Phase 3 🚀
-- [x] **REST API server** (production-ready, rate limiting, CORS, multi-tenant, OpenAPI docs) - Phase 3 🚀
-- [x] **13 missing patterns added** (IFSC, CLABE, BSB, ISIN, CUSIP, SEDOL, LEI, UTR, VAT, Company Number, ITIN, SIN, CHI, EHIC) - Phase 4 ✅
-- [x] OCR integration for image-based documents (11 languages, batch processing)
-- [x] Worker threads for parallel processing (batch text and document processing)
-- [x] Local learning system with feedback loop
-- [x] Context-aware detection with confidence scoring
-- [x] Priority optimization system
-- [x] Streaming API for large texts
-- [x] HTML report generation
-- [x] Framework integrations (React hooks, Express middleware)
-
-### Planned 📋
-- [ ] Multi-language support (Spanish, French, German, Portuguese)
-- [ ] Framework integrations (LangChain, Vercel AI SDK)
-- [ ] Cloud API with managed service
-- [ ] Interactive playground website
-
 ## Links
 
 - [GitHub Repository](https://github.com/sam247/openredact)
