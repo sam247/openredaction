@@ -6,11 +6,18 @@ import {
   PIIPattern,
   PIIDetection,
   DetectionResult,
-  OpenRedactionOptions
+  OpenRedactionOptions,
+  IAuditLogger,
+  IMetricsCollector,
+  IRBACManager
 } from './types';
+import { InMemoryAuditLogger } from './audit';
+import { InMemoryMetricsCollector } from './metrics';
+import { RBACManager, getPredefinedRole } from './rbac';
 import { allPatterns } from './patterns';
 import { generateDeterministicId } from './utils/hash';
 import { getPreset } from './utils/presets';
+import { applyRedactionMode } from './utils/redaction-strategies';
 import { LocalLearningStore } from './learning/LocalLearningStore.js';
 import { ConfigLoader } from './config/ConfigLoader.js';
 import { analyzeFullContext } from './context/ContextAnalyzer.js';
@@ -29,6 +36,8 @@ import {
 /**
  * Main OpenRedaction class for detecting and redacting PII
  */
+import type { RedactionMode } from './types';
+
 export class OpenRedaction {
   private patterns: PIIPattern[];
   private options: {
@@ -40,6 +49,7 @@ export class OpenRedaction {
     customPatterns: PIIPattern[];
     whitelist: string[];
     deterministic: boolean;
+    redactionMode: RedactionMode;
     preset?: 'gdpr' | 'hipaa' | 'ccpa';
     enableContextAnalysis: boolean;
     confidenceThreshold: number;
@@ -60,6 +70,12 @@ export class OpenRedaction {
   private learningStore?: LocalLearningStore;
   private priorityOptimizer?: PriorityOptimizer;
   private enableLearning: boolean;
+  private auditLogger?: IAuditLogger;
+  private auditUser?: string;
+  private auditSessionId?: string;
+  private auditMetadata?: Record<string, unknown>;
+  private metricsCollector?: IMetricsCollector;
+  private rbacManager?: IRBACManager;
 
   constructor(options: OpenRedactionOptions & {
     configPath?: string;
@@ -81,6 +97,7 @@ export class OpenRedaction {
       customPatterns: [],
       whitelist: [],
       deterministic: true,
+      redactionMode: 'placeholder' as RedactionMode, // Default: [EMAIL_1234]
       enableContextAnalysis: true, // Enabled by default (fine-tuned)
       confidenceThreshold: 0.5, // Balanced threshold (filters <50% confidence)
       enableFalsePositiveFilter: false, // Disabled by default (experimental)
@@ -151,6 +168,35 @@ export class OpenRedaction {
 
     // Sort by priority (highest first)
     this.patterns.sort((a, b) => b.priority - a.priority);
+
+    // Initialize audit logging if enabled
+    if (options.enableAuditLog) {
+      this.auditLogger = options.auditLogger || new InMemoryAuditLogger();
+      this.auditUser = options.auditUser;
+      this.auditSessionId = options.auditSessionId;
+      this.auditMetadata = options.auditMetadata;
+    }
+
+    // Initialize metrics collection if enabled
+    if (options.enableMetrics) {
+      this.metricsCollector = options.metricsCollector || new InMemoryMetricsCollector();
+    }
+
+    // Initialize RBAC if enabled
+    if (options.enableRBAC) {
+      if (options.rbacManager) {
+        this.rbacManager = options.rbacManager;
+      } else if (options.role) {
+        // Use predefined role
+        const role = getPredefinedRole(options.role);
+        if (role) {
+          this.rbacManager = new RBACManager(role);
+        }
+      } else {
+        // Default to admin role
+        this.rbacManager = new RBACManager();
+      }
+    }
   }
 
   /**
@@ -316,6 +362,11 @@ export class OpenRedaction {
    * Detect PII in text
    */
   detect(text: string): DetectionResult {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('detection:detect')) {
+      throw new Error('[OpenRedaction] Permission denied: detection:detect required');
+    }
+
     const startTime = performance.now();
 
     // Warn about large documents (> 5MB)
@@ -426,6 +477,42 @@ export class OpenRedaction {
       }
     }
 
+    // Log audit entry if enabled
+    if (this.auditLogger) {
+      try {
+        const piiTypes = [...new Set(detections.map(d => d.type))];
+        this.auditLogger.log({
+          operation: 'redact',
+          piiCount: detections.length,
+          piiTypes,
+          textLength: text.length,
+          processingTimeMs: processingTime,
+          redactionMode: this.options.redactionMode,
+          success: true,
+          user: this.auditUser,
+          sessionId: this.auditSessionId,
+          metadata: this.auditMetadata
+        });
+      } catch (error) {
+        // Don't fail the redaction if audit logging fails
+        if (this.options.debug) {
+          console.error('[OpenRedaction] Audit logging failed:', error);
+        }
+      }
+    }
+
+    // Record metrics if enabled
+    if (this.metricsCollector) {
+      try {
+        this.metricsCollector.recordRedaction(result, processingTime, this.options.redactionMode);
+      } catch (error) {
+        // Don't fail the redaction if metrics recording fails
+        if (this.options.debug) {
+          console.error('[OpenRedaction] Metrics recording failed:', error);
+        }
+      }
+    }
+
     // Store in cache if enabled
     if (this.resultCache) {
       const cacheKey = hashString(text);
@@ -442,10 +529,41 @@ export class OpenRedaction {
    * Restore redacted text using redaction map
    */
   restore(redactedText: string, redactionMap: Record<string, string>): string {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('detection:restore')) {
+      throw new Error('[OpenRedaction] Permission denied: detection:restore required');
+    }
+
+    const startTime = performance.now();
     let restored = redactedText;
 
     for (const [placeholder, value] of Object.entries(redactionMap)) {
       restored = restored.replace(new RegExp(this.escapeRegex(placeholder), 'g'), value);
+    }
+
+    const endTime = performance.now();
+    const processingTime = Math.round((endTime - startTime) * 100) / 100;
+
+    // Log audit entry if enabled
+    if (this.auditLogger) {
+      try {
+        this.auditLogger.log({
+          operation: 'restore',
+          piiCount: Object.keys(redactionMap).length,
+          piiTypes: [], // Types not available in restore context
+          textLength: redactedText.length,
+          processingTimeMs: processingTime,
+          success: true,
+          user: this.auditUser,
+          sessionId: this.auditSessionId,
+          metadata: this.auditMetadata
+        });
+      } catch (error) {
+        // Don't fail the restore if audit logging fails
+        if (this.options.debug) {
+          console.error('[OpenRedaction] Audit logging failed:', error);
+        }
+      }
     }
 
     return restored;
@@ -462,6 +580,20 @@ export class OpenRedaction {
 
     let placeholder: string;
 
+    // For non-placeholder modes, use redaction strategies directly
+    if (this.options.redactionMode !== 'placeholder') {
+      placeholder = applyRedactionMode(
+        value,
+        pattern.type,
+        this.options.redactionMode,
+        pattern.placeholder
+      );
+      // Still store mapping for consistency
+      this.valueToPlaceholder.set(value, placeholder);
+      return placeholder;
+    }
+
+    // Placeholder mode (default behavior)
     if (this.options.deterministic) {
       // Generate deterministic ID based on value
       const id = generateDeterministicId(value, pattern.type);
@@ -721,6 +853,37 @@ export class OpenRedaction {
   }
 
   /**
+   * Get the audit logger instance (if audit logging is enabled)
+   */
+  getAuditLogger(): IAuditLogger | undefined {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('audit:read')) {
+      throw new Error('[OpenRedaction] Permission denied: audit:read required');
+    }
+
+    return this.auditLogger;
+  }
+
+  /**
+   * Get the metrics collector instance (if metrics collection is enabled)
+   */
+  getMetricsCollector(): IMetricsCollector | undefined {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('metrics:read')) {
+      throw new Error('[OpenRedaction] Permission denied: metrics:read required');
+    }
+
+    return this.metricsCollector;
+  }
+
+  /**
+   * Get the RBAC manager instance (if RBAC is enabled)
+   */
+  getRBACManager(): IRBACManager | undefined {
+    return this.rbacManager;
+  }
+
+  /**
    * Create an explain API for debugging detections
    */
   explain(): ExplainAPI {
@@ -733,5 +896,125 @@ export class OpenRedaction {
   generateReport(result: DetectionResult, options: ReportOptions): string {
     const generator = createReportGenerator(this);
     return generator.generate(result, options);
+  }
+
+  /**
+   * Detect PII in a document (PDF, DOCX, TXT)
+   * Requires optional peer dependencies:
+   * - pdf-parse for PDF support
+   * - mammoth for DOCX support
+   */
+  async detectDocument(
+    buffer: Buffer,
+    options?: import('./document/types').DocumentOptions
+  ): Promise<import('./document/types').DocumentResult> {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('detection:detect')) {
+      throw new Error('[OpenRedaction] Permission denied: detection:detect required');
+    }
+
+    const { createDocumentProcessor } = await import('./document');
+    const processor = createDocumentProcessor();
+
+    const extractionStart = performance.now();
+
+    // Extract text from document
+    const text = await processor.extractText(buffer, options);
+    const metadata = await processor.getMetadata(buffer, options);
+
+    const extractionEnd = performance.now();
+    const extractionTime = Math.round((extractionEnd - extractionStart) * 100) / 100;
+
+    // Detect PII in extracted text
+    const detection = this.detect(text);
+
+    return {
+      text,
+      metadata,
+      detection,
+      fileSize: buffer.length,
+      extractionTime
+    };
+  }
+
+  /**
+   * Detect PII in a document file from filesystem
+   * Convenience method that reads file and calls detectDocument
+   */
+  async detectDocumentFile(
+    filePath: string,
+    options?: import('./document/types').DocumentOptions
+  ): Promise<import('./document/types').DocumentResult> {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('detection:detect')) {
+      throw new Error('[OpenRedaction] Permission denied: detection:detect required');
+    }
+
+    const fs = await import('fs/promises');
+    const buffer = await fs.readFile(filePath);
+
+    return this.detectDocument(buffer, options);
+  }
+
+  /**
+   * Batch detect PII in multiple texts using worker threads (parallel)
+   * Significantly faster for processing many texts
+   */
+  static async detectBatch(
+    texts: string[],
+    options?: OpenRedactionOptions & { numWorkers?: number }
+  ): Promise<DetectionResult[]> {
+    const { createWorkerPool } = await import('./workers');
+    const pool = createWorkerPool({ numWorkers: options?.numWorkers });
+
+    try {
+      await pool.initialize();
+
+      const tasks = texts.map((text, index) => ({
+        type: 'detect' as const,
+        id: `detect_${index}`,
+        text,
+        options
+      }));
+
+      const results = await Promise.all(
+        tasks.map(task => pool.execute<DetectionResult>(task))
+      );
+
+      return results;
+    } finally {
+      await pool.terminate();
+    }
+  }
+
+  /**
+   * Batch process multiple documents using worker threads (parallel)
+   * Efficient for processing many documents at once
+   */
+  static async detectDocumentsBatch(
+    buffers: Buffer[],
+    options?: import('./document/types').DocumentOptions & { numWorkers?: number }
+  ): Promise<import('./document/types').DocumentResult[]> {
+    const { createWorkerPool } = await import('./workers');
+    const pool = createWorkerPool({ numWorkers: options?.numWorkers });
+
+    try {
+      await pool.initialize();
+
+      const tasks = buffers.map((buffer, index) => ({
+        type: 'document' as const,
+        id: `document_${index}`,
+        buffer,
+        options
+      }));
+
+      const results = await Promise.all(
+        tasks.map(task => pool.execute(task))
+      );
+
+      return results;
+    } finally {
+      await pool.terminate();
+    }
   }
 }

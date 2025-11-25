@@ -31,6 +31,11 @@ import { gigEconomyPatterns } from './industries/gig-economy';
 import { hospitalityPatterns } from './industries/hospitality';
 import { professionalCertificationPatterns } from './industries/professional-certifications';
 import { gamingPatterns } from './industries/gaming';
+import { vehiclePatterns } from './industries/vehicles';
+import { logisticsPatterns } from './industries/logistics';
+import { aviationPatterns } from './industries/aviation';
+import { maritimePatterns } from './industries/maritime';
+import { environmentalPatterns } from './industries/environmental';
 
 // International patterns
 import { internationalPatterns } from './international';
@@ -61,6 +66,11 @@ export const allPatterns: PIIPattern[] = [
   ...hospitalityPatterns,
   ...professionalCertificationPatterns,
   ...gamingPatterns,
+  ...vehiclePatterns,
+  ...logisticsPatterns,
+  ...aviationPatterns,
+  ...maritimePatterns,
+  ...environmentalPatterns,
   ...telecomsPatterns,
   ...manufacturingPatterns,
   ...transportationPatterns,
@@ -162,6 +172,30 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
     case 'videogames':
     case 'gamers':
       return gamingPatterns;
+    case 'vehicles':
+    case 'license-plates':
+    case 'vin':
+      return vehiclePatterns;
+    case 'logistics':
+    case 'shipping':
+    case 'tracking':
+    case 'freight':
+      return logisticsPatterns;
+    case 'aviation':
+    case 'flight':
+    case 'aircraft':
+      return aviationPatterns;
+    case 'maritime':
+    case 'vessel':
+    case 'marine':
+    case 'ship':
+      return maritimePatterns;
+    case 'environmental':
+    case 'regulatory':
+    case 'epa':
+    case 'compliance':
+    case 'permits':
+      return environmentalPatterns;
     default:
       return [];
   }
@@ -187,6 +221,11 @@ export {
   hospitalityPatterns,
   professionalCertificationPatterns,
   gamingPatterns,
+  vehiclePatterns,
+  logisticsPatterns,
+  aviationPatterns,
+  maritimePatterns,
+  environmentalPatterns,
   telecomsPatterns,
   manufacturingPatterns,
   transportationPatterns,

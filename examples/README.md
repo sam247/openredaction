@@ -87,9 +87,7 @@ console.log(result.detections); // [{ type: 'EMAIL', value: 'john@example.com', 
 
 ## 📖 Documentation
 
-- [Main README](../README.md)
-- [API Documentation](../docs/API.md)
-- [Integration Guide](../docs/INTEGRATION.md)
+- [Main README](../README.md) - Full documentation and API reference
 
 ## 💡 Use Cases
 

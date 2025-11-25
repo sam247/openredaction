@@ -1,7 +1,7 @@
 {
   "name": "openredaction",
-  "version": "0.1.0",
-  "description": "Production-ready PII detection and redaction library",
+  "version": "1.0.0",
+  "description": "Production-ready PII detection and redaction library with 558+ patterns, document processing, OCR, RBAC, and enterprise features",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -45,6 +45,22 @@
   ],
   "author": "",
   "license": "MIT",
+  "peerDependencies": {
+    "pdf-parse": "^1.1.1",
+    "mammoth": "^1.6.0",
+    "tesseract.js": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "pdf-parse": {
+      "optional": true
+    },
+    "mammoth": {
+      "optional": true
+    },
+    "tesseract.js": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/express": "^5.0.5",
     "@types/node": "^20.10.0",

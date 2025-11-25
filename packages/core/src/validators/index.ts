@@ -6,7 +6,7 @@
  * Luhn algorithm validator for credit cards
  * https://en.wikipedia.org/wiki/Luhn_algorithm
  */
-export function validateLuhn(cardNumber: string): boolean {
+export function validateLuhn(cardNumber: string, _context?: string): boolean {
   // Remove any spaces or hyphens
   const cleaned = cardNumber.replace(/[\s-]/g, '');
 
@@ -39,7 +39,7 @@ export function validateLuhn(cardNumber: string): boolean {
 /**
  * IBAN validator with checksum verification
  */
-export function validateIBAN(iban: string): boolean {
+export function validateIBAN(iban: string, _context?: string): boolean {
   // Remove spaces and convert to uppercase
   const cleaned = iban.replace(/\s/g, '').toUpperCase();
 
@@ -94,7 +94,7 @@ function mod97(string: string): number {
 /**
  * UK National Insurance Number validator
  */
-export function validateNINO(nino: string): boolean {
+export function validateNINO(nino: string, _context?: string): boolean {
   const cleaned = nino.replace(/\s/g, '').toUpperCase();
 
   // Format: 2 letters, 6 digits, 1 letter (A, B, C, or D)
@@ -112,7 +112,7 @@ export function validateNINO(nino: string): boolean {
 /**
  * UK NHS Number validator with checksum
  */
-export function validateNHS(nhs: string): boolean {
+export function validateNHS(nhs: string, _context?: string): boolean {
   const cleaned = nhs.replace(/[\s-]/g, '');
 
   if (!/^\d{10}$/.test(cleaned)) {
@@ -134,7 +134,7 @@ export function validateNHS(nhs: string): boolean {
 /**
  * UK Passport validator
  */
-export function validateUKPassport(passport: string): boolean {
+export function validateUKPassport(passport: string, _context?: string): boolean {
   const cleaned = passport.replace(/\s/g, '').toUpperCase();
 
   // Format: 9 digits or 3 digits + 6 digits
@@ -144,7 +144,7 @@ export function validateUKPassport(passport: string): boolean {
 /**
  * US Social Security Number validator (format check only)
  */
-export function validateSSN(ssn: string): boolean {
+export function validateSSN(ssn: string, _context?: string): boolean {
   const cleaned = ssn.replace(/[\s-]/g, '');
 
   if (!/^\d{9}$/.test(cleaned)) {
@@ -176,7 +176,7 @@ export function validateSSN(ssn: string): boolean {
 /**
  * UK Sort Code validator (format check)
  */
-export function validateSortCode(sortCode: string): boolean {
+export function validateSortCode(sortCode: string, _context?: string): boolean {
   const cleaned = sortCode.replace(/[\s-]/g, '');
   return /^\d{6}$/.test(cleaned);
 }
@@ -227,7 +227,7 @@ export function validateName(name: string, context: string): boolean {
 /**
  * Email validator with DNS check capability
  */
-export function validateEmail(email: string): boolean {
+export function validateEmail(email: string, _context?: string): boolean {
   // Basic RFC 5322 compliant regex
   const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 

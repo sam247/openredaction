@@ -7,7 +7,7 @@
 
 **Production-ready PII detection and redaction for JavaScript/TypeScript**
 
-Local-first • Zero dependencies • <2ms latency • 100% offline • 151+ patterns
+Local-first • Zero dependencies • 10-20ms latency • 100% offline • 558+ patterns
 
 ## Features
 
@@ -50,6 +50,1131 @@ const restored = shield.restore(result.redacted, result.redactionMap);
 console.log(restored);
 // "Email john@example.com or call 07700900123"
 ```
+
+## Redaction Modes
+
+OpenRedaction supports multiple redaction strategies to balance security and usability:
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+
+// Placeholder mode (default) - Reversible
+const placeholder = new OpenRedaction({ redactionMode: 'placeholder' });
+placeholder.detect("Email john@example.com").redacted;
+// "Email [EMAIL_9619]"
+
+// Mask middle - Partial visibility
+const maskMiddle = new OpenRedaction({ redactionMode: 'mask-middle' });
+maskMiddle.detect("Email john@example.com or call 555-123-4567").redacted;
+// "Email j***@example.com or call 555-**-4567"
+
+// Mask all - Complete masking
+const maskAll = new OpenRedaction({ redactionMode: 'mask-all' });
+maskAll.detect("SSN: 123-45-6789").redacted;
+// "SSN: ***************"
+
+// Format preserving - Keep structure
+const formatPreserving = new OpenRedaction({ redactionMode: 'format-preserving' });
+formatPreserving.detect("Call 555-123-4567").redacted;
+// "Call XXX-XXX-XXXX"
+
+// Token replace - Realistic fake data
+const tokenReplace = new OpenRedaction({ redactionMode: 'token-replace' });
+tokenReplace.detect("Email john@example.com").redacted;
+// "Email user47@example.com"
+```
+
+## Audit Logging (Enterprise)
+
+Track all redaction operations with comprehensive audit logging for compliance and monitoring:
+
+```typescript
+import { OpenRedaction, InMemoryAuditLogger, ConsoleAuditLogger } from 'openredaction';
+
+// Enable audit logging with default in-memory logger
+const redactor = new OpenRedaction({
+  enableAuditLog: true,
+  auditUser: 'john.doe@company.com',
+  auditSessionId: 'session-123',
+  auditMetadata: { department: 'legal', requestId: 'req-456' }
+});
+
+// Process text (audit logged automatically)
+const result = redactor.detect("Email: john@example.com, SSN: 123-45-6789");
+
+// Access audit logs
+const auditLogger = redactor.getAuditLogger();
+const logs = auditLogger.getLogs();
+
+console.log(logs);
+// [
+//   {
+//     id: 'audit_1234567890_abc123',
+//     timestamp: '2025-01-15T10:30:00.000Z',
+//     operation: 'redact',
+//     piiCount: 2,
+//     piiTypes: ['EMAIL', 'SSN'],
+//     textLength: 45,
+//     processingTimeMs: 12.5,
+//     redactionMode: 'placeholder',
+//     success: true,
+//     user: 'john.doe@company.com',
+//     sessionId: 'session-123',
+//     metadata: { department: 'legal', requestId: 'req-456' }
+//   }
+// ]
+
+// Get statistics
+const stats = auditLogger.getStats();
+console.log(stats);
+// {
+//   totalOperations: 150,
+//   totalPiiDetected: 487,
+//   averageProcessingTime: 15.2,
+//   topPiiTypes: [
+//     { type: 'EMAIL', count: 95 },
+//     { type: 'PHONE_US', count: 72 },
+//     { type: 'SSN', count: 45 }
+//   ],
+//   operationsByType: { redact: 140, restore: 10 },
+//   successRate: 0.99
+// }
+
+// Export audit logs
+const jsonExport = auditLogger.exportAsJson();
+const csvExport = auditLogger.exportAsCsv();
+
+// Save to file for compliance
+fs.writeFileSync('audit-log.json', jsonExport);
+fs.writeFileSync('audit-log.csv', csvExport);
+
+// Filter logs by operation
+const redactOperations = auditLogger.getLogsByOperation('redact');
+
+// Filter logs by date range
+const lastWeek = auditLogger.getLogsByDateRange(
+  new Date('2025-01-08'),
+  new Date('2025-01-15')
+);
+
+// Use console logger for debugging
+const debugRedactor = new OpenRedaction({
+  enableAuditLog: true,
+  auditLogger: new ConsoleAuditLogger()
+});
+```
+
+### Custom Audit Logger
+
+Implement `IAuditLogger` for custom storage (database, cloud, etc):
+
+```typescript
+import { IAuditLogger, AuditLogEntry, AuditStats } from 'openredaction';
+
+class DatabaseAuditLogger implements IAuditLogger {
+  async log(entry: Omit<AuditLogEntry, 'id' | 'timestamp'>): void {
+    await db.auditLogs.insert({
+      ...entry,
+      id: crypto.randomUUID(),
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  async getLogs(): Promise<AuditLogEntry[]> {
+    return db.auditLogs.findAll();
+  }
+
+  // Implement other interface methods...
+}
+
+const redactor = new OpenRedaction({
+  enableAuditLog: true,
+  auditLogger: new DatabaseAuditLogger()
+});
+```
+
+## Metrics Export (Enterprise)
+
+Monitor and analyze redaction performance with built-in metrics collection and export:
+
+```typescript
+import { OpenRedaction, InMemoryMetricsCollector } from 'openredaction';
+
+// Enable metrics collection
+const redactor = new OpenRedaction({
+  enableMetrics: true
+});
+
+// Process some text
+redactor.detect("Email: john@example.com, SSN: 123-45-6789");
+redactor.detect("Call 555-123-4567 or visit website.com");
+redactor.detect("Account #12345, Card: 4532-0151-1283-0366");
+
+// Access metrics
+const metricsCollector = redactor.getMetricsCollector();
+const exporter = metricsCollector.getExporter();
+
+// Get current metrics
+const metrics = exporter.getMetrics();
+console.log(metrics);
+// {
+//   totalRedactions: 3,
+//   totalPiiDetected: 6,
+//   totalProcessingTime: 45.3,
+//   averageProcessingTime: 15.1,
+//   totalTextLength: 156,
+//   piiByType: {
+//     EMAIL: 1,
+//     SSN: 1,
+//     PHONE_US: 1,
+//     ACCOUNT_NUMBER: 1,
+//     CREDIT_CARD: 1,
+//     URL: 1
+//   },
+//   byRedactionMode: {
+//     placeholder: 3
+//   },
+//   totalErrors: 0,
+//   lastUpdated: '2025-01-15T10:45:00.000Z'
+// }
+
+// Export as Prometheus format
+const prometheusMetrics = exporter.exportPrometheus();
+console.log(prometheusMetrics);
+/*
+# HELP openredaction_total_redactions Total number of redaction operations
+# TYPE openredaction_total_redactions counter
+openredaction_total_redactions 3 1736938800000
+
+# HELP openredaction_total_pii_detected Total number of PII items detected
+# TYPE openredaction_total_pii_detected counter
+openredaction_total_pii_detected 6 1736938800000
+
+# HELP openredaction_avg_processing_time_ms Average processing time in milliseconds
+# TYPE openredaction_avg_processing_time_ms gauge
+openredaction_avg_processing_time_ms 15.10 1736938800000
+
+# HELP openredaction_pii_by_type PII detection counts by type
+# TYPE openredaction_pii_by_type counter
+openredaction_pii_by_type{type="EMAIL"} 1 1736938800000
+openredaction_pii_by_type{type="SSN"} 1 1736938800000
+openredaction_pii_by_type{type="PHONE_US"} 1 1736938800000
+...
+*/
+
+// Export as StatsD format
+const statsdMetrics = exporter.exportStatsD();
+console.log(statsdMetrics);
+/*
+[
+  'openredaction.total_redactions:3|c',
+  'openredaction.total_pii_detected:6|c',
+  'openredaction.total_processing_time_ms:45.30|c',
+  'openredaction.total_text_length:156|c',
+  'openredaction.total_errors:0|c',
+  'openredaction.avg_processing_time_ms:15.10|g',
+  'openredaction.pii_by_type:1|c|#type:EMAIL',
+  'openredaction.pii_by_type:1|c|#type:SSN',
+  'openredaction.pii_by_type:1|c|#type:PHONE_US',
+  ...
+]
+*/
+
+// Custom prefix for multi-tenant scenarios
+const customPrometheus = exporter.exportPrometheus(metrics, 'myapp_pii');
+const customStatsD = exporter.exportStatsD(metrics, 'myapp.pii');
+
+// Reset metrics
+exporter.reset();
+```
+
+### Integration with Monitoring Systems
+
+**Prometheus**:
+```typescript
+import express from 'express';
+import { OpenRedaction } from 'openredaction';
+
+const app = express();
+const redactor = new OpenRedaction({ enableMetrics: true });
+
+// Prometheus metrics endpoint
+app.get('/metrics', (req, res) => {
+  const exporter = redactor.getMetricsCollector()?.getExporter();
+  if (exporter) {
+    res.set('Content-Type', 'text/plain');
+    res.send(exporter.exportPrometheus());
+  } else {
+    res.status(404).send('Metrics not enabled');
+  }
+});
+
+app.listen(3000);
+```
+
+**StatsD/Datadog**:
+```typescript
+import { StatsD } from 'node-statsd';
+import { OpenRedaction } from 'openredaction';
+
+const statsd = new StatsD();
+const redactor = new OpenRedaction({ enableMetrics: true });
+
+// Periodically push metrics to StatsD
+setInterval(() => {
+  const exporter = redactor.getMetricsCollector()?.getExporter();
+  if (exporter) {
+    const metrics = exporter.exportStatsD();
+    metrics.forEach(metric => {
+      // Parse and send to StatsD
+      const [name, rest] = metric.split(':');
+      const [value, type] = rest.split('|');
+      statsd.gauge(name, parseFloat(value));
+    });
+  }
+}, 10000); // Every 10 seconds
+```
+
+## RBAC (Role-Based Access Control)
+
+Control access to operations with fine-grained permissions and predefined roles:
+
+```typescript
+import { OpenRedaction, ANALYST_ROLE, OPERATOR_ROLE, VIEWER_ROLE } from 'openredaction';
+
+// Enable RBAC with a predefined role
+const analystRedactor = new OpenRedaction({
+  enableRBAC: true,
+  role: 'analyst'  // admin, analyst, operator, viewer
+});
+
+// Analyst can detect and redact
+const result = analystRedactor.detect("Email: john@example.com");
+// ✓ Allowed - analysts have 'detection:detect' permission
+
+// But cannot reset metrics
+const metrics = analystRedactor.getMetricsCollector();
+metrics?.getExporter().reset();
+// ✗ Error: Permission denied - analysts lack 'metrics:reset'
+
+// Viewer role - read-only access
+const viewerRedactor = new OpenRedaction({
+  enableRBAC: true,
+  role: 'viewer'
+});
+
+viewerRedactor.detect("Email: john@example.com");
+// ✗ Error: Permission denied - viewers lack 'detection:detect'
+
+// But can view audit logs
+const auditLogger = viewerRedactor.getAuditLogger();
+const logs = auditLogger?.getLogs();
+// ✓ Allowed - viewers have 'audit:read' permission
+```
+
+### Predefined Roles
+
+**Admin Role** - Full access to all operations:
+- All permissions (`pattern:*`, `detection:*`, `audit:*`, `metrics:*`, `config:*`)
+
+**Analyst Role** - Detection and read access:
+- `pattern:read`, `detection:detect`, `detection:redact`, `detection:restore`
+- `audit:read`, `audit:export`, `metrics:read`, `metrics:export`, `config:read`
+
+**Operator Role** - Basic detection operations:
+- `pattern:read`, `detection:detect`, `detection:redact`
+- `audit:read`, `metrics:read`
+
+**Viewer Role** - Read-only access:
+- `pattern:read`, `audit:read`, `audit:export`, `metrics:read`, `metrics:export`, `config:read`
+
+### Custom Roles
+
+Create custom roles with specific permission sets:
+
+```typescript
+import { OpenRedaction, createCustomRole, RBACManager } from 'openredaction';
+
+// Create a custom role
+const dataProcessorRole = createCustomRole(
+  'data_processor',
+  [
+    'pattern:read',
+    'detection:detect',
+    'detection:redact',
+    'metrics:read'
+  ],
+  'Custom role for data processing workflows'
+);
+
+// Use custom role
+const rbacManager = new RBACManager(dataProcessorRole);
+const redactor = new OpenRedaction({
+  enableRBAC: true,
+  rbacManager
+});
+
+// Check permissions programmatically
+const manager = redactor.getRBACManager();
+if (manager?.hasPermission('detection:detect')) {
+  const result = redactor.detect("Sensitive text");
+}
+
+// Check multiple permissions
+if (manager?.hasAllPermissions(['detection:detect', 'audit:read'])) {
+  // User has both permissions
+}
+
+// Check any permission
+if (manager?.hasAnyPermission(['audit:read', 'audit:export'])) {
+  // User has at least one permission
+}
+```
+
+### Available Permissions
+
+**Pattern Management**:
+- `pattern:read` - View patterns
+- `pattern:write` - Add/modify patterns
+- `pattern:delete` - Remove patterns
+
+**Detection Operations**:
+- `detection:detect` - Run detection operations
+- `detection:redact` - Perform redaction
+- `detection:restore` - Restore redacted text
+
+**Audit Log Access**:
+- `audit:read` - Read audit logs
+- `audit:export` - Export audit logs (JSON/CSV)
+- `audit:delete` - Clear audit logs
+
+**Metrics Access**:
+- `metrics:read` - Read metrics
+- `metrics:export` - Export metrics (Prometheus/StatsD)
+- `metrics:reset` - Reset metrics
+
+**Configuration**:
+- `config:read` - Read configuration
+- `config:write` - Modify configuration
+
+### Permission Enforcement
+
+Permissions are enforced on all protected operations:
+
+```typescript
+const operatorRedactor = new OpenRedaction({
+  enableRBAC: true,
+  role: 'operator'
+});
+
+try {
+  // Operators can detect
+  operatorRedactor.detect("Email: test@example.com");
+  // ✓ Success
+
+  // But cannot access metrics exporter's reset function
+  const exporter = operatorRedactor.getMetricsCollector()?.getExporter();
+  exporter?.reset();
+  // Note: Permission check happens at getMetricsCollector(),
+  // operator role has metrics:read but not metrics:reset
+
+} catch (error) {
+  console.error(error.message);
+  // Permission denied: [permission] required
+}
+```
+
+### Multi-Tenant Scenarios
+
+Use RBAC for multi-tenant applications:
+
+```typescript
+import express from 'express';
+import { OpenRedaction, getPredefinedRole, RBACManager } from 'openredaction';
+
+const app = express();
+
+// Map user roles from your auth system
+const userRoles = {
+  'admin@company.com': 'admin',
+  'analyst@company.com': 'analyst',
+  'support@company.com': 'operator',
+  'auditor@company.com': 'viewer'
+};
+
+app.post('/api/redact', authenticate, (req, res) => {
+  const userRole = userRoles[req.user.email] || 'viewer';
+  const role = getPredefinedRole(userRole);
+
+  if (!role) {
+    return res.status(403).json({ error: 'Invalid role' });
+  }
+
+  const redactor = new OpenRedaction({
+    enableRBAC: true,
+    rbacManager: new RBACManager(role),
+    enableAuditLog: true,
+    auditUser: req.user.email
+  });
+
+  try {
+    const result = redactor.detect(req.body.text);
+    res.json(result);
+  } catch (error) {
+    if (error.message.includes('Permission denied')) {
+      res.status(403).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Internal error' });
+    }
+  }
+});
+```
+
+## Document Processing (PDF, Word, Text)
+
+Process and redact PII from PDF, Word (DOCX), and text documents with built-in text extraction:
+
+### Installation
+
+Document processing requires optional peer dependencies:
+
+```bash
+# For PDF support
+npm install pdf-parse
+
+# For Word (DOCX) support
+npm install mammoth
+
+# Or install both
+npm install pdf-parse mammoth
+```
+
+### Basic Usage
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+import fs from 'fs/promises';
+
+const redactor = new OpenRedaction();
+
+// Process PDF document
+const pdfBuffer = await fs.readFile('document.pdf');
+const pdfResult = await redactor.detectDocument(pdfBuffer);
+
+console.log('Extracted text:', pdfResult.text);
+console.log('Found PII:', pdfResult.detection.detections);
+console.log('Redacted text:', pdfResult.detection.redacted);
+console.log('Document metadata:', pdfResult.metadata);
+
+// Or use convenience method with file path
+const result = await redactor.detectDocumentFile('contract.docx');
+console.log(`Found ${result.detection.detections.length} PII items in ${result.extractionTime}ms`);
+```
+
+### Supported Formats
+
+**PDF**:
+- Text extraction from PDF files
+- Password-protected PDF support
+- Metadata extraction (pages, title, author, dates)
+- Requires: `pdf-parse`
+
+**DOCX (Word)**:
+- Text extraction from Word documents
+- Modern Office Open XML format
+- Requires: `mammoth`
+
+**TXT**:
+- Plain text files (built-in, no dependencies)
+- UTF-8 encoding
+
+### Document Options
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+
+const redactor = new OpenRedaction();
+
+// Auto-detect format
+const result1 = await redactor.detectDocument(buffer);
+
+// Specify format explicitly
+const result2 = await redactor.detectDocument(buffer, {
+  format: 'pdf'
+});
+
+// Extract specific pages (PDF only)
+const result3 = await redactor.detectDocument(pdfBuffer, {
+  format: 'pdf',
+  pages: [1, 2, 3]  // Pages 1-3 (1-indexed)
+});
+
+// Password-protected PDF
+const result4 = await redactor.detectDocument(pdfBuffer, {
+  format: 'pdf',
+  password: 'secret123'
+});
+
+// Size limit (default: 50MB)
+const result5 = await redactor.detectDocument(buffer, {
+  maxSize: 10 * 1024 * 1024  // 10MB max
+});
+```
+
+### Document Result
+
+The `detectDocument` method returns comprehensive information:
+
+```typescript
+interface DocumentResult {
+  text: string;              // Extracted text
+  metadata: DocumentMetadata; // Document info
+  detection: DetectionResult; // PII detection results
+  fileSize: number;          // Original file size in bytes
+  extractionTime: number;    // Extraction time in ms
+}
+
+// Example
+const result = await redactor.detectDocumentFile('resume.pdf');
+
+console.log(`
+File size: ${result.fileSize} bytes
+Extraction time: ${result.extractionTime}ms
+Pages: ${result.metadata.pages}
+Title: ${result.metadata.title}
+Author: ${result.metadata.author}
+Found PII: ${result.detection.detections.length} items
+`);
+
+// Access detected PII
+result.detection.detections.forEach(detection => {
+  console.log(`${detection.type}: ${detection.value} (${detection.severity})`);
+});
+
+// Get redacted document text
+const redactedText = result.detection.redacted;
+```
+
+### Batch Document Processing
+
+Process multiple documents efficiently:
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+import { glob } from 'glob';
+import fs from 'fs/promises';
+
+const redactor = new OpenRedaction({
+  enableAuditLog: true,
+  enableMetrics: true
+});
+
+// Find all documents
+const files = await glob('documents/**/*.{pdf,docx,txt}');
+
+// Process in parallel
+const results = await Promise.all(
+  files.map(async (file) => {
+    try {
+      const result = await redactor.detectDocumentFile(file);
+      return {
+        file,
+        success: true,
+        piiCount: result.detection.detections.length,
+        extractionTime: result.extractionTime
+      };
+    } catch (error) {
+      return {
+        file,
+        success: false,
+        error: error.message
+      };
+    }
+  })
+);
+
+// Summary
+const successful = results.filter(r => r.success);
+const failed = results.filter(r => !r.success);
+
+console.log(`Processed: ${successful.length} successful, ${failed.length} failed`);
+console.log(`Total PII found: ${successful.reduce((sum, r) => sum + (r.piiCount || 0), 0)}`);
+```
+
+### Integration with Express
+
+```typescript
+import express from 'express';
+import multer from 'multer';
+import { OpenRedaction } from 'openredaction';
+
+const app = express();
+const upload = multer({ storage: multer.memoryStorage() });
+const redactor = new OpenRedaction();
+
+app.post('/api/documents/scan', upload.single('document'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  try {
+    const result = await redactor.detectDocument(req.file.buffer, {
+      format: req.body.format // Optional format hint
+    });
+
+    res.json({
+      filename: req.file.originalname,
+      format: result.metadata.format,
+      pages: result.metadata.pages,
+      piiFound: result.detection.detections.length,
+      detections: result.detection.detections.map(d => ({
+        type: d.type,
+        severity: d.severity,
+        confidence: d.confidence
+      })),
+      extractionTime: result.extractionTime
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.listen(3000);
+```
+
+### Error Handling
+
+```typescript
+try {
+  const result = await redactor.detectDocument(buffer);
+} catch (error) {
+  if (error.message.includes('PDF support requires pdf-parse')) {
+    console.error('Please install pdf-parse: npm install pdf-parse');
+  } else if (error.message.includes('DOCX support requires mammoth')) {
+    console.error('Please install mammoth: npm install mammoth');
+  } else if (error.message.includes('Unable to detect document format')) {
+    console.error('Unsupported file format. Supported: PDF, DOCX, TXT');
+  } else if (error.message.includes('exceeds maximum')) {
+    console.error('Document too large');
+  } else {
+    console.error('Document processing error:', error.message);
+  }
+}
+```
+
+### Format Detection
+
+The document processor automatically detects formats:
+
+```typescript
+import { createDocumentProcessor } from 'openredaction';
+
+const processor = createDocumentProcessor();
+
+// Detect format from buffer
+const format = processor.detectFormat(buffer);
+console.log(format); // 'pdf', 'docx', 'txt', or null
+
+// Check if format is supported (and peer dependency is installed)
+if (processor.isFormatSupported('pdf')) {
+  console.log('PDF processing is available');
+} else {
+  console.log('Install pdf-parse for PDF support');
+}
+```
+
+### Standalone Document Processor
+
+Use the document processor directly without PII detection:
+
+```typescript
+import { createDocumentProcessor } from 'openredaction';
+
+const processor = createDocumentProcessor();
+
+// Extract text only
+const text = await processor.extractText(buffer);
+console.log('Extracted text:', text);
+
+// Get metadata
+const metadata = await processor.getMetadata(buffer);
+console.log('Pages:', metadata.pages);
+console.log('Author:', metadata.author);
+console.log('Created:', metadata.creationDate);
+```
+
+### OCR (Optical Character Recognition)
+
+Extract text from images and scanned documents with built-in OCR support:
+
+#### Installation
+
+OCR requires an additional optional peer dependency:
+
+```bash
+npm install tesseract.js
+```
+
+#### Supported Formats
+
+- **PNG** - Lossless image format
+- **JPEG/JPG** - Compressed image format
+- **TIFF** - High-quality scanned documents
+- **BMP** - Windows bitmap images
+- **WebP** - Modern web image format
+
+#### Basic OCR Usage
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+import fs from 'fs/promises';
+
+const redactor = new OpenRedaction();
+
+// Process image with OCR
+const imageBuffer = await fs.readFile('scanned-document.png');
+const result = await redactor.detectDocument(imageBuffer, {
+  enableOCR: true
+});
+
+console.log('Extracted text:', result.text);
+console.log('OCR confidence:', result.metadata.ocrConfidence);
+console.log('Found PII:', result.detection.detections);
+```
+
+#### OCR Language Support
+
+Configure OCR for different languages:
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+
+const redactor = new OpenRedaction();
+
+// English (default)
+await redactor.detectDocument(imageBuffer, {
+  enableOCR: true,
+  ocrOptions: {
+    language: 'eng'
+  }
+});
+
+// Spanish
+await redactor.detectDocument(imageBuffer, {
+  enableOCR: true,
+  ocrOptions: {
+    language: 'spa'
+  }
+});
+
+// Multiple languages
+await redactor.detectDocument(imageBuffer, {
+  enableOCR: true,
+  ocrOptions: {
+    language: ['eng', 'spa', 'fra']  // English, Spanish, French
+  }
+});
+
+// Supported languages:
+// - eng (English)
+// - spa (Spanish)
+// - fra (French)
+// - deu (German)
+// - por (Portuguese)
+// - ita (Italian)
+// - rus (Russian)
+// - chi_sim (Chinese Simplified)
+// - chi_tra (Chinese Traditional)
+// - jpn (Japanese)
+// - kor (Korean)
+```
+
+#### OCR Quality Settings
+
+Fine-tune OCR for better accuracy:
+
+```typescript
+await redactor.detectDocument(imageBuffer, {
+  enableOCR: true,
+  ocrOptions: {
+    language: 'eng',
+    oem: 3,  // OCR Engine Mode (0-3, default: 3 for best accuracy)
+    psm: 3   // Page Segmentation Mode (0-13, default: 3 for automatic)
+  }
+});
+
+// OCR Engine Modes (oem):
+// 0 - Legacy engine only
+// 1 - Neural nets LSTM engine only
+// 2 - Legacy + LSTM engines
+// 3 - Default, based on what is available (recommended)
+
+// Page Segmentation Modes (psm):
+// 0  - Orientation and script detection (OSD) only
+// 1  - Automatic page segmentation with OSD
+// 2  - Automatic page segmentation (no OSD or OCR)
+// 3  - Fully automatic page segmentation (default)
+// 4  - Assume a single column of text of variable sizes
+// 6  - Assume a single uniform block of text
+// 11 - Sparse text (find as much text as possible)
+// 13 - Raw line (treat image as single text line)
+```
+
+#### Standalone OCR Processor
+
+Use OCR directly without document processing:
+
+```typescript
+import { createOCRProcessor } from 'openredaction';
+
+const ocrProcessor = createOCRProcessor();
+
+// Check if OCR is available
+if (ocrProcessor.isAvailable()) {
+  // Process single image
+  const result = await ocrProcessor.recognizeText(imageBuffer, {
+    language: 'eng',
+    oem: 3,
+    psm: 3
+  });
+
+  console.log('Text:', result.text);
+  console.log('Confidence:', result.confidence);
+  console.log('Processing time:', result.processingTime, 'ms');
+}
+```
+
+#### Batch OCR Processing
+
+Process multiple images efficiently:
+
+```typescript
+import { createOCRProcessor } from 'openredaction';
+import { glob } from 'glob';
+import fs from 'fs/promises';
+
+const ocrProcessor = createOCRProcessor();
+
+// Find all images
+const imageFiles = await glob('scans/**/*.{png,jpg,jpeg}');
+
+// Load buffers
+const buffers = await Promise.all(
+  imageFiles.map(file => fs.readFile(file))
+);
+
+// Batch process with scheduler (more efficient)
+const results = await ocrProcessor.recognizeBatch(buffers, {
+  language: 'eng'
+});
+
+// Process results
+results.forEach((result, index) => {
+  console.log(`File: ${imageFiles[index]}`);
+  console.log(`Confidence: ${result.confidence}%`);
+  console.log(`Text: ${result.text.substring(0, 100)}...`);
+  console.log('---');
+});
+
+// Don't forget to cleanup
+await ocrProcessor.cleanup();
+```
+
+#### OCR with Document Processing
+
+Combine OCR with full document processing:
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+import express from 'express';
+import multer from 'multer';
+
+const app = express();
+const upload = multer({ storage: multer.memoryStorage() });
+const redactor = new OpenRedaction();
+
+app.post('/api/scan-document', upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  try {
+    const result = await redactor.detectDocument(req.file.buffer, {
+      enableOCR: true,
+      ocrOptions: {
+        language: req.body.language || 'eng'
+      }
+    });
+
+    res.json({
+      extractedText: result.text,
+      ocrConfidence: result.metadata.ocrConfidence,
+      piiFound: result.detection.detections.length,
+      redactedText: result.detection.redacted,
+      detections: result.detection.detections.map(d => ({
+        type: d.type,
+        severity: d.severity,
+        position: d.position
+      }))
+    });
+  } catch (error) {
+    if (error.message.includes('tesseract.js')) {
+      res.status(500).json({
+        error: 'OCR not available. Install tesseract.js: npm install tesseract.js'
+      });
+    } else {
+      res.status(500).json({ error: error.message });
+    }
+  }
+});
+
+app.listen(3000);
+```
+
+#### Performance Tips
+
+1. **Use Batch Processing**: For multiple images, use `recognizeBatch()` with a scheduler
+2. **Optimize Image Quality**: Higher resolution images = better OCR but slower processing
+3. **Pre-process Images**: Enhance contrast, remove noise, straighten for better accuracy
+4. **Choose Appropriate PSM**: Use PSM 6 for single blocks, PSM 11 for sparse text
+5. **Language Selection**: Only load languages you need to reduce memory usage
+
+## Worker Threads (Parallel Processing)
+
+Process multiple texts or documents in parallel using worker threads for maximum performance:
+
+### Batch Text Processing
+
+Process multiple texts in parallel:
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+
+// Process array of texts in parallel
+const texts = [
+  "Email: john@example.com",
+  "SSN: 123-45-6789",
+  "Phone: 555-123-4567",
+  // ... hundreds or thousands of texts
+];
+
+// Automatically uses all CPU cores
+const results = await OpenRedaction.detectBatch(texts);
+
+// Custom worker count
+const results = await OpenRedaction.detectBatch(texts, {
+  numWorkers: 4  // Use 4 worker threads
+});
+
+console.log(`Processed ${results.length} texts`);
+results.forEach((result, index) => {
+  console.log(`Text ${index}: Found ${result.detections.length} PII items`);
+});
+```
+
+### Batch Document Processing
+
+Process multiple documents in parallel:
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+import { glob } from 'glob';
+import fs from 'fs/promises';
+
+// Find all documents
+const files = await glob('documents/**/*.{pdf,docx,png,jpg}');
+
+// Load buffers
+const buffers = await Promise.all(
+  files.map(file => fs.readFile(file))
+);
+
+// Process all documents in parallel
+const results = await OpenRedaction.detectDocumentsBatch(buffers, {
+  enableOCR: true,  // Enable OCR for images
+  numWorkers: 8     // Use 8 workers
+});
+
+// Process results
+results.forEach((result, index) => {
+  console.log(`File: ${files[index]}`);
+  console.log(`Format: ${result.metadata.format}`);
+  console.log(`PII Found: ${result.detection.detections.length}`);
+  console.log(`Processing Time: ${result.extractionTime}ms`);
+});
+```
+
+### Manual Worker Pool Management
+
+For advanced use cases, manage worker pools manually:
+
+```typescript
+import { createWorkerPool } from 'openredaction';
+
+// Create worker pool
+const pool = createWorkerPool({
+  numWorkers: 4,           // Number of workers
+  maxQueueSize: 100,       // Maximum queue size
+  idleTimeout: 30000       // Worker idle timeout (ms)
+});
+
+// Initialize workers
+await pool.initialize();
+
+// Submit tasks
+const tasks = texts.map((text, index) => ({
+  type: 'detect' as const,
+  id: `task_${index}`,
+  text,
+  options: { preset: 'gdpr' }
+}));
+
+// Process tasks
+const results = await Promise.all(
+  tasks.map(task => pool.execute(task))
+);
+
+// Get statistics
+const stats = pool.getStats();
+console.log(`Active Workers: ${stats.activeWorkers}`);
+console.log(`Queue Size: ${stats.queueSize}`);
+console.log(`Total Processed: ${stats.totalProcessed}`);
+console.log(`Avg Processing Time: ${stats.avgProcessingTime}ms`);
+
+// Clean up
+await pool.terminate();
+```
+
+### Performance Benefits
+
+Worker threads provide significant performance improvements:
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+
+const texts = Array(1000).fill("Email: test@example.com, SSN: 123-45-6789");
+
+// Sequential processing (slow)
+console.time('Sequential');
+const redactor = new OpenRedaction();
+const sequentialResults = texts.map(text => redactor.detect(text));
+console.timeEnd('Sequential');
+// Sequential: ~5000ms
+
+// Parallel processing (fast)
+console.time('Parallel');
+const parallelResults = await OpenRedaction.detectBatch(texts);
+console.timeEnd('Parallel');
+// Parallel: ~700ms (7x faster on 8-core CPU)
+```
+
+### Best Practices
+
+1. **Use Batch Methods**: For multiple texts/documents, always use `detectBatch()` or `detectDocumentsBatch()`
+2. **Optimal Worker Count**: Default (CPU count) is usually optimal. Adjust based on workload
+3. **Memory Considerations**: Each worker uses memory. Don't create too many workers for large documents
+4. **Queue Management**: Set `maxQueueSize` to prevent memory issues with huge batches
+5. **Cleanup**: Worker pools auto-terminate after batch methods complete
 
 ## CLI Usage
 
@@ -521,9 +1646,26 @@ MIT © 2025
 
 ## Roadmap
 
+### Completed ✅
+- [x] 558+ PII patterns across 20+ industries and 40+ countries
+- [x] All 50 US state license plates with format-specific validation
+- [x] 16 international carrier tracking numbers (global coverage)
+- [x] Multiple redaction modes (5 modes: placeholder, mask-middle, mask-all, format-preserving, token-replace)
+- [x] Audit logging system with JSON/CSV export
+- [x] Metrics export API (Prometheus, StatsD) for monitoring
+- [x] RBAC (role-based access control) for enterprise multi-tenancy
+- [x] Document processing (PDF, DOCX, TXT) with text extraction
+- [x] OCR integration for image-based documents (11 languages, batch processing)
+- [x] Worker threads for parallel processing (batch text and document processing)
+- [x] Local learning system with feedback loop
+- [x] Context-aware detection with confidence scoring
+- [x] Priority optimization system
+- [x] Streaming API for large texts
+- [x] HTML report generation
+- [x] Framework integrations (React hooks, Express middleware)
+
+### Planned 📋
 - [ ] Multi-language support (Spanish, French, German, Portuguese)
-- [ ] Streaming API for large texts
-- [ ] Document support (PDF, DOCX)
 - [ ] Framework integrations (LangChain, Vercel AI SDK)
 - [ ] Cloud API with managed service
 - [ ] Interactive playground website

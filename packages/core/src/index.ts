@@ -10,8 +10,58 @@ export type {
   PIIDetection,
   DetectionResult,
   OpenRedactionOptions,
-  Validator
+  RedactionMode,
+  Validator,
+  IAuditLogger,
+  AuditLogEntry,
+  AuditStats,
+  IMetricsCollector,
+  IMetricsExporter,
+  RedactionMetrics,
+  IRBACManager,
+  Role,
+  Permission,
+  RoleName
 } from './types';
+
+// Audit logging
+export { InMemoryAuditLogger, ConsoleAuditLogger } from './audit';
+
+// Metrics collection
+export { InMemoryMetricsCollector } from './metrics';
+
+// RBAC (Role-Based Access Control)
+export {
+  RBACManager,
+  createRBACManager,
+  ADMIN_ROLE,
+  ANALYST_ROLE,
+  OPERATOR_ROLE,
+  VIEWER_ROLE,
+  ALL_PERMISSIONS,
+  getPredefinedRole,
+  createCustomRole
+} from './rbac';
+
+// Document processing (optional - requires peer dependencies)
+export {
+  DocumentProcessor,
+  createDocumentProcessor,
+  OCRProcessor,
+  createOCRProcessor
+} from './document';
+export type {
+  DocumentFormat,
+  DocumentOptions,
+  DocumentResult,
+  DocumentMetadata,
+  IDocumentProcessor,
+  ImageFormat,
+  OCRLanguage,
+  OCROptions,
+  IOCRProcessor,
+  OCRResult
+} from './document';
 
 export {
   allPatterns,
@@ -104,6 +154,20 @@ export type {
   ChunkResult,
   StreamingOptions
 } from './streaming/StreamingDetector';
+
+// Worker threads (parallel processing)
+export {
+  WorkerPool,
+  createWorkerPool
+} from './workers';
+export type {
+  WorkerTask,
+  WorkerResult,
+  WorkerPoolConfig,
+  WorkerPoolStats,
+  DetectTask,
+  DocumentTask
+} from './workers';
 
 // Batch processing
 export {
