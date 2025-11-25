@@ -14,7 +14,7 @@ import {
 import { InMemoryAuditLogger } from './audit';
 import { InMemoryMetricsCollector } from './metrics';
 import { RBACManager, getPredefinedRole } from './rbac';
-import { allPatterns } from './patterns';
+import { allPatterns, getPatternsByCategory } from './patterns';
 import { generateDeterministicId } from './utils/hash';
 import { getPreset } from './utils/presets';
 import { applyRedactionMode } from './utils/redaction-strategies';
@@ -51,6 +51,7 @@ export class OpenRedaction {
     includePhones: boolean;
     includeEmails: boolean;
     patterns: string[];
+    categories: string[]; // Pattern categories to include (e.g., ['personal', 'financial'])
     customPatterns: PIIPattern[];
     whitelist: string[];
     deterministic: boolean;
@@ -109,6 +110,7 @@ export class OpenRedaction {
       includePhones: true,
       includeEmails: true,
       patterns: [],
+      categories: [], // Empty = use all categories
       customPatterns: [],
       whitelist: [],
       deterministic: true,
@@ -266,17 +268,36 @@ export class OpenRedaction {
 
   /**
    * Build the list of patterns based on options
+   * Supports three filtering modes (in order of priority):
+   * 1. Specific pattern types (patterns option)
+   * 2. Pattern categories (categories option) - NEW!
+   * 3. All patterns with type-specific filters (includeNames, etc.)
    */
   private buildPatternList(): PIIPattern[] {
     let patterns: PIIPattern[];
 
-    // If specific patterns are whitelisted, use only those
+    // Priority 1: If specific patterns are whitelisted, use only those
     if (this.options.patterns && this.options.patterns.length > 0) {
       patterns = allPatterns.filter(p =>
         this.options.patterns!.includes(p.type)
       );
-    } else {
-      // Use all patterns, filtered by category options
+    }
+    // Priority 2: If categories are specified, use only those categories
+    else if (this.options.categories && this.options.categories.length > 0) {
+      patterns = [];
+      for (const category of this.options.categories) {
+        const categoryPatterns = getPatternsByCategory(category);
+        patterns.push(...categoryPatterns);
+      }
+      // Remove duplicates (some patterns may be in multiple categories)
+      patterns = Array.from(new Map(patterns.map(p => [p.type, p])).values());
+
+      if (this.options.debug) {
+        console.log(`[OpenRedaction] Loaded ${patterns.length} patterns from categories: ${this.options.categories.join(', ')}`);
+      }
+    }
+    // Priority 3: Use all patterns, filtered by category options
+    else {
       patterns = allPatterns.filter(pattern => {
         // Filter by category options
         if (pattern.type === 'NAME' && !this.options.includeNames) return false;
