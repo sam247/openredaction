@@ -1,11 +1,11 @@
 # OpenRedaction
 
-![Custom dimensions 1280x640 px](https://github.com/user-attachments/assets/8af856bf-0eb5-4223-949f-44ee29cfebd9)
-
 [![Version](https://img.shields.io/badge/version-0.1.0--pre--release-orange.svg)](https://github.com/sam247/openredact)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-276%20passing-brightgreen.svg)](https://github.com/sam247/openredact)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
+
+![Custom dimensions 1280x640 px](https://github.com/user-attachments/assets/8af856bf-0eb5-4223-949f-44ee29cfebd9)
 
 **Production-ready PII detection and redaction for JavaScript/TypeScript**
 
