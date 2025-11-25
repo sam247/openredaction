@@ -1,5 +1,7 @@
 # OpenRedaction
 
+![Custom dimensions 1280x640 px](https://github.com/user-attachments/assets/ac1d1c66-7325-4466-81ec-ce2b1620e18f)
+
 [![Version](https://img.shields.io/badge/version-0.1.0--pre--release-orange.svg)](https://github.com/sam247/openredact)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-276%20passing-brightgreen.svg)](https://github.com/sam247/openredact)
