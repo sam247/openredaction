@@ -7,12 +7,12 @@
 
 **Production-ready PII detection and redaction for JavaScript/TypeScript**
 
-Local-first • Zero dependencies • 10-20ms latency • 100% offline • 558+ patterns
+Local-first • Zero dependencies • 10-20ms latency • 100% offline • 571+ patterns
 
 ## Features
 
 - **Lightning Fast** - <2ms processing for 2KB text, 100x faster than cloud APIs
-- **558+ PII Patterns** - Comprehensive coverage across 25+ industries and 50+ countries
+- **571+ PII Patterns** - Comprehensive coverage across 25+ industries and 50+ countries
 - **Structured Data Support** - JSON, CSV, XLSX (Excel) with path/cell tracking
 - **Semantic Detection** - Hybrid NER + regex with 40+ contextual rules
 - **Severity Classification** - 4-tier risk scoring (critical/high/medium/low)
@@ -1931,6 +1931,13 @@ setInterval(async () => {
 - **SORT_CODE_UK** - UK sort codes
 - **ROUTING_NUMBER_US** - US routing numbers
 - **CVV** - Card security codes
+- **IFSC** - Indian Financial System Code (NEW)
+- **CLABE** - Mexican CLABE bank account numbers (NEW)
+- **BSB_AU** - Australian Bank State Branch numbers (NEW)
+- **ISIN** - International Securities Identification Number (NEW)
+- **CUSIP** - CUSIP securities identifier (NEW)
+- **SEDOL** - Stock Exchange Daily Official List identifier (NEW)
+- **LEI** - Legal Entity Identifier (NEW)
 
 ### Government IDs
 - **SSN** - US Social Security Numbers (with validation)
@@ -1938,9 +1945,16 @@ setInterval(async () => {
 - **PASSPORT_US** - US passport numbers
 - **NATIONAL_INSURANCE_UK** - UK National Insurance (with validation)
 - **NHS_NUMBER** - UK NHS numbers (with checksum validation)
+- **CHI_NUMBER** - Scottish Community Health Index number (NEW)
+- **EHIC_NUMBER** - European Health Insurance Card number (NEW)
 - **DRIVING_LICENSE_UK** - UK driving licenses
 - **DRIVING_LICENSE_US** - US driving licenses
 - **TAX_ID** - Tax identification numbers
+- **UTR_UK** - UK Unique Taxpayer Reference (NEW)
+- **VAT_NUMBER** - VAT registration numbers (EU countries) (NEW)
+- **COMPANY_NUMBER_UK** - UK Company registration numbers (NEW)
+- **ITIN** - US Individual Taxpayer Identification Number (NEW)
+- **SIN_CA** - Canadian Social Insurance Number (NEW)
 
 ### Contact Information
 - **PHONE_UK_MOBILE** - UK mobile phones
@@ -2951,7 +2965,7 @@ MIT © 2025
 ## Roadmap
 
 ### Completed ✅
-- [x] 558+ PII patterns across 25+ industries and 50+ countries
+- [x] 571+ PII patterns across 25+ industries and 50+ countries
 - [x] All 50 US state license plates with format-specific validation
 - [x] 16 international carrier tracking numbers (global coverage)
 - [x] Multiple redaction modes (5 modes: placeholder, mask-middle, mask-all, format-preserving, token-replace)
@@ -2969,6 +2983,7 @@ MIT © 2025
 - [x] **Prometheus metrics exporter** (HTTP server, Grafana dashboard template) - Phase 3 🚀
 - [x] **Webhook & alert system** (event-driven, retry logic, circuit breaker, HMAC signatures) - Phase 3 🚀
 - [x] **REST API server** (production-ready, rate limiting, CORS, multi-tenant, OpenAPI docs) - Phase 3 🚀
+- [x] **13 missing patterns added** (IFSC, CLABE, BSB, ISIN, CUSIP, SEDOL, LEI, UTR, VAT, Company Number, ITIN, SIN, CHI, EHIC) - Phase 4 ✅
 - [x] OCR integration for image-based documents (11 languages, batch processing)
 - [x] Worker threads for parallel processing (batch text and document processing)
 - [x] Local learning system with feedback loop

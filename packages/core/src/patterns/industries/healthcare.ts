@@ -407,6 +407,79 @@ export const VACCINATION_ID: PIIPattern = {
   }
 };
 
+/**
+ * CHI (Community Health Index) Number - Scotland
+ * Format: DDMMYY-XXXX (10 digits with hyphen)
+ */
+export const CHI_NUMBER: PIIPattern = {
+  type: 'CHI_NUMBER',
+  regex: /\b(?:CHI|community health index)[-\s]?(?:number|no)?[-\s]?[:#]?\s*(\d{6}[-\s]?\d{4})\b/gi,
+  placeholder: '[CHI_{n}]',
+  priority: 95,
+  severity: 'high',
+  description: 'Scottish Community Health Index number',
+  validator: (match) => {
+    const digits = match.replace(/\D/g, '');
+
+    if (digits.length !== 10) return false;
+
+    // First 6 digits should be a valid date (DDMMYY)
+    const day = parseInt(digits.substring(0, 2));
+    const month = parseInt(digits.substring(2, 4));
+    const year = parseInt(digits.substring(4, 6));
+
+    // Basic date validation
+    if (day < 1 || day > 31) return false;
+    if (month < 1 || month > 12) return false;
+
+    // Check digit validation (simple mod-11)
+    let sum = 0;
+    const weights = [10, 9, 8, 7, 6, 5, 4, 3, 2];
+
+    for (let i = 0; i < 9; i++) {
+      sum += parseInt(digits[i]) * weights[i];
+    }
+
+    const checkDigit = 11 - (sum % 11);
+    const expectedCheckDigit = checkDigit === 11 ? 0 : checkDigit === 10 ? 0 : checkDigit;
+
+    return expectedCheckDigit === parseInt(digits[9]);
+  }
+};
+
+/**
+ * EHIC (European Health Insurance Card)
+ * Format: Country code + 12-16 digits
+ */
+export const EHIC_NUMBER: PIIPattern = {
+  type: 'EHIC_NUMBER',
+  regex: /\b(?:EHIC|european health insurance|health card)[-\s]?(?:number|no)?[-\s]?[:#]?\s*([A-Z]{2}\s?\d{12,16})\b/gi,
+  placeholder: '[EHIC_{n}]',
+  priority: 90,
+  severity: 'high',
+  description: 'European Health Insurance Card number',
+  validator: (match) => {
+    // Remove spaces and extract parts
+    const cleaned = match.replace(/\s/g, '');
+
+    // Must start with valid EU country code
+    const countryCode = cleaned.substring(0, 2).toUpperCase();
+    const validCountries = [
+      'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+      'DE', 'GR', 'HU', 'IS', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU',
+      'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'CH', 'GB'
+    ];
+
+    if (!validCountries.includes(countryCode)) {
+      return false;
+    }
+
+    // Remaining part should be 12-16 digits
+    const number = cleaned.substring(2);
+    return /^\d{12,16}$/.test(number);
+  }
+};
+
 // Export all healthcare patterns
 export const healthcarePatterns: PIIPattern[] = [
   MEDICAL_RECORD_NUMBER,
@@ -434,5 +507,7 @@ export const healthcarePatterns: PIIPattern[] = [
   MEDICAL_IMAGE_REF,
   BLOOD_TYPE_PATIENT,
   ALLERGY_INFO,
-  VACCINATION_ID
+  VACCINATION_ID,
+  CHI_NUMBER,
+  EHIC_NUMBER
 ];
