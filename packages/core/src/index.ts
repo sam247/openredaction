@@ -43,6 +43,19 @@ export {
   createCustomRole
 } from './rbac';
 
+// Document processing (optional - requires peer dependencies)
+export {
+  DocumentProcessor,
+  createDocumentProcessor
+} from './document';
+export type {
+  DocumentFormat,
+  DocumentOptions,
+  DocumentResult,
+  DocumentMetadata,
+  IDocumentProcessor
+} from './document';
+
 export {
   allPatterns,
   personalPatterns,

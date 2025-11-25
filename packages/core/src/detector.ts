@@ -897,4 +897,62 @@ export class OpenRedaction {
     const generator = createReportGenerator(this);
     return generator.generate(result, options);
   }
+
+  /**
+   * Detect PII in a document (PDF, DOCX, TXT)
+   * Requires optional peer dependencies:
+   * - pdf-parse for PDF support
+   * - mammoth for DOCX support
+   */
+  async detectDocument(
+    buffer: Buffer,
+    options?: import('./document/types').DocumentOptions
+  ): Promise<import('./document/types').DocumentResult> {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('detection:detect')) {
+      throw new Error('[OpenRedaction] Permission denied: detection:detect required');
+    }
+
+    const { createDocumentProcessor } = await import('./document');
+    const processor = createDocumentProcessor();
+
+    const extractionStart = performance.now();
+
+    // Extract text from document
+    const text = await processor.extractText(buffer, options);
+    const metadata = await processor.getMetadata(buffer, options);
+
+    const extractionEnd = performance.now();
+    const extractionTime = Math.round((extractionEnd - extractionStart) * 100) / 100;
+
+    // Detect PII in extracted text
+    const detection = this.detect(text);
+
+    return {
+      text,
+      metadata,
+      detection,
+      fileSize: buffer.length,
+      extractionTime
+    };
+  }
+
+  /**
+   * Detect PII in a document file from filesystem
+   * Convenience method that reads file and calls detectDocument
+   */
+  async detectDocumentFile(
+    filePath: string,
+    options?: import('./document/types').DocumentOptions
+  ): Promise<import('./document/types').DocumentResult> {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('detection:detect')) {
+      throw new Error('[OpenRedaction] Permission denied: detection:detect required');
+    }
+
+    const fs = await import('fs/promises');
+    const buffer = await fs.readFile(filePath);
+
+    return this.detectDocument(buffer, options);
+  }
 }

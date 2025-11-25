@@ -534,6 +534,279 @@ app.post('/api/redact', authenticate, (req, res) => {
 });
 ```
 
+## Document Processing (PDF, Word, Text)
+
+Process and redact PII from PDF, Word (DOCX), and text documents with built-in text extraction:
+
+### Installation
+
+Document processing requires optional peer dependencies:
+
+```bash
+# For PDF support
+npm install pdf-parse
+
+# For Word (DOCX) support
+npm install mammoth
+
+# Or install both
+npm install pdf-parse mammoth
+```
+
+### Basic Usage
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+import fs from 'fs/promises';
+
+const redactor = new OpenRedaction();
+
+// Process PDF document
+const pdfBuffer = await fs.readFile('document.pdf');
+const pdfResult = await redactor.detectDocument(pdfBuffer);
+
+console.log('Extracted text:', pdfResult.text);
+console.log('Found PII:', pdfResult.detection.detections);
+console.log('Redacted text:', pdfResult.detection.redacted);
+console.log('Document metadata:', pdfResult.metadata);
+
+// Or use convenience method with file path
+const result = await redactor.detectDocumentFile('contract.docx');
+console.log(`Found ${result.detection.detections.length} PII items in ${result.extractionTime}ms`);
+```
+
+### Supported Formats
+
+**PDF**:
+- Text extraction from PDF files
+- Password-protected PDF support
+- Metadata extraction (pages, title, author, dates)
+- Requires: `pdf-parse`
+
+**DOCX (Word)**:
+- Text extraction from Word documents
+- Modern Office Open XML format
+- Requires: `mammoth`
+
+**TXT**:
+- Plain text files (built-in, no dependencies)
+- UTF-8 encoding
+
+### Document Options
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+
+const redactor = new OpenRedaction();
+
+// Auto-detect format
+const result1 = await redactor.detectDocument(buffer);
+
+// Specify format explicitly
+const result2 = await redactor.detectDocument(buffer, {
+  format: 'pdf'
+});
+
+// Extract specific pages (PDF only)
+const result3 = await redactor.detectDocument(pdfBuffer, {
+  format: 'pdf',
+  pages: [1, 2, 3]  // Pages 1-3 (1-indexed)
+});
+
+// Password-protected PDF
+const result4 = await redactor.detectDocument(pdfBuffer, {
+  format: 'pdf',
+  password: 'secret123'
+});
+
+// Size limit (default: 50MB)
+const result5 = await redactor.detectDocument(buffer, {
+  maxSize: 10 * 1024 * 1024  // 10MB max
+});
+```
+
+### Document Result
+
+The `detectDocument` method returns comprehensive information:
+
+```typescript
+interface DocumentResult {
+  text: string;              // Extracted text
+  metadata: DocumentMetadata; // Document info
+  detection: DetectionResult; // PII detection results
+  fileSize: number;          // Original file size in bytes
+  extractionTime: number;    // Extraction time in ms
+}
+
+// Example
+const result = await redactor.detectDocumentFile('resume.pdf');
+
+console.log(`
+File size: ${result.fileSize} bytes
+Extraction time: ${result.extractionTime}ms
+Pages: ${result.metadata.pages}
+Title: ${result.metadata.title}
+Author: ${result.metadata.author}
+Found PII: ${result.detection.detections.length} items
+`);
+
+// Access detected PII
+result.detection.detections.forEach(detection => {
+  console.log(`${detection.type}: ${detection.value} (${detection.severity})`);
+});
+
+// Get redacted document text
+const redactedText = result.detection.redacted;
+```
+
+### Batch Document Processing
+
+Process multiple documents efficiently:
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+import { glob } from 'glob';
+import fs from 'fs/promises';
+
+const redactor = new OpenRedaction({
+  enableAuditLog: true,
+  enableMetrics: true
+});
+
+// Find all documents
+const files = await glob('documents/**/*.{pdf,docx,txt}');
+
+// Process in parallel
+const results = await Promise.all(
+  files.map(async (file) => {
+    try {
+      const result = await redactor.detectDocumentFile(file);
+      return {
+        file,
+        success: true,
+        piiCount: result.detection.detections.length,
+        extractionTime: result.extractionTime
+      };
+    } catch (error) {
+      return {
+        file,
+        success: false,
+        error: error.message
+      };
+    }
+  })
+);
+
+// Summary
+const successful = results.filter(r => r.success);
+const failed = results.filter(r => !r.success);
+
+console.log(`Processed: ${successful.length} successful, ${failed.length} failed`);
+console.log(`Total PII found: ${successful.reduce((sum, r) => sum + (r.piiCount || 0), 0)}`);
+```
+
+### Integration with Express
+
+```typescript
+import express from 'express';
+import multer from 'multer';
+import { OpenRedaction } from 'openredaction';
+
+const app = express();
+const upload = multer({ storage: multer.memoryStorage() });
+const redactor = new OpenRedaction();
+
+app.post('/api/documents/scan', upload.single('document'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  try {
+    const result = await redactor.detectDocument(req.file.buffer, {
+      format: req.body.format // Optional format hint
+    });
+
+    res.json({
+      filename: req.file.originalname,
+      format: result.metadata.format,
+      pages: result.metadata.pages,
+      piiFound: result.detection.detections.length,
+      detections: result.detection.detections.map(d => ({
+        type: d.type,
+        severity: d.severity,
+        confidence: d.confidence
+      })),
+      extractionTime: result.extractionTime
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.listen(3000);
+```
+
+### Error Handling
+
+```typescript
+try {
+  const result = await redactor.detectDocument(buffer);
+} catch (error) {
+  if (error.message.includes('PDF support requires pdf-parse')) {
+    console.error('Please install pdf-parse: npm install pdf-parse');
+  } else if (error.message.includes('DOCX support requires mammoth')) {
+    console.error('Please install mammoth: npm install mammoth');
+  } else if (error.message.includes('Unable to detect document format')) {
+    console.error('Unsupported file format. Supported: PDF, DOCX, TXT');
+  } else if (error.message.includes('exceeds maximum')) {
+    console.error('Document too large');
+  } else {
+    console.error('Document processing error:', error.message);
+  }
+}
+```
+
+### Format Detection
+
+The document processor automatically detects formats:
+
+```typescript
+import { createDocumentProcessor } from 'openredaction';
+
+const processor = createDocumentProcessor();
+
+// Detect format from buffer
+const format = processor.detectFormat(buffer);
+console.log(format); // 'pdf', 'docx', 'txt', or null
+
+// Check if format is supported (and peer dependency is installed)
+if (processor.isFormatSupported('pdf')) {
+  console.log('PDF processing is available');
+} else {
+  console.log('Install pdf-parse for PDF support');
+}
+```
+
+### Standalone Document Processor
+
+Use the document processor directly without PII detection:
+
+```typescript
+import { createDocumentProcessor } from 'openredaction';
+
+const processor = createDocumentProcessor();
+
+// Extract text only
+const text = await processor.extractText(buffer);
+console.log('Extracted text:', text);
+
+// Get metadata
+const metadata = await processor.getMetadata(buffer);
+console.log('Pages:', metadata.pages);
+console.log('Author:', metadata.author);
+console.log('Created:', metadata.creationDate);
+```
+
 ## CLI Usage
 
 ```bash
