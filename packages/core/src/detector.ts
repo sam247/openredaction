@@ -8,10 +8,12 @@ import {
   DetectionResult,
   OpenRedactionOptions,
   IAuditLogger,
-  IMetricsCollector
+  IMetricsCollector,
+  IRBACManager
 } from './types';
 import { InMemoryAuditLogger } from './audit';
 import { InMemoryMetricsCollector } from './metrics';
+import { RBACManager, getPredefinedRole } from './rbac';
 import { allPatterns } from './patterns';
 import { generateDeterministicId } from './utils/hash';
 import { getPreset } from './utils/presets';
@@ -73,6 +75,7 @@ export class OpenRedaction {
   private auditSessionId?: string;
   private auditMetadata?: Record<string, unknown>;
   private metricsCollector?: IMetricsCollector;
+  private rbacManager?: IRBACManager;
 
   constructor(options: OpenRedactionOptions & {
     configPath?: string;
@@ -177,6 +180,22 @@ export class OpenRedaction {
     // Initialize metrics collection if enabled
     if (options.enableMetrics) {
       this.metricsCollector = options.metricsCollector || new InMemoryMetricsCollector();
+    }
+
+    // Initialize RBAC if enabled
+    if (options.enableRBAC) {
+      if (options.rbacManager) {
+        this.rbacManager = options.rbacManager;
+      } else if (options.role) {
+        // Use predefined role
+        const role = getPredefinedRole(options.role);
+        if (role) {
+          this.rbacManager = new RBACManager(role);
+        }
+      } else {
+        // Default to admin role
+        this.rbacManager = new RBACManager();
+      }
     }
   }
 
@@ -343,6 +362,11 @@ export class OpenRedaction {
    * Detect PII in text
    */
   detect(text: string): DetectionResult {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('detection:detect')) {
+      throw new Error('[OpenRedaction] Permission denied: detection:detect required');
+    }
+
     const startTime = performance.now();
 
     // Warn about large documents (> 5MB)
@@ -505,6 +529,11 @@ export class OpenRedaction {
    * Restore redacted text using redaction map
    */
   restore(redactedText: string, redactionMap: Record<string, string>): string {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('detection:restore')) {
+      throw new Error('[OpenRedaction] Permission denied: detection:restore required');
+    }
+
     const startTime = performance.now();
     let restored = redactedText;
 
@@ -827,6 +856,11 @@ export class OpenRedaction {
    * Get the audit logger instance (if audit logging is enabled)
    */
   getAuditLogger(): IAuditLogger | undefined {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('audit:read')) {
+      throw new Error('[OpenRedaction] Permission denied: audit:read required');
+    }
+
     return this.auditLogger;
   }
 
@@ -834,7 +868,19 @@ export class OpenRedaction {
    * Get the metrics collector instance (if metrics collection is enabled)
    */
   getMetricsCollector(): IMetricsCollector | undefined {
+    // Check RBAC permission
+    if (this.rbacManager && !this.rbacManager.hasPermission('metrics:read')) {
+      throw new Error('[OpenRedaction] Permission denied: metrics:read required');
+    }
+
     return this.metricsCollector;
+  }
+
+  /**
+   * Get the RBAC manager instance (if RBAC is enabled)
+   */
+  getRBACManager(): IRBACManager | undefined {
+    return this.rbacManager;
   }
 
   /**

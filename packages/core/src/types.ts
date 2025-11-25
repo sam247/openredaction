@@ -127,6 +127,12 @@ export interface OpenRedactionOptions {
   enableMetrics?: boolean;
   /** Metrics collector instance (optional, default: in-memory collector) */
   metricsCollector?: IMetricsCollector;
+  /** Enable RBAC (Role-Based Access Control) (default: false) */
+  enableRBAC?: boolean;
+  /** RBAC manager instance (optional, default: admin role) */
+  rbacManager?: IRBACManager;
+  /** Predefined role name (admin, analyst, operator, viewer) */
+  role?: RoleName;
 }
 
 /**
@@ -254,4 +260,65 @@ export interface IMetricsCollector {
   recordError(): void;
   /** Get metrics exporter */
   getExporter(): IMetricsExporter;
+}
+
+/**
+ * RBAC Permission - granular access control
+ */
+export type Permission =
+  // Pattern management
+  | 'pattern:read'
+  | 'pattern:write'
+  | 'pattern:delete'
+  // Detection operations
+  | 'detection:detect'
+  | 'detection:redact'
+  | 'detection:restore'
+  // Audit log access
+  | 'audit:read'
+  | 'audit:export'
+  | 'audit:delete'
+  // Metrics access
+  | 'metrics:read'
+  | 'metrics:export'
+  | 'metrics:reset'
+  // Configuration
+  | 'config:read'
+  | 'config:write';
+
+/**
+ * RBAC Role - collection of permissions
+ */
+export interface Role {
+  /** Role identifier */
+  name: string;
+  /** Role description */
+  description?: string;
+  /** Permissions granted to this role */
+  permissions: Permission[];
+}
+
+/**
+ * Predefined role names
+ */
+export type RoleName = 'admin' | 'analyst' | 'operator' | 'viewer' | 'custom';
+
+/**
+ * RBAC manager interface for access control
+ */
+export interface IRBACManager {
+  /** Check if user has specific permission */
+  hasPermission(permission: Permission): boolean;
+  /** Check if user has all specified permissions */
+  hasAllPermissions(permissions: Permission[]): boolean;
+  /** Check if user has any of the specified permissions */
+  hasAnyPermission(permissions: Permission[]): boolean;
+  /** Get current role */
+  getRole(): Role;
+  /** Set role */
+  setRole(role: Role): void;
+  /** Get all permissions for current role */
+  getPermissions(): Permission[];
+  /** Filter patterns based on read permissions */
+  filterPatterns(patterns: PIIPattern[]): PIIPattern[];
 }

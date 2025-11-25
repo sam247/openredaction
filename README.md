@@ -339,6 +339,201 @@ setInterval(() => {
 }, 10000); // Every 10 seconds
 ```
 
+## RBAC (Role-Based Access Control)
+
+Control access to operations with fine-grained permissions and predefined roles:
+
+```typescript
+import { OpenRedaction, ANALYST_ROLE, OPERATOR_ROLE, VIEWER_ROLE } from 'openredaction';
+
+// Enable RBAC with a predefined role
+const analystRedactor = new OpenRedaction({
+  enableRBAC: true,
+  role: 'analyst'  // admin, analyst, operator, viewer
+});
+
+// Analyst can detect and redact
+const result = analystRedactor.detect("Email: john@example.com");
+// ✓ Allowed - analysts have 'detection:detect' permission
+
+// But cannot reset metrics
+const metrics = analystRedactor.getMetricsCollector();
+metrics?.getExporter().reset();
+// ✗ Error: Permission denied - analysts lack 'metrics:reset'
+
+// Viewer role - read-only access
+const viewerRedactor = new OpenRedaction({
+  enableRBAC: true,
+  role: 'viewer'
+});
+
+viewerRedactor.detect("Email: john@example.com");
+// ✗ Error: Permission denied - viewers lack 'detection:detect'
+
+// But can view audit logs
+const auditLogger = viewerRedactor.getAuditLogger();
+const logs = auditLogger?.getLogs();
+// ✓ Allowed - viewers have 'audit:read' permission
+```
+
+### Predefined Roles
+
+**Admin Role** - Full access to all operations:
+- All permissions (`pattern:*`, `detection:*`, `audit:*`, `metrics:*`, `config:*`)
+
+**Analyst Role** - Detection and read access:
+- `pattern:read`, `detection:detect`, `detection:redact`, `detection:restore`
+- `audit:read`, `audit:export`, `metrics:read`, `metrics:export`, `config:read`
+
+**Operator Role** - Basic detection operations:
+- `pattern:read`, `detection:detect`, `detection:redact`
+- `audit:read`, `metrics:read`
+
+**Viewer Role** - Read-only access:
+- `pattern:read`, `audit:read`, `audit:export`, `metrics:read`, `metrics:export`, `config:read`
+
+### Custom Roles
+
+Create custom roles with specific permission sets:
+
+```typescript
+import { OpenRedaction, createCustomRole, RBACManager } from 'openredaction';
+
+// Create a custom role
+const dataProcessorRole = createCustomRole(
+  'data_processor',
+  [
+    'pattern:read',
+    'detection:detect',
+    'detection:redact',
+    'metrics:read'
+  ],
+  'Custom role for data processing workflows'
+);
+
+// Use custom role
+const rbacManager = new RBACManager(dataProcessorRole);
+const redactor = new OpenRedaction({
+  enableRBAC: true,
+  rbacManager
+});
+
+// Check permissions programmatically
+const manager = redactor.getRBACManager();
+if (manager?.hasPermission('detection:detect')) {
+  const result = redactor.detect("Sensitive text");
+}
+
+// Check multiple permissions
+if (manager?.hasAllPermissions(['detection:detect', 'audit:read'])) {
+  // User has both permissions
+}
+
+// Check any permission
+if (manager?.hasAnyPermission(['audit:read', 'audit:export'])) {
+  // User has at least one permission
+}
+```
+
+### Available Permissions
+
+**Pattern Management**:
+- `pattern:read` - View patterns
+- `pattern:write` - Add/modify patterns
+- `pattern:delete` - Remove patterns
+
+**Detection Operations**:
+- `detection:detect` - Run detection operations
+- `detection:redact` - Perform redaction
+- `detection:restore` - Restore redacted text
+
+**Audit Log Access**:
+- `audit:read` - Read audit logs
+- `audit:export` - Export audit logs (JSON/CSV)
+- `audit:delete` - Clear audit logs
+
+**Metrics Access**:
+- `metrics:read` - Read metrics
+- `metrics:export` - Export metrics (Prometheus/StatsD)
+- `metrics:reset` - Reset metrics
+
+**Configuration**:
+- `config:read` - Read configuration
+- `config:write` - Modify configuration
+
+### Permission Enforcement
+
+Permissions are enforced on all protected operations:
+
+```typescript
+const operatorRedactor = new OpenRedaction({
+  enableRBAC: true,
+  role: 'operator'
+});
+
+try {
+  // Operators can detect
+  operatorRedactor.detect("Email: test@example.com");
+  // ✓ Success
+
+  // But cannot access metrics exporter's reset function
+  const exporter = operatorRedactor.getMetricsCollector()?.getExporter();
+  exporter?.reset();
+  // Note: Permission check happens at getMetricsCollector(),
+  // operator role has metrics:read but not metrics:reset
+
+} catch (error) {
+  console.error(error.message);
+  // Permission denied: [permission] required
+}
+```
+
+### Multi-Tenant Scenarios
+
+Use RBAC for multi-tenant applications:
+
+```typescript
+import express from 'express';
+import { OpenRedaction, getPredefinedRole, RBACManager } from 'openredaction';
+
+const app = express();
+
+// Map user roles from your auth system
+const userRoles = {
+  'admin@company.com': 'admin',
+  'analyst@company.com': 'analyst',
+  'support@company.com': 'operator',
+  'auditor@company.com': 'viewer'
+};
+
+app.post('/api/redact', authenticate, (req, res) => {
+  const userRole = userRoles[req.user.email] || 'viewer';
+  const role = getPredefinedRole(userRole);
+
+  if (!role) {
+    return res.status(403).json({ error: 'Invalid role' });
+  }
+
+  const redactor = new OpenRedaction({
+    enableRBAC: true,
+    rbacManager: new RBACManager(role),
+    enableAuditLog: true,
+    auditUser: req.user.email
+  });
+
+  try {
+    const result = redactor.detect(req.body.text);
+    res.json(result);
+  } catch (error) {
+    if (error.message.includes('Permission denied')) {
+      res.status(403).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Internal error' });
+    }
+  }
+});
+```
+
 ## CLI Usage
 
 ```bash

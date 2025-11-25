@@ -17,7 +17,11 @@ export type {
   AuditStats,
   IMetricsCollector,
   IMetricsExporter,
-  RedactionMetrics
+  RedactionMetrics,
+  IRBACManager,
+  Role,
+  Permission,
+  RoleName
 } from './types';
 
 // Audit logging
@@ -25,6 +29,19 @@ export { InMemoryAuditLogger, ConsoleAuditLogger } from './audit';
 
 // Metrics collection
 export { InMemoryMetricsCollector } from './metrics';
+
+// RBAC (Role-Based Access Control)
+export {
+  RBACManager,
+  createRBACManager,
+  ADMIN_ROLE,
+  ANALYST_ROLE,
+  OPERATOR_ROLE,
+  VIEWER_ROLE,
+  ALL_PERMISSIONS,
+  getPredefinedRole,
+  createCustomRole
+} from './rbac';
 
 export {
   allPatterns,
