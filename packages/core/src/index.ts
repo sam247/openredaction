@@ -353,3 +353,39 @@ export type {
   APIRequest,
   APIResponse
 } from './api';
+
+// Configuration Import/Export (Phase 3)
+export {
+  ConfigExporter,
+  createConfigPreset,
+  exportForVersionControl
+} from './config/ConfigExporter';
+export type {
+  ExportedConfig
+} from './config/ConfigExporter';
+
+// Health Check API (Phase 3)
+export {
+  HealthChecker,
+  createHealthChecker,
+  healthCheckMiddleware
+} from './health/HealthCheck';
+export type {
+  HealthCheckResult,
+  HealthCheckStatus,
+  HealthCheckOptions
+} from './health/HealthCheck';
+
+// Safe Regex Utilities (Security)
+export {
+  safeExec,
+  safeExecAll,
+  validatePattern,
+  isUnsafePattern,
+  compileSafeRegex,
+  RegexTimeoutError,
+  RegexMaxMatchesError
+} from './utils/safe-regex';
+export type {
+  SafeRegexOptions
+} from './utils/safe-regex';

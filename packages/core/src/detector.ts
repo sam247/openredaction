@@ -1122,6 +1122,41 @@ export class OpenRedaction {
   }
 
   /**
+   * Export current configuration
+   */
+  exportConfig(metadata?: {
+    description?: string;
+    author?: string;
+    tags?: string[];
+  }): string {
+    const { ConfigExporter } = require('./config/ConfigExporter.js');
+    return ConfigExporter.exportToString(this.options, metadata, true);
+  }
+
+  /**
+   * Run health check
+   */
+  async healthCheck(options?: {
+    testDetection?: boolean;
+    checkPerformance?: boolean;
+    performanceThreshold?: number;
+    memoryThreshold?: number;
+  }): Promise<any> {
+    const { HealthChecker } = await import('./health/HealthCheck.js');
+    const checker = new HealthChecker(this);
+    return checker.check(options);
+  }
+
+  /**
+   * Quick health check (minimal overhead)
+   */
+  async quickHealthCheck(): Promise<{ status: 'healthy' | 'unhealthy'; message: string }> {
+    const { HealthChecker } = await import('./health/HealthCheck.js');
+    const checker = new HealthChecker(this);
+    return checker.quickCheck();
+  }
+
+  /**
    * Detect PII in a document (PDF, DOCX, TXT)
    * Requires optional peer dependencies:
    * - pdf-parse for PDF support
