@@ -12,11 +12,13 @@ Local-first • Zero dependencies • 10-20ms latency • 100% offline • 558+ 
 ## Features
 
 - **Lightning Fast** - <2ms processing for 2KB text, 100x faster than cloud APIs
-- **151+ PII Patterns** - Comprehensive coverage across 8+ industries
+- **558+ PII Patterns** - Comprehensive coverage across 25+ industries and 50+ countries
+- **Structured Data Support** - JSON, CSV, XLSX (Excel) with path/cell tracking
 - **Context-Aware** - 90%+ accuracy with false positive reduction
 - **Compliance Ready** - GDPR, HIPAA, CCPA, FERPA presets
 - **100% Local** - Your data never leaves your infrastructure
-- **Zero Dependencies** - ~100KB bundle, works everywhere
+- **Zero Dependencies** - ~100KB bundle, works everywhere (structured data built-in)
+- **Document Processing** - PDF, DOCX, TXT, JSON, CSV, XLSX, images (OCR)
 - **Advanced Features** - Streaming, batch processing, explain API, HTML reports
 - **Framework Ready** - React hooks, Express middleware included
 - **TypeScript Native** - Full type safety with exported types
@@ -530,9 +532,9 @@ app.post('/api/redact', authenticate, (req, res) => {
 });
 ```
 
-## Document Processing (PDF, Word, Text)
+## Document Processing (PDF, Word, Text, JSON, CSV, Excel)
 
-Process and redact PII from PDF, Word (DOCX), and text documents with built-in text extraction:
+Process and redact PII from various document formats with built-in text extraction and structured data support:
 
 ### Installation
 
@@ -545,9 +547,14 @@ npm install pdf-parse
 # For Word (DOCX) support
 npm install mammoth
 
-# Or install both
-npm install pdf-parse mammoth
+# For Excel (XLSX) support
+npm install xlsx
+
+# Or install all
+npm install pdf-parse mammoth xlsx
 ```
+
+**Note**: JSON and CSV support is built-in (no dependencies required).
 
 ### Basic Usage
 
@@ -583,6 +590,24 @@ console.log(`Found ${result.detection.detections.length} PII items in ${result.e
 - Text extraction from Word documents
 - Modern Office Open XML format
 - Requires: `mammoth`
+
+**JSON**:
+- Nested object traversal with path tracking
+- JSON Lines (JSONL) support
+- Structure-preserving redaction
+- Built-in (no dependencies)
+
+**CSV**:
+- Auto-delimiter detection (comma, tab, semicolon, pipe)
+- Header detection and column tracking
+- Column-level PII statistics
+- Built-in (no dependencies)
+
+**XLSX (Excel)**:
+- Multi-sheet support
+- Cell-level coordinate tracking (A1, B2, etc.)
+- Formula preservation
+- Requires: `xlsx`
 
 **TXT**:
 - Plain text files (built-in, no dependencies)
@@ -801,6 +826,276 @@ const metadata = await processor.getMetadata(buffer);
 console.log('Pages:', metadata.pages);
 console.log('Author:', metadata.author);
 console.log('Created:', metadata.creationDate);
+```
+
+### Structured Data Processing (JSON, CSV, XLSX)
+
+OpenRedaction provides specialized processors for structured data formats with path/cell tracking and field-level redaction:
+
+#### JSON Processing
+
+Detect and redact PII in JSON documents with nested object support:
+
+```typescript
+import { createJsonProcessor, createDetector } from 'openredaction';
+
+const jsonProcessor = createJsonProcessor();
+const detector = createDetector();
+
+// Parse and detect PII in JSON
+const jsonData = {
+  user: {
+    email: "john@example.com",
+    ssn: "123-45-6789",
+    address: "123 Main St"
+  },
+  contacts: [
+    { name: "Jane Doe", phone: "555-123-4567" }
+  ]
+};
+
+const result = jsonProcessor.detect(jsonData, detector);
+
+console.log('Paths with PII:', result.pathsDetected);
+// ['user.email', 'user.ssn', 'user.address', 'contacts[0].phone']
+
+console.log('PII by path:', result.matchesByPath);
+// {
+//   'user.email': [{ type: 'EMAIL', value: 'john@example.com', ... }],
+//   'user.ssn': [{ type: 'SSN', value: '123-45-6789', ... }],
+//   ...
+// }
+
+// Redact with structure preservation
+const redacted = jsonProcessor.redact(jsonData, result);
+console.log(redacted);
+// {
+//   user: { email: '[REDACTED]', ssn: '[REDACTED]', address: '[REDACTED]' },
+//   contacts: [{ name: 'Jane Doe', phone: '[REDACTED]' }]
+// }
+```
+
+**JSON Options:**
+
+```typescript
+const result = jsonProcessor.detect(jsonData, detector, {
+  maxDepth: 100,                    // Maximum nesting depth
+  scanKeys: true,                   // Also scan object keys for PII
+  alwaysRedact: ['user.password'],  // Always redact these paths
+  skipPaths: ['metadata.id'],       // Skip these paths
+  piiIndicatorKeys: ['email', 'ssn'], // Keys that indicate PII (boosts confidence)
+  preserveStructure: true           // Keep JSON structure in redacted output
+});
+```
+
+**JSON Lines (JSONL) Support:**
+
+```typescript
+// Process JSON Lines format (one JSON object per line)
+const jsonLines = `
+{"user": "john@example.com", "action": "login"}
+{"user": "jane@example.com", "action": "logout"}
+`;
+
+const results = jsonProcessor.detectJsonLines(jsonLines, detector);
+console.log(`Processed ${results.length} JSON documents`);
+```
+
+#### CSV Processing
+
+Detect and redact PII in CSV files with column tracking:
+
+```typescript
+import { createCsvProcessor, createDetector } from 'openredaction';
+
+const csvProcessor = createCsvProcessor();
+const detector = createDetector();
+
+// Parse and detect PII in CSV
+const csvData = `
+name,email,phone,city
+John Doe,john@example.com,555-123-4567,Boston
+Jane Smith,jane@example.com,555-987-6543,Seattle
+`;
+
+const result = csvProcessor.detect(csvData, detector);
+
+console.log('Headers:', result.headers);
+// ['name', 'email', 'phone', 'city']
+
+console.log('Column stats:', result.columnStats);
+// {
+//   0: { columnIndex: 0, columnName: 'name', piiCount: 2, piiPercentage: 100, piiTypes: ['NAME'] },
+//   1: { columnIndex: 1, columnName: 'email', piiCount: 2, piiPercentage: 100, piiTypes: ['EMAIL'] },
+//   2: { columnIndex: 2, columnName: 'phone', piiCount: 2, piiPercentage: 100, piiTypes: ['PHONE'] },
+//   ...
+// }
+
+console.log('Cell matches:', result.matchesByCell);
+// [
+//   { row: 0, column: 0, columnName: 'name', value: 'John Doe', matches: [...] },
+//   { row: 0, column: 1, columnName: 'email', value: 'john@example.com', matches: [...] },
+//   ...
+// ]
+
+// Redact CSV
+const redactedCsv = csvProcessor.redact(csvData, result);
+console.log(redactedCsv);
+// name,email,phone,city
+// [REDACTED],[REDACTED],[REDACTED],Boston
+// [REDACTED],[REDACTED],[REDACTED],Seattle
+```
+
+**CSV Options:**
+
+```typescript
+const result = csvProcessor.detect(csvData, detector, {
+  delimiter: ',',                     // Or auto-detect from ',', '\t', ';', '|'
+  hasHeader: true,                    // Or auto-detect
+  quote: '"',                         // Quote character
+  skipEmptyLines: true,               // Skip empty lines
+  maxRows: 10000,                     // Limit rows to process
+  alwaysRedactColumns: [2],           // Always redact column indices
+  alwaysRedactColumnNames: ['ssn'],   // Always redact columns by name
+  skipColumns: [0],                   // Skip scanning these columns
+  piiIndicatorNames: ['email', 'phone'] // Column names indicating PII
+});
+```
+
+**Get CSV Info Without Detection:**
+
+```typescript
+const info = csvProcessor.getColumnInfo(csvData);
+console.log(info);
+// {
+//   columnCount: 4,
+//   rowCount: 2,
+//   headers: ['name', 'email', 'phone', 'city'],
+//   sampleRows: [['John Doe', 'john@example.com', ...], ...]
+// }
+```
+
+#### XLSX (Excel) Processing
+
+Detect and redact PII in Excel spreadsheets with multi-sheet and cell tracking:
+
+```typescript
+import { createXlsxProcessor, createDetector } from 'openredaction';
+import fs from 'fs/promises';
+
+const xlsxProcessor = createXlsxProcessor();
+const detector = createDetector();
+
+// Check if XLSX support is available
+if (!xlsxProcessor.isAvailable()) {
+  console.log('Install xlsx package: npm install xlsx');
+  process.exit(1);
+}
+
+// Read Excel file
+const buffer = await fs.readFile('employees.xlsx');
+
+// Detect PII across all sheets
+const result = xlsxProcessor.detect(buffer, detector);
+
+console.log('Sheets processed:', result.sheetCount);
+console.log('Total PII found:', result.piiCount);
+
+// Iterate through sheets
+for (const sheet of result.sheetResults) {
+  console.log(`\nSheet: ${sheet.sheetName}`);
+  console.log('  Rows:', sheet.rowCount);
+  console.log('  Columns:', sheet.columnCount);
+  console.log('  Headers:', sheet.headers);
+  console.log('  PII found:', sheet.piiCount);
+
+  // Column statistics
+  for (const [colIndex, stats] of Object.entries(sheet.columnStats)) {
+    console.log(`  Column ${stats.columnLetter} (${stats.columnName}):`);
+    console.log(`    PII instances: ${stats.piiCount}`);
+    console.log(`    PII in ${stats.piiPercentage.toFixed(1)}% of rows`);
+    console.log(`    Types: ${stats.piiTypes.join(', ')}`);
+  }
+
+  // Cell-level matches
+  for (const cellMatch of sheet.matchesByCell) {
+    console.log(`  Cell ${cellMatch.cell}: ${cellMatch.value}`);
+    console.log(`    PII: ${cellMatch.matches.map(m => m.type).join(', ')}`);
+  }
+}
+
+// Redact and save
+const redactedBuffer = xlsxProcessor.redact(buffer, result);
+await fs.writeFile('employees-redacted.xlsx', redactedBuffer);
+```
+
+**XLSX Options:**
+
+```typescript
+const result = xlsxProcessor.detect(buffer, detector, {
+  sheets: ['Employee Data'],          // Process specific sheets by name
+  sheetIndices: [0, 1],              // Or by index (0-based)
+  hasHeader: true,                    // Or auto-detect
+  maxRows: 10000,                     // Limit rows per sheet
+  alwaysRedactColumns: [2],           // Always redact column indices
+  alwaysRedactColumnNames: ['SSN'],   // Always redact columns by name
+  skipColumns: [0],                   // Skip scanning these columns
+  piiIndicatorNames: ['email', 'phone'], // Column names indicating PII
+  preserveFormatting: true,           // Keep cell formatting
+  preserveFormulas: true              // Keep formulas (redact values only)
+});
+```
+
+**Get Excel Metadata:**
+
+```typescript
+const metadata = xlsxProcessor.getMetadata(buffer);
+console.log('Sheets:', metadata.sheetNames);
+console.log('Sheet count:', metadata.sheetCount);
+```
+
+#### Using Structured Data with DocumentProcessor
+
+The main `DocumentProcessor` automatically detects and processes structured formats:
+
+```typescript
+import { createDocumentProcessor } from 'openredaction';
+
+const processor = createDocumentProcessor();
+
+// Auto-detect JSON
+const jsonBuffer = Buffer.from(JSON.stringify({ email: "test@example.com" }));
+const jsonText = await processor.extractText(jsonBuffer);
+
+// Auto-detect CSV
+const csvBuffer = Buffer.from('name,email\nJohn,john@example.com');
+const csvText = await processor.extractText(csvBuffer);
+
+// For XLSX (requires 'xlsx' package)
+const xlsxBuffer = await fs.readFile('data.xlsx');
+const xlsxText = await processor.extractText(xlsxBuffer);
+
+// Get metadata
+const metadata = await processor.getMetadata(jsonBuffer);
+console.log(metadata.format); // 'json'
+console.log(metadata.custom); // { isArray: false, itemCount: 1 }
+```
+
+**Access individual processors:**
+
+```typescript
+const processor = createDocumentProcessor();
+
+// Get processors for advanced usage
+const jsonProc = processor.getJsonProcessor();
+const csvProc = processor.getCsvProcessor();
+const xlsxProc = processor.getXlsxProcessor();
+
+// Use with custom detector
+import { createDetector } from 'openredaction';
+const detector = createDetector({ patterns: ['EMAIL', 'PHONE'] });
+
+const result = jsonProc.detect(data, detector, { scanKeys: true });
 ```
 
 ### OCR (Optical Character Recognition)
@@ -1647,14 +1942,15 @@ MIT © 2025
 ## Roadmap
 
 ### Completed ✅
-- [x] 558+ PII patterns across 20+ industries and 40+ countries
+- [x] 558+ PII patterns across 25+ industries and 50+ countries
 - [x] All 50 US state license plates with format-specific validation
 - [x] 16 international carrier tracking numbers (global coverage)
 - [x] Multiple redaction modes (5 modes: placeholder, mask-middle, mask-all, format-preserving, token-replace)
 - [x] Audit logging system with JSON/CSV export
 - [x] Metrics export API (Prometheus, StatsD) for monitoring
 - [x] RBAC (role-based access control) for enterprise multi-tenancy
-- [x] Document processing (PDF, DOCX, TXT) with text extraction
+- [x] Document processing (PDF, DOCX, TXT, JSON, CSV, XLSX) with text extraction
+- [x] **Structured data support (JSON, CSV, XLSX)** with path/cell tracking - Phase 1 ✨
 - [x] OCR integration for image-based documents (11 languages, batch processing)
 - [x] Worker threads for parallel processing (batch text and document processing)
 - [x] Local learning system with feedback loop
