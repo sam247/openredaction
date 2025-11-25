@@ -26,10 +26,32 @@ export type {
 } from './types';
 
 // Audit logging
-export { InMemoryAuditLogger, ConsoleAuditLogger } from './audit';
+export {
+  InMemoryAuditLogger,
+  ConsoleAuditLogger,
+  PersistentAuditLogger,
+  createPersistentAuditLogger
+} from './audit';
+export type {
+  AuditBackend,
+  AuditDatabaseConfig,
+  RetentionPolicy,
+  PersistentAuditLoggerOptions,
+  HashedAuditLogEntry,
+  IAuditDatabaseAdapter,
+  AuditQueryFilter
+} from './audit';
 
 // Metrics collection
-export { InMemoryMetricsCollector } from './metrics';
+export {
+  InMemoryMetricsCollector,
+  PrometheusServer,
+  createPrometheusServer,
+  GRAFANA_DASHBOARD_TEMPLATE
+} from './metrics';
+export type {
+  PrometheusServerOptions
+} from './metrics';
 
 // RBAC (Role-Based Access Control)
 export {
@@ -290,3 +312,44 @@ export {
 export type {
   ErrorSuggestion
 } from './errors/OpenRedactionError';
+
+// Multi-tenancy (Phase 3)
+export {
+  TenantManager,
+  createTenantManager,
+  TenantQuotaExceededError,
+  TenantNotFoundError,
+  TenantSuspendedError,
+  DEFAULT_TIER_QUOTAS
+} from './tenancy';
+export type {
+  TenantConfig,
+  TenantQuotas,
+  TenantUsage
+} from './tenancy';
+
+// Webhooks and alerts (Phase 3)
+export {
+  WebhookManager,
+  createWebhookManager,
+  verifyWebhookSignature
+} from './webhooks';
+export type {
+  WebhookEventType,
+  WebhookEvent,
+  WebhookConfig,
+  WebhookDeliveryStatus,
+  WebhookDelivery,
+  WebhookStats
+} from './webhooks';
+
+// REST API Server (Phase 3)
+export {
+  APIServer,
+  createAPIServer
+} from './api';
+export type {
+  APIServerConfig,
+  APIRequest,
+  APIResponse
+} from './api';
