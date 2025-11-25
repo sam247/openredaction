@@ -89,25 +89,36 @@ describe('OpenRedact', () => {
 
   describe('Deterministic placeholders', () => {
     it('should generate same placeholder for same value', () => {
-      const shield = new OpenRedaction({ deterministic: true });
+      const shield = new OpenRedaction({
+        deterministic: true,
+        enableContextAnalysis: false  // Disable context analysis for this test
+      });
       const text = 'john@example.com and john@example.com';
       const result = shield.detect(text);
 
+      expect(result.detections).toHaveLength(2);
       const placeholders = result.detections.map(d => d.placeholder);
       expect(placeholders[0]).toBe(placeholders[1]);
     });
 
     it('should generate different placeholders for different values', () => {
-      const shield = new OpenRedaction({ deterministic: true });
+      const shield = new OpenRedaction({
+        deterministic: true,
+        enableContextAnalysis: false  // Disable context analysis for this test
+      });
       const text = 'john@example.com and jane@example.com';
       const result = shield.detect(text);
 
+      expect(result.detections).toHaveLength(2);
       const placeholders = result.detections.map(d => d.placeholder);
       expect(placeholders[0]).not.toBe(placeholders[1]);
     });
 
     it('should use incremental counters in non-deterministic mode', () => {
-      const shield = new OpenRedaction({ deterministic: false });
+      const shield = new OpenRedaction({
+        deterministic: false,
+        enableContextAnalysis: false  // Disable context analysis for this test
+      });
       const text = 'john@example.com and john@example.com';
       const result = shield.detect(text);
 
