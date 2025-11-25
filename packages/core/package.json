@@ -6,7 +6,8 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "openredaction": "./dist/index.cli.js"
+    "openredaction": "./dist/index.cli.js",
+    "openredaction-test-pattern": "./dist/cli/test-pattern.js"
   },
   "exports": {
     ".": {

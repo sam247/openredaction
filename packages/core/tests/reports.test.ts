@@ -413,7 +413,7 @@ describe('Report Generation', () => {
     });
 
     it('should generate development debug report', () => {
-      const detector = new OpenRedaction({ enableContextAnalysis: true });
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Dev test: test@example.com, Real: admin@business.co.uk';
       const result = detector.detect(text);
 

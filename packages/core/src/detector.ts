@@ -14,7 +14,7 @@ import {
 import { InMemoryAuditLogger } from './audit';
 import { InMemoryMetricsCollector } from './metrics';
 import { RBACManager, getPredefinedRole } from './rbac';
-import { allPatterns } from './patterns';
+import { allPatterns, getPatternsByCategory } from './patterns';
 import { generateDeterministicId } from './utils/hash';
 import { getPreset } from './utils/presets';
 import { applyRedactionMode } from './utils/redaction-strategies';
@@ -33,9 +33,9 @@ import { createReportGenerator, type ReportOptions } from './reports/ReportGener
 import { PriorityOptimizer, createPriorityOptimizer, type OptimizerOptions } from './optimizer/PriorityOptimizer.js';
 import {
   createLearningDisabledError,
-  createOptimizationDisabledError,
-  createHighMemoryError
+  createOptimizationDisabledError
 } from './errors/OpenRedactionError.js';
+import { safeExec, validatePattern, RegexTimeoutError } from './utils/safe-regex.js';
 
 /**
  * Main OpenRedaction class for detecting and redacting PII
@@ -44,12 +44,14 @@ import type { RedactionMode } from './types';
 
 export class OpenRedaction {
   private patterns: PIIPattern[];
+  private compiledPatterns: Map<PIIPattern, RegExp> = new Map(); // Pre-compiled regex cache
   private options: {
     includeNames: boolean;
     includeAddresses: boolean;
     includePhones: boolean;
     includeEmails: boolean;
     patterns: string[];
+    categories: string[]; // Pattern categories to include (e.g., ['personal', 'financial'])
     customPatterns: PIIPattern[];
     whitelist: string[];
     deterministic: boolean;
@@ -66,6 +68,8 @@ export class OpenRedaction {
     enablePriorityOptimization: boolean;
     optimizerOptions: OptimizerOptions;
     debug: boolean;
+    maxInputSize: number; // Maximum input size in bytes (default: 10MB)
+    regexTimeout: number; // Regex execution timeout in ms (default: 100ms)
   };
   private multiPassConfig?: DetectionPass[];
   private resultCache?: LRUCache<string, DetectionResult>;
@@ -93,6 +97,8 @@ export class OpenRedaction {
     enableNER?: boolean;
     enableContextRules?: boolean;
     contextRulesConfig?: ContextRulesConfig;
+    maxInputSize?: number;
+    regexTimeout?: number;
   } = {}) {
     // Apply preset if specified
     const presetOptions = options.preset ? getPreset(options.preset) : {};
@@ -104,6 +110,7 @@ export class OpenRedaction {
       includePhones: true,
       includeEmails: true,
       patterns: [],
+      categories: [], // Empty = use all categories
       customPatterns: [],
       whitelist: [],
       deterministic: true,
@@ -118,6 +125,8 @@ export class OpenRedaction {
       cacheSize: 100, // Default: cache up to 100 results
       enablePriorityOptimization: false, // Disabled by default (opt-in)
       debug: false, // Disabled by default (opt-in for debugging)
+      maxInputSize: 10 * 1024 * 1024, // Default: 10MB max input size
+      regexTimeout: 100, // Default: 100ms regex timeout
       ...presetOptions,
       ...options
     };
@@ -170,6 +179,12 @@ export class OpenRedaction {
 
     // Build pattern list
     this.patterns = this.buildPatternList();
+
+    // Validate all patterns (especially custom ones)
+    this.validatePatterns();
+
+    // Pre-compile all regex patterns for performance
+    this.precompilePatterns();
 
     // Apply priority optimization if enabled
     if (this.priorityOptimizer) {
@@ -253,17 +268,36 @@ export class OpenRedaction {
 
   /**
    * Build the list of patterns based on options
+   * Supports three filtering modes (in order of priority):
+   * 1. Specific pattern types (patterns option)
+   * 2. Pattern categories (categories option) - NEW!
+   * 3. All patterns with type-specific filters (includeNames, etc.)
    */
   private buildPatternList(): PIIPattern[] {
     let patterns: PIIPattern[];
 
-    // If specific patterns are whitelisted, use only those
+    // Priority 1: If specific patterns are whitelisted, use only those
     if (this.options.patterns && this.options.patterns.length > 0) {
       patterns = allPatterns.filter(p =>
         this.options.patterns!.includes(p.type)
       );
-    } else {
-      // Use all patterns, filtered by category options
+    }
+    // Priority 2: If categories are specified, use only those categories
+    else if (this.options.categories && this.options.categories.length > 0) {
+      patterns = [];
+      for (const category of this.options.categories) {
+        const categoryPatterns = getPatternsByCategory(category);
+        patterns.push(...categoryPatterns);
+      }
+      // Remove duplicates (some patterns may be in multiple categories)
+      patterns = Array.from(new Map(patterns.map(p => [p.type, p])).values());
+
+      if (this.options.debug) {
+        console.log(`[OpenRedaction] Loaded ${patterns.length} patterns from categories: ${this.options.categories.join(', ')}`);
+      }
+    }
+    // Priority 3: Use all patterns, filtered by category options
+    else {
       patterns = allPatterns.filter(pattern => {
         // Filter by category options
         if (pattern.type === 'NAME' && !this.options.includeNames) return false;
@@ -286,6 +320,53 @@ export class OpenRedaction {
   }
 
   /**
+   * Validate all patterns to prevent malicious regex injection
+   * ONLY validates custom patterns - built-in patterns are already vetted
+   * Timeout protection in safeExec() is the primary defense against ReDoS
+   */
+  private validatePatterns(): void {
+    // Only validate custom patterns (user-provided)
+    // Built-in patterns are already vetted and safe
+    if (!this.options.customPatterns || this.options.customPatterns.length === 0) {
+      if (this.options.debug) {
+        console.log(`[OpenRedaction] No custom patterns to validate. ${this.patterns.length} built-in patterns loaded.`);
+      }
+      return;
+    }
+
+    // Validate each custom pattern
+    for (const customPattern of this.options.customPatterns) {
+      try {
+        validatePattern(customPattern.regex);
+      } catch (error) {
+        const errorMsg = `[OpenRedaction] Invalid custom pattern '${customPattern.type}': ${(error as Error).message}`;
+        throw new Error(errorMsg); // Security issue - reject invalid custom patterns
+      }
+    }
+
+    if (this.options.debug) {
+      console.log(`[OpenRedaction] Validated ${this.options.customPatterns.length} custom patterns. Total patterns: ${this.patterns.length}`);
+    }
+  }
+
+  /**
+   * Pre-compile all regex patterns for performance
+   * Avoids creating new RegExp objects on every detect() call
+   */
+  private precompilePatterns(): void {
+    this.compiledPatterns.clear();
+
+    for (const pattern of this.patterns) {
+      const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
+      this.compiledPatterns.set(pattern, regex);
+    }
+
+    if (this.options.debug) {
+      console.log(`[OpenRedaction] Pre-compiled ${this.compiledPatterns.size} regex patterns`);
+    }
+  }
+
+  /**
    * Process patterns and detect PII
    * Used by both single-pass and multi-pass detection
    */
@@ -294,14 +375,37 @@ export class OpenRedaction {
     patterns: PIIPattern[],
     processedRanges: Array<[number, number]>
   ): PIIDetection[] {
-    const detections: PIIDetection[] = [];
+    let detections: PIIDetection[] = [];
 
     // Process each pattern
     for (const pattern of patterns) {
-      const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
-      let match: RegExpExecArray | null;
+      // Use pre-compiled regex for performance
+      const regex = this.compiledPatterns.get(pattern);
+      if (!regex) {
+        if (this.options.debug) {
+          console.warn(`[OpenRedaction] Pattern '${pattern.type}' not found in compiled cache, skipping`);
+        }
+        continue;
+      }
 
-      while ((match = regex.exec(text)) !== null) {
+      let match: RegExpExecArray | null;
+      let matchCount = 0;
+      const maxMatches = 10000; // Safety limit to prevent infinite loops
+
+      // Reset regex state
+      regex.lastIndex = 0;
+
+      try {
+        while ((match = safeExec(regex, text, { timeout: this.options.regexTimeout })) !== null) {
+          matchCount++;
+
+          // Safety check for excessive matches
+          if (matchCount >= maxMatches) {
+            if (this.options.debug) {
+              console.warn(`[OpenRedaction] Pattern '${pattern.type}' exceeded ${maxMatches} matches, stopping`);
+            }
+            break;
+          }
         // Use capturing group if present, otherwise use full match
         const value = match[1] !== undefined ? match[1] : match[0];
         const fullMatch = match[0];
@@ -400,8 +504,20 @@ export class OpenRedaction {
           confidence
         });
 
-        // Mark range as processed
-        processedRanges.push([startPos, endPos]);
+          // Mark range as processed
+          processedRanges.push([startPos, endPos]);
+        }
+      } catch (error) {
+        // Handle regex timeout errors gracefully
+        if (error instanceof RegexTimeoutError) {
+          if (this.options.debug) {
+            console.warn(`[OpenRedaction] ${error.message}`);
+          }
+          // Skip this pattern and continue with others
+          continue;
+        }
+        // Re-throw other errors
+        throw error;
       }
     }
 
@@ -469,13 +585,20 @@ export class OpenRedaction {
 
     const startTime = performance.now();
 
-    // Warn about large documents (> 5MB)
+    // Enforce input size limit (security critical)
     const textSize = new Blob([text]).size;
-    if (textSize > 5 * 1024 * 1024) {
-      const error = createHighMemoryError(textSize);
-      if (this.options.debug) {
-        console.warn(error.getFormattedMessage());
-      }
+    if (textSize > this.options.maxInputSize) {
+      throw new Error(
+        `[OpenRedaction] Input size (${textSize} bytes) exceeds maximum allowed size (${this.options.maxInputSize} bytes). ` +
+        `Set maxInputSize option to increase limit or use streaming/batch processing for large documents.`
+      );
+    }
+
+    // Warn about large documents approaching the limit
+    if (textSize > this.options.maxInputSize * 0.8 && this.options.debug) {
+      console.warn(
+        `[OpenRedaction] Input size (${textSize} bytes) is approaching maximum limit (${this.options.maxInputSize} bytes)`
+      );
     }
 
     if (this.options.debug) {
@@ -996,6 +1119,41 @@ export class OpenRedaction {
   generateReport(result: DetectionResult, options: ReportOptions): string {
     const generator = createReportGenerator(this);
     return generator.generate(result, options);
+  }
+
+  /**
+   * Export current configuration
+   */
+  exportConfig(metadata?: {
+    description?: string;
+    author?: string;
+    tags?: string[];
+  }): string {
+    const { ConfigExporter } = require('./config/ConfigExporter.js');
+    return ConfigExporter.exportToString(this.options, metadata, true);
+  }
+
+  /**
+   * Run health check
+   */
+  async healthCheck(options?: {
+    testDetection?: boolean;
+    checkPerformance?: boolean;
+    performanceThreshold?: number;
+    memoryThreshold?: number;
+  }): Promise<any> {
+    const { HealthChecker } = await import('./health/HealthCheck.js');
+    const checker = new HealthChecker(this);
+    return checker.check(options);
+  }
+
+  /**
+   * Quick health check (minimal overhead)
+   */
+  async quickHealthCheck(): Promise<{ status: 'healthy' | 'unhealthy'; message: string }> {
+    const { HealthChecker } = await import('./health/HealthCheck.js');
+    const checker = new HealthChecker(this);
+    return checker.quickCheck();
   }
 
   /**

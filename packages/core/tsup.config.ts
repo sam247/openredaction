@@ -20,5 +20,14 @@ export default defineConfig([
     banner: {
       js: '#!/usr/bin/env node'
     }
+  },
+  // Pattern testing CLI build
+  {
+    entry: ['src/cli/test-pattern.ts'],
+    format: ['cjs'],
+    outDir: 'dist/cli',
+    banner: {
+      js: '#!/usr/bin/env node'
+    }
   }
 ]);
