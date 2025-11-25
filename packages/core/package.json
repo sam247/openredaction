@@ -1,10 +1,11 @@
 {
   "name": "openredaction",
   "version": "1.0.0",
-  "description": "Production-ready PII detection and redaction library with 558+ patterns, document processing, OCR, RBAC, and enterprise features",
+  "description": "Local-first PII detection and redaction library for JavaScript/TypeScript. 571+ patterns, zero dependencies, works everywhere.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "bin": {
     "openredaction": "./dist/index.cli.js",
     "openredaction-test-pattern": "./dist/cli/test-pattern.js"
@@ -17,7 +18,10 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsup",
@@ -28,24 +32,33 @@
     "bench": "vitest bench --run",
     "bench:watch": "vitest bench",
     "lint": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "pii",
+    "pii-detection",
     "redaction",
     "privacy",
+    "data-protection",
     "gdpr",
     "hipaa",
-    "data-protection",
+    "ccpa",
     "sensitive-data",
-    "openredaction",
-    "redact",
     "anonymization",
-    "pii-detection",
-    "ccpa"
+    "redact",
+    "local-first",
+    "zero-dependencies",
+    "typescript",
+    "llm",
+    "agent"
   ],
-  "author": "",
+  "author": "OpenRedaction Contributors",
   "license": "MIT",
+  "homepage": "https://github.com/sam247/openredaction#readme",
+  "bugs": {
+    "url": "https://github.com/sam247/openredaction/issues"
+  },
   "peerDependencies": {
     "pdf-parse": "^1.1.1",
     "mammoth": "^1.6.0",
@@ -76,7 +89,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sam247/openredact.git",
+    "url": "https://github.com/sam247/openredaction.git",
     "directory": "packages/core"
   }
 }
