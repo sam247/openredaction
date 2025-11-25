@@ -9,23 +9,18 @@
 
 Local-first • Zero dependencies • 10-20ms latency • 100% offline • 558+ patterns
 
-> ⚠️ **Pre-release**: Not yet published to npm. Coming soon!
-
 ## Features
 
-- 🚀 **Lightning Fast** - 10-20ms processing for 2-3KB text, 100x faster than cloud APIs
-- 🎯 **558+ PII Patterns** - Comprehensive coverage across 20+ industries and 40+ countries
-- 🧠 **Context-Aware** - 90%+ accuracy with false positive reduction and confidence scoring
-- 🔒 **Compliance Ready** - GDPR, HIPAA, CCPA presets with customizable rulesets
-- 🌍 **100% Local** - Your data never leaves your infrastructure, fully offline-capable
-- ⚡ **Zero Dependencies** - ~365KB bundle, works everywhere (Node.js, browsers, edge)
-- 🎨 **Multiple Redaction Modes** - Placeholder, mask-middle, mask-all, format-preserving, token-replace
-- 📄 **Document Processing** - PDF, Word (DOCX), and text file support with automatic extraction
-- 📊 **Advanced Features** - Streaming, batch processing, explain API, HTML reports, audit logging
-- 🔍 **Enterprise Ready** - RBAC, audit logging, metrics export (Prometheus/StatsD), learning system
-- ⚛️ **Framework Ready** - React hooks, Express middleware included
-- 📝 **TypeScript Native** - Full type safety with exported types
-- 🧪 **Battle Tested** - 415+ tests passing, production-ready with 99%+ coverage
+- **Lightning Fast** - <2ms processing for 2KB text, 100x faster than cloud APIs
+- **151+ PII Patterns** - Comprehensive coverage across 8+ industries
+- **Context-Aware** - 90%+ accuracy with false positive reduction
+- **Compliance Ready** - GDPR, HIPAA, CCPA, FERPA presets
+- **100% Local** - Your data never leaves your infrastructure
+- **Zero Dependencies** - ~100KB bundle, works everywhere
+- **Advanced Features** - Streaming, batch processing, explain API, HTML reports
+- **Framework Ready** - React hooks, Express middleware included
+- **TypeScript Native** - Full type safety with exported types
+- **Battle Tested** - 276 tests passing, production-ready
 
 ## Installation
 
