@@ -81,13 +81,16 @@ export class ExplainAPI {
     const testResult = detector.detect('Contact: admin@business.co.uk');
     const hasConfidence = testResult.detections.length > 0 && testResult.detections[0].confidence !== undefined;
 
+    // Access detector's private options to get whitelist
+    const detectorOptions = (detector as any).options;
+
     // Infer options from detector behavior
     this.options = {
       enableContextAnalysis: hasConfidence,
-      confidenceThreshold: 0.5,
-      enableFalsePositiveFilter: false,
-      falsePositiveThreshold: 0.7,
-      whitelist: []
+      confidenceThreshold: detectorOptions?.confidenceThreshold || 0.5,
+      enableFalsePositiveFilter: detectorOptions?.enableFalsePositiveFilter || false,
+      falsePositiveThreshold: detectorOptions?.falsePositiveThreshold || 0.7,
+      whitelist: detectorOptions?.whitelist || []
     };
   }
 
