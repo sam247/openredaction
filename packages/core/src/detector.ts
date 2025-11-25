@@ -955,4 +955,66 @@ export class OpenRedaction {
 
     return this.detectDocument(buffer, options);
   }
+
+  /**
+   * Batch detect PII in multiple texts using worker threads (parallel)
+   * Significantly faster for processing many texts
+   */
+  static async detectBatch(
+    texts: string[],
+    options?: OpenRedactionOptions & { numWorkers?: number }
+  ): Promise<DetectionResult[]> {
+    const { createWorkerPool } = await import('./workers');
+    const pool = createWorkerPool({ numWorkers: options?.numWorkers });
+
+    try {
+      await pool.initialize();
+
+      const tasks = texts.map((text, index) => ({
+        type: 'detect' as const,
+        id: `detect_${index}`,
+        text,
+        options
+      }));
+
+      const results = await Promise.all(
+        tasks.map(task => pool.execute<DetectionResult>(task))
+      );
+
+      return results;
+    } finally {
+      await pool.terminate();
+    }
+  }
+
+  /**
+   * Batch process multiple documents using worker threads (parallel)
+   * Efficient for processing many documents at once
+   */
+  static async detectDocumentsBatch(
+    buffers: Buffer[],
+    options?: import('./document/types').DocumentOptions & { numWorkers?: number }
+  ): Promise<import('./document/types').DocumentResult[]> {
+    const { createWorkerPool } = await import('./workers');
+    const pool = createWorkerPool({ numWorkers: options?.numWorkers });
+
+    try {
+      await pool.initialize();
+
+      const tasks = buffers.map((buffer, index) => ({
+        type: 'document' as const,
+        id: `document_${index}`,
+        buffer,
+        options
+      }));
+
+      const results = await Promise.all(
+        tasks.map(task => pool.execute(task))
+      );
+
+      return results;
+    } finally {
+      await pool.terminate();
+    }
+  }
 }

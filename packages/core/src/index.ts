@@ -155,6 +155,20 @@ export type {
   StreamingOptions
 } from './streaming/StreamingDetector';
 
+// Worker threads (parallel processing)
+export {
+  WorkerPool,
+  createWorkerPool
+} from './workers';
+export type {
+  WorkerTask,
+  WorkerResult,
+  WorkerPoolConfig,
+  WorkerPoolStats,
+  DetectTask,
+  DocumentTask
+} from './workers';
+
 // Batch processing
 export {
   BatchProcessor,

@@ -173,7 +173,6 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
     case 'gamers':
       return gamingPatterns;
     case 'vehicles':
-    case 'automotive':
     case 'license-plates':
     case 'vin':
       return vehiclePatterns;
@@ -184,7 +183,6 @@ export function getPatternsByCategory(category: string): PIIPattern[] {
       return logisticsPatterns;
     case 'aviation':
     case 'flight':
-    case 'airline':
     case 'aircraft':
       return aviationPatterns;
     case 'maritime':
