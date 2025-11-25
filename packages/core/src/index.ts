@@ -8,6 +8,7 @@ export { OpenRedaction } from './detector';
 export type {
   PIIPattern,
   PIIDetection,
+  PIIMatch,
   DetectionResult,
   OpenRedactionOptions,
   RedactionMode,
@@ -48,7 +49,13 @@ export {
   DocumentProcessor,
   createDocumentProcessor,
   OCRProcessor,
-  createOCRProcessor
+  createOCRProcessor,
+  JsonProcessor,
+  createJsonProcessor,
+  CsvProcessor,
+  createCsvProcessor,
+  XlsxProcessor,
+  createXlsxProcessor
 } from './document';
 export type {
   DocumentFormat,
@@ -60,7 +67,16 @@ export type {
   OCRLanguage,
   OCROptions,
   IOCRProcessor,
-  OCRResult
+  OCRResult,
+  JsonProcessorOptions,
+  JsonDetectionResult,
+  CsvProcessorOptions,
+  CsvDetectionResult,
+  ColumnStats,
+  CellMatch,
+  XlsxProcessorOptions,
+  XlsxDetectionResult,
+  SheetDetectionResult
 } from './document';
 
 export {
@@ -112,6 +128,45 @@ export type {
   ContextAnalysis,
   ContextFeatures
 } from './context/ContextAnalyzer';
+
+// Context rules engine (Phase 2)
+export {
+  ContextRulesEngine,
+  createContextRulesEngine,
+  DEFAULT_PROXIMITY_RULES,
+  DEFAULT_DOMAIN_VOCABULARIES
+} from './context/ContextRules';
+export type {
+  ProximityRule,
+  DomainVocabulary,
+  ContextRulesConfig
+} from './context/ContextRules';
+
+// NER detection (Phase 2 - requires compromise.js peer dependency)
+export {
+  NERDetector,
+  createNERDetector
+} from './ml/NERDetector';
+export type {
+  NEREntityType,
+  NERMatch,
+  HybridMatch
+} from './ml/NERDetector';
+
+// Severity classification (Phase 2)
+export {
+  SeverityClassifier,
+  createSeverityClassifier,
+  getSeverity,
+  calculateRisk,
+  DEFAULT_SEVERITY_MAP,
+  SEVERITY_SCORES
+} from './severity/SeverityClassifier';
+export type {
+  SeverityLevel,
+  SeverityClassification,
+  RiskScore
+} from './severity/SeverityClassifier';
 
 // False positive filtering
 export {

@@ -19,7 +19,7 @@ export interface PIIPattern {
   /** Optional description */
   description?: string;
   /** Severity level */
-  severity?: 'high' | 'medium' | 'low';
+  severity?: 'critical' | 'high' | 'medium' | 'low';
 }
 
 /**
@@ -35,9 +35,30 @@ export interface PIIDetection {
   /** Position in text [start, end] */
   position: [number, number];
   /** Severity level */
-  severity: 'high' | 'medium' | 'low';
+  severity: 'critical' | 'high' | 'medium' | 'low';
   /** Confidence score (0-1) based on context analysis */
   confidence?: number;
+}
+
+/**
+ * PII match (used internally for processing)
+ */
+export interface PIIMatch {
+  /** Type of PII */
+  type: string;
+  /** Matched value */
+  value: string;
+  /** Start position */
+  start: number;
+  /** End position */
+  end: number;
+  /** Confidence score (0-1) */
+  confidence: number;
+  /** Context around match */
+  context: {
+    before: string;
+    after: string;
+  };
 }
 
 /**
