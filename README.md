@@ -18,10 +18,11 @@ Local-first • Zero dependencies • 10-20ms latency • 100% offline • 558+ 
 - 🧠 **Context-Aware** - 90%+ accuracy with false positive reduction and confidence scoring
 - 🔒 **Compliance Ready** - GDPR, HIPAA, CCPA presets with customizable rulesets
 - 🌍 **100% Local** - Your data never leaves your infrastructure, fully offline-capable
-- ⚡ **Zero Dependencies** - ~340KB bundle, works everywhere (Node.js, browsers, edge)
+- ⚡ **Zero Dependencies** - ~365KB bundle, works everywhere (Node.js, browsers, edge)
 - 🎨 **Multiple Redaction Modes** - Placeholder, mask-middle, mask-all, format-preserving, token-replace
+- 📄 **Document Processing** - PDF, Word (DOCX), and text file support with automatic extraction
 - 📊 **Advanced Features** - Streaming, batch processing, explain API, HTML reports, audit logging
-- 🔍 **Enterprise Ready** - Audit logging, metrics export, learning system, priority optimization
+- 🔍 **Enterprise Ready** - RBAC, audit logging, metrics export (Prometheus/StatsD), learning system
 - ⚛️ **Framework Ready** - React hooks, Express middleware included
 - 📝 **TypeScript Native** - Full type safety with exported types
 - 🧪 **Battle Tested** - 415+ tests passing, production-ready with 99%+ coverage
@@ -1283,6 +1284,9 @@ MIT © 2025
 - [x] 16 international carrier tracking numbers (global coverage)
 - [x] Multiple redaction modes (5 modes: placeholder, mask-middle, mask-all, format-preserving, token-replace)
 - [x] Audit logging system with JSON/CSV export
+- [x] Metrics export API (Prometheus, StatsD) for monitoring
+- [x] RBAC (role-based access control) for enterprise multi-tenancy
+- [x] Document processing (PDF, DOCX, TXT) with text extraction
 - [x] Local learning system with feedback loop
 - [x] Context-aware detection with confidence scoring
 - [x] Priority optimization system
@@ -1291,11 +1295,9 @@ MIT © 2025
 - [x] Framework integrations (React hooks, Express middleware)
 
 ### In Progress 🚧
-- [ ] Metrics export API (Prometheus, StatsD)
-- [ ] RBAC (role-based access control) for enterprise
+- [ ] OCR integration for image-based documents
 
 ### Planned 📋
-- [ ] Document support (PDF, DOCX) with OCR integration
 - [ ] WebAssembly compilation for faster pattern matching
 - [ ] Worker threads for parallel processing
 - [ ] Multi-language support (Spanish, French, German, Portuguese)
