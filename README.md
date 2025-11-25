@@ -9,20 +9,18 @@
 
 Local-first • Zero dependencies • <2ms latency • 100% offline • 151+ patterns
 
-> ⚠️ **Pre-release**: Not yet published to npm. Coming soon!
-
 ## Features
 
-- 🚀 **Lightning Fast** - <2ms processing for 2KB text, 100x faster than cloud APIs
-- 🎯 **151+ PII Patterns** - Comprehensive coverage across 8+ industries
-- 🧠 **Context-Aware** - 90%+ accuracy with false positive reduction
-- 🔒 **Compliance Ready** - GDPR, HIPAA, CCPA, FERPA presets
-- 🌍 **100% Local** - Your data never leaves your infrastructure
-- ⚡ **Zero Dependencies** - ~100KB bundle, works everywhere
-- 📊 **Advanced Features** - Streaming, batch processing, explain API, HTML reports
-- ⚛️ **Framework Ready** - React hooks, Express middleware included
-- 📝 **TypeScript Native** - Full type safety with exported types
-- 🧪 **Battle Tested** - 276 tests passing, production-ready
+- **Lightning Fast** - <2ms processing for 2KB text, 100x faster than cloud APIs
+- **151+ PII Patterns** - Comprehensive coverage across 8+ industries
+- **Context-Aware** - 90%+ accuracy with false positive reduction
+- **Compliance Ready** - GDPR, HIPAA, CCPA, FERPA presets
+- **100% Local** - Your data never leaves your infrastructure
+- **Zero Dependencies** - ~100KB bundle, works everywhere
+- **Advanced Features** - Streaming, batch processing, explain API, HTML reports
+- **Framework Ready** - React hooks, Express middleware included
+- **TypeScript Native** - Full type safety with exported types
+- **Battle Tested** - 276 tests passing, production-ready
 
 ## Installation
 
