@@ -14,11 +14,17 @@ export type {
   Validator,
   IAuditLogger,
   AuditLogEntry,
-  AuditStats
+  AuditStats,
+  IMetricsCollector,
+  IMetricsExporter,
+  RedactionMetrics
 } from './types';
 
 // Audit logging
 export { InMemoryAuditLogger, ConsoleAuditLogger } from './audit';
+
+// Metrics collection
+export { InMemoryMetricsCollector } from './metrics';
 
 export {
   allPatterns,

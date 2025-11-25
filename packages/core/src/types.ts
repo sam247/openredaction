@@ -123,6 +123,10 @@ export interface OpenRedactionOptions {
   auditSessionId?: string;
   /** Additional metadata for audit logs */
   auditMetadata?: Record<string, unknown>;
+  /** Enable metrics collection (default: false) */
+  enableMetrics?: boolean;
+  /** Metrics collector instance (optional, default: in-memory collector) */
+  metricsCollector?: IMetricsCollector;
 }
 
 /**
@@ -200,4 +204,54 @@ export interface AuditStats {
   operationsByType: Record<string, number>;
   /** Success rate (0-1) */
   successRate: number;
+}
+
+/**
+ * Metrics for monitoring redaction operations
+ */
+export interface RedactionMetrics {
+  /** Total number of redaction operations */
+  totalRedactions: number;
+  /** Total number of PII items detected */
+  totalPiiDetected: number;
+  /** Total processing time in milliseconds */
+  totalProcessingTime: number;
+  /** Average processing time in milliseconds */
+  averageProcessingTime: number;
+  /** Total text length processed (characters) */
+  totalTextLength: number;
+  /** PII detection counts by type */
+  piiByType: Record<string, number>;
+  /** Operation counts by redaction mode */
+  byRedactionMode: Record<string, number>;
+  /** Error count */
+  totalErrors: number;
+  /** Timestamp of last update */
+  lastUpdated: string;
+}
+
+/**
+ * Metrics exporter interface
+ */
+export interface IMetricsExporter {
+  /** Export metrics in Prometheus format */
+  exportPrometheus(metrics: RedactionMetrics, prefix?: string): string;
+  /** Export metrics in StatsD format */
+  exportStatsD(metrics: RedactionMetrics, prefix?: string): string[];
+  /** Get current metrics snapshot */
+  getMetrics(): RedactionMetrics;
+  /** Reset all metrics */
+  reset(): void;
+}
+
+/**
+ * Metrics collector interface
+ */
+export interface IMetricsCollector {
+  /** Record a redaction operation */
+  recordRedaction(result: DetectionResult, processingTimeMs: number, redactionMode: RedactionMode): void;
+  /** Record an error */
+  recordError(): void;
+  /** Get metrics exporter */
+  getExporter(): IMetricsExporter;
 }

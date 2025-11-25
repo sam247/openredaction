@@ -7,9 +7,11 @@ import {
   PIIDetection,
   DetectionResult,
   OpenRedactionOptions,
-  IAuditLogger
+  IAuditLogger,
+  IMetricsCollector
 } from './types';
 import { InMemoryAuditLogger } from './audit';
+import { InMemoryMetricsCollector } from './metrics';
 import { allPatterns } from './patterns';
 import { generateDeterministicId } from './utils/hash';
 import { getPreset } from './utils/presets';
@@ -70,6 +72,7 @@ export class OpenRedaction {
   private auditUser?: string;
   private auditSessionId?: string;
   private auditMetadata?: Record<string, unknown>;
+  private metricsCollector?: IMetricsCollector;
 
   constructor(options: OpenRedactionOptions & {
     configPath?: string;
@@ -169,6 +172,11 @@ export class OpenRedaction {
       this.auditUser = options.auditUser;
       this.auditSessionId = options.auditSessionId;
       this.auditMetadata = options.auditMetadata;
+    }
+
+    // Initialize metrics collection if enabled
+    if (options.enableMetrics) {
+      this.metricsCollector = options.metricsCollector || new InMemoryMetricsCollector();
     }
   }
 
@@ -465,6 +473,18 @@ export class OpenRedaction {
         // Don't fail the redaction if audit logging fails
         if (this.options.debug) {
           console.error('[OpenRedaction] Audit logging failed:', error);
+        }
+      }
+    }
+
+    // Record metrics if enabled
+    if (this.metricsCollector) {
+      try {
+        this.metricsCollector.recordRedaction(result, processingTime, this.options.redactionMode);
+      } catch (error) {
+        // Don't fail the redaction if metrics recording fails
+        if (this.options.debug) {
+          console.error('[OpenRedaction] Metrics recording failed:', error);
         }
       }
     }
@@ -808,6 +828,13 @@ export class OpenRedaction {
    */
   getAuditLogger(): IAuditLogger | undefined {
     return this.auditLogger;
+  }
+
+  /**
+   * Get the metrics collector instance (if metrics collection is enabled)
+   */
+  getMetricsCollector(): IMetricsCollector | undefined {
+    return this.metricsCollector;
   }
 
   /**

@@ -197,6 +197,148 @@ const redactor = new OpenRedaction({
 });
 ```
 
+## Metrics Export (Enterprise)
+
+Monitor and analyze redaction performance with built-in metrics collection and export:
+
+```typescript
+import { OpenRedaction, InMemoryMetricsCollector } from 'openredaction';
+
+// Enable metrics collection
+const redactor = new OpenRedaction({
+  enableMetrics: true
+});
+
+// Process some text
+redactor.detect("Email: john@example.com, SSN: 123-45-6789");
+redactor.detect("Call 555-123-4567 or visit website.com");
+redactor.detect("Account #12345, Card: 4532-0151-1283-0366");
+
+// Access metrics
+const metricsCollector = redactor.getMetricsCollector();
+const exporter = metricsCollector.getExporter();
+
+// Get current metrics
+const metrics = exporter.getMetrics();
+console.log(metrics);
+// {
+//   totalRedactions: 3,
+//   totalPiiDetected: 6,
+//   totalProcessingTime: 45.3,
+//   averageProcessingTime: 15.1,
+//   totalTextLength: 156,
+//   piiByType: {
+//     EMAIL: 1,
+//     SSN: 1,
+//     PHONE_US: 1,
+//     ACCOUNT_NUMBER: 1,
+//     CREDIT_CARD: 1,
+//     URL: 1
+//   },
+//   byRedactionMode: {
+//     placeholder: 3
+//   },
+//   totalErrors: 0,
+//   lastUpdated: '2025-01-15T10:45:00.000Z'
+// }
+
+// Export as Prometheus format
+const prometheusMetrics = exporter.exportPrometheus();
+console.log(prometheusMetrics);
+/*
+# HELP openredaction_total_redactions Total number of redaction operations
+# TYPE openredaction_total_redactions counter
+openredaction_total_redactions 3 1736938800000
+
+# HELP openredaction_total_pii_detected Total number of PII items detected
+# TYPE openredaction_total_pii_detected counter
+openredaction_total_pii_detected 6 1736938800000
+
+# HELP openredaction_avg_processing_time_ms Average processing time in milliseconds
+# TYPE openredaction_avg_processing_time_ms gauge
+openredaction_avg_processing_time_ms 15.10 1736938800000
+
+# HELP openredaction_pii_by_type PII detection counts by type
+# TYPE openredaction_pii_by_type counter
+openredaction_pii_by_type{type="EMAIL"} 1 1736938800000
+openredaction_pii_by_type{type="SSN"} 1 1736938800000
+openredaction_pii_by_type{type="PHONE_US"} 1 1736938800000
+...
+*/
+
+// Export as StatsD format
+const statsdMetrics = exporter.exportStatsD();
+console.log(statsdMetrics);
+/*
+[
+  'openredaction.total_redactions:3|c',
+  'openredaction.total_pii_detected:6|c',
+  'openredaction.total_processing_time_ms:45.30|c',
+  'openredaction.total_text_length:156|c',
+  'openredaction.total_errors:0|c',
+  'openredaction.avg_processing_time_ms:15.10|g',
+  'openredaction.pii_by_type:1|c|#type:EMAIL',
+  'openredaction.pii_by_type:1|c|#type:SSN',
+  'openredaction.pii_by_type:1|c|#type:PHONE_US',
+  ...
+]
+*/
+
+// Custom prefix for multi-tenant scenarios
+const customPrometheus = exporter.exportPrometheus(metrics, 'myapp_pii');
+const customStatsD = exporter.exportStatsD(metrics, 'myapp.pii');
+
+// Reset metrics
+exporter.reset();
+```
+
+### Integration with Monitoring Systems
+
+**Prometheus**:
+```typescript
+import express from 'express';
+import { OpenRedaction } from 'openredaction';
+
+const app = express();
+const redactor = new OpenRedaction({ enableMetrics: true });
+
+// Prometheus metrics endpoint
+app.get('/metrics', (req, res) => {
+  const exporter = redactor.getMetricsCollector()?.getExporter();
+  if (exporter) {
+    res.set('Content-Type', 'text/plain');
+    res.send(exporter.exportPrometheus());
+  } else {
+    res.status(404).send('Metrics not enabled');
+  }
+});
+
+app.listen(3000);
+```
+
+**StatsD/Datadog**:
+```typescript
+import { StatsD } from 'node-statsd';
+import { OpenRedaction } from 'openredaction';
+
+const statsd = new StatsD();
+const redactor = new OpenRedaction({ enableMetrics: true });
+
+// Periodically push metrics to StatsD
+setInterval(() => {
+  const exporter = redactor.getMetricsCollector()?.getExporter();
+  if (exporter) {
+    const metrics = exporter.exportStatsD();
+    metrics.forEach(metric => {
+      // Parse and send to StatsD
+      const [name, rest] = metric.split(':');
+      const [value, type] = rest.split('|');
+      statsd.gauge(name, parseFloat(value));
+    });
+  }
+}, 10000); // Every 10 seconds
+```
+
 ## CLI Usage
 
 ```bash
