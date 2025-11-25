@@ -7,7 +7,29 @@ import type { DetectionResult } from '../types';
 /**
  * Supported document formats
  */
-export type DocumentFormat = 'pdf' | 'docx' | 'txt';
+export type DocumentFormat = 'pdf' | 'docx' | 'txt' | 'image';
+
+/**
+ * Supported image formats for OCR
+ */
+export type ImageFormat = 'png' | 'jpg' | 'jpeg' | 'tiff' | 'bmp' | 'webp';
+
+/**
+ * OCR language codes (Tesseract format)
+ */
+export type OCRLanguage = 'eng' | 'spa' | 'fra' | 'deu' | 'por' | 'ita' | 'rus' | 'chi_sim' | 'chi_tra' | 'jpn' | 'kor';
+
+/**
+ * OCR options
+ */
+export interface OCROptions {
+  /** OCR language (default: 'eng' for English) */
+  language?: OCRLanguage | OCRLanguage[];
+  /** OCR engine mode (0-3, default: 3 for best accuracy) */
+  oem?: 0 | 1 | 2 | 3;
+  /** Page segmentation mode (0-13, default: 3 for automatic) */
+  psm?: number;
+}
 
 /**
  * Document processing options
@@ -21,6 +43,10 @@ export interface DocumentOptions {
   password?: string;
   /** Maximum document size in bytes (default: 50MB) */
   maxSize?: number;
+  /** Enable OCR for image-based content (default: false) */
+  enableOCR?: boolean;
+  /** OCR configuration options */
+  ocrOptions?: OCROptions;
 }
 
 /**
@@ -55,8 +81,34 @@ export interface DocumentMetadata {
   creationDate?: Date;
   /** Last modified date */
   modifiedDate?: Date;
+  /** OCR confidence (0-100) if OCR was used */
+  ocrConfidence?: number;
+  /** Whether OCR was used for extraction */
+  usedOCR?: boolean;
   /** Additional custom metadata */
   custom?: Record<string, unknown>;
+}
+
+/**
+ * OCR processor interface
+ */
+export interface IOCRProcessor {
+  /** Extract text from image buffer using OCR */
+  recognizeText(buffer: Buffer, options?: OCROptions): Promise<OCRResult>;
+  /** Check if OCR is available (tesseract.js installed) */
+  isAvailable(): boolean;
+}
+
+/**
+ * OCR recognition result
+ */
+export interface OCRResult {
+  /** Recognized text */
+  text: string;
+  /** Confidence score (0-100) */
+  confidence: number;
+  /** Processing time in milliseconds */
+  processingTime: number;
 }
 
 /**

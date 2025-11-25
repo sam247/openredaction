@@ -46,14 +46,21 @@ export {
 // Document processing (optional - requires peer dependencies)
 export {
   DocumentProcessor,
-  createDocumentProcessor
+  createDocumentProcessor,
+  OCRProcessor,
+  createOCRProcessor
 } from './document';
 export type {
   DocumentFormat,
   DocumentOptions,
   DocumentResult,
   DocumentMetadata,
-  IDocumentProcessor
+  IDocumentProcessor,
+  ImageFormat,
+  OCRLanguage,
+  OCROptions,
+  IOCRProcessor,
+  OCRResult
 } from './document';
 
 export {

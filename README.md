@@ -808,6 +808,242 @@ console.log('Author:', metadata.author);
 console.log('Created:', metadata.creationDate);
 ```
 
+### OCR (Optical Character Recognition)
+
+Extract text from images and scanned documents with built-in OCR support:
+
+#### Installation
+
+OCR requires an additional optional peer dependency:
+
+```bash
+npm install tesseract.js
+```
+
+#### Supported Formats
+
+- **PNG** - Lossless image format
+- **JPEG/JPG** - Compressed image format
+- **TIFF** - High-quality scanned documents
+- **BMP** - Windows bitmap images
+- **WebP** - Modern web image format
+
+#### Basic OCR Usage
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+import fs from 'fs/promises';
+
+const redactor = new OpenRedaction();
+
+// Process image with OCR
+const imageBuffer = await fs.readFile('scanned-document.png');
+const result = await redactor.detectDocument(imageBuffer, {
+  enableOCR: true
+});
+
+console.log('Extracted text:', result.text);
+console.log('OCR confidence:', result.metadata.ocrConfidence);
+console.log('Found PII:', result.detection.detections);
+```
+
+#### OCR Language Support
+
+Configure OCR for different languages:
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+
+const redactor = new OpenRedaction();
+
+// English (default)
+await redactor.detectDocument(imageBuffer, {
+  enableOCR: true,
+  ocrOptions: {
+    language: 'eng'
+  }
+});
+
+// Spanish
+await redactor.detectDocument(imageBuffer, {
+  enableOCR: true,
+  ocrOptions: {
+    language: 'spa'
+  }
+});
+
+// Multiple languages
+await redactor.detectDocument(imageBuffer, {
+  enableOCR: true,
+  ocrOptions: {
+    language: ['eng', 'spa', 'fra']  // English, Spanish, French
+  }
+});
+
+// Supported languages:
+// - eng (English)
+// - spa (Spanish)
+// - fra (French)
+// - deu (German)
+// - por (Portuguese)
+// - ita (Italian)
+// - rus (Russian)
+// - chi_sim (Chinese Simplified)
+// - chi_tra (Chinese Traditional)
+// - jpn (Japanese)
+// - kor (Korean)
+```
+
+#### OCR Quality Settings
+
+Fine-tune OCR for better accuracy:
+
+```typescript
+await redactor.detectDocument(imageBuffer, {
+  enableOCR: true,
+  ocrOptions: {
+    language: 'eng',
+    oem: 3,  // OCR Engine Mode (0-3, default: 3 for best accuracy)
+    psm: 3   // Page Segmentation Mode (0-13, default: 3 for automatic)
+  }
+});
+
+// OCR Engine Modes (oem):
+// 0 - Legacy engine only
+// 1 - Neural nets LSTM engine only
+// 2 - Legacy + LSTM engines
+// 3 - Default, based on what is available (recommended)
+
+// Page Segmentation Modes (psm):
+// 0  - Orientation and script detection (OSD) only
+// 1  - Automatic page segmentation with OSD
+// 2  - Automatic page segmentation (no OSD or OCR)
+// 3  - Fully automatic page segmentation (default)
+// 4  - Assume a single column of text of variable sizes
+// 6  - Assume a single uniform block of text
+// 11 - Sparse text (find as much text as possible)
+// 13 - Raw line (treat image as single text line)
+```
+
+#### Standalone OCR Processor
+
+Use OCR directly without document processing:
+
+```typescript
+import { createOCRProcessor } from 'openredaction';
+
+const ocrProcessor = createOCRProcessor();
+
+// Check if OCR is available
+if (ocrProcessor.isAvailable()) {
+  // Process single image
+  const result = await ocrProcessor.recognizeText(imageBuffer, {
+    language: 'eng',
+    oem: 3,
+    psm: 3
+  });
+
+  console.log('Text:', result.text);
+  console.log('Confidence:', result.confidence);
+  console.log('Processing time:', result.processingTime, 'ms');
+}
+```
+
+#### Batch OCR Processing
+
+Process multiple images efficiently:
+
+```typescript
+import { createOCRProcessor } from 'openredaction';
+import { glob } from 'glob';
+import fs from 'fs/promises';
+
+const ocrProcessor = createOCRProcessor();
+
+// Find all images
+const imageFiles = await glob('scans/**/*.{png,jpg,jpeg}');
+
+// Load buffers
+const buffers = await Promise.all(
+  imageFiles.map(file => fs.readFile(file))
+);
+
+// Batch process with scheduler (more efficient)
+const results = await ocrProcessor.recognizeBatch(buffers, {
+  language: 'eng'
+});
+
+// Process results
+results.forEach((result, index) => {
+  console.log(`File: ${imageFiles[index]}`);
+  console.log(`Confidence: ${result.confidence}%`);
+  console.log(`Text: ${result.text.substring(0, 100)}...`);
+  console.log('---');
+});
+
+// Don't forget to cleanup
+await ocrProcessor.cleanup();
+```
+
+#### OCR with Document Processing
+
+Combine OCR with full document processing:
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+import express from 'express';
+import multer from 'multer';
+
+const app = express();
+const upload = multer({ storage: multer.memoryStorage() });
+const redactor = new OpenRedaction();
+
+app.post('/api/scan-document', upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  try {
+    const result = await redactor.detectDocument(req.file.buffer, {
+      enableOCR: true,
+      ocrOptions: {
+        language: req.body.language || 'eng'
+      }
+    });
+
+    res.json({
+      extractedText: result.text,
+      ocrConfidence: result.metadata.ocrConfidence,
+      piiFound: result.detection.detections.length,
+      redactedText: result.detection.redacted,
+      detections: result.detection.detections.map(d => ({
+        type: d.type,
+        severity: d.severity,
+        position: d.position
+      }))
+    });
+  } catch (error) {
+    if (error.message.includes('tesseract.js')) {
+      res.status(500).json({
+        error: 'OCR not available. Install tesseract.js: npm install tesseract.js'
+      });
+    } else {
+      res.status(500).json({ error: error.message });
+    }
+  }
+});
+
+app.listen(3000);
+```
+
+#### Performance Tips
+
+1. **Use Batch Processing**: For multiple images, use `recognizeBatch()` with a scheduler
+2. **Optimize Image Quality**: Higher resolution images = better OCR but slower processing
+3. **Pre-process Images**: Enhance contrast, remove noise, straighten for better accuracy
+4. **Choose Appropriate PSM**: Use PSM 6 for single blocks, PSM 11 for sparse text
+5. **Language Selection**: Only load languages you need to reduce memory usage
+
 ## CLI Usage
 
 ```bash
@@ -1287,15 +1523,13 @@ MIT © 2025
 - [x] Metrics export API (Prometheus, StatsD) for monitoring
 - [x] RBAC (role-based access control) for enterprise multi-tenancy
 - [x] Document processing (PDF, DOCX, TXT) with text extraction
+- [x] OCR integration for image-based documents (11 languages, batch processing)
 - [x] Local learning system with feedback loop
 - [x] Context-aware detection with confidence scoring
 - [x] Priority optimization system
 - [x] Streaming API for large texts
 - [x] HTML report generation
 - [x] Framework integrations (React hooks, Express middleware)
-
-### In Progress 🚧
-- [ ] OCR integration for image-based documents
 
 ### Planned 📋
 - [ ] WebAssembly compilation for faster pattern matching
