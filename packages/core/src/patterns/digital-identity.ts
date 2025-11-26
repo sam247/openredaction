@@ -111,23 +111,32 @@ export const FACEBOOK_ID: PIIPattern = {
 
 /**
  * Instagram Username
- * Format: alphanumeric, periods, underscores (1-30 chars)
- * Example: user.name_123
+ * Format: @username with alphanumeric, periods, underscores (1-30 chars)
+ * Example: @user.name_123
+ * Note: Requires @ symbol to prevent false positives from matching regular words
+ * Higher priority than generic SOCIAL_MEDIA_HANDLE to match usernames with periods
  */
 export const INSTAGRAM_USERNAME: PIIPattern = {
   type: 'INSTAGRAM_USERNAME',
-  regex: /\b([a-zA-Z0-9._]{1,30})\b/g,
-  placeholder: '[IG_USER_{n}]',
-  priority: 70,
+  regex: /@([a-zA-Z0-9._]{1,30})\b/g,
+  placeholder: '[@IG_USER_{n}]',
+  priority: 80, // Higher than SOCIAL_MEDIA_HANDLE (75) to match first
   severity: 'medium',
-  description: 'Instagram username',
-  validator: (value: string, context: string) => {
+  description: 'Instagram username with @ symbol',
+  validator: (value: string, _context: string) => {
     // Must be valid Instagram format
     if (value.length < 1 || value.length > 30) return false;
     if (!/^[a-zA-Z0-9._]+$/.test(value)) return false;
 
-    // Context validation strongly required
-    return /instagram|ig|insta|profile|handle/i.test(context);
+    // Can't start or end with period
+    if (value.startsWith('.') || value.endsWith('.')) return false;
+
+    // Can't have consecutive periods
+    if (/\.\./.test(value)) return false;
+
+    // Since @ symbol is required in regex, we can be lenient with context
+    // The @ symbol itself provides sufficient signal
+    return true;
   }
 };
 
@@ -215,20 +224,23 @@ export const REDDIT_USERNAME: PIIPattern = {
  * Xbox Gamertag
  * Format: alphanumeric with spaces (3-15 chars)
  * Example: GamerName123
+ * Note: Disabled by default - too prone to false positives. Use custom pattern if needed.
  */
 export const XBOX_GAMERTAG: PIIPattern = {
   type: 'XBOX_GAMERTAG',
   regex: /\b([a-zA-Z][a-zA-Z0-9 ]{2,14})\b/g,
   placeholder: '[XBOX_TAG_{n}]',
-  priority: 70,
-  severity: 'medium',
-  description: 'Xbox Live Gamertag',
+  priority: 50, // Lowered priority
+  severity: 'low', // Lowered severity
+  description: 'Xbox Live Gamertag (requires strong context)',
   validator: (value: string, context: string) => {
     if (value.length < 3 || value.length > 15) return false;
     if (!/^[a-zA-Z]/.test(value)) return false;
 
-    // Context validation strongly required
-    return /xbox|gamertag|live|microsoft|gaming|player/i.test(context);
+    // Much stricter context validation required to avoid false positives
+    const strictContext = /(?:xbox|gamertag|live|XBL)[\s:]+/i.test(context) ||
+                         /\b(?:xbox|gamertag)\b.*\b(?:is|:|=)\b/i.test(context);
+    return strictContext;
   }
 };
 
@@ -236,20 +248,23 @@ export const XBOX_GAMERTAG: PIIPattern = {
  * PlayStation Network ID
  * Format: alphanumeric, hyphens, underscores (3-16 chars)
  * Example: PSN_User123
+ * Note: Requires strong context to avoid false positives with common words
  */
 export const PSN_ID: PIIPattern = {
   type: 'PSN_ID',
   regex: /\b([a-zA-Z][a-zA-Z0-9_-]{2,15})\b/g,
   placeholder: '[PSN_{n}]',
-  priority: 70,
-  severity: 'medium',
-  description: 'PlayStation Network ID',
+  priority: 50, // Lowered priority
+  severity: 'low', // Lowered severity
+  description: 'PlayStation Network ID (requires strong context)',
   validator: (value: string, context: string) => {
     if (value.length < 3 || value.length > 16) return false;
     if (!/^[a-zA-Z]/.test(value)) return false;
 
-    // Context validation required
-    return /playstation|psn|sony|ps4|ps5|gamer|player/i.test(context);
+    // Much stricter context validation required
+    const strictContext = /(?:playstation|psn|PSN)[\s:]+/i.test(context) ||
+                         /\b(?:psn|playstation)\b.*\b(?:is|id|:|=)\b/i.test(context);
+    return strictContext;
   }
 };
 
