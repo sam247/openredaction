@@ -349,7 +349,7 @@ export class APIServer {
    * Handle POST /api/detect
    */
   private async handleDetect(req: APIRequest): Promise<APIResponse> {
-    const { text, options } = req.body;
+    const { text } = req.body;
 
     if (!text || typeof text !== 'string') {
       return {
@@ -399,7 +399,7 @@ export class APIServer {
    * Handle POST /api/redact
    */
   private async handleRedact(req: APIRequest): Promise<APIResponse> {
-    const { text, options } = req.body;
+    const { text } = req.body;
 
     if (!text || typeof text !== 'string') {
       return {
@@ -513,7 +513,7 @@ export class APIServer {
   /**
    * Handle GET /api/audit/stats
    */
-  private async handleAuditStats(req: APIRequest): Promise<APIResponse> {
+  private async handleAuditStats(_req: APIRequest): Promise<APIResponse> {
     if (!this.config.auditLogger) {
       return {
         status: 501,
@@ -613,7 +613,7 @@ export class APIServer {
   /**
    * Handle GET /api/health
    */
-  private async handleHealth(req: APIRequest): Promise<APIResponse> {
+  private async handleHealth(_req: APIRequest): Promise<APIResponse> {
     return {
       status: 200,
       body: {
@@ -633,7 +633,7 @@ export class APIServer {
   /**
    * Handle GET /api/docs
    */
-  private async handleDocs(req: APIRequest): Promise<APIResponse> {
+  private async handleDocs(_req: APIRequest): Promise<APIResponse> {
     const html = `
 <!DOCTYPE html>
 <html>
@@ -753,7 +753,7 @@ export class APIServer {
   /**
    * Handle GET /
    */
-  private async handleRoot(req: APIRequest): Promise<APIResponse> {
+  private async handleRoot(_req: APIRequest): Promise<APIResponse> {
     return {
       status: 200,
       body: {

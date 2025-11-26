@@ -367,7 +367,7 @@ export function createHealthChecker(detector: OpenRedaction): HealthChecker {
 export function healthCheckMiddleware(detector: OpenRedaction) {
   const checker = new HealthChecker(detector);
 
-  return async (req: any, res: any) => {
+  return async (_req: any, res: any) => {
     try {
       const result = await checker.check({
         testDetection: true,

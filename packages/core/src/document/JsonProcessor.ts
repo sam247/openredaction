@@ -2,8 +2,8 @@
  * JSON document processor for PII detection and redaction in structured data
  */
 
-import type { DetectionResult, PIIMatch } from '../types';
-import type { Detector } from '../detector';
+import type { DetectionResult, PIIDetection } from '../types';
+import type { OpenRedaction } from '../detector';
 
 /**
  * JSON processing options
@@ -30,7 +30,7 @@ export interface JsonDetectionResult extends DetectionResult {
   /** Paths where PII was detected (e.g., 'user.email', 'contacts[0].phone') */
   pathsDetected: string[];
   /** PII matches with path information */
-  matchesByPath: Record<string, PIIMatch[]>;
+  matchesByPath: Record<string, PIIDetection[]>;
 }
 
 /**
@@ -81,13 +81,13 @@ export class JsonProcessor {
    */
   detect(
     data: any,
-    detector: Detector,
+    detector: OpenRedaction,
     options?: JsonProcessorOptions
   ): JsonDetectionResult {
     const opts = { ...this.defaultOptions, ...options };
     const pathsDetected: string[] = [];
-    const matchesByPath: Record<string, PIIMatch[]> = {};
-    const allMatches: PIIMatch[] = [];
+    const matchesByPath: Record<string, PIIDetection[]> = {};
+    const allDetections: PIIDetection[] = [];
 
     // Traverse JSON and collect all text values with paths
     this.traverse(data, '', opts, (path, value, key) => {
@@ -99,31 +99,28 @@ export class JsonProcessor {
       // Check if path should always be redacted
       if (this.shouldAlwaysRedact(path, opts.alwaysRedact)) {
         // Mark as high-confidence PII without scanning
-        const match: PIIMatch = {
+        const detection: PIIDetection = {
           type: 'SENSITIVE_FIELD',
           value: String(value),
-          start: 0,
-          end: String(value).length,
-          confidence: 1.0,
-          context: {
-            before: '',
-            after: ''
-          }
+          placeholder: `[SENSITIVE_FIELD]`,
+          position: [0, String(value).length],
+          severity: 'high',
+          confidence: 1.0
         };
-        matchesByPath[path] = [match];
+        matchesByPath[path] = [detection];
         pathsDetected.push(path);
-        allMatches.push(match);
+        allDetections.push(detection);
         return;
       }
 
       // Scan keys if enabled
       if (opts.scanKeys && key) {
         const keyResult = detector.detect(key);
-        if (keyResult.piiFound && keyResult.matches.length > 0) {
+        if (keyResult.detections.length > 0) {
           const keyPath = `${path}.__key__`;
-          matchesByPath[keyPath] = keyResult.matches;
+          matchesByPath[keyPath] = keyResult.detections;
           pathsDetected.push(keyPath);
-          allMatches.push(...keyResult.matches);
+          allDetections.push(...keyResult.detections);
         }
       }
 
@@ -131,33 +128,48 @@ export class JsonProcessor {
       const valueStr = String(value);
       const result = detector.detect(valueStr);
 
-      if (result.piiFound && result.matches.length > 0) {
+      if (result.detections.length > 0) {
         // Boost confidence if key indicates PII
-        const boostedMatches = this.boostConfidenceFromKey(
-          result.matches,
+        const boostedDetections = this.boostConfidenceFromKey(
+          result.detections,
           key,
           opts.piiIndicatorKeys
         );
 
-        matchesByPath[path] = boostedMatches;
+        matchesByPath[path] = boostedDetections;
         pathsDetected.push(path);
-        allMatches.push(...boostedMatches);
+        allDetections.push(...boostedDetections);
       }
     });
 
-    // Calculate statistics
-    const uniqueTypes = new Set(allMatches.map(m => m.type));
-    const totalPiiCount = allMatches.length;
+    // Build redacted text
+    const original = JSON.stringify(data);
+    const redacted = this.redact(data, {
+      original,
+      redacted: original,
+      detections: allDetections,
+      redactionMap: {},
+      stats: { piiCount: allDetections.length },
+      pathsDetected,
+      matchesByPath
+    } as JsonDetectionResult, opts);
+
+    // Build redaction map
+    const redactionMap: Record<string, string> = {};
+    allDetections.forEach(det => {
+      redactionMap[det.placeholder] = det.value;
+    });
 
     return {
-      piiFound: totalPiiCount > 0,
-      piiCount: totalPiiCount,
-      piiTypes: Array.from(uniqueTypes),
-      matches: allMatches,
+      original,
+      redacted: typeof redacted === 'string' ? redacted : JSON.stringify(redacted),
+      detections: allDetections,
+      redactionMap,
+      stats: {
+        piiCount: allDetections.length
+      },
       pathsDetected,
-      matchesByPath,
-      text: JSON.stringify(data),
-      processingTime: 0 // Set by caller
+      matchesByPath
     };
   }
 
@@ -235,11 +247,11 @@ export class JsonProcessor {
    */
   private redactText(text: string, detectionResult: DetectionResult): string {
     let redacted = text;
-    const sortedMatches = [...detectionResult.matches].sort((a, b) => b.start - a.start);
+    const sortedDetections = [...detectionResult.detections].sort((a, b) => b.position[0] - a.position[0]);
 
-    for (const match of sortedMatches) {
-      const placeholder = `[${match.type}_REDACTED]`;
-      redacted = redacted.slice(0, match.start) + placeholder + redacted.slice(match.end);
+    for (const detection of sortedDetections) {
+      const [start, end] = detection.position;
+      redacted = redacted.slice(0, start) + detection.placeholder + redacted.slice(end);
     }
 
     return redacted;
@@ -338,23 +350,23 @@ export class JsonProcessor {
    * Boost confidence if key name indicates PII
    */
   private boostConfidenceFromKey(
-    matches: PIIMatch[],
+    detections: PIIDetection[],
     key: string | undefined,
     piiIndicatorKeys: string[]
-  ): PIIMatch[] {
-    if (!key) return matches;
+  ): PIIDetection[] {
+    if (!key) return detections;
 
     const keyLower = key.toLowerCase();
     const isPiiKey = piiIndicatorKeys.some(indicator =>
       keyLower.includes(indicator.toLowerCase())
     );
 
-    if (!isPiiKey) return matches;
+    if (!isPiiKey) return detections;
 
     // Boost confidence by 20% (capped at 1.0)
-    return matches.map(match => ({
-      ...match,
-      confidence: Math.min(1.0, match.confidence * 1.2)
+    return detections.map(detection => ({
+      ...detection,
+      confidence: Math.min(1.0, (detection.confidence || 0.5) * 1.2)
     }));
   }
 
@@ -365,7 +377,7 @@ export class JsonProcessor {
     const opts = { ...this.defaultOptions, ...options };
     const textParts: string[] = [];
 
-    this.traverse(data, '', opts, (path, value, key) => {
+    this.traverse(data, '', opts, (_path, value, key) => {
       if (opts.scanKeys && key) {
         textParts.push(key);
       }
@@ -410,7 +422,7 @@ export class JsonProcessor {
    */
   detectJsonLines(
     input: Buffer | string,
-    detector: Detector,
+    detector: OpenRedaction,
     options?: JsonProcessorOptions
   ): JsonDetectionResult[] {
     const documents = this.parseJsonLines(input);

@@ -2,8 +2,8 @@
  * XLSX/Excel document processor for PII detection and redaction in spreadsheets
  */
 
-import type { DetectionResult, PIIMatch } from '../types';
-import type { Detector } from '../detector';
+import type { DetectionResult, PIIDetection } from '../types';
+import type { OpenRedaction } from '../detector';
 
 /**
  * XLSX processing options
@@ -55,12 +55,6 @@ export interface SheetDetectionResult {
   columnCount: number;
   /** Column headers (if detected) */
   headers?: string[];
-  /** PII found in this sheet */
-  piiFound: boolean;
-  /** PII count in this sheet */
-  piiCount: number;
-  /** PII types found in this sheet */
-  piiTypes: string[];
   /** Column statistics */
   columnStats: Record<number, ColumnStats>;
   /** Cell matches */
@@ -104,7 +98,7 @@ export interface CellMatch {
   /** Cell formula (if any) */
   formula?: string;
   /** PII matches in this cell */
-  matches: PIIMatch[];
+  matches: PIIDetection[];
 }
 
 /**
@@ -168,7 +162,7 @@ export class XlsxProcessor {
    */
   detect(
     buffer: Buffer,
-    detector: Detector,
+    detector: OpenRedaction,
     options?: XlsxProcessorOptions
   ): XlsxDetectionResult {
     if (!this.xlsx) {
@@ -184,7 +178,7 @@ export class XlsxProcessor {
     const sheetNames = this.getSheetNamesToProcess(workbook, opts);
 
     const sheetResults: SheetDetectionResult[] = [];
-    const allMatches: PIIMatch[] = [];
+    const allDetections: PIIDetection[] = [];
     const allTypes = new Set<string>();
 
     for (let sheetIndex = 0; sheetIndex < sheetNames.length; sheetIndex++) {
@@ -200,17 +194,37 @@ export class XlsxProcessor {
       );
 
       sheetResults.push(sheetResult);
-      allMatches.push(...sheetResult.matchesByCell.flatMap(c => c.matches));
-      sheetResult.piiTypes.forEach(type => allTypes.add(type));
+      allDetections.push(...sheetResult.matchesByCell.flatMap(c => c.matches));
+      sheetResult.matchesByCell.forEach(cell => {
+        cell.matches.forEach(det => allTypes.add(det.type));
+      });
     }
 
+    const original = this.extractText(buffer, options);
+    const redactedBuffer = this.redact(buffer, {
+      original,
+      redacted: original,
+      detections: allDetections,
+      redactionMap: {},
+      stats: { piiCount: allDetections.length },
+      sheetResults,
+      sheetCount: sheetResults.length
+    } as XlsxDetectionResult, options);
+    const redacted = this.extractText(redactedBuffer, options);
+
+    const redactionMap: Record<string, string> = {};
+    allDetections.forEach(det => {
+      redactionMap[det.placeholder] = det.value;
+    });
+
     return {
-      piiFound: allMatches.length > 0,
-      piiCount: allMatches.length,
-      piiTypes: Array.from(allTypes),
-      matches: allMatches,
-      text: this.extractText(buffer, options),
-      processingTime: 0,
+      original,
+      redacted,
+      detections: allDetections,
+      redactionMap,
+      stats: {
+        piiCount: allDetections.length
+      },
       sheetResults,
       sheetCount: sheetResults.length
     };
@@ -223,7 +237,7 @@ export class XlsxProcessor {
     sheet: any,
     sheetName: string,
     sheetIndex: number,
-    detector: Detector,
+    detector: OpenRedaction,
     options: Required<Omit<XlsxProcessorOptions, 'sheets' | 'sheetIndices' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns' | 'hasHeader'>> & Partial<Pick<XlsxProcessorOptions, 'sheets' | 'sheetIndices' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns' | 'hasHeader'>>
   ): SheetDetectionResult {
     // Get sheet range
@@ -236,7 +250,6 @@ export class XlsxProcessor {
     const endCol = range.e.c;
 
     const columnCount = endCol - startCol + 1;
-    const rowCount = endRow - startRow + 1;
 
     // Detect header
     const hasHeader = options.hasHeader !== undefined
@@ -310,16 +323,13 @@ export class XlsxProcessor {
 
         // Always redact this column?
         if (alwaysRedactCols.has(colIndex)) {
-          const match: PIIMatch = {
+          const detection: PIIDetection = {
             type: 'SENSITIVE_COLUMN',
             value: cellValue,
-            start: 0,
-            end: cellValue.length,
-            confidence: 1.0,
-            context: {
-              before: '',
-              after: ''
-            }
+            placeholder: `[SENSITIVE_COLUMN_${colIndex}]`,
+            position: [0, cellValue.length],
+            severity: 'high',
+            confidence: 1.0
           };
 
           matchesByCell.push({
@@ -330,7 +340,7 @@ export class XlsxProcessor {
             columnName: headers?.[colIndex],
             value: cellValue,
             formula: cellFormula,
-            matches: [match]
+            matches: [detection]
           });
 
           columnStats[colIndex].piiCount++;
@@ -340,10 +350,10 @@ export class XlsxProcessor {
         // Detect PII
         const result = detector.detect(cellValue);
 
-        if (result.piiFound && result.matches.length > 0) {
+        if (result.detections.length > 0) {
           // Boost confidence if column name indicates PII
-          const boostedMatches = this.boostConfidenceFromColumnName(
-            result.matches,
+          const boostedDetections = this.boostConfidenceFromColumnName(
+            result.detections,
             headers?.[colIndex],
             options.piiIndicatorNames || []
           );
@@ -356,14 +366,14 @@ export class XlsxProcessor {
             columnName: headers?.[colIndex],
             value: cellValue,
             formula: cellFormula,
-            matches: boostedMatches
+            matches: boostedDetections
           });
 
-          columnStats[colIndex].piiCount += boostedMatches.length;
+          columnStats[colIndex].piiCount += boostedDetections.length;
 
           // Track PII types by column
           const columnTypes = new Set(columnStats[colIndex].piiTypes);
-          boostedMatches.forEach(m => columnTypes.add(m.type));
+          boostedDetections.forEach(d => columnTypes.add(d.type));
           columnStats[colIndex].piiTypes = Array.from(columnTypes);
         }
       }
@@ -378,18 +388,12 @@ export class XlsxProcessor {
         : 0;
     }
 
-    const allMatches = matchesByCell.flatMap(c => c.matches);
-    const uniqueTypes = new Set(allMatches.map(m => m.type));
-
     return {
       sheetName,
       sheetIndex,
       rowCount: dataRowCount,
       columnCount,
-      headers,
-      piiFound: allMatches.length > 0,
-      piiCount: allMatches.length,
-      piiTypes: Array.from(uniqueTypes),
+      headers: headers?.filter((h): h is string => h !== undefined),
       columnStats,
       matchesByCell
     };
@@ -546,23 +550,23 @@ export class XlsxProcessor {
    * Boost confidence if column name indicates PII
    */
   private boostConfidenceFromColumnName(
-    matches: PIIMatch[],
+    detections: PIIDetection[],
     columnName: string | undefined,
     piiIndicatorNames: string[]
-  ): PIIMatch[] {
-    if (!columnName) return matches;
+  ): PIIDetection[] {
+    if (!columnName) return detections;
 
     const nameLower = columnName.toLowerCase().trim();
     const isPiiColumn = piiIndicatorNames.some(indicator =>
       nameLower.includes(indicator.toLowerCase())
     );
 
-    if (!isPiiColumn) return matches;
+    if (!isPiiColumn) return detections;
 
     // Boost confidence by 20% (capped at 1.0)
-    return matches.map(match => ({
-      ...match,
-      confidence: Math.min(1.0, match.confidence * 1.2)
+    return detections.map(detection => ({
+      ...detection,
+      confidence: Math.min(1.0, (detection.confidence || 0.5) * 1.2)
     }));
   }
 
