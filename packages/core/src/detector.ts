@@ -1,5 +1,11 @@
 /**
- * Main OpenRedaction detector implementation
+ * OpenRedaction - Local-first PII detection and redaction library
+ *
+ * Main detector implementation for identifying and redacting personally identifiable
+ * information (PII) in text. Supports 571+ patterns across 25+ industries with
+ * zero runtime dependencies.
+ *
+ * @packageDocumentation
  */
 
 import {
@@ -38,7 +44,67 @@ import {
 import { safeExec, validatePattern, RegexTimeoutError } from './utils/safe-regex.js';
 
 /**
- * Main OpenRedaction class for detecting and redacting PII
+ * Main PII detection and redaction engine
+ *
+ * Detects and redacts personally identifiable information (PII) from text using
+ * 571+ pre-configured patterns. Supports multiple industries, compliance presets
+ * (GDPR, HIPAA, CCPA), and advanced features like context analysis, false positive
+ * filtering, and multi-pass detection.
+ *
+ * @example Basic usage
+ * ```typescript
+ * import { OpenRedaction } from 'openredaction';
+ *
+ * const detector = new OpenRedaction();
+ * const result = detector.detect('Contact John at john@example.com or 555-1234');
+ *
+ * console.log(result.piiFound); // true
+ * console.log(result.detections); // Array of detected PII
+ * console.log(result.redacted); // 'Contact John at [EMAIL_1] or [PHONE_1]'
+ * ```
+ *
+ * @example GDPR compliance
+ * ```typescript
+ * const detector = new OpenRedaction({
+ *   preset: 'gdpr',
+ *   redactionMode: 'hash',
+ *   deterministic: true
+ * });
+ * ```
+ *
+ * @example Custom patterns
+ * ```typescript
+ * const detector = new OpenRedaction({
+ *   customPatterns: [{
+ *     type: 'EMPLOYEE_ID',
+ *     regex: /EMP-\d{6}/g,
+ *     priority: 10,
+ *     placeholder: '[EMPLOYEE_ID]'
+ *   }]
+ * });
+ * ```
+ *
+ * @example Category filtering (performance optimization)
+ * ```typescript
+ * // Only detect emails and phones (97.8% faster)
+ * const detector = new OpenRedaction({
+ *   categories: ['contact']
+ * });
+ * ```
+ *
+ * @example Advanced features
+ * ```typescript
+ * const detector = new OpenRedaction({
+ *   enableContextAnalysis: true,     // Boost confidence based on context
+ *   enableFalsePositiveFilter: true, // Filter common false positives
+ *   enableMultiPass: true,            // Multi-pass detection for better accuracy
+ *   enableCache: true,                // Cache results for repeated text
+ *   enableLearning: true,             // Learn from feedback
+ *   debug: true                       // Enable debug logging
+ * });
+ * ```
+ *
+ * @see {@link https://github.com/sam247/openredaction OpenRedaction on GitHub}
  */
 import type { RedactionMode } from './types';
 
@@ -88,6 +154,41 @@ export class OpenRedaction {
   private contextRulesEngine?: ContextRulesEngine;
   private severityClassifier: SeverityClassifier;
 
+  /**
+   * Create a new OpenRedaction detector instance
+   *
+   * @param options - Configuration options for the detector
+   * @param options.preset - Compliance preset: 'gdpr', 'hipaa', or 'ccpa'
+   * @param options.redactionMode - How to redact PII: 'placeholder', 'hash', 'mask', 'remove', or 'partial'
+   * @param options.categories - Pattern categories to include (e.g., ['contact', 'financial']). Empty = all categories
+   * @param options.customPatterns - Additional custom PII patterns to detect
+   * @param options.whitelist - Values to exclude from detection (e.g., company emails)
+   * @param options.deterministic - Use deterministic placeholders for consistent redaction
+   * @param options.enableContextAnalysis - Enable context-aware detection (default: true)
+   * @param options.confidenceThreshold - Minimum confidence to report detection (0-1, default: 0.5)
+   * @param options.enableFalsePositiveFilter - Filter common false positives (default: false)
+   * @param options.enableMultiPass - Multi-pass detection for better accuracy (default: false)
+   * @param options.enableCache - Cache results for repeated text (default: false)
+   * @param options.enableLearning - Learn from feedback to improve accuracy (default: true)
+   * @param options.maxInputSize - Maximum input size in bytes (default: 10MB)
+   * @param options.regexTimeout - Regex execution timeout in milliseconds (default: 100ms)
+   * @param options.debug - Enable debug logging (default: false)
+   *
+   * @example
+   * ```typescript
+   * // Basic detector with defaults
+   * const detector = new OpenRedaction();
+   *
+   * // GDPR-compliant detector
+   * const gdprDetector = new OpenRedaction({ preset: 'gdpr' });
+   *
+   * // High-performance detector for emails and phones only
+   * const fastDetector = new OpenRedaction({
+   *   categories: ['contact'],
+   *   enableCache: true
+   * });
+   * ```
+   */
   constructor(options: OpenRedactionOptions & {
     configPath?: string;
     enableLearning?: boolean;
@@ -576,6 +677,49 @@ export class OpenRedaction {
 
   /**
    * Detect PII in text
+   *
+   * Scans text for personally identifiable information using configured patterns.
+   * Returns detected PII with positions, types, confidence scores, and redacted text.
+   *
+   * @param text - The text to scan for PII
+   * @returns Detection result with found PII and redacted text
+   *
+   * @throws {Error} If text size exceeds maxInputSize limit
+   * @throws {Error} If RBAC permission denied (when RBAC is enabled)
+   *
+   * @example Basic detection
+   * ```typescript
+   * const result = detector.detect('Email me at john@example.com');
+   * console.log(result.piiFound);    // true
+   * console.log(result.piiCount);    // 1
+   * console.log(result.redacted);    // 'Email me at [EMAIL_1]'
+   * console.log(result.detections[0].type);  // 'EMAIL_ADDRESS'
+   * console.log(result.detections[0].value); // 'john@example.com'
+   * ```
+   *
+   * @example Working with detection results
+   * ```typescript
+   * const result = detector.detect('SSN: 123-45-6789, Card: 4532-1234-5678-9010');
+   *
+   * // Iterate through detections
+   * result.detections.forEach(detection => {
+   *   console.log(`Found ${detection.type} at position ${detection.position}`);
+   *   console.log(`Confidence: ${detection.confidence}`);
+   *   console.log(`Severity: ${detection.severity}`);
+   * });
+   *
+   * // Use redacted text
+   * console.log(result.redacted);  // 'SSN: [SSN_1], Card: [CREDIT_CARD_1]'
+   *
+   * // Reverse redaction using map
+   * let original = result.redacted;
+   * for (const [placeholder, value] of Object.entries(result.redactionMap)) {
+   *   original = original.replace(placeholder, value);
+   * }
+   * ```
+   *
+   * @see {@link DetectionResult} for the structure of returned results
+   * @see {@link PIIDetection} for individual detection details
    */
   detect(text: string): DetectionResult {
     // Check RBAC permission
@@ -859,13 +1003,44 @@ export class OpenRedaction {
 
   /**
    * Get the list of active patterns
+   *
+   * Returns a copy of all PII patterns currently configured for detection,
+   * including built-in patterns (filtered by categories) and custom patterns.
+   *
+   * @returns Array of active PIIPattern objects
+   *
+   * @example
+   * ```typescript
+   * const patterns = detector.getPatterns();
+   * console.log(`Active patterns: ${patterns.length}`);
+   * console.log(`Pattern types: ${patterns.map(p => p.type).join(', ')}`);
+   * ```
    */
   getPatterns(): PIIPattern[] {
     return [...this.patterns];
   }
 
   /**
-   * Get severity-based scan results
+   * Scan text and categorize detections by severity level
+   *
+   * Performs PII detection and groups results by severity (high, medium, low).
+   * Useful for risk assessment and prioritizing remediation actions.
+   *
+   * @param text - The text to scan
+   * @returns Object with detections grouped by severity level
+   *
+   * @example
+   * ```typescript
+   * const results = detector.scan('SSN: 123-45-6789, Email: test@example.com');
+   * console.log(`High severity items: ${results.high.length}`);  // SSN
+   * console.log(`Medium severity items: ${results.medium.length}`);  // Email
+   * console.log(`Total PII found: ${results.total}`);
+   *
+   * // Review high-severity findings first
+   * results.high.forEach(detection => {
+   *   console.log(`CRITICAL: ${detection.type} found at position ${detection.position}`);
+   * });
+   * ```
    */
   scan(text: string): {
     high: PIIDetection[];
@@ -884,7 +1059,31 @@ export class OpenRedaction {
   }
 
   /**
-   * Record a false positive (incorrectly detected as PII)
+   * Record a false positive detection for learning
+   *
+   * Reports a value that was incorrectly detected as PII. The learning system
+   * will track this feedback and may add it to the whitelist if confidence is high.
+   * Requires enableLearning to be true.
+   *
+   * @param detection - The detection that was incorrectly flagged as PII
+   * @param context - Optional context about why this is a false positive
+   *
+   * @throws {Error} If learning is disabled
+   *
+   * @example
+   * ```typescript
+   * const result = detector.detect('Download file.pdf');
+   * // Assume 'file.pdf' was incorrectly detected as a FILE_PATH
+   *
+   * if (result.detections[0].value === 'file.pdf') {
+   *   detector.recordFalsePositive(
+   *     result.detections[0],
+   *     'Generic file extension, not sensitive'
+   *   );
+   * }
+   *
+   * // After enough reports, it will be auto-whitelisted
+   * ```
    */
   recordFalsePositive(detection: PIIDetection, context?: string): void {
     if (!this.learningStore) {
@@ -1066,6 +1265,24 @@ export class OpenRedaction {
 
   /**
    * Get cache statistics
+   *
+   * Returns information about the result cache including current size,
+   * maximum capacity, and whether caching is enabled.
+   *
+   * @returns Cache statistics object
+   *
+   * @example
+   * ```typescript
+   * const detector = new OpenRedaction({ enableCache: true, cacheSize: 100 });
+   *
+   * // Perform some detections
+   * detector.detect('test1@example.com');
+   * detector.detect('test2@example.com');
+   *
+   * const stats = detector.getCacheStats();
+   * console.log(`Cache: ${stats.size}/${stats.maxSize} entries`);
+   * console.log(`Cache enabled: ${stats.enabled}`);
+   * ```
    */
   getCacheStats(): { size: number; maxSize: number; enabled: boolean } {
     return {
@@ -1108,13 +1325,75 @@ export class OpenRedaction {
 
   /**
    * Create an explain API for debugging detections
+   *
+   * Returns an ExplainAPI instance that provides detailed explanations of
+   * why text was or wasn't detected as PII. Useful for debugging patterns
+   * and understanding detection behavior.
+   *
+   * @returns ExplainAPI instance for detailed pattern analysis
+   *
+   * @example
+   * ```typescript
+   * const detector = new OpenRedaction();
+   * const explainer = detector.explain();
+   *
+   * // Why was this detected?
+   * const explanation = explainer.explainText('john@example.com');
+   * console.log(explanation.matches);  // Shows which patterns matched
+   * console.log(explanation.reasons);  // Why each pattern matched
+   *
+   * // Test a specific pattern
+   * const patternTest = explainer.testPattern('EMAIL_ADDRESS', 'test@example.com');
+   * console.log(`Pattern matched: ${patternTest.matched}`);
+   * ```
+   *
+   * @see {@link ExplainAPI} for available explanation methods
    */
   explain(): ExplainAPI {
     return createExplainAPI(this);
   }
 
   /**
-   * Generate a report from detection results
+   * Generate a formatted report from detection results
+   *
+   * Creates a human-readable report in various formats (text, JSON, Markdown,
+   * HTML, CSV) summarizing PII detections. Useful for auditing, compliance
+   * reporting, and documentation.
+   *
+   * @param result - The detection result to generate a report from
+   * @param options - Report generation options (format, includeStats, etc.)
+   * @returns Formatted report as a string
+   *
+   * @example Text report
+   * ```typescript
+   * const result = detector.detect('Email: john@example.com, SSN: 123-45-6789');
+   * const report = detector.generateReport(result, {
+   *   format: 'text',
+   *   includeStats: true,
+   *   includeSummary: true
+   * });
+   * console.log(report);
+   * ```
+   *
+   * @example JSON report for API responses
+   * ```typescript
+   * const report = detector.generateReport(result, {
+   *   format: 'json',
+   *   includeMetadata: true
+   * });
+   * const reportData = JSON.parse(report);
+   * ```
+   *
+   * @example CSV report for spreadsheet analysis
+   * ```typescript
+   * const report = detector.generateReport(result, {
+   *   format: 'csv',
+   *   groupByType: true
+   * });
+   * // Import into Excel or Google Sheets
+   * ```
+   *
+   * @see {@link ReportOptions} for available report formats and options
    */
   generateReport(result: DetectionResult, options: ReportOptions): string {
     const generator = createReportGenerator(this);
