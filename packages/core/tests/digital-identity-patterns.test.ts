@@ -283,7 +283,12 @@ describe('Digital Identity Pattern Detection', () => {
       // Verify multiple digital identity patterns are detected
       // Check for distinctive patterns with strong context
       expect(result.detections.some(d => d.type === 'STEAM_ID64')).toBe(true);
-      expect(result.detections.some(d => d.type === 'SOCIAL_MEDIA_HANDLE')).toBe(true);
+      // Social media handles may be detected as INSTAGRAM_USERNAME (higher priority) or SOCIAL_MEDIA_HANDLE
+      expect(result.detections.some(d =>
+        d.type === 'SOCIAL_MEDIA_HANDLE' ||
+        d.type === 'INSTAGRAM_USERNAME' ||
+        d.type === 'TIKTOK_USERNAME'
+      )).toBe(true);
       expect(result.detections.some(d => d.type === 'REDDIT_USERNAME')).toBe(true);
       expect(result.detections.some(d => d.type === 'NINTENDO_FRIEND_CODE')).toBe(true);
       expect(result.detections.some(d => d.type === 'BATTLETAG')).toBe(true);
