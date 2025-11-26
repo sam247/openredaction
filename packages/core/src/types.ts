@@ -1,9 +1,31 @@
 /**
- * Core types for PII Shield
+ * Core TypeScript types for OpenRedaction
+ *
+ * Defines the type system for PII detection, redaction, and configuration.
+ * All types are exported for use in consuming applications.
+ *
+ * @packageDocumentation
  */
 
 /**
- * PII pattern definition with validation
+ * PII pattern definition for detection
+ *
+ * Defines a pattern for detecting a specific type of PII. Each pattern includes
+ * a regex for matching, priority for ordering, optional validator for accuracy,
+ * and severity classification.
+ *
+ * @example Custom employee ID pattern
+ * ```typescript
+ * const employeePattern: PIIPattern = {
+ *   type: 'EMPLOYEE_ID',
+ *   regex: /EMP-\d{6}/g,
+ *   priority: 10,
+ *   placeholder: '[EMPLOYEE_ID]',
+ *   severity: 'high',
+ *   description: 'Internal employee ID number',
+ *   validator: (match) => match.startsWith('EMP-')
+ * };
+ * ```
  */
 export interface PIIPattern {
   /** Pattern type identifier (e.g., "EMAIL", "PHONE_UK_MOBILE") */
@@ -23,7 +45,23 @@ export interface PIIPattern {
 }
 
 /**
- * Detected PII instance
+ * Detected PII instance with metadata
+ *
+ * Represents a single piece of PII found in text, including its type,
+ * position, severity, and confidence score.
+ *
+ * @example Working with detections
+ * ```typescript
+ * const result = detector.detect('Email: john@example.com');
+ * const detection: PIIDetection = result.detections[0];
+ *
+ * console.log(detection.type);        // 'EMAIL_ADDRESS'
+ * console.log(detection.value);       // 'john@example.com'
+ * console.log(detection.placeholder); // '[EMAIL_1]'
+ * console.log(detection.position);    // [7, 24]
+ * console.log(detection.severity);    // 'medium'
+ * console.log(detection.confidence);  // 0.95
+ * ```
  */
 export interface PIIDetection {
   /** Type of PII detected */
@@ -62,7 +100,36 @@ export interface PIIMatch {
 }
 
 /**
- * Detection result
+ * Complete PII detection result
+ *
+ * Contains the original text, redacted version, all detections, and a
+ * redaction map for reversing redactions. Returned by detect() method.
+ *
+ * @example Using detection results
+ * ```typescript
+ * const result = detector.detect('Contact: john@example.com, 555-1234');
+ *
+ * console.log(result.original);   // 'Contact: john@example.com, 555-1234'
+ * console.log(result.redacted);   // 'Contact: [EMAIL_1], [PHONE_1]'
+ * console.log(result.detections.length); // 2
+ *
+ * // Reverse redaction
+ * let text = result.redacted;
+ * for (const [placeholder, value] of Object.entries(result.redactionMap)) {
+ *   text = text.replace(placeholder, value);
+ * }
+ * console.log(text === result.original); // true
+ * ```
+ *
+ * @example Checking for PII
+ * ```typescript
+ * const result = detector.detect(userInput);
+ *
+ * if (result.stats && result.stats.piiCount > 0) {
+ *   console.log(`Found ${result.stats.piiCount} PII instances`);
+ *   console.log(`Processed in ${result.stats.processingTime}ms`);
+ * }
+ * ```
  */
 export interface DetectionResult {
   /** Original text */
@@ -83,7 +150,31 @@ export interface DetectionResult {
 }
 
 /**
- * Redaction mode - controls how PII is replaced
+ * Redaction mode - controls how PII is replaced in text
+ *
+ * Different modes provide different levels of obfuscation and readability:
+ * - `placeholder`: Replaces with labeled placeholders like [EMAIL_1]
+ * - `mask-middle`: Partially masks, keeping context (e.g., j***@example.com)
+ * - `mask-all`: Completely masks with asterisks (***************)
+ * - `format-preserving`: Maintains structure (e.g., XXX-XX-XXXX for SSN)
+ * - `token-replace`: Replaces with realistic fake data
+ *
+ * @example Different redaction modes
+ * ```typescript
+ * const text = 'Email: john@example.com';
+ *
+ * // placeholder mode (default)
+ * const d1 = new OpenRedaction({ redactionMode: 'placeholder' });
+ * console.log(d1.detect(text).redacted); // 'Email: [EMAIL_1]'
+ *
+ * // mask-middle mode
+ * const d2 = new OpenRedaction({ redactionMode: 'mask-middle' });
+ * console.log(d2.detect(text).redacted); // 'Email: j***@example.com'
+ *
+ * // mask-all mode
+ * const d3 = new OpenRedaction({ redactionMode: 'mask-all' });
+ * console.log(d3.detect(text).redacted); // 'Email: *****************'
+ * ```
  */
 export type RedactionMode =
   | 'placeholder'        // Default: [EMAIL_1234]
@@ -93,7 +184,41 @@ export type RedactionMode =
   | 'token-replace';     // Fake data: john.doe@example.com
 
 /**
- * Configuration options for OpenRedaction
+ * Configuration options for OpenRedaction detector
+ *
+ * Comprehensive options for customizing PII detection behavior, including
+ * pattern selection, compliance presets, performance tuning, and advanced
+ * features like context analysis and learning.
+ *
+ * @example Basic configuration
+ * ```typescript
+ * const detector = new OpenRedaction({
+ *   preset: 'gdpr',
+ *   redactionMode: 'placeholder',
+ *   deterministic: true
+ * });
+ * ```
+ *
+ * @example Performance optimization
+ * ```typescript
+ * const detector = new OpenRedaction({
+ *   categories: ['contact'],  // Only emails and phones (97.8% faster)
+ *   enableCache: true,
+ *   cacheSize: 1000
+ * });
+ * ```
+ *
+ * @example Advanced features
+ * ```typescript
+ * const detector = new OpenRedaction({
+ *   enableContextAnalysis: true,     // Boost confidence based on context
+ *   enableFalsePositiveFilter: true, // Filter common false positives
+ *   enableMultiPass: true,            // Multi-pass for better accuracy
+ *   confidenceThreshold: 0.7,         // Only report high-confidence detections
+ *   enableLearning: true,             // Learn from feedback
+ *   debug: true                       // Enable debug logging
+ * });
+ * ```
  */
 export interface OpenRedactionOptions {
   /** Include name detection (default: true) */
