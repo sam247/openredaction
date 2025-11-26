@@ -38,16 +38,27 @@ export const LOYALTY_CARD_NUMBER: PIIPattern = {
 
 /**
  * Customer ID
+ * Format: CUSTOMER ID: XXXXX or CUST#XXXXX
+ * Requires explicit ID indicator to avoid false positives
  */
 export const CUSTOMER_ID: PIIPattern = {
   type: 'CUSTOMER_ID',
-  regex: /\b(?:CUSTOMER|CUST)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\b(?:CUSTOMER|CUST)[-\s](?:ID|NO|NUM(?:BER)?|#)[-\s:#]\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[CUSTOMER_{n}]',
   priority: 85,
   severity: 'high',
   description: 'Customer identification numbers',
-  validator: (_value: string, context: string) => {
-    return /customer|account|profile|user|buyer/i.test(context);
+  validator: (value: string, context: string) => {
+    // Must have clear ID context, not just generic words
+    const hasIdContext = /customer[-\s](?:id|no|num|number|#)/i.test(context);
+
+    // Reject common words that aren't IDs
+    const commonWords = /\b(?:accounts?|services?|support|team|department|relations?|success|experience|care)\b/i;
+    if (commonWords.test(value)) {
+      return false;
+    }
+
+    return hasIdContext;
   }
 };
 

@@ -292,6 +292,31 @@ export const SECURITY_CLEARANCE: PIIPattern = {
 };
 
 /**
+ * Office/Location ID
+ * Format: 2-3 uppercase letters + hyphen + 2-4 digits
+ * Example: BR-017, NYC-1234, LON-42
+ */
+export const OFFICE_LOCATION_ID: PIIPattern = {
+  type: 'OFFICE_LOCATION_ID',
+  regex: /\b([A-Z]{2,3}-\d{2,4})\b/g,
+  placeholder: '[OFFICE_{n}]',
+  priority: 85,
+  severity: 'medium',
+  description: 'Office and location identification codes',
+  validator: (_value: string, context: string) => {
+    // Must have clear office/location context
+    const hasLocationContext = /\b(?:office|location|site|branch|facility|building|campus|center|centre)\b/i.test(context);
+
+    // Check for explicit "Office ID:" or similar patterns
+    const hasExplicitId = /\b(?:office|location|site|branch)[-\s]?(?:id|code|num(?:ber)?)[:\s]/i.test(context);
+
+    // The pattern itself is quite specific (letters-numbers), so we can be moderately lenient
+    // but still require some context to avoid false positives
+    return hasLocationContext || hasExplicitId;
+  }
+};
+
+/**
  * Recruitment Agency References
  */
 export const RECRUITER_REF: PIIPattern = {
@@ -328,5 +353,6 @@ export const hrPatterns: PIIPattern[] = [
   EMERGENCY_CONTACT_REF,
   WORK_PERMIT,
   SECURITY_CLEARANCE,
+  OFFICE_LOCATION_ID,
   RECRUITER_REF
 ];

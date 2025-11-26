@@ -194,11 +194,32 @@ export function validateName(name: string, context: string): boolean {
     'mr', 'mrs', 'ms', 'dr', 'sir', 'madam', 'lord', 'lady'
   ];
 
+  // Job titles and roles that should not be detected as names
+  const jobTitleIndicators = [
+    'manager', 'director', 'officer', 'coordinator', 'specialist', 'analyst',
+    'engineer', 'developer', 'designer', 'architect', 'consultant', 'advisor',
+    'assistant', 'executive', 'administrator', 'supervisor', 'lead', 'head',
+    'chief', 'president', 'vice', 'senior', 'junior', 'associate', 'principal',
+    'operations', 'marketing', 'sales', 'finance', 'human resources', 'hr',
+    'customer service', 'support', 'technical', 'product', 'project', 'program',
+    'account', 'business', 'data', 'software', 'systems', 'network', 'security',
+    'quality', 'compliance', 'legal', 'research', 'development', 'training'
+  ];
+
   const nameLower = name.toLowerCase();
 
   // Skip if it's a business term
   if (businessTerms.some(term => nameLower.includes(term))) {
     return false;
+  }
+
+  // Skip if it's a job title (multi-word names containing job indicators)
+  if (name.includes(' ')) {
+    const words = nameLower.split(/\s+/);
+    // If contains common job title words, likely a title not a name
+    if (jobTitleIndicators.some(indicator => words.some(word => word.includes(indicator)))) {
+      return false;
+    }
   }
 
   // Skip if it's all caps (likely an acronym)
@@ -211,12 +232,13 @@ export function validateName(name: string, context: string): boolean {
     return false;
   }
 
-  // Check if appears in business context
+  // Check if appears in business/job title context
   const contextLower = context.toLowerCase();
   if (
     contextLower.includes('company ') ||
     contextLower.includes('business ') ||
-    contextLower.includes('organization')
+    contextLower.includes('organization') ||
+    /\b(?:our|their|the)\s+\w+\s+(?:manager|director|officer|coordinator)/i.test(context)
   ) {
     return false;
   }
