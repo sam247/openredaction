@@ -426,7 +426,7 @@ export const CHI_NUMBER: PIIPattern = {
     // First 6 digits should be a valid date (DDMMYY)
     const day = parseInt(digits.substring(0, 2));
     const month = parseInt(digits.substring(2, 4));
-    const year = parseInt(digits.substring(4, 6));
+    // Note: year validation could be added here if needed
 
     // Basic date validation
     if (day < 1 || day > 31) return false;

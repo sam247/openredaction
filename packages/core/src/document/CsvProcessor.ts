@@ -3,7 +3,7 @@
  */
 
 import type { DetectionResult, PIIMatch } from '../types';
-import type { Detector } from '../detector';
+import type { OpenRedaction } from '../detector';
 
 /**
  * CSV processing options
@@ -36,7 +36,19 @@ export interface CsvProcessorOptions {
 /**
  * CSV detection result with column tracking
  */
-export interface CsvDetectionResult extends DetectionResult {
+export interface CsvDetectionResult {
+  /** Whether PII was found */
+  piiFound: boolean;
+  /** Total count of PII instances found */
+  piiCount: number;
+  /** Array of PII types detected */
+  piiTypes: string[];
+  /** All PII matches */
+  matches: PIIMatch[];
+  /** Original CSV as string */
+  text: string;
+  /** Processing time in milliseconds */
+  processingTime: number;
   /** Total rows processed */
   rowCount: number;
   /** Column count */
@@ -157,11 +169,28 @@ export class CsvProcessor {
   }
 
   /**
+   * Convert DetectionResult to PIIMatch[] for internal use
+   */
+  private convertToMatches(result: DetectionResult): PIIMatch[] {
+    return result.detections.map(detection => ({
+      type: detection.type,
+      value: detection.value,
+      start: detection.position[0],
+      end: detection.position[1],
+      confidence: detection.confidence ?? 1.0,
+      context: {
+        before: '',
+        after: ''
+      }
+    }));
+  }
+
+  /**
    * Detect PII in CSV data
    */
   detect(
     input: Buffer | string,
-    detector: Detector,
+    detector: OpenRedaction,
     options?: CsvProcessorOptions
   ): CsvDetectionResult {
     const opts = { ...this.defaultOptions, ...options };
@@ -268,11 +297,12 @@ export class CsvProcessor {
 
         // Detect PII
         const result = detector.detect(cellValue);
+        const matches = this.convertToMatches(result);
 
-        if (result.piiFound && result.matches.length > 0) {
+        if (matches.length > 0) {
           // Boost confidence if column name indicates PII
           const boostedMatches = this.boostConfidenceFromColumnName(
-            result.matches,
+            matches,
             headers?.[col],
             opts.piiIndicatorNames || []
           );
@@ -342,7 +372,7 @@ export class CsvProcessor {
     );
 
     const hasHeader = detectionResult.headers !== undefined;
-    const dataStartIndex = hasHeader ? 1 : 0;
+    // Note: dataStartIndex would be 1 if hasHeader, 0 otherwise
 
     // Build redaction map: row -> column -> redacted value
     const redactionMap = new Map<number, Map<number, string>>();
@@ -387,7 +417,7 @@ export class CsvProcessor {
     line: string,
     delimiter: string,
     quote: string,
-    escape: string
+    _escape: string
   ): string[] {
     const values: string[] = [];
     let current = '';

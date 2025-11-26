@@ -157,7 +157,7 @@ export class PersistentAuditLogger implements IAuditLogger {
       enableHashing: options.enableHashing ?? true,
       hashAlgorithm: options.hashAlgorithm ?? 'sha256',
       enableWAL: options.enableWAL ?? true,
-      secretKey: options.secretKey
+      secretKey: options.secretKey ?? ''
     };
 
     // Create appropriate database adapter
@@ -242,7 +242,7 @@ export class PersistentAuditLogger implements IAuditLogger {
   /**
    * Get logs by operation type
    */
-  getLogsByOperation(operation: AuditLogEntry['operation']): AuditLogEntry[] {
+  getLogsByOperation(_operation: AuditLogEntry['operation']): AuditLogEntry[] {
     throw new Error(
       '[PersistentAuditLogger] getLogsByOperation() is not supported for persistent storage. Use queryLogs({ operation }) instead.'
     );
@@ -251,7 +251,7 @@ export class PersistentAuditLogger implements IAuditLogger {
   /**
    * Get logs by date range
    */
-  getLogsByDateRange(startDate: Date, endDate: Date): AuditLogEntry[] {
+  getLogsByDateRange(_startDate: Date, _endDate: Date): AuditLogEntry[] {
     throw new Error(
       '[PersistentAuditLogger] getLogsByDateRange() is not supported for persistent storage. Use queryLogs({ startDate, endDate }) instead.'
     );
@@ -593,7 +593,7 @@ export class PersistentAuditLogger implements IAuditLogger {
    * Start automatic cleanup schedule
    */
   private startCleanupSchedule(): void {
-    const intervalMs = this.options.retention.cleanupIntervalHours * 60 * 60 * 1000;
+    const intervalMs = (this.options.retention?.cleanupIntervalHours ?? 24) * 60 * 60 * 1000;
 
     this.cleanupTimer = setInterval(() => {
       this.runCleanup().catch(err => {

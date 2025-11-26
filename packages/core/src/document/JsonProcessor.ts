@@ -3,7 +3,7 @@
  */
 
 import type { DetectionResult, PIIMatch } from '../types';
-import type { Detector } from '../detector';
+import type { OpenRedaction } from '../detector';
 
 /**
  * JSON processing options
@@ -26,11 +26,23 @@ export interface JsonProcessorOptions {
 /**
  * JSON detection result with path tracking
  */
-export interface JsonDetectionResult extends DetectionResult {
+export interface JsonDetectionResult {
+  /** Whether PII was found */
+  piiFound: boolean;
+  /** Total count of PII instances found */
+  piiCount: number;
+  /** Array of PII types detected */
+  piiTypes: string[];
+  /** All PII matches */
+  matches: PIIMatch[];
   /** Paths where PII was detected (e.g., 'user.email', 'contacts[0].phone') */
   pathsDetected: string[];
   /** PII matches with path information */
   matchesByPath: Record<string, PIIMatch[]>;
+  /** Original JSON as string */
+  text: string;
+  /** Processing time in milliseconds */
+  processingTime: number;
 }
 
 /**
@@ -77,11 +89,28 @@ export class JsonProcessor {
   }
 
   /**
+   * Convert DetectionResult to PIIMatch[] for internal use
+   */
+  private convertToMatches(result: DetectionResult): PIIMatch[] {
+    return result.detections.map(detection => ({
+      type: detection.type,
+      value: detection.value,
+      start: detection.position[0],
+      end: detection.position[1],
+      confidence: detection.confidence ?? 1.0,
+      context: {
+        before: '',
+        after: ''
+      }
+    }));
+  }
+
+  /**
    * Detect PII in JSON data
    */
   detect(
     data: any,
-    detector: Detector,
+    detector: OpenRedaction,
     options?: JsonProcessorOptions
   ): JsonDetectionResult {
     const opts = { ...this.defaultOptions, ...options };
@@ -119,22 +148,24 @@ export class JsonProcessor {
       // Scan keys if enabled
       if (opts.scanKeys && key) {
         const keyResult = detector.detect(key);
-        if (keyResult.piiFound && keyResult.matches.length > 0) {
+        const keyMatches = this.convertToMatches(keyResult);
+        if (keyMatches.length > 0) {
           const keyPath = `${path}.__key__`;
-          matchesByPath[keyPath] = keyResult.matches;
+          matchesByPath[keyPath] = keyMatches;
           pathsDetected.push(keyPath);
-          allMatches.push(...keyResult.matches);
+          allMatches.push(...keyMatches);
         }
       }
 
       // Scan value
       const valueStr = String(value);
       const result = detector.detect(valueStr);
+      const matches = this.convertToMatches(result);
 
-      if (result.piiFound && result.matches.length > 0) {
+      if (matches.length > 0) {
         // Boost confidence if key indicates PII
         const boostedMatches = this.boostConfidenceFromKey(
-          result.matches,
+          matches,
           key,
           opts.piiIndicatorKeys
         );
@@ -233,7 +264,7 @@ export class JsonProcessor {
   /**
    * Simple text-based redaction (fallback)
    */
-  private redactText(text: string, detectionResult: DetectionResult): string {
+  private redactText(text: string, detectionResult: JsonDetectionResult): string {
     let redacted = text;
     const sortedMatches = [...detectionResult.matches].sort((a, b) => b.start - a.start);
 
@@ -365,7 +396,7 @@ export class JsonProcessor {
     const opts = { ...this.defaultOptions, ...options };
     const textParts: string[] = [];
 
-    this.traverse(data, '', opts, (path, value, key) => {
+    this.traverse(data, '', opts, (_path, value, key) => {
       if (opts.scanKeys && key) {
         textParts.push(key);
       }
@@ -410,7 +441,7 @@ export class JsonProcessor {
    */
   detectJsonLines(
     input: Buffer | string,
-    detector: Detector,
+    detector: OpenRedaction,
     options?: JsonProcessorOptions
   ): JsonDetectionResult[] {
     const documents = this.parseJsonLines(input);

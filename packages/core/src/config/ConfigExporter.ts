@@ -114,7 +114,7 @@ export class ConfigExporter {
    */
   static importConfig(
     exported: ExportedConfig,
-    options?: {
+    _options?: {
       mergeWithDefaults?: boolean;
       validatePatterns?: boolean;
     }

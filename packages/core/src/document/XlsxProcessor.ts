@@ -3,7 +3,7 @@
  */
 
 import type { DetectionResult, PIIMatch } from '../types';
-import type { Detector } from '../detector';
+import type { OpenRedaction } from '../detector';
 
 /**
  * XLSX processing options
@@ -34,7 +34,19 @@ export interface XlsxProcessorOptions {
 /**
  * XLSX detection result with sheet and cell tracking
  */
-export interface XlsxDetectionResult extends DetectionResult {
+export interface XlsxDetectionResult {
+  /** Whether PII was found */
+  piiFound: boolean;
+  /** Total count of PII instances found */
+  piiCount: number;
+  /** Array of PII types detected */
+  piiTypes: string[];
+  /** All PII matches */
+  matches: PIIMatch[];
+  /** Original XLSX as string */
+  text: string;
+  /** Processing time in milliseconds */
+  processingTime: number;
   /** Results by sheet */
   sheetResults: SheetDetectionResult[];
   /** Total sheets processed */
@@ -168,7 +180,7 @@ export class XlsxProcessor {
    */
   detect(
     buffer: Buffer,
-    detector: Detector,
+    detector: OpenRedaction,
     options?: XlsxProcessorOptions
   ): XlsxDetectionResult {
     if (!this.xlsx) {
@@ -217,13 +229,30 @@ export class XlsxProcessor {
   }
 
   /**
+   * Convert DetectionResult to PIIMatch[]
+   */
+  private convertToMatches(result: DetectionResult): PIIMatch[] {
+    return result.detections.map(detection => ({
+      type: detection.type,
+      value: detection.value,
+      start: detection.position[0],
+      end: detection.position[1],
+      confidence: detection.confidence ?? 1.0,
+      context: {
+        before: '',
+        after: ''
+      }
+    }));
+  }
+
+  /**
    * Detect PII in a single sheet
    */
   private detectSheet(
     sheet: any,
     sheetName: string,
     sheetIndex: number,
-    detector: Detector,
+    detector: OpenRedaction,
     options: Required<Omit<XlsxProcessorOptions, 'sheets' | 'sheetIndices' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns' | 'hasHeader'>> & Partial<Pick<XlsxProcessorOptions, 'sheets' | 'sheetIndices' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns' | 'hasHeader'>>
   ): SheetDetectionResult {
     // Get sheet range
@@ -236,7 +265,6 @@ export class XlsxProcessor {
     const endCol = range.e.c;
 
     const columnCount = endCol - startCol + 1;
-    const rowCount = endRow - startRow + 1;
 
     // Detect header
     const hasHeader = options.hasHeader !== undefined
@@ -244,7 +272,7 @@ export class XlsxProcessor {
       : this.detectHeader(sheet, range);
 
     const headers = hasHeader
-      ? this.getRowValues(sheet, startRow, startCol, endCol)
+      ? this.getRowValues(sheet, startRow, startCol, endCol).filter((h): h is string => h !== undefined)
       : undefined;
 
     const dataStartRow = hasHeader ? startRow + 1 : startRow;
@@ -339,11 +367,12 @@ export class XlsxProcessor {
 
         // Detect PII
         const result = detector.detect(cellValue);
+        const matches = this.convertToMatches(result);
 
-        if (result.piiFound && result.matches.length > 0) {
+        if (matches.length > 0) {
           // Boost confidence if column name indicates PII
           const boostedMatches = this.boostConfidenceFromColumnName(
-            result.matches,
+            matches,
             headers?.[colIndex],
             options.piiIndicatorNames || []
           );

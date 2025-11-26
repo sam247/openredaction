@@ -26,45 +26,20 @@ export type {
 } from './types';
 
 // Audit logging
+// Note: PersistentAuditLogger and database features moved to @openredaction/server
 export {
   InMemoryAuditLogger,
-  ConsoleAuditLogger,
-  PersistentAuditLogger,
-  createPersistentAuditLogger
-} from './audit';
-export type {
-  AuditBackend,
-  AuditDatabaseConfig,
-  RetentionPolicy,
-  PersistentAuditLoggerOptions,
-  HashedAuditLogEntry,
-  IAuditDatabaseAdapter,
-  AuditQueryFilter
+  ConsoleAuditLogger
 } from './audit';
 
 // Metrics collection
+// Note: PrometheusServer and Grafana features moved to @openredaction/server
 export {
-  InMemoryMetricsCollector,
-  PrometheusServer,
-  createPrometheusServer,
-  GRAFANA_DASHBOARD_TEMPLATE
-} from './metrics';
-export type {
-  PrometheusServerOptions
+  InMemoryMetricsCollector
 } from './metrics';
 
 // RBAC (Role-Based Access Control)
-export {
-  RBACManager,
-  createRBACManager,
-  ADMIN_ROLE,
-  ANALYST_ROLE,
-  OPERATOR_ROLE,
-  VIEWER_ROLE,
-  ALL_PERMISSIONS,
-  getPredefinedRole,
-  createCustomRole
-} from './rbac';
+// Note: RBAC features moved to @openredaction/server for multi-tenant applications
 
 // Document processing (optional - requires peer dependencies)
 export {
@@ -314,45 +289,14 @@ export type {
 } from './errors/OpenRedactionError';
 
 // Multi-tenancy (Phase 3)
-export {
-  TenantManager,
-  createTenantManager,
-  TenantQuotaExceededError,
-  TenantNotFoundError,
-  TenantSuspendedError,
-  DEFAULT_TIER_QUOTAS
-} from './tenancy';
-export type {
-  TenantConfig,
-  TenantQuotas,
-  TenantUsage
-} from './tenancy';
+// Note: Multi-tenancy features moved to @openredaction/server
 
 // Webhooks and alerts (Phase 3)
-export {
-  WebhookManager,
-  createWebhookManager,
-  verifyWebhookSignature
-} from './webhooks';
-export type {
-  WebhookEventType,
-  WebhookEvent,
-  WebhookConfig,
-  WebhookDeliveryStatus,
-  WebhookDelivery,
-  WebhookStats
-} from './webhooks';
+// Note: Webhook features moved to @openredaction/server
 
 // REST API Server (Phase 3)
-export {
-  APIServer,
-  createAPIServer
-} from './api';
-export type {
-  APIServerConfig,
-  APIRequest,
-  APIResponse
-} from './api';
+// Note: APIServer moved to @openredaction/server
+// Library users should build their own API routes using the core OpenRedaction class
 
 // Configuration Import/Export (Phase 3)
 export {
