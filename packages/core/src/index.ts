@@ -11,6 +11,7 @@ export type {
   PIIMatch,
   DetectionResult,
   OpenRedactionOptions,
+  PresetName,
   RedactionMode,
   Validator,
   IAuditLogger,
@@ -123,7 +124,17 @@ export {
   validateEmail
 } from './validators';
 
-export { gdprPreset, hipaaPreset, ccpaPreset, getPreset } from './utils/presets';
+export {
+  gdprPreset,
+  hipaaPreset,
+  ccpaPreset,
+  healthcarePreset,
+  healthcareResearchPreset,
+  financePreset,
+  educationPreset,
+  transportLogisticsPreset,
+  getPreset
+} from './utils/presets';
 
 // Local learning system
 export { LocalLearningStore } from './learning/LocalLearningStore';

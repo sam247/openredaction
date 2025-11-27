@@ -95,6 +95,20 @@ export type RedactionMode =
 /**
  * Configuration options for OpenRedaction
  */
+export type PresetName =
+  | 'gdpr'
+  | 'hipaa'
+  | 'ccpa'
+  | 'healthcare'
+  | 'healthcare-provider'
+  | 'healthcare-research'
+  | 'finance'
+  | 'financial-services'
+  | 'education'
+  | 'transport-logistics'
+  | 'transportation'
+  | 'logistics';
+
 export interface OpenRedactionOptions {
   /** Include name detection (default: true) */
   includeNames?: boolean;
@@ -104,6 +118,8 @@ export interface OpenRedactionOptions {
   includePhones?: boolean;
   /** Include email detection (default: true) */
   includeEmails?: boolean;
+  /** Pattern categories to include (e.g., ['personal', 'financial']) */
+  categories?: string[];
   /** Whitelist specific patterns only */
   patterns?: string[];
   /** Add custom patterns */
@@ -115,7 +131,7 @@ export interface OpenRedactionOptions {
   /** Redaction mode (default: 'placeholder') */
   redactionMode?: RedactionMode;
   /** Compliance preset */
-  preset?: 'gdpr' | 'hipaa' | 'ccpa';
+  preset?: PresetName;
   /** Enable context-aware detection (default: true) */
   enableContextAnalysis?: boolean;
   /** Minimum confidence threshold for detections (0-1, default: 0.5) */
