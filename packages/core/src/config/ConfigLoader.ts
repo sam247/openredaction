@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { OpenRedactionOptions } from '../types.js';
+import { OpenRedactionOptions, PresetName } from '../types.js';
 
 export interface OpenRedactionConfig extends OpenRedactionOptions {
   extends?: string | string[];
@@ -140,9 +140,24 @@ export class ConfigLoader {
 
     // Handle compliance presets
     if (preset.startsWith('openredaction:')) {
-      const complianceType = preset.replace('openredaction:', '') as 'gdpr' | 'hipaa' | 'ccpa';
-      if (['gdpr', 'hipaa', 'ccpa'].includes(complianceType)) {
-        return { preset: complianceType };
+      const presetName = preset.replace('openredaction:', '') as PresetName;
+      const supportedPresets: PresetName[] = [
+        'gdpr',
+        'hipaa',
+        'ccpa',
+        'healthcare',
+        'healthcare-provider',
+        'healthcare-research',
+        'finance',
+        'financial-services',
+        'education',
+        'transport-logistics',
+        'transportation',
+        'logistics'
+      ];
+
+      if (supportedPresets.includes(presetName)) {
+        return { preset: presetName };
       }
     }
 
@@ -160,7 +175,8 @@ export class ConfigLoader {
 export default {
   // Extend built-in presets
   // Options: 'openredaction:recommended', 'openredaction:strict', 'openredaction:minimal'
-  // Or compliance: 'openredaction:gdpr', 'openredaction:hipaa', 'openredaction:ccpa'
+  // Or compliance/industry presets: 'openredaction:gdpr', 'openredaction:hipaa', 'openredaction:ccpa',
+  // 'openredaction:finance', 'openredaction:education', 'openredaction:healthcare', 'openredaction:transport-logistics'
   extends: ['openredaction:recommended'],
 
   // Detection options

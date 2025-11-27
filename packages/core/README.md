@@ -33,7 +33,7 @@ Full documentation available at [GitHub](https://github.com/sam247/openredaction
 - 🧠 **Semantic Detection** - Hybrid NER + regex with 40+ contextual rules
 - 🎨 **Multiple Redaction Modes** - Placeholder, mask-middle, mask-all, format-preserving, token-replace
 - ✅ **Built-in Validators** - Luhn, IBAN, NHS, National ID checksums
-- 🔒 **Compliance Presets** - GDPR, HIPAA, CCPA, PCI-DSS
+- 🔒 **Compliance Presets** - GDPR, HIPAA, CCPA plus finance, education, healthcare, and transport presets
 - 🎭 **Deterministic Placeholders** - Consistent redaction for same values
 - 🌍 **Global Coverage** - 50+ countries
 - 📄 **Structured Data Support** - JSON, CSV, XLSX with path/cell tracking

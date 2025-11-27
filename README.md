@@ -21,7 +21,7 @@ Local-first • Zero dependencies • 10-20ms latency • 100% offline • 571+ 
 - **Enterprise SaaS Ready** - Multi-tenancy, persistent audit logging, webhooks, REST API (NEW 🚀)
 - **Production Monitoring** - Prometheus metrics, Grafana dashboards, health checks (NEW 🚀)
 - **Context-Aware** - 90%+ accuracy with false positive reduction
-- **Compliance Ready** - GDPR, HIPAA, CCPA, FERPA presets
+- **Compliance Ready** - GDPR, HIPAA, CCPA plus finance, education, healthcare, and transport/logistics presets
 - **100% Local** - Your data never leaves your infrastructure
 - **Zero Dependencies** - ~100KB bundle, works everywhere (structured data built-in)
 - **Document Processing** - PDF, DOCX, TXT, JSON, CSV, XLSX, images (OCR)
@@ -1856,8 +1856,9 @@ openredaction detect "Email john@example.com"
 # Scan and show severity breakdown
 openredaction scan "Contact john@example.com or call 555-123-4567"
 
-# Use compliance preset
+# Use compliance/industry preset
 openredaction detect "SSN: 123-45-6789" --preset hipaa
+openredaction detect "BIC: DEUTDEFF" --preset finance
 
 # JSON output
 openredaction detect "Card: 4532015112830366" --json
@@ -1996,6 +1997,11 @@ const redactor = await OpenRedaction.fromConfig();
 - `openredaction:gdpr` - GDPR compliance preset
 - `openredaction:hipaa` - HIPAA compliance preset
 - `openredaction:ccpa` - CCPA compliance preset
+- `openredaction:finance` - Financial services (SWIFT/BIC, accounts, trading, payments)
+- `openredaction:education` - Education/FERPA (student IDs, transcripts, faculty IDs)
+- `openredaction:healthcare` - Provider operations (MRNs, claims, NPI/license IDs)
+- `openredaction:healthcare-research` - Clinical research (trial IDs, protocols, genetic markers)
+- `openredaction:transport-logistics` - Fleet, shipping, and tracking identifiers
 
 ### Integration with Disclosurely
 
@@ -2225,12 +2231,12 @@ const shield = new OpenRedaction({
   // Deterministic placeholders
   deterministic: true,       // Default: true
 
-  // Compliance preset
-  preset: 'gdpr' // or 'hipaa', 'ccpa'
+  // Compliance/industry preset
+  preset: 'gdpr' // or 'hipaa', 'ccpa', 'finance', 'education', 'healthcare', 'transport-logistics'
 });
 ```
 
-## Compliance Presets
+## Compliance & Industry Presets
 
 ### GDPR (European Union)
 ```typescript
@@ -2249,6 +2255,36 @@ Detects: Email, names, SSN, US phones, addresses, dates of birth, medical IDs
 const shield = new OpenRedaction({ preset: 'ccpa' });
 ```
 Detects: Email, names, SSN, US phones, addresses, IP addresses, usernames
+
+### Finance (Banking & Payments)
+```typescript
+const shield = new OpenRedaction({ preset: 'finance' });
+```
+Detects: SWIFT/BIC, IBAN, routing/sort codes, credit cards, trading and loan accounts
+
+### Education (Schools & Universities)
+```typescript
+const shield = new OpenRedaction({ preset: 'education' });
+```
+Detects: Student IDs, transcripts, faculty IDs, course codes, enrollment and aid references
+
+### Healthcare Operations
+```typescript
+const shield = new OpenRedaction({ preset: 'healthcare' });
+```
+Detects: Medical record numbers, patient IDs, claims, NPI/license IDs, lab and device references
+
+### Healthcare Research & Clinical Trials
+```typescript
+const shield = new OpenRedaction({ preset: 'healthcare-research' });
+```
+Detects: Trial participant IDs, protocol numbers, ICD-10/CPT codes, genetic markers, biobank samples
+
+### Transportation & Logistics
+```typescript
+const shield = new OpenRedaction({ preset: 'transport-logistics' });
+```
+Detects: VINs, license plates, fleet/driver IDs, shipment tracking, airway bills, container numbers
 
 ## Advanced Usage
 

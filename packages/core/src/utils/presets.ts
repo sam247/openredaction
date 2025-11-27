@@ -2,7 +2,7 @@
  * Compliance preset configurations
  */
 
-import { OpenRedactionOptions } from '../types';
+import { OpenRedactionOptions, PresetName } from '../types';
 
 /**
  * GDPR compliance preset - European Union data protection
@@ -82,16 +82,87 @@ export const ccpaPreset: Partial<OpenRedactionOptions> = {
 };
 
 /**
+ * Healthcare operations preset - provider-centric coverage
+ */
+export const healthcarePreset: Partial<OpenRedactionOptions> = {
+  includeNames: true,
+  includeEmails: true,
+  includePhones: true,
+  includeAddresses: true,
+  categories: ['personal', 'contact', 'healthcare', 'insurance', 'government']
+};
+
+/**
+ * Healthcare research preset - clinical research and trials
+ */
+export const healthcareResearchPreset: Partial<OpenRedactionOptions> = {
+  includeNames: true,
+  includeEmails: true,
+  includePhones: true,
+  includeAddresses: true,
+  categories: ['personal', 'contact', 'healthcare', 'insurance', 'government']
+};
+
+/**
+ * Financial services preset - banking, trading, and payments
+ */
+export const financePreset: Partial<OpenRedactionOptions> = {
+  includeNames: true,
+  includeEmails: true,
+  includePhones: true,
+  includeAddresses: true,
+  categories: ['personal', 'contact', 'financial', 'government', 'network']
+};
+
+/**
+ * Education preset - FERPA-style coverage for schools and universities
+ */
+export const educationPreset: Partial<OpenRedactionOptions> = {
+  includeNames: true,
+  includeEmails: true,
+  includePhones: true,
+  includeAddresses: true,
+  categories: ['personal', 'contact', 'education', 'government', 'network']
+};
+
+/**
+ * Transportation and logistics preset - fleet, shipping, and mobility
+ */
+export const transportLogisticsPreset: Partial<OpenRedactionOptions> = {
+  includeNames: true,
+  includeEmails: true,
+  includePhones: true,
+  includeAddresses: true,
+  categories: ['personal', 'contact', 'transportation', 'logistics', 'vehicles', 'network']
+};
+
+/**
  * Get preset configuration by name
  */
 export function getPreset(name: string): Partial<OpenRedactionOptions> {
-  switch (name.toLowerCase()) {
+  const presetName = name.toLowerCase() as PresetName | string;
+
+  switch (presetName) {
     case 'gdpr':
       return gdprPreset;
     case 'hipaa':
       return hipaaPreset;
     case 'ccpa':
       return ccpaPreset;
+    case 'healthcare':
+    case 'healthcare-provider':
+      return healthcarePreset;
+    case 'healthcare-research':
+      return healthcareResearchPreset;
+    case 'finance':
+    case 'financial-services':
+      return financePreset;
+    case 'education':
+      return educationPreset;
+    case 'transport-logistics':
+    case 'transportation':
+    case 'logistics':
+      return transportLogisticsPreset;
     default:
       return {};
   }

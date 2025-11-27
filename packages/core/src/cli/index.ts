@@ -19,7 +19,7 @@ Usage:
   openredaction --help                     Show this help message
 
 Detection Options:
-  --preset <name>                       Use compliance preset (gdpr, hipaa, ccpa)
+  --preset <name>                       Use compliance/industry preset (gdpr, hipaa, ccpa, finance, education, healthcare, transport-logistics)
   --patterns <types>                    Comma-separated list of pattern types to use
   --no-names                            Exclude name detection
   --no-emails                           Exclude email detection
@@ -34,6 +34,7 @@ Feedback Options:
 Examples:
   openredaction detect "Email john@example.com"
   openredaction detect "SSN: 123-45-6789" --preset hipaa
+  openredaction detect "Routing SWIFT: DEUTDEFF" --preset finance
   openredaction scan "Contact john@example.com or call 555-123-4567"
   openredaction feedback false-positive "API" --type NAME --context "Call the API"
   openredaction stats
