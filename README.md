@@ -1,5 +1,12 @@
 # OpenRedaction
 
+[![Version](https://img.shields.io/badge/version-1.0-brightgreen.svg)](https://github.com/sam247/openredact)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Tests](https://img.shields.io/badge/tests-276%20passing-brightgreen.svg)](https://github.com/sam247/openredact)
+[![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
+
+![Custom dimensions 1280x640 px](https://github.com/user-attachments/assets/8af856bf-0eb5-4223-949f-44ee29cfebd9)
+
 Production-ready TypeScript toolkit for detecting and redacting PII across text and structured data.
 
 ## Why this exists
@@ -8,14 +15,14 @@ OpenRedaction makes it easy to keep sensitive data out of logs, prompts, and ana
 
 ## Features
 
-- 🧠 570+ built-in detectors with contextual validation to minimize false positives
-- 🎭 Multiple redaction modes: placeholders, middle-mask, full-mask, format-preserving, and token replacement
-- 🌍 Global coverage across personal, financial, healthcare, government, and digital identity patterns
-- 🧩 Structured data support for JSON/CSV/XLSX with path-level tracking
-- ⚡ Fast performance (tuned for streaming and high-throughput services)
-- 🔒 Compliance presets (GDPR, HIPAA, CCPA, finance, education, transport) and deterministic placeholders
-- 📈 Enterprise options: audit logging, metrics hooks, RBAC, health checks, and multi-tenancy scaffolding
-- 🛠️ TypeScript-first API with zero external runtime dependencies in the core package
+- 570+ built-in detectors with contextual validation to minimize false positives
+- Multiple redaction modes: placeholders, middle-mask, full-mask, format-preserving, and token replacement
+- Global coverage across personal, financial, healthcare, government, and digital identity patterns
+- Structured data support for JSON/CSV/XLSX with path-level tracking
+- Fast performance (tuned for streaming and high-throughput services)
+- Compliance presets (GDPR, HIPAA, CCPA, finance, education, transport) and deterministic placeholders
+- Enterprise options: audit logging, metrics hooks, RBAC, health checks, and multi-tenancy scaffolding
+- TypeScript-first API with zero external runtime dependencies in the core package
 
 ## Quickstart
 
