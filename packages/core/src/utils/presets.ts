@@ -82,6 +82,76 @@ export const ccpaPreset: Partial<OpenRedactionOptions> = {
 };
 
 /**
+ * Personal information preset
+ * Core personal data: names, emails, phones, addresses
+ */
+export const personalPreset: Partial<OpenRedactionOptions> = {
+  patterns: [
+    'EMAIL',
+    'NAME',
+    'PHONE_INTERNATIONAL',
+    'PHONE_UK',
+    'PHONE_UK_MOBILE',
+    'PHONE_US',
+    'ADDRESS_STREET',
+    'DATE_OF_BIRTH'
+  ]
+};
+
+/**
+ * Financial information preset
+ * Banking, payments, crypto
+ */
+export const financialPreset: Partial<OpenRedactionOptions> = {
+  patterns: [
+    'CREDIT_CARD',
+    'IBAN',
+    'BANK_ACCOUNT_UK',
+    'BANK_ACCOUNT_US',
+    'SORT_CODE_UK',
+    'ROUTING_NUMBER_US',
+    'CRYPTO_WALLET_BTC',
+    'CRYPTO_WALLET_ETH',
+    'SWIFT_CODE'
+  ]
+};
+
+/**
+ * Tech/security preset
+ * API keys, tokens, IP addresses
+ */
+export const techPreset: Partial<OpenRedactionOptions> = {
+  patterns: [
+    'IPV4',
+    'IPV6',
+    'GENERIC_API_KEY',
+    'JWT_TOKEN',
+    'OAUTH_TOKEN',
+    'AWS_ACCESS_KEY',
+    'AWS_SECRET_KEY',
+    'GITHUB_TOKEN',
+    'PRIVATE_KEY',
+    'SSH_PRIVATE_KEY',
+    'BEARER_TOKEN'
+  ]
+};
+
+/**
+ * Healthcare preset
+ * Medical and patient identifiers
+ */
+export const healthcarePreset: Partial<OpenRedactionOptions> = {
+  patterns: [
+    'MEDICAL_RECORD_NUMBER',
+    'PATIENT_ID',
+    'DEA_NUMBER',
+    'NPI_NUMBER',
+    'MEDICARE_NUMBER',
+    'MEDICAID_NUMBER'
+  ]
+};
+
+/**
  * Get preset configuration by name
  */
 export function getPreset(name: string): Partial<OpenRedactionOptions> {
@@ -92,7 +162,36 @@ export function getPreset(name: string): Partial<OpenRedactionOptions> {
       return hipaaPreset;
     case 'ccpa':
       return ccpaPreset;
+    case 'personal':
+      return personalPreset;
+    case 'financial':
+      return financialPreset;
+    case 'tech':
+      return techPreset;
+    case 'healthcare':
+      return healthcarePreset;
     default:
       return {};
   }
+}
+
+/**
+ * Get multiple presets and merge them
+ * Allows composable presets like: presets: ['gdpr', 'financial', 'personal']
+ */
+export function getPresets(names: string[]): Partial<OpenRedactionOptions> {
+  const allPresets = names.map(name => getPreset(name));
+
+  // Merge all patterns arrays
+  const mergedPatterns = new Set<string>();
+
+  for (const preset of allPresets) {
+    if (preset.patterns) {
+      preset.patterns.forEach(p => mergedPatterns.add(p));
+    }
+  }
+
+  return {
+    patterns: Array.from(mergedPatterns)
+  };
 }

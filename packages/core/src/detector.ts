@@ -22,7 +22,7 @@ import { InMemoryMetricsCollector } from './metrics';
 import { RBACManager, getPredefinedRole } from './rbac';
 import { allPatterns, getPatternsByCategory } from './patterns';
 import { generateDeterministicId } from './utils/hash';
-import { getPreset } from './utils/presets';
+import { getPreset, getPresets } from './utils/presets';
 import { applyRedactionMode } from './utils/redaction-strategies';
 import { LocalLearningStore } from './learning/LocalLearningStore.js';
 import { ConfigLoader } from './config/ConfigLoader.js';
@@ -122,7 +122,8 @@ export class OpenRedaction {
     whitelist: string[];
     deterministic: boolean;
     redactionMode: RedactionMode;
-    preset?: 'gdpr' | 'hipaa' | 'ccpa';
+    preset?: 'gdpr' | 'hipaa' | 'ccpa' | 'personal' | 'financial' | 'tech' | 'healthcare';
+    presets?: string[];
     enableContextAnalysis: boolean;
     confidenceThreshold: number;
     enableFalsePositiveFilter: boolean;
@@ -201,8 +202,15 @@ export class OpenRedaction {
     maxInputSize?: number;
     regexTimeout?: number;
   } = {}) {
-    // Apply preset if specified
-    const presetOptions = options.preset ? getPreset(options.preset) : {};
+    // Support both single preset (backward compat) and multiple presets (new)
+    let presetOptions = {};
+    if (options.presets && options.presets.length > 0) {
+      // Use new composable presets
+      presetOptions = getPresets(options.presets);
+    } else if (options.preset) {
+      // Backward compatibility: single preset
+      presetOptions = getPreset(options.preset);
+    }
 
     // Merge options with defaults
     const mergedOptions = {

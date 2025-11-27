@@ -239,8 +239,10 @@ export interface OpenRedactionOptions {
   deterministic?: boolean;
   /** Redaction mode (default: 'placeholder') */
   redactionMode?: RedactionMode;
-  /** Compliance preset */
-  preset?: 'gdpr' | 'hipaa' | 'ccpa';
+  /** Compliance preset (single preset, backward compatible) */
+  preset?: 'gdpr' | 'hipaa' | 'ccpa' | 'personal' | 'financial' | 'tech' | 'healthcare';
+  /** Composable presets (combine multiple presets) */
+  presets?: string[];
   /** Enable context-aware detection (default: true) */
   enableContextAnalysis?: boolean;
   /** Minimum confidence threshold for detections (0-1, default: 0.5) */

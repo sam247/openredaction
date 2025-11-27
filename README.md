@@ -152,6 +152,45 @@ const detector = new OpenRedaction({
 });
 ```
 
+### Composable Presets (NEW!)
+
+Combine multiple presets for cross-industry use cases:
+
+```typescript
+// UK Fintech Example
+const detector = new OpenRedaction({
+  presets: ['gdpr', 'financial', 'personal']
+});
+// Detects: EU compliance + banking + personal info (~30 patterns)
+
+// US Healthcare Example
+const detector = new OpenRedaction({
+  presets: ['hipaa', 'healthcare', 'personal']
+});
+// Detects: HIPAA compliance + medical + personal (~30 patterns)
+
+// Tech Startup Example
+const detector = new OpenRedaction({
+  presets: ['gdpr', 'tech', 'personal']
+});
+// Detects: EU compliance + API keys/tokens + personal info (~30 patterns)
+```
+
+**Available Presets:**
+- `gdpr` - EU data protection (15 patterns)
+- `hipaa` - US healthcare compliance (16 patterns)
+- `ccpa` - California privacy (16 patterns)
+- `personal` - Names, emails, phones, addresses (8 patterns)
+- `financial` - Credit cards, IBAN, crypto, banking (9 patterns)
+- `tech` - IP addresses, API keys, tokens (8 patterns)
+- `healthcare` - Medical IDs, patient numbers (6 patterns)
+
+**Backward compatible:** Single preset still works!
+
+```typescript
+const detector = new OpenRedaction({ preset: 'gdpr' });  // Still works!
+```
+
 ---
 
 ## Documentation
