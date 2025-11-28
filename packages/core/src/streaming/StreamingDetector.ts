@@ -114,11 +114,11 @@ export class StreamingDetector {
         );
 
         for (const detection of sortedDetections) {
-          const [start, end] = detection.position;
-          redactedChunk =
-            redactedChunk.substring(0, start) +
-            detection.placeholder +
-            redactedChunk.substring(end);
+          if (!detection.value) continue;
+
+          const escapedValue = this.escapeRegex(detection.value);
+          const pattern = new RegExp(escapedValue, 'gi');
+          redactedChunk = redactedChunk.replace(pattern, detection.placeholder);
         }
       }
 
@@ -154,11 +154,11 @@ export class StreamingDetector {
     const redactionMap: Record<string, string> = {};
 
     for (const detection of allDetections) {
-      const [start, end] = detection.position;
-      redactedText =
-        redactedText.substring(0, start) +
-        detection.placeholder +
-        redactedText.substring(end);
+      if (!detection.value) continue;
+
+      const escapedValue = this.escapeRegex(detection.value);
+      const pattern = new RegExp(escapedValue, 'gi');
+      redactedText = redactedText.replace(pattern, detection.placeholder);
 
       redactionMap[detection.placeholder] = detection.value;
     }
@@ -262,6 +262,10 @@ export class StreamingDetector {
       overlap: this.options.overlap,
       estimatedMemory
     };
+  }
+
+  private escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 }
 

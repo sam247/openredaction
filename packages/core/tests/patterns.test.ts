@@ -25,6 +25,39 @@ describe('Pattern Detection', () => {
       expect(result.detections.some(d => d.type === 'NAME')).toBe(true);
     });
 
+    it('should detect names with salutations', () => {
+      const shield = new OpenRedaction({ patterns: ['NAME'] });
+
+      const result = shield.detect('Please ask Mr James Smith to join');
+      expect(result.detections.some(d => d.type === 'NAME')).toBe(true);
+    });
+
+    it('redacts the same name across casing variants', () => {
+      const shield = new OpenRedaction({ patterns: ['NAME'] });
+      const input = 'hi my name is james smith James Smith JAMES SMITH';
+
+      const { redacted } = shield.detect(input);
+      expect(redacted.toLowerCase()).not.toContain('james smith');
+
+      const placeholders = redacted.match(/\[NAME_\d+\]/g) || [];
+      expect(placeholders.length).toBe(3);
+      expect(new Set(placeholders).size).toBe(1);
+    });
+
+    it('should avoid matching non-name phrases', () => {
+      const shield = new OpenRedaction({ patterns: ['NAME'] });
+
+      const samples = [
+        'the system name is james db',
+        'we deploy using smith & co tooling'
+      ];
+
+      samples.forEach(text => {
+        const result = shield.detect(text);
+        expect(result.detections.some(d => d.type === 'NAME')).toBe(false);
+      });
+    });
+
     it('should detect employee IDs', () => {
       const shield = new OpenRedaction({ patterns: ['EMPLOYEE_ID'] });
 
