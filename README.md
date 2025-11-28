@@ -21,8 +21,9 @@ OpenRedaction makes it easy to keep sensitive data out of logs, prompts, and ana
 - Structured data support for JSON/CSV/XLSX with path-level tracking
 - Fast performance (tuned for streaming and high-throughput services)
 - Compliance presets (GDPR, HIPAA, CCPA, finance, education, transport) and deterministic placeholders
+- Industry starter packs and quickstart recipes in docs/examples to cover common pipelines (logs, LLMs, ETL) without adding bundle weight
 - Enterprise options: audit logging, metrics hooks, RBAC, health checks, and multi-tenancy scaffolding
-- TypeScript-first API with zero external runtime dependencies in the core package
+- Lightweight NPM package with zero external runtime dependencies in the core; optional dashboards and deployment snippets stay in docs/examples to avoid shipping heavy assets
 
 ## Quickstart
 
