@@ -667,10 +667,11 @@ export class OpenRedaction {
     const redactionMap: Record<string, string> = {};
 
     for (const detection of detections) {
-      const [start, end] = detection.position;
-      redacted = redacted.substring(0, start) +
-        detection.placeholder +
-        redacted.substring(end);
+      if (!detection.value) continue;
+
+      const escapedValue = this.escapeRegex(detection.value);
+      const pattern = new RegExp(escapedValue, 'gi');
+      redacted = redacted.replace(pattern, detection.placeholder);
 
       redactionMap[detection.placeholder] = detection.value;
     }

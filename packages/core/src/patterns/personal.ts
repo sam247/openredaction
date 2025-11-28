@@ -17,6 +17,7 @@ export const personalPatterns: PIIPattern[] = [
   },
   {
     type: 'NAME',
+    // Keep pattern conservative; we handle casing variants during replacement, not here.
     regex: /\b(?:(?:Mr|Mrs|Ms|Miss|Dr|Prof|Professor|Sir|Madam|Lady|Lord|Rev|Father|Sister|Brother)\.?\s+)?([A-Z][a-z]+(?:-[A-Z][a-z]+)? (?:[A-Z][a-z]+(?:-[A-Z][a-z]+)? )?[A-Z][a-z]+(?:-[A-Z][a-z]+)?)(?:\s+(?:Jr|Sr|II|III|IV|PhD|MD|Esq|DDS|DVM|MBA|CPA)\.?)?\b/g,
     priority: 50,
     validator: validateName,
