@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-1.0-brightgreen.svg)](https://github.com/sam247/openredact)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-276%20passing-brightgreen.svg)](https://github.com/sam247/openredact)
-[![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
 
 ![Custom dimensions 1280x640 px](https://github.com/user-attachments/assets/8af856bf-0eb5-4223-949f-44ee29cfebd9)
 
@@ -136,8 +136,3 @@ We welcome issues, feature requests, and pull requests from the community. See [
 ## License
 
 OpenRedaction is licensed under the [MIT License](LICENSE).
-
-## Badges
-
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
