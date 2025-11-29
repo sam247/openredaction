@@ -7,7 +7,7 @@ import { PIIPattern } from '../types';
 export const contactPatterns: PIIPattern[] = [
   {
     type: 'PHONE_UK_MOBILE',
-    regex: /\b07\d{3}[\s-]?\d{3}[\s-]?\d{3}\b/g,
+    regex: /\b(?:\+?44[\s.-]?7\d{3}|0?7\d{3})[\s.-]?\d{3}[\s.-]?\d{3}\b/g,
     priority: 90,
     placeholder: '[PHONE_UK_MOBILE_{n}]',
     description: 'UK mobile phone',
@@ -15,7 +15,7 @@ export const contactPatterns: PIIPattern[] = [
   },
   {
     type: 'PHONE_UK',
-    regex: /\b(?:0[1-9]\d{1,2}[\s-]?\d{3,4}[\s-]?\d{4}|\+44[\s-]?[1-9]\d{1,2}[\s-]?\d{3,4}[\s-]?\d{4})\b/g,
+    regex: /\b(?:\+?44[\s.-]?(?:0)?\s*)?(?:\(?0?[1-9]\d{1,3}\)?[\s.-]?\d{3,4}[\s.-]?\d{3,4})(?:\s?(?:ext\.?|x)\s?\d{1,5})?\b/g,
     priority: 85,
     placeholder: '[PHONE_UK_{n}]',
     description: 'UK phone number',
@@ -23,7 +23,7 @@ export const contactPatterns: PIIPattern[] = [
   },
   {
     type: 'PHONE_US',
-    regex: /(?<=^|[^\d])(?:\+1[\s-]?)?(?:\(\d{3}\)\s?|\d{3}[\s-]?)\d{3}[\s-]?\d{4}(?=[^\d]|$)/g,
+    regex: /\b(?:\+1[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}(?:\s?(?:ext\.?|x)\s?\d{1,6})?\b/g,
     priority: 85,
     placeholder: '[PHONE_US_{n}]',
     description: 'US phone number',
@@ -31,7 +31,7 @@ export const contactPatterns: PIIPattern[] = [
   },
   {
     type: 'PHONE_INTERNATIONAL',
-    regex: /\b\+\d{1,3}[\s-]?\d{1,4}[\s-]?\d{1,4}[\s-]?\d{1,9}\b/g,
+    regex: /\b\+(?:\d[\s.-()]?){6,14}\d(?:\s?(?:ext\.?|x)\s?\d{1,6})?\b/g,
     priority: 80,
     placeholder: '[PHONE_{n}]',
     description: 'International phone number',
@@ -55,7 +55,7 @@ export const contactPatterns: PIIPattern[] = [
   },
   {
     type: 'ADDRESS_STREET',
-    regex: /\b(\d{1,5}\s[A-Z][a-z]+(?:\s[A-Z][a-z]+){0,3}\s(?:Street|St|Road|Rd|Avenue|Ave|Lane|Ln|Drive|Dr|Court|Ct|Boulevard|Blvd))\b/g,
+    regex: /\b\d{1,5}\s+[A-Za-z0-9][A-Za-z0-9'’.\-]*(?:\s+[A-Za-z0-9][A-Za-z0-9'’.\-]*){0,4}\s+(?:Street|St\.?|Road|Rd\.?|Avenue|Ave\.?|Lane|Ln\.?|Drive|Dr\.?|Court|Ct\.?|Boulevard|Blvd\.?|Way|Terrace|Ter\.?|Place|Pl\.?|Trail|Trl\.?|Parkway|Pkwy\.?|Highway|Hwy\.)(?:\s+(?:Apt|Unit|Suite|Ste)\s*\d+)?\b/gi,
     priority: 70,
     placeholder: '[ADDRESS_{n}]',
     description: 'Street address',
