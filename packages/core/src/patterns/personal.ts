@@ -18,7 +18,7 @@ export const personalPatterns: PIIPattern[] = [
   {
     type: 'NAME',
     // Keep pattern conservative; we handle casing variants during replacement, not here.
-    regex: /\b(?:(?:Mr|Mrs|Ms|Miss|Dr|Prof|Professor|Sir|Madam|Lady|Lord|Rev|Father|Sister|Brother)\.?\s+)?([A-Z][a-z]+(?:-[A-Z][a-z]+)? (?:[A-Z][a-z]+(?:-[A-Z][a-z]+)? )?[A-Z][a-z]+(?:-[A-Z][a-z]+)?)(?:\s+(?:Jr|Sr|II|III|IV|PhD|MD|Esq|DDS|DVM|MBA|CPA)\.?)?\b/g,
+    regex: /\b(?:(?:Mr|Mrs|Ms|Miss|Dr|Prof|Professor|Sir|Madam|Lady|Lord|Rev|Father|Sister|Brother)\.?\s+)?((?:\p{Lu}[\p{L}'’.\-]+)(?:\s+\p{Lu}[\p{L}'’.\-]+){1,3})(?:\s+(?:Jr|Sr|II|III|IV|PhD|MD|Esq|DDS|DVM|MBA|CPA)\.?)?\b/gu,
     priority: 50,
     validator: validateName,
     placeholder: '[NAME_{n}]',
@@ -43,7 +43,7 @@ export const personalPatterns: PIIPattern[] = [
   },
   {
     type: 'DATE_OF_BIRTH',
-    regex: /\b(?:DOB|date of birth|birth ?date)[:\s]*(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})\b/gi,
+    regex: /\b(?:DOB|date of birth|birth ?date)[:\s-]*((?:\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4})|(?:\d{1,2}\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{2,4}))\b/gi,
     priority: 95,
     placeholder: '[DOB_{n}]',
     description: 'Date of birth',
