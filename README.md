@@ -60,7 +60,7 @@ const shield = new OpenRedaction({
 });
 
 const transcript = `Agent Sarah Jones spoke with customer Bob at bob@example.com about card 4242-4242-4242-4242.`;
-const { redacted, detections } = shield.detect(transcript);
+const { redacted, detections } = await shield.detect(transcript);
 
 console.log(redacted);
 // Agent S***h J***s spoke with customer B** at b**@example.com about card ****-****-****-****.
