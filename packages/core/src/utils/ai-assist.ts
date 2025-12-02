@@ -88,8 +88,12 @@ export async function callAIDetect(
 
     if (!response.ok) {
       if (debug) {
-        console.warn(`[OpenRedaction] AI endpoint returned ${response.status}: ${response.statusText}`);
+        const statusText = response.status === 429 
+          ? 'Rate limit exceeded (429)'
+          : `${response.status}: ${response.statusText}`;
+        console.warn(`[OpenRedaction] AI endpoint returned ${statusText}`);
       }
+      // Gracefully handle rate limits and other errors
       return null;
     }
 
