@@ -138,7 +138,7 @@ export interface AuditQueryFilter {
  */
 export class PersistentAuditLogger implements IAuditLogger {
   private adapter: IAuditDatabaseAdapter;
-  private options: Required<PersistentAuditLoggerOptions>;
+  private options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>;
   private batchBuffer: HashedAuditLogEntry[] = [];
   private lastHash: string = '';
   private sequence: number = 0;
@@ -157,7 +157,7 @@ export class PersistentAuditLogger implements IAuditLogger {
       enableHashing: options.enableHashing ?? true,
       hashAlgorithm: options.hashAlgorithm ?? 'sha256',
       enableWAL: options.enableWAL ?? true,
-      secretKey: options.secretKey
+      secretKey: options.secretKey ?? undefined
     };
 
     // Create appropriate database adapter
@@ -242,7 +242,7 @@ export class PersistentAuditLogger implements IAuditLogger {
   /**
    * Get logs by operation type
    */
-  getLogsByOperation(operation: AuditLogEntry['operation']): AuditLogEntry[] {
+  getLogsByOperation(_operation: AuditLogEntry['operation']): AuditLogEntry[] {
     throw new Error(
       '[PersistentAuditLogger] getLogsByOperation() is not supported for persistent storage. Use queryLogs({ operation }) instead.'
     );
@@ -251,7 +251,7 @@ export class PersistentAuditLogger implements IAuditLogger {
   /**
    * Get logs by date range
    */
-  getLogsByDateRange(startDate: Date, endDate: Date): AuditLogEntry[] {
+  getLogsByDateRange(_startDate: Date, _endDate: Date): AuditLogEntry[] {
     throw new Error(
       '[PersistentAuditLogger] getLogsByDateRange() is not supported for persistent storage. Use queryLogs({ startDate, endDate }) instead.'
     );
@@ -593,7 +593,8 @@ export class PersistentAuditLogger implements IAuditLogger {
    * Start automatic cleanup schedule
    */
   private startCleanupSchedule(): void {
-    const intervalMs = this.options.retention.cleanupIntervalHours * 60 * 60 * 1000;
+    const cleanupIntervalHours = this.options.retention?.cleanupIntervalHours ?? 24;
+    const intervalMs = cleanupIntervalHours * 60 * 60 * 1000;
 
     this.cleanupTimer = setInterval(() => {
       this.runCleanup().catch(err => {
@@ -641,9 +642,9 @@ export class PersistentAuditLogger implements IAuditLogger {
 class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
   private db?: any;
   private config: AuditDatabaseConfig;
-  private options: Required<PersistentAuditLoggerOptions>;
+  private options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>;
 
-  constructor(config: AuditDatabaseConfig, options: Required<PersistentAuditLoggerOptions>) {
+  constructor(config: AuditDatabaseConfig, options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>) {
     this.config = config;
     this.options = options;
   }
@@ -919,7 +920,7 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
  * PostgreSQL adapter implementation (stub - requires pg package)
  */
 class PostgreSQLAuditAdapter implements IAuditDatabaseAdapter {
-  constructor(_config: AuditDatabaseConfig, _options: Required<PersistentAuditLoggerOptions>) {
+  constructor(_config: AuditDatabaseConfig, _options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>) {
     // Implementation will be added later
   }
 
@@ -964,7 +965,7 @@ class PostgreSQLAuditAdapter implements IAuditDatabaseAdapter {
  * MongoDB adapter implementation (stub - requires mongodb package)
  */
 class MongoDBuditAdapter implements IAuditDatabaseAdapter {
-  constructor(_config: AuditDatabaseConfig, _options: Required<PersistentAuditLoggerOptions>) {
+  constructor(_config: AuditDatabaseConfig, _options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>) {
     // Implementation will be added later
   }
 
@@ -1009,7 +1010,7 @@ class MongoDBuditAdapter implements IAuditDatabaseAdapter {
  * S3 adapter implementation (stub - requires aws-sdk)
  */
 class S3AuditAdapter implements IAuditDatabaseAdapter {
-  constructor(_config: AuditDatabaseConfig, _options: Required<PersistentAuditLoggerOptions>) {
+  constructor(_config: AuditDatabaseConfig, _options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>) {
     // Implementation will be added later
   }
 
@@ -1054,7 +1055,7 @@ class S3AuditAdapter implements IAuditDatabaseAdapter {
  * File-based adapter implementation (append-only log file)
  */
 class FileAuditAdapter implements IAuditDatabaseAdapter {
-  constructor(_config: AuditDatabaseConfig, _options: Required<PersistentAuditLoggerOptions>) {
+  constructor(_config: AuditDatabaseConfig, _options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>) {
     // Implementation will be added later
   }
 

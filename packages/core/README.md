@@ -20,6 +20,62 @@ console.log(result.redacted);
 // "Email [EMAIL_9619] or call [PHONE_UK_MOBILE_9478]"
 ```
 
+## Optional AI Assist
+
+OpenRedaction supports an optional AI-assisted detection mode that enhances regex-based detection by calling a hosted AI endpoint. This feature is **OFF by default** and requires explicit configuration.
+
+### Configuration
+
+```typescript
+import { OpenRedaction } from 'openredaction';
+
+const detector = new OpenRedaction({
+  // ... other options ...
+  ai: {
+    enabled: true,
+    endpoint: 'https://your-api.example.com' // Optional: defaults to OPENREDACTION_AI_ENDPOINT env var
+  }
+});
+
+// detect() is now async when AI is enabled
+const result = await detector.detect('Contact John Doe at john@example.com');
+```
+
+### How It Works
+
+1. **Regex Detection First**: The library always runs regex detection first (existing behavior)
+2. **AI Enhancement**: If `ai.enabled === true` and an endpoint is configured, the library calls the `/ai-detect` endpoint
+3. **Smart Merging**: AI entities are merged with regex detections, with regex taking precedence on conflicts
+4. **Graceful Fallback**: If the AI endpoint fails or is unavailable, the library silently falls back to regex-only detection
+
+### Environment Variables
+
+In Node.js environments, you can set the endpoint via environment variable:
+
+```bash
+export OPENREDACTION_AI_ENDPOINT=https://your-api.example.com
+```
+
+### Important Notes
+
+- **AI is optional**: The library works exactly as before when `ai.enabled` is `false` or omitted
+- **Regex is primary**: AI only adds additional entities; regex detections always take precedence
+- **No breaking changes**: When AI is disabled, behavior is identical to previous versions
+- **Browser support**: In browsers, you must provide an explicit `ai.endpoint` (env vars not available)
+- **Network dependency**: AI mode requires network access to the endpoint
+
+### For Sensitive Workloads
+
+For maximum security and privacy, keep AI disabled and rely purely on regex detection:
+
+```typescript
+const detector = new OpenRedaction({
+  // AI not configured = pure regex detection
+  includeNames: true,
+  includeEmails: true
+});
+```
+
 ## Documentation
 
 Full documentation available at [GitHub](https://github.com/sam247/openredaction)

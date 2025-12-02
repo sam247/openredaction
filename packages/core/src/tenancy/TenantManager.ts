@@ -7,8 +7,7 @@ import type {
   OpenRedactionOptions,
   PIIPattern,
   IAuditLogger,
-  IMetricsCollector,
-  IRBACManager
+  IMetricsCollector
 } from '../types';
 import { OpenRedaction } from '../detector';
 
@@ -231,7 +230,7 @@ export class TenantManager {
 
     // Get tenant detector and perform detection
     const detector = this.getDetector(tenantId);
-    const result = detector.detect(text);
+    const result = await detector.detect(text);
 
     // Update usage stats
     const usage = this.usage.get(tenantId)!;
