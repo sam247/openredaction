@@ -77,12 +77,9 @@ export class ExplainAPI {
     this.detector = detector;
     this.patterns = detector.getPatterns();
 
-    // Test a simple detection to infer options from behavior
-    const testResult = detector.detect('Contact: admin@business.co.uk');
-    const hasConfidence = testResult.detections.length > 0 && testResult.detections[0].confidence !== undefined;
-
-    // Access detector's private options to get whitelist
+    // Access detector's private options to get whitelist and infer settings
     const detectorOptions = (detector as any).options;
+    const hasConfidence = detectorOptions?.enableContextAnalysis || false;
 
     // Infer options from detector behavior
     this.options = {
@@ -97,7 +94,7 @@ export class ExplainAPI {
   /**
    * Explain why text was or wasn't detected as PII
    */
-  explain(text: string): TextExplanation {
+  async explain(text: string): Promise<TextExplanation> {
     const patternResults: PatternMatchResult[] = [];
     const matchedPatterns: PatternMatchResult[] = [];
     const unmatchedPatterns: PatternMatchResult[] = [];
@@ -213,7 +210,8 @@ export class ExplainAPI {
     }
 
     // Get final detections
-    const detections = this.detector.detect(text).detections;
+    const detectionResult = await this.detector.detect(text);
+    const detections = detectionResult.detections;
 
     return {
       text,
@@ -234,12 +232,13 @@ export class ExplainAPI {
   /**
    * Explain a specific detection
    */
-  explainDetection(detection: PIIDetection, text: string): {
+  async explainDetection(detection: PIIDetection, text: string): Promise<{
     detection: PIIDetection;
     pattern?: PIIPattern;
     contextAnalysis?: ContextAnalysis;
     reasoning: string[];
-  } {
+    suggestions: string[];
+  }> {
     const pattern = this.patterns.find(p => p.type === detection.type);
     const reasoning: string[] = [];
 
@@ -277,19 +276,20 @@ export class ExplainAPI {
       detection,
       pattern,
       contextAnalysis,
-      reasoning
+      reasoning,
+      suggestions: [] // Will be populated if needed
     };
   }
 
   /**
    * Suggest why text wasn't detected
    */
-  suggestWhy(text: string, expectedType: string): {
+  async suggestWhy(text: string, expectedType: string): Promise<{
     text: string;
     expectedType: string;
     suggestions: string[];
     similarPatterns: PIIPattern[];
-  } {
+  }> {
     const suggestions: string[] = [];
     const similarPatterns: PIIPattern[] = [];
 
@@ -315,7 +315,7 @@ export class ExplainAPI {
         suggestions.push(`Pattern "${pattern.type}" matched value: "${value}"`);
 
         // Check why it was filtered
-        const explanation = this.explain(text);
+        const explanation = await this.explain(text);
         const filtered = explanation.filteredPatterns.find(r => r.pattern.type === pattern.type);
 
         if (filtered && filtered.reason) {
@@ -350,7 +350,7 @@ export class ExplainAPI {
   /**
    * Get debugging information for entire detection process
    */
-  debug(text: string): {
+  async debug(text: string): Promise<{
     text: string;
     textLength: number;
     enabledFeatures: string[];
@@ -359,9 +359,9 @@ export class ExplainAPI {
     performance: {
       estimatedTime: string;
     };
-  } {
+  }> {
     const start = performance.now();
-    const explanation = this.explain(text);
+    const explanation = await this.explain(text);
     const duration = performance.now() - start;
 
     const enabledFeatures: string[] = [];

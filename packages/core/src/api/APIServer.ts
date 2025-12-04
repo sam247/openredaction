@@ -366,7 +366,7 @@ export class APIServer {
         result = await this.config.tenantManager.detect(req.tenantId, text);
       } else if (this.detector) {
         // Single-tenant mode
-        result = this.detector.detect(text);
+        result = await this.detector.detect(text);
       } else {
         throw new Error('No detector available');
       }
@@ -414,7 +414,7 @@ export class APIServer {
       if (req.tenantId && this.config.tenantManager) {
         result = await this.config.tenantManager.detect(req.tenantId, text);
       } else if (this.detector) {
-        result = this.detector.detect(text);
+        result = await this.detector.detect(text);
       } else {
         throw new Error('No detector available');
       }

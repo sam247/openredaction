@@ -172,11 +172,11 @@ export class CsvProcessor {
   /**
    * Detect PII in CSV data
    */
-  detect(
+  async detect(
     input: Buffer | string,
     detector: OpenRedaction,
     options?: CsvProcessorOptions
-  ): CsvDetectionResult {
+  ): Promise<CsvDetectionResult> {
     const opts = { ...this.defaultOptions, ...options };
     const rows = this.parse(input, options);
 
@@ -279,7 +279,7 @@ export class CsvProcessor {
         }
 
         // Detect PII
-        const result = detector.detect(cellValue);
+        const result = await detector.detect(cellValue);
 
         if (result.detections.length > 0) {
           // Boost confidence if column name indicates PII
