@@ -461,6 +461,7 @@ describe('Pattern Detection', () => {
       const negative = await shield.detect('VAT: ZZ123456789');
       expect(negative.detections.some(d => d.type === 'VAT_NUMBER')).toBe(false);
     });
+  });
 
   describe('Emergency services patterns', () => {
     it('should detect police report numbers with separators', async () => {
@@ -493,6 +494,7 @@ describe('Pattern Detection', () => {
         expect(result.detections.some(d => d.type === 'FIRE_INCIDENT_NUMBER')).toBe(true);
       }
     });
+  });
 
   describe('HR patterns', () => {
     it('should detect benefits plan numbers with separators', async () => {
@@ -527,8 +529,8 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('Warning ID: ABC');
       expect(negative.detections.some(d => d.type === 'DISCIPLINARY_ACTION_ID')).toBe(false);
-    }
-  }
+    });
+  });
 
   describe('Healthcare patterns', () => {
     it('should detect provider licenses with varied separators', async () => {
@@ -596,8 +598,8 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('biometric score 99 recorded');
       expect(negative.detections.some(d => d.type === 'BIOMETRIC_ID')).toBe(false);
-    }
-  }
+    });
+  });
 
   describe('Contact patterns', () => {
     it('should detect UK mobile phones', async () => {
@@ -715,8 +717,8 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'DATE_OF_BIRTH')).toBe(true);
       }
-    }
-  }
+    });
+  });
 
   describe('Network patterns', () => {
     it('should detect IPv4 addresses', async () => {
@@ -767,8 +769,8 @@ describe('Pattern Detection', () => {
 
       const result = await shield.detect('Connect: https://user:pass@example.com/path');
       expect(result.detections.some(d => d.type === 'URL_WITH_AUTH')).toBe(true);
-    }
-  }
+    });
+  });
 
   describe('Real-world scenarios', () => {
     it('should handle mixed PII in email text', async () => {
@@ -813,6 +815,6 @@ describe('Pattern Detection', () => {
 
       const result = await shield.detect(text);
       expect(result.detections.length).toBeGreaterThan(0);
-    }
-  }
-}
+    });
+  });
+});
