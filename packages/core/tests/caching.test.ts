@@ -57,16 +57,16 @@ describe('Result Caching', () => {
       expect(result2).toBe(result1);
     });
 
-    it('should cache multiple different inputs', () => {
+    it('should cache multiple different inputs', async () => {
       const redactor = new OpenRedaction({ enableCache: true });
 
       const text1 = 'Email: user1@company.com';
       const text2 = 'Email: user2@company.com';
       const text3 = 'Email: user3@company.com';
 
-      redactor.detect(text1);
-      redactor.detect(text2);
-      redactor.detect(text3);
+      await redactor.detect(text1);
+      await redactor.detect(text2);
+      await redactor.detect(text3);
 
       const stats = redactor.getCacheStats();
       expect(stats.size).toBe(3);
