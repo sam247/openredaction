@@ -43,7 +43,7 @@ export const contactPatterns: PIIPattern[] = [
   },
   {
     type: 'PHONE_INTERNATIONAL',
-    regex: /\b\+(?:\d[\s.-()]?){6,14}\d(?:\s?(?:ext\.?|x)\s?\d{1,6})?\b/g,
+    regex: /\b\+(?:\d[\s.\-()]?){6,14}\d(?:\s?(?:ext\.?|x)\s?\d{1,6})?\b/g,
     priority: 80,
     placeholder: '[PHONE_{n}]',
     description: 'International phone number',
