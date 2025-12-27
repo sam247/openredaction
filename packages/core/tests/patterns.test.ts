@@ -656,7 +656,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(`Call: ${phone}`);
         expect(result.detections.some(d => d.type === 'PHONE_INTERNATIONAL')).toBe(true);
       }
-    }
+    });
 
     it('should detect UK postcodes', async () => {
       const shield = new OpenRedaction({ patterns: ['POSTCODE_UK'] });
