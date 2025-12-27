@@ -56,7 +56,7 @@ describe('Pattern Detection', () => {
       const placeholders = redacted.match(/\[NAME_\d+\]/g) || [];
       expect(placeholders.length).toBe(3);
       expect(new Set(placeholders).size).toBe(1);
-    }
+    });
 
     it('should avoid matching non-name phrases', async () => {
       const shield = new OpenRedaction({ patterns: ['NAME'] });

@@ -157,12 +157,12 @@ describe('Multi-pass Detection', () => {
   describe('Integration with OpenRedact', () => {
     it('should work when multi-pass is disabled (default)', async () => {
       const redactor = new OpenRedaction();
-      const result = redactor.detect('API Key: AKIA1234567890ABCDEF, Email: user@company.com');
+      const result = await redactor.detect('API Key: AKIA1234567890ABCDEF, Email: user@company.com');
 
       expect(result.detections.length).toBeGreaterThan(0);
       expect(result.detections.some(d => d.type.includes('AWS'))).toBe(true);
       expect(result.detections.some(d => d.type === 'EMAIL')).toBe(true);
-});
+    });
 
     it('should work when multi-pass is enabled', async () => {
       const redactor = new OpenRedaction({ enableMultiPass: true });

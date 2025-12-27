@@ -101,7 +101,7 @@ describe('Pattern Category Filtering', () => {
 
     // Should only have financial patterns
     expect(patternTypes.some(t => t.includes('CREDIT_CARD') || t.includes('IBAN'))).toBe(true);
-  }
+  });
 
   it('should work with custom patterns alongside categories', async () => {
     const shield = new OpenRedaction({
