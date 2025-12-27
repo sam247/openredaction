@@ -27,7 +27,7 @@ describe('Multi-pass Detection', () => {
       const critical = grouped.get('critical-credentials') || [];
       expect(critical.length).toBeGreaterThan(0);
       expect(critical.every(p => p.priority >= 95)).toBe(true);
-    }
+    });
 
     it('should sort patterns within each pass by priority', async () => {
       const grouped = groupPatternsByPass(allPatterns, defaultPasses);
@@ -36,9 +36,9 @@ describe('Multi-pass Detection', () => {
         // Check that patterns are sorted in descending priority order
         for (let i = 0; i < patterns.length - 1; i++) {
           expect(patterns[i].priority).toBeGreaterThanOrEqual(patterns[i + 1].priority);
-});
-});
-});
+        }
+      }
+    });
 
     it('should respect includeTypes filter', async () => {
       const passes = [{
@@ -56,33 +56,33 @@ describe('Multi-pass Detection', () => {
       expect(credPatterns.every(p =>
         ['API_KEY', 'TOKEN', 'SECRET'].some(type => p.type.includes(type))
       )).toBe(true);
-    }
-  }
+    });
+  });
 
   describe('createSimpleMultiPass', () => {
     it('should create 3-pass configuration by default', async () => {
       const passes = createSimpleMultiPass();
       expect(passes.length).toBe(3);
-});
+    });
 
     it('should prioritize credentials when requested', async () => {
-      const passes = createSimpleMultiPass({ prioritizeCredentials: true }
+      const passes = createSimpleMultiPass({ prioritizeCredentials: true });
       expect(passes[0].name).toBe('credentials');
       expect(passes[0].includeTypes).toContain('API_KEY');
       expect(passes[0].includeTypes).toContain('TOKEN');
-});
+    });
 
     it('should create custom number of passes', async () => {
-      const passes = createSimpleMultiPass({ numPasses: 4 }
+      const passes = createSimpleMultiPass({ numPasses: 4 });
       expect(passes.length).toBe(4);
 
-      const passes5 = createSimpleMultiPass({ numPasses: 5 }
+      const passes5 = createSimpleMultiPass({ numPasses: 5 });
       expect(passes5.length).toBe(5);
 
-      const passes2 = createSimpleMultiPass({ numPasses: 2 }
+      const passes2 = createSimpleMultiPass({ numPasses: 2 });
       expect(passes2.length).toBe(2);
-});
-});
+    });
+  });
 
   describe('mergePassDetections', () => {
     it('should merge detections from multiple passes', async () => {
