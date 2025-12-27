@@ -52,7 +52,7 @@ describe('Streaming API', () => {
       expect(chunks[0].chunkIndex).toBe(0);
       expect(chunks[0].detections.length).toBeGreaterThan(0);
       expect(chunks[0].originalChunk).toBe(text);
-    }
+    });
 
     it('should process large text in multiple chunks', async () => {
       const detector = new OpenRedaction();

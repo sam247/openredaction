@@ -30,7 +30,7 @@ describe('Pattern Detection', () => {
 
       const result = await shield.detect('Please ask Mr James Smith to join');
       expect(result.detections.some(d => d.type === 'NAME')).toBe(true);
-    }
+    });
 
     it('should detect Unicode and hyphenated names', async () => {
       const shield = new OpenRedaction({ patterns: ['NAME'] });

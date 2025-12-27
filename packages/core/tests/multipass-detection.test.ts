@@ -224,7 +224,7 @@ describe('Multi-pass Detection', () => {
 
       // Both should detect the same PII
       expect(result2.detections.length).toBe(result5.detections.length);
-    }
+    });
 
     it('should maintain consistency between single and multi-pass', async () => {
       const singlePass = new OpenRedaction({ enableMultiPass: false });

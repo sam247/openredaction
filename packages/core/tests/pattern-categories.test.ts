@@ -49,7 +49,7 @@ describe('Pattern Category Filtering', () => {
     expect(patternTypes.some(t => t.includes('IP'))).toBe(true); // network
 
     console.log(`Loaded ${patterns.length} patterns from 3 categories`);
-  }
+  });
 
   it('should improve performance by using fewer patterns', async () => {
     const text = 'Email: john@example.com, IP: 192.168.1.1';
