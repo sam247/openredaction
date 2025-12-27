@@ -740,7 +740,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(`Server: ${ip}`);
         expect(result.detections.some(d => d.type === 'IPV4')).toBe(false);
       }
-    }
+    });
 
     it('should detect IPv6 addresses', async () => {
       const shield = new OpenRedaction({ patterns: ['IPV6'] });
