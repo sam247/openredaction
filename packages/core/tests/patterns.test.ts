@@ -271,7 +271,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'NATIONAL_INSURANCE_UK')).toBe(false);
       }
-    }
+    });
 
     it('should detect NHS numbers with mixed separators', async () => {
       const shield = new OpenRedaction({ patterns: ['NHS_NUMBER'] });

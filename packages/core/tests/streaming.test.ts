@@ -241,11 +241,11 @@ describe('Streaming API', () => {
       expect(stats.chunkSize).toBe(1000);
       expect(stats.overlap).toBe(100);
       expect(stats.estimatedMemory).toBeGreaterThan(0);
-    }
+    });
 
     it('should handle edge cases in chunk calculation', async () => {
       const detector = new OpenRedaction();
-      const streaming = new StreamingDetector(detector, { chunkSize: 1000 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 1000 });
 
       // Exact multiple
       const stats1 = streaming.getChunkStats(3000);
