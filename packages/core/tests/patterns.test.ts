@@ -725,7 +725,7 @@ describe('Pattern Detection', () => {
 
       const result = await shield.detect('Server: 203.0.113.42');
       expect(result.detections.some(d => d.type === 'IPV4')).toBe(true);
-    }
+    });
 
     it('should not detect private IPv4 addresses', async () => {
       const shield = new OpenRedaction({ patterns: ['IPV4'] });
