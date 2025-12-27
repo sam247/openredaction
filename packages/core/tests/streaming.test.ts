@@ -360,11 +360,11 @@ describe('Streaming API', () => {
 
       // Max chunk size should be close to configured size + overlap
       expect(maxChunkSize).toBeLessThan(1200); // 1024 + 100 overlap + safety margin
-    }
+    });
 
     it('should process chunks incrementally', async () => {
       const detector = new OpenRedaction();
-      const streaming = new StreamingDetector(detector, { chunkSize: 100 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       const text = 'Email: user@company.com. '.repeat(20);
       const chunkIndices: number[] = [];

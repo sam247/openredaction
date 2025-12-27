@@ -392,7 +392,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'DRIVING_LICENSE_US')).toBe(true);
       }
-    }
+    });
 
     it('should detect tax IDs with dotted or non-breaking separators', async () => {
       const shield = new OpenRedaction({ patterns: ['TAX_ID'] });
