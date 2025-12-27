@@ -224,6 +224,6 @@ describe('Industry-Specific Pattern Detection', () => {
       expect(result.detections.some(d => d.type === 'CLAIM_ID')).toBe(true);
       expect(result.detections.some(d => d.type === 'VIN')).toBe(true);
       expect(result.detections.some(d => d.type === 'TELECOMS_ACCOUNT_NUMBER')).toBe(true);
-    }
-  }
-}
+    });
+  });
+});

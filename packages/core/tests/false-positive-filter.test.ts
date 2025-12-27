@@ -269,7 +269,7 @@ describe('False Positive Filter', () => {
       const redactor = new OpenRedaction();
 
       // With filtering disabled (default), should detect example.com email
-      const result = redactor.detect('Contact test@example.com');
+      const result = await redactor.detect('Contact test@example.com');
       const emailDetections = result.detections.filter(d => d.type === 'EMAIL');
 
       // May or may not detect depending on other filters, but option should be respected

@@ -20,7 +20,7 @@ describe('Pattern Category Filtering', () => {
 
     // Verify significantly fewer patterns than all 571
     expect(patterns.length).toBeLessThan(100);
-  }
+  });
 
   it('should load only financial category patterns', async () => {
     const shield = new OpenRedaction({

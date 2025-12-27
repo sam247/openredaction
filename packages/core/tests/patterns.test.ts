@@ -16,7 +16,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(`Contact: ${email}`);
         expect(result.detections.some(d => d.value === email)).toBe(true);
       }
-    }
+    });
 
     it('should detect names', async () => {
       const shield = new OpenRedaction({ patterns: ['NAME'] });

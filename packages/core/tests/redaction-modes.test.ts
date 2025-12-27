@@ -129,8 +129,8 @@ describe('Redaction Modes', () => {
 
       expect(emails1[0]).toBe(emails1[1]); // Same in one detection
       expect(emails1[0]).toBe(emails2[0]); // Same across detections
-    }
-  }
+    });
+  });
 
   describe('Multiple Values', () => {
     it('should handle multiple PII with consistent mode', async () => {

@@ -175,6 +175,6 @@ describe('Middle East National ID Detection', () => {
       expect(result.detections.some(d => d.type === 'SAUDI_NATIONAL_ID')).toBe(true);
       expect(result.detections.some(d => d.type === 'TURKEY_ID')).toBe(true);
       expect(result.detections.some(d => d.type === 'KUWAIT_CIVIL_ID')).toBe(true);
-    }
-  }
-}
+    });
+  });
+});

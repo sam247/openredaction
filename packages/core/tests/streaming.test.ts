@@ -39,7 +39,7 @@ describe('Streaming API', () => {
   describe('Chunk processing', () => {
     it('should process small text in single chunk', async () => {
       const detector = new OpenRedaction();
-      const streaming = new StreamingDetector(detector, { chunkSize: 1000 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 1000 });
 
       const text = 'Email: john.smith@company.com, Phone: 07700900123';
       const chunks: any[] = [];

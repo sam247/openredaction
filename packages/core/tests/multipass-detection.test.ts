@@ -189,7 +189,7 @@ describe('Multi-pass Detection', () => {
       if (hasGitHubToken) {
         expect(hasGitHubToken).toBe(true);
       }
-    }
+    });
 
     it('should handle mixed priority patterns correctly', async () => {
       const redactor = new OpenRedaction({ enableMultiPass: true });
