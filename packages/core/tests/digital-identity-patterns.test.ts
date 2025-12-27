@@ -262,7 +262,7 @@ describe('Digital Identity Pattern Detection', () => {
 
   describe('Integration: Multiple Digital Identities', () => {
     it('should detect multiple digital identity patterns', async () => {
-      const detector = new OpenRedaction();
+      const detector = new OpenRedaction({ debug: true });
       const text = `
         Discord user: 987654321098765432
         Steam profile: 76561198012345678
@@ -279,6 +279,17 @@ describe('Digital Identity Pattern Detection', () => {
       `;
 
       const result = await detector.detect(text);
+
+      // Debug: Log all detections
+      if (result.detections.length > 0) {
+        console.log('[DEBUG] Detected patterns:', result.detections.map(d => `${d.type}: '${d.value}'`));
+      } else {
+        console.log('[DEBUG] No patterns detected');
+      }
+
+      // Focus on the failing patterns first
+      const nintendoDetected = result.detections.some(d => d.type === 'NINTENDO_FRIEND_CODE');
+      console.log(`[DEBUG] NINTENDO_FRIEND_CODE detected: ${nintendoDetected}`);
 
       // Verify multiple digital identity patterns are detected
       // Check for distinctive patterns with strong context

@@ -362,6 +362,9 @@ export class OpenRedaction {
     for (const pattern of this.patterns) {
       const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
       this.compiledPatterns.set(pattern, regex);
+      if (this.options.debug && (pattern.type === 'NINTENDO_FRIEND_CODE' || pattern.type === 'TELECOMS_ACCOUNT_NUMBER')) {
+        console.log(`[OpenRedaction] Compiled pattern '${pattern.type}': ${regex}`);
+      }
     }
 
     if (this.options.debug) {
@@ -391,6 +394,10 @@ export class OpenRedaction {
         continue;
       }
 
+      if (this.options.debug && (pattern.type === 'NINTENDO_FRIEND_CODE' || pattern.type === 'TELECOMS_ACCOUNT_NUMBER')) {
+        console.log(`[OpenRedaction] Processing pattern '${pattern.type}' with regex: ${regex}`);
+      }
+
       let match: RegExpExecArray | null;
       let matchCount = 0;
       const maxMatches = 10000; // Safety limit to prevent infinite loops
@@ -400,6 +407,9 @@ export class OpenRedaction {
 
       try {
         while ((match = safeExec(regex, text, { timeout: this.options.regexTimeout })) !== null) {
+          if (this.options.debug && (pattern.type === 'NINTENDO_FRIEND_CODE' || pattern.type === 'TELECOMS_ACCOUNT_NUMBER')) {
+            console.log(`[OpenRedaction] Pattern '${pattern.type}' regex match found: '${match[0]}' at position ${match.index}`);
+          }
           matchCount++;
 
           // Safety check for excessive matches
@@ -429,6 +439,9 @@ export class OpenRedaction {
 
         // Skip if this range overlaps with already detected PII (higher priority wins)
         if (this.overlapsWithExisting(startPos, endPos, processedRanges)) {
+          if (this.options.debug) {
+            console.log(`[OpenRedaction] Pattern '${pattern.type}' skipped due to overlap at ${startPos}-${endPos}`);
+          }
           continue;
         }
 
@@ -439,6 +452,9 @@ export class OpenRedaction {
 
         // Run validator if present
         if (pattern.validator && !pattern.validator(value, context)) {
+          if (this.options.debug) {
+            console.log(`[OpenRedaction] Pattern '${pattern.type}' validation failed for value: '${value}' with context: '${context.substring(0, 100)}...'`);
+          }
           continue;
         }
 
@@ -462,6 +478,9 @@ export class OpenRedaction {
             endPos
           );
           confidence = contextAnalysis.confidence;
+          if (this.options.debug && confidence < this.options.confidenceThreshold) {
+            console.log(`[OpenRedaction] Pattern '${pattern.type}' failed context analysis. Value: '${value}', Confidence: ${confidence} < ${this.options.confidenceThreshold}`);
+          }
         }
 
         // Apply context rules for proximity-based confidence adjustment
@@ -498,6 +517,9 @@ export class OpenRedaction {
         const placeholder = this.generatePlaceholder(value, pattern);
 
         // Add detection
+        if (this.options.debug) {
+          console.log(`[OpenRedaction] Pattern '${pattern.type}' detected: '${value}' at position ${startPos}-${endPos}, confidence: ${confidence}`);
+        }
         detections.push({
           type: pattern.type,
           value,

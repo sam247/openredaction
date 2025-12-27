@@ -219,6 +219,16 @@ describe('Industry-Specific Pattern Detection', () => {
 
       const result = await shield.detect(text);
 
+      // Debug: Log all detections
+      if (result.detections.length > 0) {
+        console.log('[DEBUG] Industry patterns detected:', result.detections.map(d => `${d.type}: '${d.value}'`));
+      } else {
+        console.log('[DEBUG] No industry patterns detected');
+      }
+
+      const telecomDetected = result.detections.some(d => d.type === 'TELECOMS_ACCOUNT_NUMBER');
+      console.log(`[DEBUG] TELECOMS_ACCOUNT_NUMBER detected: ${telecomDetected}`);
+
       expect(result.detections.some(d => d.type === 'STUDENT_ID')).toBe(true);
       expect(result.detections.some(d => d.type === 'ORDER_NUMBER')).toBe(true);
       expect(result.detections.some(d => d.type === 'CLAIM_ID')).toBe(true);
