@@ -510,7 +510,7 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('Plan ID: ABC');
       expect(negative.detections.some(d => d.type === 'BENEFITS_PLAN_NUMBER')).toBe(false);
-    }
+    });
 
     it('should detect disciplinary action IDs with separators', async () => {
       const shield = new OpenRedaction({ patterns: ['DISCIPLINARY_ACTION_ID'] });

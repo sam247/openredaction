@@ -210,7 +210,7 @@ describe('Industry-Specific Pattern Detection', () => {
 
   describe('Integration: Multiple industry patterns', () => {
     it('should detect patterns from multiple industries in one text', async () => {
-      const shield = new OpenRedaction({ enableContextAnalysis: false });
+      const shield = new OpenRedaction();
       const text = `
         Student S1234567 ordered item ORD-1234567890.
         Claim ID: CLAIM-12345678 for vehicle VIN: VIN-1HGBH41JXMN109186.
