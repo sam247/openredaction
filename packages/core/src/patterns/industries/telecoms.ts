@@ -12,7 +12,7 @@ export const TELECOMS_ACCOUNT_NUMBER: PIIPattern = {
   type: 'TELECOMS_ACCOUNT_NUMBER',
   regex: /\bACC(?:OUNT)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{8,12})\b/gi,
   placeholder: '[ACCOUNT_{n}]',
-  priority: 85,
+  priority: 90,
   severity: 'high',
   description: 'Telecommunications customer account numbers',
   validator: (_value: string, context: string) => {

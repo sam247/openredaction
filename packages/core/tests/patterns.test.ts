@@ -577,7 +577,7 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('DEA # AB 123 456 0');
       expect(negative.detections.some(d => d.type === 'DEA_NUMBER')).toBe(false);
-    }
+    });
 
     it('should detect medical image references with hyphens and dots', async () => {
       const shield = new OpenRedaction({ patterns: ['MEDICAL_IMAGE_REF'] });
