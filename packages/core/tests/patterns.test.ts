@@ -613,7 +613,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(`Call: ${phone}`);
         expect(result.detections.some(d => d.type === 'PHONE_UK_MOBILE')).toBe(true);
       }
-    }
+    });
 
     it('should detect US phones', async () => {
       const shield = new OpenRedaction({ patterns: ['PHONE_US'] });
