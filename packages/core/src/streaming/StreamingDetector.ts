@@ -69,7 +69,7 @@ export class StreamingDetector {
       const byteOffset = start;
 
       // Detect PII in this chunk
-      const result = this.detector.detect(chunk);
+      const result = await this.detector.detect(chunk);
 
       // Filter out detections we've already processed
       const newDetections = result.detections.filter((detection: PIIDetection) => {

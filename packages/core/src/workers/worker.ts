@@ -24,7 +24,7 @@ parentPort?.on('message', async (task: WorkerTask) => {
         if (!redactor) {
           redactor = new OpenRedaction(task.options);
         }
-        result = redactor.detect(task.text);
+        result = await redactor.detect(task.text);
         break;
 
       case 'document':

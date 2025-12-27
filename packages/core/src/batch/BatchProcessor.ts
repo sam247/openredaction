@@ -50,15 +50,15 @@ export class BatchProcessor {
   /**
    * Process multiple documents sequentially
    */
-  processSequential(
+  async processSequential(
     documents: string[],
     options: BatchOptions = {}
-  ): BatchResult {
+  ): Promise<BatchResult> {
     const startTime = performance.now();
     const results: DetectionResult[] = [];
 
     for (let i = 0; i < documents.length; i++) {
-      const result = this.detector.detect(documents[i]);
+      const result = await this.detector.detect(documents[i]);
       results.push(result);
 
       if (options.onProgress) {
@@ -95,18 +95,16 @@ export class BatchProcessor {
     // Process in batches of maxConcurrency
     for (let i = 0; i < documents.length; i += maxConcurrency) {
       const batch = documents.slice(i, i + maxConcurrency);
-      const batchPromises = batch.map((doc, batchIndex) => {
-        return Promise.resolve().then(() => {
-          const result = this.detector.detect(doc);
-          results[i + batchIndex] = result;
-          completed++;
+      const batchPromises = batch.map(async (doc, batchIndex) => {
+        const result = await this.detector.detect(doc);
+        results[i + batchIndex] = result;
+        completed++;
 
-          if (options.onProgress) {
-            options.onProgress(completed, documents.length);
-          }
+        if (options.onProgress) {
+          options.onProgress(completed, documents.length);
+        }
 
-          return result;
-        });
+        return result;
       });
 
       await Promise.all(batchPromises);
@@ -136,7 +134,7 @@ export class BatchProcessor {
     if (options.parallel) {
       return this.processParallel(documents, options);
     } else {
-      return Promise.resolve(this.processSequential(documents, options));
+      return this.processSequential(documents, options);
     }
   }
 
@@ -152,7 +150,7 @@ export class BatchProcessor {
       const batch = documents.slice(i, i + batchSize);
 
       for (const doc of batch) {
-        const result = this.detector.detect(doc);
+        const result = await this.detector.detect(doc);
         yield result;
       }
     }

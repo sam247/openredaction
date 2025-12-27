@@ -170,6 +170,18 @@ export interface OpenRedactionOptions {
   rbacManager?: IRBACManager;
   /** Predefined role name (admin, analyst, operator, viewer) */
   role?: RoleName;
+  /** Optional AI assist configuration */
+  ai?: AIOptions;
+}
+
+/**
+ * AI assist configuration options
+ */
+export interface AIOptions {
+  /** Enable AI assist mode (default: false) */
+  enabled?: boolean;
+  /** AI endpoint URL (defaults to OPENREDACTION_AI_ENDPOINT env var if available) */
+  endpoint?: string;
 }
 
 /**

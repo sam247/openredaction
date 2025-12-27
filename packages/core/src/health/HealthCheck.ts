@@ -118,7 +118,7 @@ export class HealthChecker {
       // Run test detection if enabled
       if (options.testDetection !== false) {
         const testText = 'Test email: test@example.com';
-        const result = this.detector.detect(testText);
+        const result = await this.detector.detect(testText);
 
         if (!result || !result.detections) {
           return {
@@ -195,7 +195,7 @@ export class HealthChecker {
     try {
       const testText = 'Test: john@example.com, phone: 555-123-4567, IP: 192.168.1.1';
       const start = performance.now();
-      this.detector.detect(testText);
+      await this.detector.detect(testText);
       const duration = performance.now() - start;
 
       if (duration > threshold * 2) {

@@ -9,7 +9,8 @@ import {
   OpenRedactionOptions,
   IAuditLogger,
   IMetricsCollector,
-  IRBACManager
+  IRBACManager,
+  PresetName
 } from './types';
 import { InMemoryAuditLogger } from './audit';
 import { InMemoryMetricsCollector } from './metrics';
@@ -36,6 +37,7 @@ import {
   createOptimizationDisabledError
 } from './errors/OpenRedactionError.js';
 import { safeExec, validatePattern, RegexTimeoutError } from './utils/safe-regex.js';
+import { getAIEndpoint, callAIDetect, mergeAIEntities } from './utils/ai-assist.js';
 
 /**
  * Main OpenRedaction class for detecting and redacting PII
@@ -56,7 +58,7 @@ export class OpenRedaction {
     whitelist: string[];
     deterministic: boolean;
     redactionMode: RedactionMode;
-    preset?: 'gdpr' | 'hipaa' | 'ccpa';
+    preset?: PresetName;
     enableContextAnalysis: boolean;
     confidenceThreshold: number;
     enableFalsePositiveFilter: boolean;
@@ -70,6 +72,7 @@ export class OpenRedaction {
     debug: boolean;
     maxInputSize: number; // Maximum input size in bytes (default: 10MB)
     regexTimeout: number; // Regex execution timeout in ms (default: 100ms)
+    ai?: { enabled?: boolean; endpoint?: string };
   };
   private multiPassConfig?: DetectionPass[];
   private resultCache?: LRUCache<string, DetectionResult>;
@@ -576,8 +579,9 @@ export class OpenRedaction {
 
   /**
    * Detect PII in text
+   * Now async to support optional AI assist
    */
-  detect(text: string): DetectionResult {
+  async detect(text: string): Promise<DetectionResult> {
     // Check RBAC permission
     if (this.rbacManager && !this.rbacManager.hasPermission('detection:detect')) {
       throw new Error('[OpenRedaction] Permission denied: detection:detect required');
@@ -657,6 +661,42 @@ export class OpenRedaction {
     } else {
       // Single-pass detection (original behavior)
       detections = this.processPatterns(text, this.patterns, processedRanges);
+    }
+
+    // AI Assist: Call AI endpoint if enabled
+    if (this.options.ai?.enabled) {
+      const aiEndpoint = getAIEndpoint(this.options.ai);
+      if (aiEndpoint) {
+        try {
+          if (this.options.debug) {
+            console.log('[OpenRedaction] AI assist enabled, calling AI endpoint...');
+          }
+          
+          const aiEntities = await callAIDetect(text, aiEndpoint, this.options.debug);
+          
+          if (aiEntities && aiEntities.length > 0) {
+            if (this.options.debug) {
+              console.log(`[OpenRedaction] AI returned ${aiEntities.length} additional entities`);
+            }
+            
+            // Merge AI entities with regex detections (regex takes precedence on conflicts)
+            detections = mergeAIEntities(detections, aiEntities, text);
+            
+            if (this.options.debug) {
+              console.log(`[OpenRedaction] After AI merge: ${detections.length} total detections`);
+            }
+          } else if (this.options.debug) {
+            console.log('[OpenRedaction] AI endpoint returned no additional entities');
+          }
+        } catch (error) {
+          // Silently fall back to regex-only - AI must never break core functionality
+          if (this.options.debug) {
+            console.warn(`[OpenRedaction] AI assist failed, using regex-only: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
+        }
+      } else if (this.options.debug) {
+        console.warn('[OpenRedaction] AI assist enabled but no endpoint configured. Set ai.endpoint or OPENREDACTION_AI_ENDPOINT env var.');
+      }
     }
 
     // Sort detections by position (descending) for proper replacement
@@ -868,13 +908,13 @@ export class OpenRedaction {
   /**
    * Get severity-based scan results
    */
-  scan(text: string): {
+  async scan(text: string): Promise<{
     high: PIIDetection[];
     medium: PIIDetection[];
     low: PIIDetection[];
     total: number;
-  } {
-    const result = this.detect(text);
+  }> {
+    const result = await this.detect(text);
 
     return {
       high: result.detections.filter(d => d.severity === 'high'),
@@ -1185,7 +1225,7 @@ export class OpenRedaction {
     const extractionTime = Math.round((extractionEnd - extractionStart) * 100) / 100;
 
     // Detect PII in extracted text
-    const detection = this.detect(text);
+    const detection = await this.detect(text);
 
     return {
       text,

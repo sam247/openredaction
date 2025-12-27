@@ -160,11 +160,11 @@ export class XlsxProcessor {
   /**
    * Detect PII in XLSX data
    */
-  detect(
+  async detect(
     buffer: Buffer,
     detector: OpenRedaction,
     options?: XlsxProcessorOptions
-  ): XlsxDetectionResult {
+  ): Promise<XlsxDetectionResult> {
     if (!this.xlsx) {
       throw new Error(
         '[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx'
@@ -185,7 +185,7 @@ export class XlsxProcessor {
       const sheetName = sheetNames[sheetIndex];
       const sheet = workbook.Sheets[sheetName];
 
-      const sheetResult = this.detectSheet(
+      const sheetResult = await this.detectSheet(
         sheet,
         sheetName,
         sheetIndex,
@@ -233,13 +233,13 @@ export class XlsxProcessor {
   /**
    * Detect PII in a single sheet
    */
-  private detectSheet(
+  private async detectSheet(
     sheet: any,
     sheetName: string,
     sheetIndex: number,
     detector: OpenRedaction,
     options: Required<Omit<XlsxProcessorOptions, 'sheets' | 'sheetIndices' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns' | 'hasHeader'>> & Partial<Pick<XlsxProcessorOptions, 'sheets' | 'sheetIndices' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns' | 'hasHeader'>>
-  ): SheetDetectionResult {
+  ): Promise<SheetDetectionResult> {
     // Get sheet range
     const range = this.xlsx.utils.decode_range(sheet['!ref'] || 'A1');
     const startRow = range.s.r;
@@ -348,7 +348,7 @@ export class XlsxProcessor {
         }
 
         // Detect PII
-        const result = detector.detect(cellValue);
+        const result = await detector.detect(cellValue);
 
         if (result.detections.length > 0) {
           // Boost confidence if column name indicates PII

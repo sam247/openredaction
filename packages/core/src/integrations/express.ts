@@ -58,7 +58,7 @@ export function openredactionMiddleware(options: OpenRedactionMiddlewareOptions 
   // Create detector with only OpenRedactionOptions
   const detector = new OpenRedaction(detectorOptions);
 
-  return (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     // Skip if route matches skip pattern
     if (skipRoutes.some(pattern => pattern.test(req.path))) {
       return next();
@@ -91,7 +91,7 @@ export function openredactionMiddleware(options: OpenRedactionMiddlewareOptions 
       const redactedBody: any = { ...req.body };
 
       for (const { field, value } of textsToCheck) {
-        const result = detector.detect(value);
+        const result = await detector.detect(value);
 
         if (result.detections.length > 0) {
           totalDetections += result.detections.length;
@@ -160,7 +160,7 @@ export function openredactionMiddleware(options: OpenRedactionMiddlewareOptions 
 export function detectPII(options: OpenRedactionOptions = {}) {
   const detector = new OpenRedaction(options);
 
-  return (req: Request, res: Response): void => {
+  return async (req: Request, res: Response): Promise<void> => {
     const text = req.body?.text || req.query.text as string;
 
     if (!text) {
@@ -171,15 +171,22 @@ export function detectPII(options: OpenRedactionOptions = {}) {
       return;
     }
 
-    const result = detector.detect(text);
+    try {
+      const result = await detector.detect(text);
 
-    res.json({
-      detected: result.detections.length > 0,
-      count: result.detections.length,
-      detections: result.detections,
-      redacted: result.redacted,
-      stats: result.stats
-    });
+      res.json({
+        detected: result.detections.length > 0,
+        count: result.detections.length,
+        detections: result.detections,
+        redacted: result.redacted,
+        stats: result.stats
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: 'Detection failed',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
   };
 }
 
@@ -189,7 +196,7 @@ export function detectPII(options: OpenRedactionOptions = {}) {
 export function generateReport(options: OpenRedactionOptions = {}) {
   const detector = new OpenRedaction(options);
 
-  return (req: Request, res: Response): void => {
+  return async (req: Request, res: Response): Promise<void> => {
     const text = req.body?.text;
     const format = (req.body?.format || req.query.format || 'json') as string;
 
@@ -200,7 +207,8 @@ export function generateReport(options: OpenRedactionOptions = {}) {
       return;
     }
 
-    const result = detector.detect(text);
+    try {
+      const result = await detector.detect(text);
 
     if (format === 'html') {
       const html = detector.generateReport(result, {
@@ -223,6 +231,12 @@ export function generateReport(options: OpenRedactionOptions = {}) {
         detections: result.detections,
         redacted: result.redacted,
         stats: result.stats
+      });
+    }
+    } catch (error) {
+      res.status(500).json({
+        error: 'Report generation failed',
+        message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   };

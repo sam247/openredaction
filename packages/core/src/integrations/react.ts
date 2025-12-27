@@ -32,12 +32,17 @@ export function useOpenRedaction(options?: OpenRedactionOptions) {
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
 
-  const detect = useCallback((text: string): DetectionResult => {
+  const detect = useCallback(async (text: string): Promise<DetectionResult> => {
     setIsDetecting(true);
-    const detection = detector.detect(text);
-    setResult(detection);
-    setIsDetecting(false);
-    return detection;
+    try {
+      const detection = await detector.detect(text);
+      setResult(detection);
+      setIsDetecting(false);
+      return detection;
+    } catch (error) {
+      setIsDetecting(false);
+      throw error;
+    }
   }, [detector]);
 
   const clear = useCallback(() => {
@@ -89,10 +94,14 @@ export function usePIIDetector(
     }
 
     setIsDetecting(true);
-    const timer = setTimeout(() => {
-      const detection = detector.detect(text);
-      setResult(detection);
-      setIsDetecting(false);
+    const timer = setTimeout(async () => {
+      try {
+        const detection = await detector.detect(text);
+        setResult(detection);
+        setIsDetecting(false);
+      } catch (error) {
+        setIsDetecting(false);
+      }
     }, debounce);
 
     return () => {
@@ -141,7 +150,7 @@ export function useFormFieldValidator(options?: OpenRedactionOptions & {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DetectionResult | null>(null);
 
-  const validate = useCallback((inputValue: string) => {
+  const validate = useCallback(async (inputValue: string): Promise<boolean> => {
     setValue(inputValue);
 
     if (!inputValue) {
@@ -150,13 +159,14 @@ export function useFormFieldValidator(options?: OpenRedactionOptions & {
       return true;
     }
 
-    const detection = detector.detect(inputValue);
-    setResult(detection);
+    try {
+      const detection = await detector.detect(inputValue);
+      setResult(detection);
 
-    // Filter by types if specified
-    const relevantDetections = types.length > 0
-      ? detection.detections.filter((d) => types.includes(d.type))
-      : detection.detections;
+      // Filter by types if specified
+      const relevantDetections = types.length > 0
+        ? detection.detections.filter((d) => types.includes(d.type))
+        : detection.detections;
 
     if (relevantDetections.length > 0) {
       if (failOnPII) {
@@ -172,6 +182,10 @@ export function useFormFieldValidator(options?: OpenRedactionOptions & {
 
     setError(null);
     return true;
+    } catch (error) {
+      setError('Validation failed');
+      return false;
+    }
   }, [detector, failOnPII, types, onPIIDetected]);
 
   const getFieldProps = useCallback(() => ({
@@ -218,7 +232,7 @@ export function useBatchDetector(options?: OpenRedactionOptions) {
     const detections: DetectionResult[] = [];
 
     for (let i = 0; i < texts.length; i++) {
-      const result = detector.detect(texts[i]);
+      const result = await detector.detect(texts[i]);
       detections.push(result);
       setProgress(((i + 1) / texts.length) * 100);
 
@@ -282,9 +296,13 @@ export function useAutoRedact(options?: OpenRedactionOptions & { debounce?: numb
       return;
     }
 
-    const timer = setTimeout(() => {
-      const detection = detector.detect(text);
-      setResult(detection);
+    const timer = setTimeout(async () => {
+      try {
+        const detection = await detector.detect(text);
+        setResult(detection);
+      } catch (error) {
+        // Silently fail
+      }
     }, debounce);
 
     return () => clearTimeout(timer);
