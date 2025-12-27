@@ -26,7 +26,7 @@ describe('Batch Processing', () => {
   });
 
   describe('Sequential processing', () => {
-    it('should process multiple documents sequentially', () => {
+    it('should process multiple documents sequentially', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
@@ -36,7 +36,7 @@ describe('Batch Processing', () => {
         'Credit Card: 4532 0151 1283 0366'
       ];
 
-      const result = batch.processSequential(documents);
+      const result = await batch.processSequential(documents);
 
       expect(result.results.length).toBe(3);
       expect(result.stats.totalDocuments).toBe(3);
@@ -45,14 +45,14 @@ describe('Batch Processing', () => {
       expect(result.stats.avgTimePerDocument).toBeGreaterThan(0);
     });
 
-    it('should call progress callback', () => {
+    it('should call progress callback', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = ['Email: test1@business.co.uk', 'Email: test2@business.co.uk'];
       const progressCalls: Array<{completed: number; total: number}> = [];
 
-      batch.processSequential(documents, {
+      await batch.processSequential(documents, {
         onProgress: (completed, total) => {
           progressCalls.push({ completed, total });
         }
@@ -63,18 +63,18 @@ describe('Batch Processing', () => {
       expect(progressCalls[1]).toEqual({ completed: 2, total: 2 });
     });
 
-    it('should handle empty array', () => {
+    it('should handle empty array', async () => {
       const detector = new OpenRedaction();
       const batch = new BatchProcessor(detector);
 
-      const result = batch.processSequential([]);
+      const result = await batch.processSequential([]);
 
       expect(result.results.length).toBe(0);
       expect(result.stats.totalDocuments).toBe(0);
       expect(result.stats.totalDetections).toBe(0);
     });
 
-    it('should handle documents with no PII', () => {
+    it('should handle documents with no PII', async () => {
       const detector = new OpenRedaction();
       const batch = new BatchProcessor(detector);
 
@@ -84,7 +84,7 @@ describe('Batch Processing', () => {
         'Nothing sensitive here'
       ];
 
-      const result = batch.processSequential(documents);
+      const result = await batch.processSequential(documents);
 
       expect(result.results.length).toBe(3);
       expect(result.stats.totalDetections).toBe(0);
@@ -203,7 +203,7 @@ describe('Batch Processing', () => {
   });
 
   describe('Aggregated statistics', () => {
-    it('should provide aggregated stats', () => {
+    it('should provide aggregated stats', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
@@ -213,7 +213,7 @@ describe('Batch Processing', () => {
         'Email: admin@business.co.uk'
       ];
 
-      const batchResult = batch.processSequential(documents);
+      const batchResult = await batch.processSequential(documents);
       const stats = batch.getAggregatedStats(batchResult.results);
 
       expect(stats.totalDetections).toBeGreaterThan(0);
@@ -222,7 +222,7 @@ describe('Batch Processing', () => {
       expect(stats.detectionsByType['EMAIL']).toBeGreaterThan(0);
     });
 
-    it('should calculate average confidence', () => {
+    it('should calculate average confidence', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: true });
       const batch = new BatchProcessor(detector);
 
@@ -231,14 +231,14 @@ describe('Batch Processing', () => {
         'Email: admin@business.co.uk'
       ];
 
-      const batchResult = batch.processSequential(documents);
+      const batchResult = await batch.processSequential(documents);
       const stats = batch.getAggregatedStats(batchResult.results);
 
       expect(stats.avgConfidence).toBeGreaterThan(0);
       expect(stats.avgConfidence).toBeLessThanOrEqual(1);
     });
 
-    it('should group by severity', () => {
+    it('should group by severity', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
@@ -247,7 +247,7 @@ describe('Batch Processing', () => {
         'Credit Card: 4532 0151 1283 0366'      // high
       ];
 
-      const batchResult = batch.processSequential(documents);
+      const batchResult = await batch.processSequential(documents);
       const stats = batch.getAggregatedStats(batchResult.results);
 
       expect(stats.detectionsBySeverity['high']).toBeGreaterThan(0);
@@ -255,14 +255,14 @@ describe('Batch Processing', () => {
   });
 
   describe('Performance', () => {
-    it('should handle large batches efficiently', () => {
+    it('should handle large batches efficiently', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
       const documents = Array(1000).fill('Email: test@business.co.uk');
 
       const startTime = performance.now();
-      const result = batch.processSequential(documents);
+      const result = await batch.processSequential(documents);
       const duration = performance.now() - startTime;
 
       expect(result.results.length).toBe(1000);
@@ -271,7 +271,7 @@ describe('Batch Processing', () => {
   });
 
   describe('Integration with caching', () => {
-    it('should benefit from caching for duplicate documents', () => {
+    it('should benefit from caching for duplicate documents', async () => {
       const detector = new OpenRedaction({
         enableCache: true,
         enableContextAnalysis: false
@@ -281,7 +281,7 @@ describe('Batch Processing', () => {
       // Many duplicate documents
       const documents = Array(100).fill('Email: test@business.co.uk, Phone: 07700900123');
 
-      const result = batch.processSequential(documents);
+      const result = await batch.processSequential(documents);
 
       expect(result.results.length).toBe(100);
       // With caching, this should be very fast
@@ -308,7 +308,7 @@ describe('Batch Processing', () => {
       expect(result.stats.totalDetections).toBeGreaterThan(3); // At least 4 documents with PII
     });
 
-    it('should provide useful statistics for compliance reporting', () => {
+    it('should provide useful statistics for compliance reporting', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const batch = new BatchProcessor(detector);
 
@@ -318,7 +318,7 @@ describe('Batch Processing', () => {
         'Employee: staff@customer.com, SSN: 123-45-6789'
       ];
 
-      const result = batch.processSequential(documents);
+      const result = await batch.processSequential(documents);
       const stats = batch.getAggregatedStats(result.results);
 
       // Should have detected various PII types
