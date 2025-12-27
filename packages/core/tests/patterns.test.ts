@@ -587,7 +587,7 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('MRI results negative for fracture');
       expect(negative.detections.some(d => d.type === 'MEDICAL_IMAGE_REF')).toBe(false);
-    }
+    });
 
     it('should detect biometric identifiers with separators and reject short tokens', async () => {
       const shield = new OpenRedaction({ patterns: ['BIOMETRIC_ID'] });
