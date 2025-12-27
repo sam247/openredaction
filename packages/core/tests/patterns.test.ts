@@ -406,7 +406,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'TAX_ID')).toBe(true);
       }
-    }
+    });
 
     it('should detect travel and immigration document numbers with spacing', async () => {
       const shield = new OpenRedaction({ patterns: ['TRAVEL_DOCUMENT_NUMBER', 'IMMIGRATION_NUMBER'] });
