@@ -210,14 +210,12 @@ describe('Industry-Specific Pattern Detection', () => {
 
   describe('Integration: Multiple industry patterns', () => {
     it('should detect patterns from multiple industries in one text', async () => {
-      const shield = new OpenRedaction();
+      const shield = new OpenRedaction({ debug: true });
       const text = `
         Student S1234567 ordered item ORD-1234567890.
         Claim ID: CLAIM-12345678 for vehicle VIN: VIN-1HGBH41JXMN109186.
         Customer account number ACC-123456789 for telecom service.
       `;
-
-      const shield = new OpenRedaction({ debug: true });
       const result = await shield.detect(text);
 
       // Debug: Log all detections

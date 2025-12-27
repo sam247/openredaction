@@ -567,7 +567,7 @@ describe('Pattern Detection', () => {
 
       const invalid = await shield.detect('npi 1000 0000 00');
       expect(invalid.detections.some(d => d.type === 'NPI_NUMBER')).toBe(false);
-    }
+    });
 
     it('should detect DEA numbers with spacing and checksum validation', async () => {
       const shield = new OpenRedaction({ patterns: ['DEA_NUMBER'] });
