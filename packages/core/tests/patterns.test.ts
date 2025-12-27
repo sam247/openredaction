@@ -701,7 +701,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(`Address: ${address}`);
         expect(result.detections.some(d => d.type === 'ADDRESS_STREET')).toBe(true);
       }
-    }
+    });
 
     it('should parse multiple date formats for DOB', async () => {
       const shield = new OpenRedaction({ patterns: ['DATE_OF_BIRTH'] });
