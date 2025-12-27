@@ -214,7 +214,7 @@ async function main() {
   }
 
   if (command === 'detect') {
-    const result = shield.detect(text);
+    const result = await shield.detect(text);
 
     if (jsonOutput) {
       console.log(JSON.stringify(result, null, 2));

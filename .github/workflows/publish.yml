@@ -1,0 +1,60 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./packages/core
+
+      - name: Run tests
+        run: npm test
+        working-directory: ./packages/core
+
+      - name: Build package
+        run: npm run build
+        working-directory: ./packages/core
+
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Published version: $VERSION"
+
+      - name: Verify version matches package.json
+        run: |
+          TAG_VERSION="${{ steps.get_version.outputs.version }}"
+          PACKAGE_VERSION=$(node -p "require('./packages/core/package.json').version")
+          if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
+            echo "Error: Tag version ($TAG_VERSION) does not match package.json version ($PACKAGE_VERSION)"
+            exit 1
+          fi
+          echo "Version match confirmed: $TAG_VERSION"
+
+      - name: Publish to npm
+        run: npm publish
+        working-directory: ./packages/core
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+

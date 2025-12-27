@@ -79,18 +79,22 @@ export class JsonProcessor {
   /**
    * Detect PII in JSON data
    */
-  detect(
+  async detect(
     data: any,
     detector: OpenRedaction,
     options?: JsonProcessorOptions
-  ): JsonDetectionResult {
+  ): Promise<JsonDetectionResult> {
     const opts = { ...this.defaultOptions, ...options };
     const pathsDetected: string[] = [];
     const matchesByPath: Record<string, PIIDetection[]> = {};
     const allDetections: PIIDetection[] = [];
 
     // Traverse JSON and collect all text values with paths
+    // Note: traverse callback needs to be async, but traverse itself is sync
+    // We'll collect promises and await them
+    const promises: Promise<void>[] = [];
     this.traverse(data, '', opts, (path, value, key) => {
+      promises.push((async () => {
       // Check if path should be skipped
       if (this.shouldSkip(path, opts.skipPaths)) {
         return;
@@ -115,7 +119,7 @@ export class JsonProcessor {
 
       // Scan keys if enabled
       if (opts.scanKeys && key) {
-        const keyResult = detector.detect(key);
+        const keyResult = await detector.detect(key);
         if (keyResult.detections.length > 0) {
           const keyPath = `${path}.__key__`;
           matchesByPath[keyPath] = keyResult.detections;
@@ -126,7 +130,7 @@ export class JsonProcessor {
 
       // Scan value
       const valueStr = String(value);
-      const result = detector.detect(valueStr);
+      const result = await detector.detect(valueStr);
 
       if (result.detections.length > 0) {
         // Boost confidence if key indicates PII
@@ -140,7 +144,11 @@ export class JsonProcessor {
         pathsDetected.push(path);
         allDetections.push(...boostedDetections);
       }
+      })());
     });
+    
+    // Wait for all async operations to complete
+    await Promise.all(promises);
 
     // Build redacted text
     const original = JSON.stringify(data);
@@ -420,13 +428,13 @@ export class JsonProcessor {
   /**
    * Detect PII in JSON Lines format
    */
-  detectJsonLines(
+  async detectJsonLines(
     input: Buffer | string,
     detector: OpenRedaction,
     options?: JsonProcessorOptions
-  ): JsonDetectionResult[] {
+  ): Promise<JsonDetectionResult[]> {
     const documents = this.parseJsonLines(input);
-    return documents.map(doc => this.detect(doc, detector, options));
+    return Promise.all(documents.map(doc => this.detect(doc, detector, options)));
   }
 }
 

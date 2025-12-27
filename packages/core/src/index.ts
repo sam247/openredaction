@@ -11,6 +11,7 @@ export type {
   PIIMatch,
   DetectionResult,
   OpenRedactionOptions,
+  AIOptions,
   PresetName,
   RedactionMode,
   Validator,
@@ -400,3 +401,7 @@ export {
 export type {
   SafeRegexOptions
 } from './utils/safe-regex';
+
+// AI Assist utilities
+export { getAIEndpoint, callAIDetect, mergeAIEntities, validateAIEntity, detectionsOverlap, convertAIEntityToDetection } from './utils/ai-assist';
+export type { AIEntity, AIResponse } from './utils/ai-assist';

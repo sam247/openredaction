@@ -3,7 +3,7 @@
  * Supports HTTP webhooks with retry logic, circuit breaker, and event filtering
  */
 
-import type { PIIDetection, DetectionResult } from '../types';
+import type { DetectionResult } from '../types';
 
 /**
  * Webhook event types
@@ -152,7 +152,7 @@ export class WebhookManager {
   // Circuit breaker configuration
   private readonly FAILURE_THRESHOLD = 5;
   private readonly RESET_TIMEOUT_MS = 60000; // 1 minute
-  private readonly HALF_OPEN_MAX_REQUESTS = 1;
+  // private readonly HALF_OPEN_MAX_REQUESTS = 1; // Reserved for future use
 
   constructor(options?: { maxHistorySize?: number }) {
     this.maxHistorySize = options?.maxHistorySize ?? 1000;
