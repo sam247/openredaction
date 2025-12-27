@@ -159,7 +159,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'BANK_ACCOUNT_UK')).toBe(false);
       }
-    }
+    });
 
     it('should detect UK sort codes', async () => {
       const shield = new OpenRedaction({ patterns: ['SORT_CODE_UK'] });

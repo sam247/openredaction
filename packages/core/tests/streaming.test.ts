@@ -141,17 +141,17 @@ describe('Streaming API', () => {
 
       for await (const chunk of streaming.processStream(text)) {
         chunks.push(chunk);
-});
+      }
 
       expect(chunks[0].originalChunk).toBe(text);
       expect(chunks[0].originalChunk).toContain('user@company.com');
-    }
-  }
+    });
+  });
 
   describe('Complete processing', () => {
     it('should process and return complete result', async () => {
       const detector = new OpenRedaction();
-      const streaming = new StreamingDetector(detector, { chunkSize: 100 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       const text = `
         Email: john.smith@company.com
