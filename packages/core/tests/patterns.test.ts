@@ -416,7 +416,7 @@ describe('Pattern Detection', () => {
 
       const immigration = await shield.detect('A-number: A12 345 678');
       expect(immigration.detections.some(d => d.type === 'IMMIGRATION_NUMBER')).toBe(true);
-    }
+    });
 
     it('should detect visa numbers and border crossing cards with separators', async () => {
       const shield = new OpenRedaction({ patterns: ['VISA_NUMBER', 'BORDER_CROSSING_CARD'] });

@@ -375,6 +375,6 @@ describe('Streaming API', () => {
 
       // Chunks should be processed in order
       expect(chunkIndices).toEqual([...chunkIndices].sort((a, b) => a - b));
-    }
-  }
-}
+    });
+  });
+};
