@@ -269,8 +269,12 @@ export const NINTENDO_FRIEND_CODE: PIIPattern = {
     const digits = value.replace(/\D/g, '');
     if (digits.length !== 12) return false;
 
-    // Context validation
-    return /nintendo|switch|friend[- ]?code|gaming/i.test(context);
+    // Context validation - allow if context includes gaming keywords or if value is in SW-XXXX-XXXX-XXXX format
+    const hasContext = /nintendo|switch|friend[- ]?code|gaming/i.test(context);
+    const hasFormat = /^SW[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}$/i.test(value);
+    
+    // If it's in the correct format, allow it even without explicit context (format is distinctive enough)
+    return hasContext || hasFormat;
   }
 };
 

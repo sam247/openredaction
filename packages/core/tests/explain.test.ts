@@ -285,7 +285,7 @@ describe('Explain API', () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
-      const text = 'Contact me at: not-an-email';
+      const text = 'Reach out via: not-an-email';
       const explanation = await explainAPI.explain(text);
       const suggestion = await explainAPI.suggestWhy(text, 'EMAIL');
 
