@@ -75,7 +75,7 @@ export class BatchProcessor {
         totalDocuments: documents.length,
         totalDetections: results.reduce((sum, r) => sum + r.detections.length, 0),
         totalTime,
-        avgTimePerDocument: totalTime / documents.length
+        avgTimePerDocument: documents.length > 0 ? totalTime / documents.length : 0
       }
     };
   }
@@ -119,7 +119,7 @@ export class BatchProcessor {
         totalDocuments: documents.length,
         totalDetections: results.reduce((sum, r) => sum + r.detections.length, 0),
         totalTime,
-        avgTimePerDocument: totalTime / documents.length
+        avgTimePerDocument: documents.length > 0 ? totalTime / documents.length : 0
       }
     };
   }
