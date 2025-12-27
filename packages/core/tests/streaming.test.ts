@@ -68,7 +68,7 @@ describe('Streaming API', () => {
       expect(chunks.length).toBeGreaterThan(1);
       expect(chunks[0].chunkIndex).toBe(0);
       expect(chunks[1].chunkIndex).toBe(1);
-    }
+    });
 
     it('should handle overlapping patterns correctly', async () => {
       const detector = new OpenRedaction();

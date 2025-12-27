@@ -175,7 +175,7 @@ describe('Multi-pass Detection', () => {
 
     it('should prioritize credentials in multi-pass mode', async () => {
       const redactor = new OpenRedaction({ enableMultiPass: true });
-      const text = 'GitHub token: ghp_1234567890abcdefghij1234567890abcd and email user@company.com';
+      const text = 'GitHub token: ghp_1234567890abcdefghij1234567890abcdefgh and email user@company.com';
       const result = await redactor.detect(text);
 
       expect(result.detections.length).toBeGreaterThan(0);

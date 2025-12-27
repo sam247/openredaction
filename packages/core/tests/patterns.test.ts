@@ -70,7 +70,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'NAME')).toBe(false);
       }
-    }
+    });
 
     it('should avoid matching short generic tokens as names', async () => {
       const shield = new OpenRedaction({ patterns: ['NAME'] });

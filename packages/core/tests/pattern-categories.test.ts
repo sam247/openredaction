@@ -121,5 +121,5 @@ describe('Pattern Category Filtering', () => {
     // Should have both built-in (from category) and custom pattern types
     expect(patternTypes.some(t => t === 'EMAIL')).toBe(true);
     expect(patternTypes.some(t => t === 'CUSTOM_ID')).toBe(true);
-  }
-}
+  });
+});
