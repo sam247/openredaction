@@ -214,7 +214,7 @@ describe('Industry-Specific Pattern Detection', () => {
       const text = `
         Student S1234567 ordered item ORD-1234567890.
         Claim ID: CLAIM-12345678 for vehicle VIN: VIN-1HGBH41JXMN109186.
-        Account number ACC-123456789 for customer service.
+        Customer account ACC-123456789 for service.
       `;
 
       const result = await shield.detect(text);
