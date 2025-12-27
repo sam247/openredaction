@@ -310,11 +310,11 @@ describe('Streaming API', () => {
 
       const emails = result.detections.filter(d => d.type === 'EMAIL');
       expect(emails.length).toBe(1);
-    }
+    });
 
     it('should work with context analysis enabled', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: true });
-      const streaming = new StreamingDetector(detector, { chunkSize: 200 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 200 });
 
       const text = `
         Real email: john.smith@company.com
