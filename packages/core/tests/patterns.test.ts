@@ -747,7 +747,7 @@ describe('Pattern Detection', () => {
 
       const result = await shield.detect('Server: 2001:0db8:85a3:0000:0000:8a2e:0370:7334');
       expect(result.detections.some(d => d.type === 'IPV6')).toBe(true);
-    }
+    });
 
     it('should detect MAC addresses', async () => {
       const shield = new OpenRedaction({ patterns: ['MAC_ADDRESS'] });
@@ -761,7 +761,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(`Device: ${mac}`);
         expect(result.detections.some(d => d.type === 'MAC_ADDRESS')).toBe(true);
       }
-    }
+    });
 
     it('should detect URLs with credentials', async () => {
       const shield = new OpenRedaction({ patterns: ['URL_WITH_AUTH'] });
@@ -786,7 +786,7 @@ describe('Pattern Detection', () => {
       const result = await shield.detect(text);
       expect(result.detections.length).toBeGreaterThan(0);
       expect(result.detections.some(d => d.type === 'EMAIL')).toBe(true);
-    }
+    });
 
     it('should handle financial document', async () => {
       const shield = new OpenRedaction();
