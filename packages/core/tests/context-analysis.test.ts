@@ -241,32 +241,34 @@ describe('Context Analysis', () => {
       }
     });
 
-    it('should include confidence scores when enabled', () => {
+    it('should include confidence scores when enabled', async () => {
       const redactor = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.3
       });
 
-      const result = redactor.detect('Contact john@example.com for information');
+      const result = await redactor.detect('Contact john@example.com for information');
 
-      if (result.detections.length > 0) {
+      if (result.detections && result.detections.length > 0) {
         expect(result.detections[0].confidence).toBeGreaterThan(0);
         expect(result.detections[0].confidence).toBeLessThanOrEqual(1);
       }
     });
 
-    it('should pass high-confidence detections', () => {
+    it('should pass high-confidence detections', async () => {
       const redactor = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.5
       });
 
-      const result = redactor.detect('Dear Mr. Smith, please call me at 020-1234-5678');
+      const result = await redactor.detect('Dear Mr. Smith, please call me at 020-1234-5678');
 
-      expect(result.detections.length).toBeGreaterThan(0);
-      result.detections.forEach(detection => {
-        expect(detection.confidence).toBeGreaterThanOrEqual(0.5);
-      });
+      expect(result.detections && result.detections.length).toBeGreaterThan(0);
+      if (result.detections) {
+        result.detections.forEach(detection => {
+          expect(detection.confidence).toBeGreaterThanOrEqual(0.5);
+        });
+      }
     });
   });
 });
