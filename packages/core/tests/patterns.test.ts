@@ -356,7 +356,7 @@ describe('Pattern Detection', () => {
 
       const result = await shield.detect(mrz);
       expect(result.detections.some(d => d.type === 'VISA_MRZ')).toBe(true);
-    }
+    });
 
     it('should detect UK driving licenses', async () => {
       const shield = new OpenRedaction({ patterns: ['DRIVING_LICENSE_UK'] });

@@ -332,7 +332,7 @@ describe('Streaming API', () => {
 
     it('should work with caching enabled', async () => {
       const detector = new OpenRedaction({ enableCache: true });
-      const streaming = new StreamingDetector(detector, { chunkSize: 100 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       const text = 'Email: user@company.com. '.repeat(10);
 
