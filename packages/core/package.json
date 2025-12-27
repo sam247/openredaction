@@ -1,7 +1,6 @@
 {
-  "name": "openredaction",
+  "name": "open-redaction",
   "version": "1.0.5",
-  "description": "Production-ready PII detection and redaction library with 558 patterns, document processing, OCR, RBAC, and enterprise features",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -79,10 +78,5 @@
   },
   "engines": {
     "node": ">=20.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sam247/openredaction.git",
-    "directory": "packages/core"
   }
 }
