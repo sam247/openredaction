@@ -294,11 +294,11 @@ describe('Streaming API', () => {
       expect(result.detections.length).toBeGreaterThan(0);
       expect(result.redacted).toContain('测试');
       expect(result.redacted).toContain('🎉');
-});
+    });
 
     it('should handle very long documents', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
-      const streaming = new StreamingDetector(detector, { chunkSize: 100 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       // Create a long document with PII in the middle
       const prefix = 'This is a very long document with lots of text. '.repeat(20);

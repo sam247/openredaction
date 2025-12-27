@@ -319,7 +319,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'PASSPORT_US')).toBe(true);
       }
-    }
+    });
 
     it('should detect MRZ TD1 blocks with Windows and Unix newlines', async () => {
       const shield = new OpenRedaction({ patterns: ['PASSPORT_MRZ_TD1'] });
