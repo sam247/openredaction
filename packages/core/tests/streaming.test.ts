@@ -258,8 +258,8 @@ describe('Streaming API', () => {
       // Very small
       const stats3 = streaming.getChunkStats(10);
       expect(stats3.numChunks).toBe(1);
-    }
-  }
+    });
+  });
 
   describe('Edge cases', () => {
     it('should handle PII near chunk boundaries with sufficient overlap', async () => {

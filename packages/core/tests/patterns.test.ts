@@ -289,7 +289,7 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('NHS: 943 476 5918');
       expect(negative.detections.some(d => d.type === 'NHS_NUMBER')).toBe(false);
-    }
+    });
 
     it('should detect UK passports with varied separators', async () => {
       const shield = new OpenRedaction({ patterns: ['PASSPORT_UK'] });
