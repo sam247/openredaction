@@ -347,7 +347,7 @@ describe('Streaming API', () => {
   describe('Memory efficiency', () => {
     it('should not load entire document into memory for streaming', async () => {
       const detector = new OpenRedaction();
-      const streaming = new StreamingDetector(detector, { chunkSize: 1024 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 1024 });
 
       // Create large text (100KB)
       const section = 'Email: user@company.com. '.repeat(100);

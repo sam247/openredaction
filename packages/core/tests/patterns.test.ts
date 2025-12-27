@@ -378,7 +378,7 @@ describe('Pattern Detection', () => {
 
       const invalid = await shield.detect('License: SMITH903332AB1CD');
       expect(invalid.detections.some(d => d.type === 'DRIVING_LICENSE_UK')).toBe(false);
-    }
+    });
 
     it('should detect US driving licenses with separators', async () => {
       const shield = new OpenRedaction({ patterns: ['DRIVING_LICENSE_US'] });
