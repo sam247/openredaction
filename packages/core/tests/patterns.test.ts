@@ -304,7 +304,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'PASSPORT_UK')).toBe(true);
       }
-    }
+    });
 
     it('should detect US passports with mixed casing and separators', async () => {
       const shield = new OpenRedaction({ patterns: ['PASSPORT_US'] });

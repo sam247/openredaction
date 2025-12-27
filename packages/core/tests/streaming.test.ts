@@ -282,11 +282,11 @@ describe('Streaming API', () => {
 
       // Email should be detected with sufficient overlap
       expect(emails.length).toBeGreaterThanOrEqual(1);
-    }
+    });
 
     it('should handle unicode characters', async () => {
       const detector = new OpenRedaction();
-      const streaming = new StreamingDetector(detector, { chunkSize: 100 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       const text = '测试 Email: user@company.com 🎉 Phone: 07700900123';
       const result = await streaming.processComplete(text);
