@@ -5,10 +5,6 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "bin": {
-    "openredaction": "./dist/index.cli.js",
-    "openredaction-test-pattern": "./dist/cli/test-pattern.js"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -44,7 +40,7 @@
     "pii-detection",
     "ccpa"
   ],
-  "author": "",
+  "author": "OpenRedaction Team",
   "license": "MIT",
   "peerDependencies": {
     "pdf-parse": "^1.1.1",
@@ -76,7 +72,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sam247/openredact.git",
+    "url": "git+https://github.com/sam247/openredact.git",
     "directory": "packages/core"
   }
 }
