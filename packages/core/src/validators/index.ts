@@ -40,8 +40,8 @@ export function validateLuhn(cardNumber: string, _context?: string): boolean {
  * IBAN validator with checksum verification
  */
 export function validateIBAN(iban: string, _context?: string): boolean {
-  // Remove spaces and convert to uppercase
-  const cleaned = iban.replace(/\s/g, '').toUpperCase();
+  // Remove spaces, hyphens, dots and convert to uppercase
+  const cleaned = iban.replace(/[\s\u00A0.-]/g, '').toUpperCase();
 
   // Check format: 2 letters, 2 digits, up to 30 alphanumeric
   if (!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/.test(cleaned)) {
@@ -95,7 +95,7 @@ function mod97(string: string): number {
  * UK National Insurance Number validator
  */
 export function validateNINO(nino: string, _context?: string): boolean {
-  const cleaned = nino.replace(/\s/g, '').toUpperCase();
+  const cleaned = nino.replace(/[\s\u00A0.-]/g, '').toUpperCase();
 
   // Format: 2 letters, 6 digits, 1 letter (A, B, C, or D)
   if (!/^[A-CEGHJ-PR-TW-Z]{2}[0-9]{6}[A-D]$/.test(cleaned)) {
@@ -113,7 +113,7 @@ export function validateNINO(nino: string, _context?: string): boolean {
  * UK NHS Number validator with checksum
  */
 export function validateNHS(nhs: string, _context?: string): boolean {
-  const cleaned = nhs.replace(/[\s-]/g, '');
+  const cleaned = nhs.replace(/[\s\u00A0.-]/g, '');
 
   if (!/^\d{10}$/.test(cleaned)) {
     return false;
@@ -135,7 +135,7 @@ export function validateNHS(nhs: string, _context?: string): boolean {
  * UK Passport validator
  */
 export function validateUKPassport(passport: string, _context?: string): boolean {
-  const cleaned = passport.replace(/\s/g, '').toUpperCase();
+  const cleaned = passport.replace(/[\s\u00A0.-]/g, '').toUpperCase();
 
   // Format: 9 digits or 3 digits + 6 digits
   return /^\d{9}$/.test(cleaned) || /^\d{3}\d{6}$/.test(cleaned);
@@ -145,7 +145,7 @@ export function validateUKPassport(passport: string, _context?: string): boolean
  * US Social Security Number validator (format check only)
  */
 export function validateSSN(ssn: string, _context?: string): boolean {
-  const cleaned = ssn.replace(/[\s-]/g, '');
+  const cleaned = ssn.replace(/[\s\u00A0.-]/g, '');
 
   if (!/^\d{9}$/.test(cleaned)) {
     return false;

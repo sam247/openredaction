@@ -98,13 +98,17 @@ export const RESUME_ID: PIIPattern = {
  */
 export const BENEFITS_PLAN_NUMBER: PIIPattern = {
   type: 'BENEFITS_PLAN_NUMBER',
-  regex: /\b(?:BENEFITS?|INSURANCE|HEALTH[-\s]?PLAN)[-\s]?(?:PLAN)?[-\s]?(?:NO|NUM(?:BER)?|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\b(?:BENEFITS?|INSURANCE|HEALTH[-\s\u00A0]?PLAN)[-\s\u00A0]*(?:PLAN)?[-\s\u00A0]*(?:NO|NUM(?:BER)?|ID)?[-\s\u00A0.:#]*([A-Z0-9](?:[A-Z0-9][\s\u00A0./-]?){5,15}[A-Z0-9])\b/gi,
   placeholder: '[BENEFITS_{n}]',
   priority: 85,
   severity: 'high',
   description: 'Employee benefits and insurance plan numbers',
-  validator: (_value: string, context: string) => {
-    return /benefit|insurance|health|dental|vision|plan|policy|enrollment/i.test(context);
+  validator: (value: string, context: string) => {
+    const normalized = value.replace(/[\s\u00A0./-]/g, '');
+    const hasDigits = /\d{4,}/.test(normalized);
+    const validLength = normalized.length >= 6 && normalized.length <= 14;
+    const inContext = /benefit|insurance|health|dental|vision|plan|policy|enrollment/i.test(context);
+    return hasDigits && validLength && inContext;
   }
 };
 
@@ -242,13 +246,16 @@ export const EXIT_INTERVIEW_ID: PIIPattern = {
  */
 export const DISCIPLINARY_ACTION_ID: PIIPattern = {
   type: 'DISCIPLINARY_ACTION_ID',
-  regex: /\b(?:DISCIPLINARY|INCIDENT|WARNING|VIOLATION)[-\s]?(?:ACTION)?[-\s]?(?:NO|NUM(?:BER)?|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:DISCIPLINARY|INCIDENT|WARNING|VIOLATION)[-\s\u00A0]*(?:ACTION)?[-\s\u00A0]*(?:NO|NUM(?:BER)?|ID)?[-\s\u00A0.:#]*([A-Z0-9](?:[A-Z0-9][\s\u00A0./-]?){5,15}[A-Z0-9])\b/gi,
   placeholder: '[DISCIPLINE_{n}]',
   priority: 85,
   severity: 'high',
   description: 'Disciplinary action and incident identifiers',
-  validator: (_value: string, context: string) => {
-    return /disciplinary|incident|warning|violation|misconduct|investigation/i.test(context);
+  validator: (value: string, context: string) => {
+    const normalized = value.replace(/[\s\u00A0./-]/g, '');
+    const hasDigits = /\d{3,}/.test(normalized);
+    const validLength = normalized.length >= 6 && normalized.length <= 12;
+    return hasDigits && validLength && /disciplinary|incident|warning|violation|misconduct|investigation/i.test(context);
   }
 };
 

@@ -30,7 +30,7 @@ export const EMERGENCY_CALL_REF: PIIPattern = {
  */
 export const POLICE_REPORT_NUMBER: PIIPattern = {
   type: 'POLICE_REPORT_NUMBER',
-  regex: /\b(?:POLICE|PR|RPT|REPORT|CASE)[-\s]?(?:NO|NUM|NUMBER|ID)?[-\s]?[:#]?\s*(\d{4}[-\s]?\d{5,10}|[A-Z]{2,4}[-\s]?\d{6,10})\b/gi,
+  regex: /\b(?:POLICE|PR|RPT|REPORT|CASE)[-\s\u00A0]*(?:NO|NUM|NUMBER|ID)?[-\s\u00A0.:#]*((?:[A-Z]{2,4}[\s\u00A0./-]?\d{2,4}[\s\u00A0./-]?\d{4,10})|\d{4}[\s\u00A0./-]?\d{5,10})\b/gi,
   placeholder: '[POLICE_RPT_{n}]',
   priority: 95,
   severity: 'high',
@@ -46,7 +46,7 @@ export const POLICE_REPORT_NUMBER: PIIPattern = {
  */
 export const FIRE_INCIDENT_NUMBER: PIIPattern = {
   type: 'FIRE_INCIDENT_NUMBER',
-  regex: /\b(?:FIRE|FI|FD)[-\s]?(?:INCIDENT|INC|NO|NUM|NUMBER|ID)?[-\s]?[:#]?\s*(\d{4}[-\s]?\d{4,8}|[A-Z]{2,4}[-\s]?\d{5,10})\b/gi,
+  regex: /\b(?:FIRE|FI|FD)[-\s\u00A0]*(?:INCIDENT|INC|NO|NUM|NUMBER|ID)?[-\s\u00A0.:#]*((?:[A-Z]{2,4}[\s\u00A0./-]?\d{2,4}[\s\u00A0./-]?\d{4,10})|\d{4}[\s\u00A0./-]?\d{4,8})\b/gi,
   placeholder: '[FIRE_INC_{n}]',
   priority: 95,
   severity: 'high',

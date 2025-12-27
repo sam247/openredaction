@@ -13,7 +13,7 @@ import {
 export const governmentPatterns: PIIPattern[] = [
   {
     type: 'SSN',
-    regex: /\b(?:SSN|social security)[:\s#]*(\d{3}[-\s]?\d{2}[-\s]?\d{4})\b/gi,
+    regex: /\b(?:SSN|social\s+security)\b[:\s#-]*([0-9]{3}[\s\u00A0.-]?[0-9]{2}[\s\u00A0.-]?[0-9]{4})\b/gi,
     priority: 100,
     validator: (match) => validateSSN(match),
     placeholder: '[SSN_{n}]',
@@ -22,7 +22,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'PASSPORT_UK',
-    regex: /\b(?:passport|pass)[:\s#]*([0-9]{9})\b/gi,
+    regex: /\b(?:passport|pass)[:\s#-]*((?:\d{3}[\s\u00A0.-]?){2}\d{3})\b/gi,
     priority: 95,
     validator: (match) => validateUKPassport(match),
     placeholder: '[PASSPORT_{n}]',
@@ -31,7 +31,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'PASSPORT_US',
-    regex: /\b(?:passport|pass)[:\s#]*([A-Z0-9]{6,9})\b/gi,
+    regex: /\b(?:passport|pass)[:\s#-]*(([A-Z0-9][\s\u00A0.-]?){5,8}[A-Z0-9])\b/gi,
     priority: 95,
     placeholder: '[PASSPORT_{n}]',
     description: 'US Passport number',
@@ -39,7 +39,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'NATIONAL_INSURANCE_UK',
-    regex: /\b(?:NI|NINO|national insurance)[:\s#]*([A-CEGHJ-PR-TW-Z]{2}\s?\d{2}\s?\d{2}\s?\d{2}\s?[A-D])\b/gi,
+    regex: /\b(?:NI\b|NINO|national\s+insurance)[:\s#-]*([A-CEGHJ-PR-TW-Z]{2}(?:[\s\u00A0.-]?\d{2}){3}[\s\u00A0.-]?[A-D])\b/gi,
     priority: 100,
     validator: (match) => validateNINO(match),
     placeholder: '[NINO_{n}]',
@@ -48,7 +48,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'NHS_NUMBER',
-    regex: /\b(?:NHS|nhs number)[:\s#]*(\d{3}[\s-]?\d{3}[\s-]?\d{4})\b/gi,
+    regex: /\b(?:NHS|nhs number)[:\s#-]*((?:\d{3}[\s\u00A0.-]?){2}\d{4})\b/gi,
     priority: 95,
     validator: (match) => validateNHS(match),
     placeholder: '[NHS_{n}]',
@@ -57,15 +57,27 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'DRIVING_LICENSE_UK',
-    regex: /\b([A-Z]{5}\d{6}[A-Z]{2}\d[A-Z]{2})\b/g,
+    regex: /\b(?:DL|DRIVING|DRIVER(?:'S)?|LICEN[SC]E)?[\s#:-]*(?:NO|NUM(?:BER)?|ID)?[\s#:-]*([A-Z]{5}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?[A-Z]{2}[\s\u00A0.-]?\d[\s\u00A0.-]?[A-Z]{2})\b/gi,
     priority: 90,
     placeholder: '[DRIVING_LICENSE_{n}]',
     description: 'UK Driving License',
-    severity: 'high'
+    severity: 'high',
+    validator: (value: string) => {
+      const normalized = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+      if (!/^[A-Z]{5}\d{6}[A-Z]{2}\d[A-Z]{2}$/.test(normalized)) {
+        return false;
+      }
+      const dob = normalized.slice(5, 11);
+      const month = parseInt(dob.slice(2, 4), 10);
+      const day = parseInt(dob.slice(4, 6), 10);
+      const validMonth = (month >= 1 && month <= 12) || (month >= 51 && month <= 62);
+      const validDay = day >= 1 && day <= 31;
+      return validMonth && validDay;
+    }
   },
   {
     type: 'DRIVING_LICENSE_US',
-    regex: /\b(?:DL|driver(?:'s)?\slicense)[:\s#]*([A-Z0-9]{5,20})\b/gi,
+    regex: /\b(?:DL|driver(?:'s)?\slicense)[:\s#-]*([A-Z0-9](?:[A-Z0-9][\s\u00A0.-]?){3,18}[A-Z0-9])\b/gi,
     priority: 90,
     placeholder: '[DRIVING_LICENSE_{n}]',
     description: 'US Driving License',
@@ -73,7 +85,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'TAX_ID',
-    regex: /\b(?:TIN|tax id|EIN)[:\s#]*(\d{2}[-\s]?\d{7})\b/gi,
+    regex: /\b(?:TIN|tax id|EIN)[:\s#-]*(\d{2}(?:[\s\u00A0.-]?\d){7})\b/gi,
     priority: 95,
     placeholder: '[TAX_ID_{n}]',
     description: 'Tax identification number',
@@ -81,7 +93,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'PASSPORT_MRZ_TD3',
-    regex: /P<[A-Z]{3}[A-Z<]{39}\n[A-Z0-9<]{9}[0-9][A-Z]{3}[0-9]{6}[0-9][MF<][0-9]{6}[0-9][A-Z0-9<]{14}[0-9]/g,
+    regex: /P<[A-Z]{3}[A-Z<]{39}\r?\n[A-Z0-9<]{9}[0-9][A-Z]{3}[0-9]{6}[0-9][MF<][0-9]{6}[0-9][A-Z0-9<]{14}[0-9]/g,
     priority: 98,
     placeholder: '[PASSPORT_MRZ_{n}]',
     description: 'Passport Machine Readable Zone (TD3 - 2 lines x 44 chars)',
@@ -89,7 +101,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'PASSPORT_MRZ_TD1',
-    regex: /[A-Z]{1}[A-Z<][A-Z]{3}[A-Z0-9<]{9}[0-9][A-Z0-9<]{15}\n[0-9]{6}[0-9][MF<][0-9]{6}[0-9][A-Z]{3}[A-Z0-9<]{11}[0-9]\n[A-Z<]{30}/g,
+    regex: /[A-Z]{1}[A-Z<][A-Z]{3}[A-Z0-9<]{9}[0-9][A-Z0-9<]{15}\r?\n[0-9]{6}[0-9][MF<][0-9]{6}[0-9][A-Z]{3}[A-Z0-9<]{11}[0-9]\r?\n[A-Z<]{30}/g,
     priority: 98,
     placeholder: '[ID_MRZ_{n}]',
     description: 'ID Card Machine Readable Zone (TD1 - 3 lines x 30 chars)',
@@ -97,7 +109,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'VISA_MRZ',
-    regex: /V<[A-Z]{3}[A-Z<]{39}\n[A-Z0-9<]{9}[0-9][A-Z]{3}[0-9]{6}[0-9][MF<][0-9]{6}[0-9][A-Z0-9<]{14}[0-9]/g,
+    regex: /V<[A-Z]{3}[A-Z<]{39}\r?\n[A-Z0-9<]{9}[0-9][A-Z]{3}[0-9]{6}[0-9][MF<][0-9]{6}[0-9][A-Z0-9<]{14}[0-9]/g,
     priority: 98,
     placeholder: '[VISA_MRZ_{n}]',
     description: 'Visa Machine Readable Zone',
@@ -105,7 +117,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'TRAVEL_DOCUMENT_NUMBER',
-    regex: /\b(?:TRAVEL\s+DOC(?:UMENT)?|TD)[:\s#]*([A-Z0-9]{6,15})\b/gi,
+    regex: /\b(?:TRAVEL\s+DOC(?:UMENT)?|TD)[:\s#-]*([A-Z0-9](?:[A-Z0-9][\s\u00A0.-]?){4,13}[A-Z0-9])\b/gi,
     priority: 92,
     placeholder: '[TRAVEL_DOC_{n}]',
     description: 'Travel document numbers',
@@ -116,7 +128,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'VISA_NUMBER',
-    regex: /\b(?:VISA)[:\s#]*([A-Z0-9]{8,12})\b/gi,
+    regex: /\b(?:VISA)[:\s#-]*([A-Z0-9](?:[A-Z0-9][\s\u00A0.-]?){6,10}[A-Z0-9])\b/gi,
     priority: 92,
     placeholder: '[VISA_{n}]',
     description: 'Visa numbers',
@@ -127,7 +139,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'IMMIGRATION_NUMBER',
-    regex: /\b(?:IMMIGRATION|ALIEN|A-NUMBER|A#)[:\s#]*([A-Z]?\d{8,10})\b/gi,
+    regex: /\b(?:IMMIGRATION|ALIEN|A-NUMBER|A#)[:\s#-]*([A-Z]?(?:\d[\s\u00A0.-]?){7,9})\b/gi,
     priority: 92,
     placeholder: '[IMMIGRATION_{n}]',
     description: 'Immigration and alien registration numbers',
@@ -135,7 +147,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'BORDER_CROSSING_CARD',
-    regex: /\b(?:BCC|BORDER\s+CROSSING)[:\s#]*([A-Z0-9]{10,15})\b/gi,
+    regex: /\b(?:BCC|BORDER\s+CROSSING)[:\s#-]*([A-Z0-9](?:[A-Z0-9\s\u00A0.-]?){8,13}[A-Z0-9])\b/gi,
     priority: 90,
     placeholder: '[BCC_{n}]',
     description: 'Border crossing card numbers',
