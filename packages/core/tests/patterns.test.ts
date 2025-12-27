@@ -555,7 +555,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'PROVIDER_LICENSE')).toBe(false);
       }
-    }
+    });
 
     it('should detect NPI numbers with dotted or spaced separators', async () => {
       const shield = new OpenRedaction({ patterns: ['NPI_NUMBER'] });
