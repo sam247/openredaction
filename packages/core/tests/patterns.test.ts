@@ -645,7 +645,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(`Call: ${phone}`);
         expect(result.detections.some(d => d.type === 'PHONE_UK_MOBILE' || d.type === 'PHONE_UK')).toBe(true);
       }
-    }
+    });
 
     it('should detect international phones with extensions', async () => {
       const shield = new OpenRedaction({ patterns: ['PHONE_INTERNATIONAL'] });
