@@ -685,7 +685,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(`ZIP: ${zip}`);
         expect(result.detections.some(d => d.type === 'ZIP_CODE_US')).toBe(true);
       }
-    }
+    });
 
     it('should detect street addresses', async () => {
       const shield = new OpenRedaction({ patterns: ['ADDRESS_STREET'] });
