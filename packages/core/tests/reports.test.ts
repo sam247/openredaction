@@ -8,10 +8,10 @@ import { createReportGenerator } from '../src/reports/ReportGenerator';
 
 describe('Report Generation', () => {
   describe('Basic report generation', () => {
-    it('should generate HTML report', () => {
+    it('should generate HTML report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk, Phone: 07700900123';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const html = detector.generateReport(result, {
         format: 'html',
@@ -25,10 +25,10 @@ describe('Report Generation', () => {
       expect(html.length).toBeGreaterThan(100);
     });
 
-    it('should generate Markdown report', () => {
+    it('should generate Markdown report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk, Phone: 07700900123';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const md = detector.generateReport(result, {
         format: 'markdown',
@@ -42,14 +42,14 @@ describe('Report Generation', () => {
       expect(md.length).toBeGreaterThan(50);
     });
 
-    it('should use helper to create report generator', () => {
+    it('should use helper to create report generator', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const generator = createReportGenerator(detector);
 
       expect(generator).toBeDefined();
 
       const text = 'Email: test@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const report = generator.generate(result, { format: 'markdown' });
       expect(report).toContain('# PII Detection Report');
@@ -57,10 +57,10 @@ describe('Report Generation', () => {
   });
 
   describe('HTML report content', () => {
-    it('should include statistics in HTML report', () => {
+    it('should include statistics in HTML report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk, Phone: 07700900123, Card: 4532015112830366';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const html = detector.generateReport(result, {
         format: 'html',
@@ -72,10 +72,10 @@ describe('Report Generation', () => {
       expect(html).toContain('Unique Types');
     });
 
-    it('should include detection details in HTML report', () => {
+    it('should include detection details in HTML report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const html = detector.generateReport(result, {
         format: 'html',
@@ -87,10 +87,10 @@ describe('Report Generation', () => {
       expect(html).toContain('admin@business.co.uk');
     });
 
-    it('should include redacted text in HTML report', () => {
+    it('should include redacted text in HTML report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const html = detector.generateReport(result, {
         format: 'html',
@@ -101,10 +101,10 @@ describe('Report Generation', () => {
       expect(html).toContain('[EMAIL_');
     });
 
-    it('should include original text when requested', () => {
+    it('should include original text when requested', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const html = detector.generateReport(result, {
         format: 'html',
@@ -115,10 +115,10 @@ describe('Report Generation', () => {
       expect(html).toContain('admin@business.co.uk');
     });
 
-    it('should not include original text by default', () => {
+    it('should not include original text by default', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Secret: admin@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const html = detector.generateReport(result, {
         format: 'html'
@@ -128,10 +128,10 @@ describe('Report Generation', () => {
       expect(html).not.toContain('Original Text (Sensitive)');
     });
 
-    it('should include metadata in HTML report', () => {
+    it('should include metadata in HTML report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: test@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const html = detector.generateReport(result, {
         format: 'html',
@@ -147,10 +147,10 @@ describe('Report Generation', () => {
       expect(html).toContain('1.0.0');
     });
 
-    it('should escape HTML in content', () => {
+    it('should escape HTML in content', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: <script>alert("xss")</script>@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const html = detector.generateReport(result, {
         format: 'html',
@@ -164,10 +164,10 @@ describe('Report Generation', () => {
   });
 
   describe('Markdown report content', () => {
-    it('should include statistics in Markdown report', () => {
+    it('should include statistics in Markdown report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk, Phone: 07700900123';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const md = detector.generateReport(result, {
         format: 'markdown',
@@ -179,10 +179,10 @@ describe('Report Generation', () => {
       expect(md).toContain('| Metric | Value |');
     });
 
-    it('should include detection breakdown in Markdown', () => {
+    it('should include detection breakdown in Markdown', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk, Phone: 07700900123';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const md = detector.generateReport(result, {
         format: 'markdown'
@@ -192,10 +192,10 @@ describe('Report Generation', () => {
       expect(md).toContain('| PII Type | Count | Percentage |');
     });
 
-    it('should include redacted text in code blocks', () => {
+    it('should include redacted text in code blocks', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Contact: admin@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const md = detector.generateReport(result, {
         format: 'markdown',
@@ -207,10 +207,10 @@ describe('Report Generation', () => {
       expect(md).toContain('[EMAIL_');
     });
 
-    it('should include warning for original text', () => {
+    it('should include warning for original text', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Secret: admin@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const md = detector.generateReport(result, {
         format: 'markdown',
@@ -221,10 +221,10 @@ describe('Report Generation', () => {
       expect(md).toContain('admin@business.co.uk');
     });
 
-    it('should include metadata in Markdown report', () => {
+    it('should include metadata in Markdown report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: test@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const md = detector.generateReport(result, {
         format: 'markdown',
@@ -243,10 +243,10 @@ describe('Report Generation', () => {
   });
 
   describe('Report types', () => {
-    it('should generate summary report', () => {
+    it('should generate summary report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const report = detector.generateReport(result, {
         format: 'markdown',
@@ -256,10 +256,10 @@ describe('Report Generation', () => {
       expect(report).toContain('Report Type: SUMMARY');
     });
 
-    it('should generate detailed report', () => {
+    it('should generate detailed report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const report = detector.generateReport(result, {
         format: 'markdown',
@@ -269,10 +269,10 @@ describe('Report Generation', () => {
       expect(report).toContain('Report Type: DETAILED');
     });
 
-    it('should generate compliance report', () => {
+    it('should generate compliance report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: user@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const report = detector.generateReport(result, {
         format: 'markdown',
@@ -286,7 +286,7 @@ describe('Report Generation', () => {
   });
 
   describe('Statistics calculations', () => {
-    it('should calculate correct statistics', () => {
+    it('should calculate correct statistics', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = `
         Email: user1@business.co.uk
@@ -294,7 +294,7 @@ describe('Report Generation', () => {
         Phone: 07700900123
         Card: 4532015112830366
       `;
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const html = detector.generateReport(result, {
         format: 'html',
@@ -307,14 +307,14 @@ describe('Report Generation', () => {
       expect(html).toContain('Unique Types');
     });
 
-    it('should show type breakdown', () => {
+    it('should show type breakdown', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = `
         Email: user1@business.co.uk
         Email: user2@business.co.uk
         Phone: 07700900123
       `;
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const md = detector.generateReport(result, {
         format: 'markdown'
@@ -327,10 +327,10 @@ describe('Report Generation', () => {
   });
 
   describe('Edge cases', () => {
-    it('should handle empty detection results', () => {
+    it('should handle empty detection results', async () => {
       const detector = new OpenRedaction();
       const text = 'This text has no PII';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const html = detector.generateReport(result, {
         format: 'html'
@@ -340,10 +340,10 @@ describe('Report Generation', () => {
       expect(html).toContain('PII Detected');
     });
 
-    it('should handle very long text', () => {
+    it('should handle very long text', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const longText = 'a'.repeat(10000) + ' Email: test@business.co.uk ' + 'b'.repeat(10000);
-      const result = detector.detect(longText);
+      const result = await detector.detect(longText);
 
       const report = detector.generateReport(result, {
         format: 'markdown',
@@ -354,10 +354,10 @@ describe('Report Generation', () => {
       expect(report.length).toBeGreaterThan(100);
     });
 
-    it('should handle special characters in metadata', () => {
+    it('should handle special characters in metadata', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Email: test@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const html = detector.generateReport(result, {
         format: 'html',
@@ -373,7 +373,7 @@ describe('Report Generation', () => {
   });
 
   describe('Real-world scenarios', () => {
-    it('should generate compliance audit report', () => {
+    it('should generate compliance audit report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = `
         Customer Support Ticket #12345
@@ -386,7 +386,7 @@ describe('Report Generation', () => {
         Issue: Unable to process payment
       `;
 
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const report = detector.generateReport(result, {
         format: 'html',
@@ -412,10 +412,10 @@ describe('Report Generation', () => {
       expect(report).not.toContain('4532 0151 1283 0366');
     });
 
-    it('should generate development debug report', () => {
+    it('should generate development debug report', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const text = 'Dev test: test@example.com, Real: admin@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       const report = detector.generateReport(result, {
         format: 'markdown',
