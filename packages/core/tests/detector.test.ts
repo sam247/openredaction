@@ -145,7 +145,7 @@ describe('OpenRedact', () => {
 
     it('should respect whitelist option', async () => {
       const shieldWithWhitelist = new OpenRedaction({ whitelist: ['example.com'] });
-      const result = await shieldWithWhitelist.detect('Contact john@example.com for details');
+      const result = await shieldWithWhitelist.detect('Contact user@example.com for details');
 
       expect(result.detections).toHaveLength(0);
     });

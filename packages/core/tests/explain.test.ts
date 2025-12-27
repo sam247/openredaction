@@ -22,12 +22,12 @@ describe('Explain API', () => {
       expect(explainAPI).toBeDefined();
     });
 
-    it('should explain detected PII', () => {
+    it('should explain detected PII', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Contact: user@business.co.uk';
-      const explanation = explainAPI.explain(text);
+      const explanation = await explainAPI.explain(text);
 
       expect(explanation.text).toBe(text);
       expect(explanation.matchedPatterns.length).toBeGreaterThan(0);
@@ -35,12 +35,12 @@ describe('Explain API', () => {
       expect(explanation.summary.finalDetections).toBeGreaterThan(0);
     });
 
-    it('should explain why text has no PII', () => {
+    it('should explain why text has no PII', async () => {
       const detector = new OpenRedaction();
       const explainAPI = detector.explain();
 
-      const text = 'This is plain text with no sensitive information';
-      const explanation = explainAPI.explain(text);
+      const text = 'This is plain text with no personal details';
+      const explanation = await explainAPI.explain(text);
 
       expect(explanation.text).toBe(text);
       expect(explanation.matchedPatterns.length).toBe(0);
@@ -50,23 +50,23 @@ describe('Explain API', () => {
   });
 
   describe('Pattern matching details', () => {
-    it('should list all patterns checked', () => {
+    it('should list all patterns checked', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: test@business.co.uk';
-      const explanation = explainAPI.explain(text);
+      const explanation = await explainAPI.explain(text);
 
       expect(explanation.patternResults.length).toBeGreaterThan(0);
       expect(explanation.summary.totalPatternsChecked).toBeGreaterThan(0);
     });
 
-    it('should separate matched and unmatched patterns', () => {
+    it('should separate matched and unmatched patterns', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: user@business.co.uk';
-      const explanation = explainAPI.explain(text);
+      const explanation = await explainAPI.explain(text);
 
       expect(explanation.matchedPatterns.length).toBeGreaterThan(0);
       expect(explanation.unmatchedPatterns.length).toBeGreaterThan(0);
@@ -83,7 +83,7 @@ describe('Explain API', () => {
       }
     });
 
-    it('should show filtered patterns', () => {
+    it('should show filtered patterns', async () => {
       const detector = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.9 // High threshold to filter some
@@ -91,18 +91,18 @@ describe('Explain API', () => {
       const explainAPI = detector.explain();
 
       const text = 'aaaaaaa user@business.co.uk bbbbbb'; // Weird context
-      const explanation = explainAPI.explain(text);
+      const explanation = await explainAPI.explain(text);
 
       // Some patterns may be filtered due to low confidence
       expect(explanation.filteredPatterns).toBeDefined();
     });
 
-    it('should include pattern details', () => {
+    it('should include pattern details', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: admin@business.co.uk';
-      const explanation = explainAPI.explain(text);
+      const explanation = await explainAPI.explain(text);
 
       const emailMatch = explanation.matchedPatterns.find(r => r.pattern.type === 'EMAIL');
       expect(emailMatch).toBeDefined();
@@ -113,12 +113,12 @@ describe('Explain API', () => {
   });
 
   describe('Context analysis in explanations', () => {
-    it('should include context analysis results', () => {
+    it('should include context analysis results', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: true });
       const explainAPI = detector.explain();
 
       const text = 'Email address: john.smith@company.com';
-      const explanation = explainAPI.explain(text);
+      const explanation = await explainAPI.explain(text);
 
       const matched = explanation.matchedPatterns.find(r => r.pattern.type === 'EMAIL');
       expect(matched).toBeDefined();
@@ -126,7 +126,7 @@ describe('Explain API', () => {
       expect(matched!.contextAnalysis!.confidence).toBeGreaterThan(0);
     });
 
-    it('should explain low confidence filtering', () => {
+    it('should explain low confidence filtering', async () => {
       const detector = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.6
@@ -134,7 +134,7 @@ describe('Explain API', () => {
       const explainAPI = detector.explain();
 
       const text = 'test@example.com'; // Low confidence due to example.com
-      const explanation = explainAPI.explain(text);
+      const explanation = await explainAPI.explain(text);
 
       // Should be filtered due to low confidence
       const filtered = explanation.filteredPatterns.find(r =>
@@ -148,12 +148,12 @@ describe('Explain API', () => {
   });
 
   describe('Validation results', () => {
-    it('should show validator failures', () => {
+    it('should show validator failures', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: invalid-email-format'; // Won't pass email validator
-      const explanation = explainAPI.explain(text);
+      const explanation = await explainAPI.explain(text);
 
       // Check if any patterns failed validation
       const failedValidation = explanation.filteredPatterns.some(r =>
@@ -166,32 +166,32 @@ describe('Explain API', () => {
   });
 
   describe('Explain specific detections', () => {
-    it('should explain a specific detection', () => {
+    it('should explain a specific detection', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Contact: admin@business.co.uk, Phone: 07700900123';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
 
       expect(result.detections.length).toBeGreaterThan(0);
 
       const detection = result.detections[0];
-      const detectionExplanation = explainAPI.explainDetection(detection, text);
+      const detectionExplanation = await explainAPI.explainDetection(detection, text);
 
       expect(detectionExplanation.detection).toBe(detection);
       expect(detectionExplanation.reasoning).toBeDefined();
       expect(detectionExplanation.reasoning.length).toBeGreaterThan(0);
     });
 
-    it('should include pattern information in detection explanation', () => {
+    it('should include pattern information in detection explanation', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: test@business.co.uk';
-      const result = detector.detect(text);
+      const result = await detector.detect(text);
       const detection = result.detections[0];
 
-      const explanation = explainAPI.explainDetection(detection, text);
+      const explanation = await explainAPI.explainDetection(detection, text);
 
       expect(explanation.pattern).toBeDefined();
       expect(explanation.pattern!.type).toBe(detection.type);
@@ -199,12 +199,12 @@ describe('Explain API', () => {
   });
 
   describe('Suggest why not detected', () => {
-    it('should suggest why text wasn\'t detected', () => {
+    it('should suggest why text wasn\'t detected', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'invalid-email'; // Not a valid email
-      const suggestion = explainAPI.suggestWhy(text, 'EMAIL');
+      const suggestion = await explainAPI.suggestWhy(text, 'EMAIL');
 
       expect(suggestion.text).toBe(text);
       expect(suggestion.expectedType).toBe('EMAIL');
@@ -212,7 +212,7 @@ describe('Explain API', () => {
       expect(suggestion.suggestions.length).toBeGreaterThan(0);
     });
 
-    it('should show patterns that matched but were filtered', () => {
+    it('should show patterns that matched but were filtered', async () => {
       const detector = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.8
@@ -220,16 +220,16 @@ describe('Explain API', () => {
       const explainAPI = detector.explain();
 
       const text = 'test@example.com'; // Matches but likely filtered
-      const suggestion = explainAPI.suggestWhy(text, 'EMAIL');
+      const suggestion = await explainAPI.suggestWhy(text, 'EMAIL');
 
       expect(suggestion.suggestions).toBeDefined();
     });
 
-    it('should handle unknown types', () => {
+    it('should handle unknown types', async () => {
       const detector = new OpenRedaction();
       const explainAPI = detector.explain();
 
-      const suggestion = explainAPI.suggestWhy('anything', 'UNKNOWN_TYPE');
+      const suggestion = await explainAPI.suggestWhy('anything', 'UNKNOWN_TYPE');
 
       expect(suggestion.suggestions).toBeDefined();
       expect(suggestion.suggestions.some(s => s.includes('No patterns found'))).toBe(true);
@@ -237,12 +237,12 @@ describe('Explain API', () => {
   });
 
   describe('Debug mode', () => {
-    it('should provide comprehensive debug information', () => {
+    it('should provide comprehensive debug information', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: true });
       const explainAPI = detector.explain();
 
       const text = 'Email: user@business.co.uk, Phone: 07700900123';
-      const debug = explainAPI.debug(text);
+      const debug = await explainAPI.debug(text);
 
       expect(debug.text).toBe(text);
       expect(debug.textLength).toBe(text.length);
@@ -254,7 +254,7 @@ describe('Explain API', () => {
       expect(debug.performance.estimatedTime).toContain('ms');
     });
 
-    it('should list enabled features', () => {
+    it('should list enabled features', async () => {
       const detector = new OpenRedaction({
         enableContextAnalysis: true,
         enableFalsePositiveFilter: true
@@ -262,18 +262,18 @@ describe('Explain API', () => {
       const explainAPI = detector.explain();
 
       // Use text that will be detected to test feature detection
-      const debug = explainAPI.debug('Email: test@business.co.uk');
+      const debug = await explainAPI.debug('Email: test@business.co.uk');
 
       expect(debug.enabledFeatures).toContain('Context Analysis');
       // False positive filter status is inferred, may not always be detected
       expect(debug.enabledFeatures.length).toBeGreaterThan(0);
     });
 
-    it('should include performance metrics', () => {
+    it('should include performance metrics', async () => {
       const detector = new OpenRedaction();
       const explainAPI = detector.explain();
 
-      const debug = explainAPI.debug('Email: test@business.co.uk');
+      const debug = await explainAPI.debug('Email: test@business.co.uk');
 
       expect(debug.performance.estimatedTime).toBeDefined();
       expect(debug.performance.estimatedTime).toMatch(/\d+\.\d+ms/);
@@ -281,19 +281,19 @@ describe('Explain API', () => {
   });
 
   describe('Real-world debugging scenarios', () => {
-    it('should help debug why email wasn\'t detected', () => {
+    it('should help debug why email wasn\'t detected', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Contact me at: not-an-email';
-      const explanation = explainAPI.explain(text);
-      const suggestion = explainAPI.suggestWhy(text, 'EMAIL');
+      const explanation = await explainAPI.explain(text);
+      const suggestion = await explainAPI.suggestWhy(text, 'EMAIL');
 
       expect(explanation.matchedPatterns.length).toBe(0);
       expect(suggestion.suggestions.length).toBeGreaterThan(0);
     });
 
-    it('should help understand filtering decisions', () => {
+    it('should help understand filtering decisions', async () => {
       const detector = new OpenRedaction({
         enableContextAnalysis: true,
         whitelist: ['company']
@@ -301,7 +301,7 @@ describe('Explain API', () => {
       const explainAPI = detector.explain();
 
       const text = 'Email: admin@company.com'; // 'company' in whitelist
-      const explanation = explainAPI.explain(text);
+      const explanation = await explainAPI.explain(text);
 
       // Email might be filtered due to whitelist
       const filtered = explanation.filteredPatterns.find(r =>
@@ -313,7 +313,7 @@ describe('Explain API', () => {
       }
     });
 
-    it('should explain complex detection scenarios', () => {
+    it('should explain complex detection scenarios', async () => {
       const detector = new OpenRedaction({
         enableContextAnalysis: true,
         enableMultiPass: true
@@ -327,7 +327,7 @@ describe('Explain API', () => {
         Credit Card: 4532 0151 1283 0366
       `;
 
-      const debug = explainAPI.debug(text);
+      const debug = await explainAPI.debug(text);
 
       expect(debug.explanation.detections.length).toBeGreaterThan(2);
       expect(debug.explanation.summary).toBeDefined();
@@ -335,19 +335,19 @@ describe('Explain API', () => {
   });
 
   describe('Summary statistics', () => {
-    it('should provide accurate summary', () => {
+    it('should provide accurate summary', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
       const explainAPI = detector.explain();
 
       const text = 'Email: admin@business.co.uk, Phone: 07700900123';
-      const explanation = explainAPI.explain(text);
+      const explanation = await explainAPI.explain(text);
 
       expect(explanation.summary.totalPatternsChecked).toBeGreaterThan(0);
       expect(explanation.summary.patternsMatched).toBeGreaterThanOrEqual(explanation.summary.finalDetections);
       expect(explanation.summary.finalDetections).toBe(explanation.detections.length);
     });
 
-    it('should count filtered patterns correctly', () => {
+    it('should count filtered patterns correctly', async () => {
       const detector = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.9 // High threshold
@@ -355,7 +355,7 @@ describe('Explain API', () => {
       const explainAPI = detector.explain();
 
       const text = 'xxxx user@business.co.uk yyyy'; // Weird context
-      const explanation = explainAPI.explain(text);
+      const explanation = await explainAPI.explain(text);
 
       const totalMatched = explanation.matchedPatterns.length + explanation.filteredPatterns.length;
       expect(totalMatched).toBeGreaterThanOrEqual(0);
