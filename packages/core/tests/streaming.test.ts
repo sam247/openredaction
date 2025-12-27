@@ -102,7 +102,7 @@ describe('Streaming API', () => {
 
       for await (const chunk of streaming.processStream(text)) {
         chunks.push(chunk);
-});
+      }
 
       // Email should be in second chunk
       const emailDetection = chunks
