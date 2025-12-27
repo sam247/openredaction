@@ -460,8 +460,7 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('VAT: ZZ123456789');
       expect(negative.detections.some(d => d.type === 'VAT_NUMBER')).toBe(false);
-    }
-  }
+    });
 
   describe('Emergency services patterns', () => {
     it('should detect police report numbers with separators', async () => {
