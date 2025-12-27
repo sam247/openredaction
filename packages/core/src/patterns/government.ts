@@ -57,11 +57,23 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'DRIVING_LICENSE_UK',
-    regex: /\b([A-Z]{5}[\s\u00A0-]?\d{2}[\s\u00A0-]?\d{2}[\s\u00A0-]?\d{2}[\s\u00A0-]?[A-Z]{2}[\s\u00A0-]?\d[\s\u00A0-]?[A-Z]{2})\b/gi,
+    regex: /\b(?:DL|DRIVING|DRIVER(?:'S)?|LICEN[SC]E)?[\s#:-]*(?:NO|NUM(?:BER)?|ID)?[\s#:-]*([A-Z]{5}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?[A-Z]{2}[\s\u00A0.-]?\d[\s\u00A0.-]?[A-Z]{2})\b/gi,
     priority: 90,
     placeholder: '[DRIVING_LICENSE_{n}]',
     description: 'UK Driving License',
-    severity: 'high'
+    severity: 'high',
+    validator: (value: string) => {
+      const normalized = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+      if (!/^[A-Z]{5}\d{6}[A-Z]{2}\d[A-Z]{2}$/.test(normalized)) {
+        return false;
+      }
+      const dob = normalized.slice(5, 11);
+      const month = parseInt(dob.slice(2, 4), 10);
+      const day = parseInt(dob.slice(4, 6), 10);
+      const validMonth = (month >= 1 && month <= 12) || (month >= 51 && month <= 62);
+      const validDay = day >= 1 && day <= 31;
+      return validMonth && validDay;
+    }
   },
   {
     type: 'DRIVING_LICENSE_US',

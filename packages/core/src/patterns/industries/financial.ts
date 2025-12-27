@@ -42,11 +42,18 @@ export const TRANSACTION_ID: PIIPattern = {
  */
 export const INVESTMENT_ACCOUNT: PIIPattern = {
   type: 'INVESTMENT_ACCOUNT',
-  regex: /\b(?:ISA|SIPP|INV(?:ESTMENT)?|PENSION|401K|IRA)[-\s]?(?:ACCOUNT|ACCT|A\/C)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:ISA|SIPP|INV(?:ESTMENT)?|PENSION|401K|IRA)[-\s\u00A0]*(?:ACCOUNT|ACCT|A\/C)?[-\s\u00A0]*(?:NO|NUM(?:BER)?)?[-\s\u00A0.:#]*([A-Z0-9](?:[A-Z0-9][\s\u00A0./-]?){5,18}[A-Z0-9])\b/gi,
   placeholder: '[INV_ACCT_{n}]',
   priority: 85,
   severity: 'high',
-  description: 'Investment and pension account numbers'
+  description: 'Investment and pension account numbers',
+  validator: (value: string, context: string) => {
+    const normalized = value.replace(/[\s\u00A0./-]/g, '');
+    const hasDigits = /\d{4,}/.test(normalized);
+    const validLength = normalized.length >= 6 && normalized.length <= 15;
+    const inContext = /isa|sipp|invest|pension|401k|ira|account|fund/i.test(context);
+    return hasDigits && validLength && inContext;
+  }
 };
 
 /**

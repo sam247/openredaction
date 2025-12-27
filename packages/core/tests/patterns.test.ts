@@ -176,6 +176,24 @@ describe('Pattern Detection', () => {
         expect(result.detections.some(d => d.type === 'SORT_CODE_UK')).toBe(true);
       });
     });
+
+    it('should detect investment account numbers with separators', () => {
+      const shield = new OpenRedaction({ patterns: ['INVESTMENT_ACCOUNT'] });
+
+      const positives = [
+        'ISA account: AB12 34-56 78',
+        'Pension acct #INV-1234-5678',
+        'IRA A/C: ZX-98.76.5432'
+      ];
+
+      positives.forEach(text => {
+        const result = shield.detect(text);
+        expect(result.detections.some(d => d.type === 'INVESTMENT_ACCOUNT')).toBe(true);
+      });
+
+      const negative = shield.detect('Investment account: ABC');
+      expect(negative.detections.some(d => d.type === 'INVESTMENT_ACCOUNT')).toBe(false);
+    });
   });
 
   describe('Government patterns', () => {
@@ -310,13 +328,21 @@ describe('Pattern Detection', () => {
 
       const tests = [
         'License: SMITH901234AB1CD',
-        'Licence SMITH 90 12 34 AB 1 CD'
+        'Licence SMITH 90 12 34 AB 1 CD',
+        'Driving licence: SMITH90.12.34AB1CD'
       ];
 
       tests.forEach(text => {
         const result = shield.detect(text);
         expect(result.detections.some(d => d.type === 'DRIVING_LICENSE_UK')).toBe(true);
       });
+    });
+
+    it('should reject invalid UK driving license dates', () => {
+      const shield = new OpenRedaction({ patterns: ['DRIVING_LICENSE_UK'] });
+
+      const invalid = shield.detect('License: SMITH903332AB1CD');
+      expect(invalid.detections.some(d => d.type === 'DRIVING_LICENSE_UK')).toBe(false);
     });
 
     it('should detect US driving licenses with separators', () => {
@@ -365,6 +391,75 @@ describe('Pattern Detection', () => {
 
       const bcc = shield.detect('Border Crossing Card: BCC 12 34 56789');
       expect(bcc.detections.some(d => d.type === 'BORDER_CROSSING_CARD')).toBe(true);
+    });
+  });
+
+  describe('Emergency services patterns', () => {
+    it('should detect police report numbers with separators', () => {
+      const shield = new OpenRedaction({ patterns: ['POLICE_REPORT_NUMBER'] });
+
+      const tests = [
+        'Police report: PR-2023-000123',
+        'Case #PD 23/0004567'
+      ];
+
+      tests.forEach(text => {
+        const result = shield.detect(text);
+        expect(result.detections.some(d => d.type === 'POLICE_REPORT_NUMBER')).toBe(true);
+      });
+
+      const negative = shield.detect('Report: 2023-12');
+      expect(negative.detections.some(d => d.type === 'POLICE_REPORT_NUMBER')).toBe(false);
+    });
+
+    it('should detect fire incident numbers with separators', () => {
+      const shield = new OpenRedaction({ patterns: ['FIRE_INCIDENT_NUMBER'] });
+
+      const tests = [
+        'Fire incident: FD-2024-012345',
+        'FI report #FD 24.123456'
+      ];
+
+      tests.forEach(text => {
+        const result = shield.detect(text);
+        expect(result.detections.some(d => d.type === 'FIRE_INCIDENT_NUMBER')).toBe(true);
+      });
+    });
+  });
+
+  describe('HR patterns', () => {
+    it('should detect benefits plan numbers with separators', () => {
+      const shield = new OpenRedaction({ patterns: ['BENEFITS_PLAN_NUMBER'] });
+
+      const tests = [
+        'Benefits plan ID: HL-1234 5678',
+        'Insurance plan no. AB/12-3456'
+      ];
+
+      tests.forEach(text => {
+        const result = shield.detect(text);
+        expect(result.detections.some(d => d.type === 'BENEFITS_PLAN_NUMBER')).toBe(true);
+      });
+
+      const negative = shield.detect('Plan ID: ABC');
+      expect(negative.detections.some(d => d.type === 'BENEFITS_PLAN_NUMBER')).toBe(false);
+    });
+
+    it('should detect disciplinary action IDs with separators', () => {
+      const shield = new OpenRedaction({ patterns: ['DISCIPLINARY_ACTION_ID'] });
+
+      const tests = [
+        'Disciplinary action: DA-2024-0007',
+        'Violation ID VI/2023/12345'
+      ];
+
+      tests.forEach(text => {
+        const result = shield.detect(text);
+        expect(result.detections.some(d => d.type === 'DISCIPLINARY_ACTION_ID')).toBe(true);
+      });
+
+      const negative = shield.detect('Warning ID: ABC');
+      expect(negative.detections.some(d => d.type === 'DISCIPLINARY_ACTION_ID')).toBe(false);
     });
   });
 
