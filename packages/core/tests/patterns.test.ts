@@ -96,7 +96,6 @@ describe('Pattern Detection', () => {
         expect(result.detections.some(d => d.type === 'EMPLOYEE_ID')).toBe(true);
       }
     });
-  });
 
   describe('Financial patterns', () => {
     it('should detect credit cards with Luhn validation', async () => {
