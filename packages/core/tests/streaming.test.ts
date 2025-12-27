@@ -377,4 +377,4 @@ describe('Streaming API', () => {
       expect(chunkIndices).toEqual([...chunkIndices].sort((a, b) => a - b));
     });
   });
-};
+});
