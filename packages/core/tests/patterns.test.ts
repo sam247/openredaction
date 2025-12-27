@@ -344,7 +344,7 @@ describe('Pattern Detection', () => {
 
       const result = await shield.detect(mrz);
       expect(result.detections.some(d => d.type === 'PASSPORT_MRZ_TD3')).toBe(true);
-    }
+    });
 
     it('should detect visa MRZ blocks across newline styles', async () => {
       const shield = new OpenRedaction({ patterns: ['VISA_MRZ'] });

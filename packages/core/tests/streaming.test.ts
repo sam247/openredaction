@@ -328,7 +328,7 @@ describe('Streaming API', () => {
         d.value.includes('company.com')
       );
       expect(realEmails.length).toBeGreaterThan(0);
-    }
+    });
 
     it('should work with caching enabled', async () => {
       const detector = new OpenRedaction({ enableCache: true });
