@@ -17,7 +17,7 @@ describe('False Positive Filter', () => {
     it('should detect semver patterns', async () => {
       const result = isFalsePositive('2.0.1', 'PHONE_UK', 'v2.0.1 changelog');
       expect(result.isFalsePositive).toBe(true);
-});
+    });
 
     it('should handle build numbers', async () => {
       const result = isFalsePositive('10.15.7', 'PHONE', 'build 10.15.7');
