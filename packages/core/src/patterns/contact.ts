@@ -27,7 +27,19 @@ export const contactPatterns: PIIPattern[] = [
     priority: 85,
     placeholder: '[PHONE_US_{n}]',
     description: 'US phone number',
-    severity: 'medium'
+    severity: 'medium',
+    validator: (value: string, context: string) => {
+      // Avoid matching version numbers or dates
+      const versionContext = /\b(version|v\d+|release|build)\s*[:\s]*/i;
+      if (versionContext.test(context)) return false;
+      
+      // Avoid matching dates (DD-MM-YYYY, MM-DD-YYYY formats)
+      const cleaned = value.replace(/[\s()-]/g, '');
+      const datePattern = /^\d{2}[-/]\d{2}[-/]\d{4}$/;
+      if (datePattern.test(cleaned)) return false;
+      
+      return true;
+    }
   },
   {
     type: 'PHONE_INTERNATIONAL',

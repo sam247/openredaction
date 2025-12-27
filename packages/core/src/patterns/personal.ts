@@ -17,12 +17,13 @@ export const personalPatterns: PIIPattern[] = [
   },
   {
     type: 'NAME',
-    // Keep pattern conservative; we handle casing variants during replacement, not here.
-    regex: /\b(?:(?:Mr|Mrs|Ms|Miss|Dr|Prof|Professor|Sir|Madam|Lady|Lord|Rev|Father|Sister|Brother)\.?\s+)?((?:\p{Lu}[\p{L}'’.\-]+)(?:\s+\p{Lu}[\p{L}'’.\-]+){1,3})(?:\s+(?:Jr|Sr|II|III|IV|PhD|MD|Esq|DDS|DVM|MBA|CPA)\.?)?\b/gu,
+    // Match names with case variations - handles "John Smith", "john smith", "JOHN SMITH", "Lucy jones", etc.
+    // First word must start with uppercase or be all uppercase; subsequent words can be any case
+    regex: /\b(?:(?:Mr|Mrs|Ms|Miss|Dr|Prof|Professor|Sir|Madam|Lady|Lord|Rev|Father|Sister|Brother)\.?\s+)?((?:[A-Z][a-z'’.\-]+|[A-Z]{2,})(?:\s+(?:[A-Z][a-z'’.\-]+|[A-Z]{2,}|[a-z][a-z'’.\-]+)){1,3})(?:\s+(?:Jr|Sr|II|III|IV|PhD|MD|Esq|DDS|DVM|MBA|CPA)\.?)?\b/g,
     priority: 50,
     validator: validateName,
     placeholder: '[NAME_{n}]',
-    description: 'Person name with salutations/suffixes',
+    description: 'Person name with salutations/suffixes (handles case variations)',
     severity: 'high'
   },
   {
@@ -48,5 +49,24 @@ export const personalPatterns: PIIPattern[] = [
     placeholder: '[DOB_{n}]',
     description: 'Date of birth',
     severity: 'high'
+  },
+  {
+    type: 'DATE',
+    regex: /\b((?:\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4})|(?:\d{1,2}\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{2,4}))\b/gi,
+    priority: 60,
+    placeholder: '[DATE_{n}]',
+    description: 'Date (standalone, without DOB context)',
+    severity: 'medium',
+    validator: (value: string, context: string) => {
+      // Avoid matching years, version numbers, or other numeric patterns
+      const yearPattern = /^(19|20)\d{2}$/;
+      if (yearPattern.test(value.replace(/[\/\-.\s]/g, ''))) return false;
+      
+      // Avoid matching in version/software context
+      const versionContext = /\b(version|v\d+|release|build|update)\s*[:\s]*/i;
+      if (versionContext.test(context)) return false;
+      
+      return true;
+    }
   }
 ];
