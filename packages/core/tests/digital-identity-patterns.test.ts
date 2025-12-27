@@ -271,7 +271,7 @@ describe('Digital Identity Pattern Detection', () => {
         TikTok: @user123
         YouTube channel: UC1234567890abcdefghijkl
         Reddit: u/username123
-        Nintendo Switch: SW-1234-5678-9012
+        Nintendo Switch friend code: SW-1234-5678-9012
         Battle.net: Player#12345
         Xbox gamertag: GamerName123
         PlayStation PSN: PSN_User123
