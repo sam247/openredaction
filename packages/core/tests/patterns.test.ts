@@ -193,7 +193,7 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('Routing number: 021000022');
       expect(negative.detections.some(d => d.type === 'ROUTING_NUMBER_US')).toBe(false);
-    }
+    });
 
     it('should detect IFSC codes with separators', async () => {
       const shield = new OpenRedaction({ patterns: ['IFSC'] });

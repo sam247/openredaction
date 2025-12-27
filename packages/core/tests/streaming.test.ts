@@ -166,7 +166,7 @@ describe('Streaming API', () => {
       expect(result.redacted).not.toBe(text);
       expect(result.redacted).toContain('[EMAIL_');
       expect(result.redactionMap).toBeDefined();
-    }
+    });
 
     it('should produce same result as non-streaming for small text', async () => {
       const detector = new OpenRedaction();
