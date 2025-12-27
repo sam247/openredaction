@@ -206,7 +206,7 @@ describe('Multi-pass Detection', () => {
 
       // Should detect at least AWS key (high priority)
       expect(result.detections.some(d => d.type.includes('AWS'))).toBe(true);
-    }
+    });
 
     it('should support custom number of passes', async () => {
       const redactor2Pass = new OpenRedaction({

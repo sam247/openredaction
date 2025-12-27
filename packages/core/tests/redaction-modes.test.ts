@@ -144,8 +144,8 @@ describe('Redaction Modes', () => {
       expect(result.redacted).toMatch(/j\*+@test\.com/);
       expect(result.redacted).toMatch(/555-\*+-4567/);
       expect(result.redacted).toMatch(/555-\*+-6543/);
-    }
-  }
+    });
+  });
 
   describe('Redaction Map', () => {
     it('should maintain redaction map regardless of mode', async () => {

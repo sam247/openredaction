@@ -23,7 +23,7 @@ describe('Pattern Detection', () => {
 
       const result = await shield.detect('Contact John Smith for details');
       expect(result.detections.some(d => d.type === 'NAME')).toBe(true);
-    }
+    });
 
     it('should detect names with salutations', async () => {
       const shield = new OpenRedaction({ patterns: ['NAME'] });

@@ -34,7 +34,7 @@ describe('Pattern Category Filtering', () => {
 
     // Verify fewer patterns
     expect(patterns.length).toBeLessThan(150);
-  }
+  });
 
   it('should load multiple categories', async () => {
     const shield = new OpenRedaction({

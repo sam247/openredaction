@@ -46,7 +46,7 @@ describe('Streaming API', () => {
 
       for await (const chunk of streaming.processStream(text)) {
         chunks.push(chunk);
-});
+      }
 
       expect(chunks.length).toBe(1);
       expect(chunks[0].chunkIndex).toBe(0);

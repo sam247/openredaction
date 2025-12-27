@@ -41,9 +41,9 @@ describe('Middle East National ID Detection', () => {
 
     it('should detect Iqama (resident ID starting with 2)', async () => {
       const detector = new OpenRedaction({ patterns: ['SAUDI_NATIONAL_ID'] });
-      const result = detector.detect('Iqama number: 2123456789');
+      const result = await detector.detect('Iqama number: 2123456789');
       expect(result.detections.some(d => d.type === 'SAUDI_NATIONAL_ID')).toBe(true);
-});
+    });
 
     it('should require starting with 1 or 2', async () => {
       const detector = new OpenRedaction({ patterns: ['SAUDI_NATIONAL_ID'] });
