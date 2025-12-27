@@ -671,7 +671,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(`Address: ${postcode}`);
         expect(result.detections.some(d => d.type === 'POSTCODE_UK')).toBe(true);
       }
-    }
+    });
 
     it('should detect US ZIP codes', async () => {
       const shield = new OpenRedaction({ patterns: ['ZIP_CODE_US'] });
