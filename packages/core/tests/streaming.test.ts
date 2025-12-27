@@ -95,7 +95,7 @@ describe('Streaming API', () => {
 
     it('should provide correct byte offsets', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
-      const streaming = new StreamingDetector(detector, { chunkSize: 100, overlap: 20 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 100, overlap: 20 });
 
       const text = 'a'.repeat(100) + 'Email: user@business.co.uk' + 'b'.repeat(100);
       const chunks: any[] = [];

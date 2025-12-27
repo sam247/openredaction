@@ -94,9 +94,9 @@ describe('Pattern Detection', () => {
       for (const text of tests) {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'EMPLOYEE_ID')).toBe(true);
-      }
-    }
-  }
+      });
+    });
+  });
 
   describe('Financial patterns', () => {
     it('should detect credit cards with Luhn validation', async () => {

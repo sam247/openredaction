@@ -212,7 +212,8 @@ export function validateName(name: string, context: string): boolean {
     'july', 'august', 'september', 'october', 'november', 'december',
     'mr', 'mrs', 'ms', 'dr', 'sir', 'madam', 'lord', 'lady',
     'personal', 'sensitive', 'information', 'data', 'details', 'content',
-    'document', 'text', 'example', 'simple', 'regular', 'plain'
+    'document', 'text', 'example', 'simple', 'regular', 'plain',
+    'send', 'reply', 'reach', 'write', 'use', 'contact', 'message'
   ];
 
   const nameLower = name.toLowerCase();
