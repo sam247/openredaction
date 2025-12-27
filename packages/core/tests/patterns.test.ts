@@ -443,7 +443,7 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('UTR: 12345 6789');
       expect(negative.detections.some(d => d.type === 'UTR_UK')).toBe(false);
-    }
+    });
 
     it('should detect VAT numbers with separators', async () => {
       const shield = new OpenRedaction({ patterns: ['VAT_NUMBER'] });
