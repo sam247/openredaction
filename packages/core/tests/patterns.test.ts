@@ -492,8 +492,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'FIRE_INCIDENT_NUMBER')).toBe(true);
       }
-    }
-  }
+    });
 
   describe('HR patterns', () => {
     it('should detect benefits plan numbers with separators', async () => {
