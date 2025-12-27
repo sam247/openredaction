@@ -179,7 +179,7 @@ describe('Streaming API', () => {
 
       expect(streamResult.detections.length).toBe(normalResult.detections.length);
       expect(streamResult.redacted).toBe(normalResult.redacted);
-    }
+    });
 
     it('should handle empty text', async () => {
       const detector = new OpenRedaction();

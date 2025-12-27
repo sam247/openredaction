@@ -210,7 +210,7 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('IFSC: HDFC 1 000123');
       expect(negative.detections.some(d => d.type === 'IFSC')).toBe(false);
-    }
+    });
 
     it('should detect investment account numbers with separators', async () => {
       const shield = new OpenRedaction({ patterns: ['INVESTMENT_ACCOUNT'] });
