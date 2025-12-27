@@ -36,9 +36,9 @@ describe('Multi-pass Detection', () => {
         // Check that patterns are sorted in descending priority order
         for (let i = 0; i < patterns.length - 1; i++) {
           expect(patterns[i].priority).toBeGreaterThanOrEqual(patterns[i + 1].priority);
-        }
-      }
-    }
+});
+});
+});
 
     it('should respect includeTypes filter', async () => {
       const passes = [{
@@ -63,14 +63,14 @@ describe('Multi-pass Detection', () => {
     it('should create 3-pass configuration by default', async () => {
       const passes = createSimpleMultiPass();
       expect(passes.length).toBe(3);
-    }
+});
 
     it('should prioritize credentials when requested', async () => {
       const passes = createSimpleMultiPass({ prioritizeCredentials: true }
       expect(passes[0].name).toBe('credentials');
       expect(passes[0].includeTypes).toContain('API_KEY');
       expect(passes[0].includeTypes).toContain('TOKEN');
-    }
+});
 
     it('should create custom number of passes', async () => {
       const passes = createSimpleMultiPass({ numPasses: 4 }
@@ -81,8 +81,8 @@ describe('Multi-pass Detection', () => {
 
       const passes2 = createSimpleMultiPass({ numPasses: 2 }
       expect(passes2.length).toBe(2);
-    }
-  }
+});
+});
 
   describe('mergePassDetections', () => {
     it('should merge detections from multiple passes', async () => {
@@ -162,19 +162,19 @@ describe('Multi-pass Detection', () => {
       expect(result.detections.length).toBeGreaterThan(0);
       expect(result.detections.some(d => d.type.includes('AWS'))).toBe(true);
       expect(result.detections.some(d => d.type === 'EMAIL')).toBe(true);
-    }
+});
 
     it('should work when multi-pass is enabled', async () => {
-      const redactor = new OpenRedaction({ enableMultiPass: true }
+      const redactor = new OpenRedaction({ enableMultiPass: true });
       const result = await redactor.detect('API Key: AKIA1234567890ABCDEF, Email: user@company.com');
 
       expect(result.detections.length).toBeGreaterThan(0);
       // Should detect at least the AWS key
       expect(result.detections.some(d => d.type.includes('AWS'))).toBe(true);
-    }
+});
 
     it('should prioritize credentials in multi-pass mode', async () => {
-      const redactor = new OpenRedaction({ enableMultiPass: true }
+      const redactor = new OpenRedaction({ enableMultiPass: true });
       const text = 'GitHub token: ghp_1234567890abcdefghij1234567890abcd and email user@company.com';
       const result = await redactor.detect(text);
 
@@ -192,7 +192,7 @@ describe('Multi-pass Detection', () => {
     }
 
     it('should handle mixed priority patterns correctly', async () => {
-      const redactor = new OpenRedaction({ enableMultiPass: true }
+      const redactor = new OpenRedaction({ enableMultiPass: true });
       const text = `
         Credit Card: 4532015112830366
         Email: john.smith@company.com
@@ -212,13 +212,11 @@ describe('Multi-pass Detection', () => {
       const redactor2Pass = new OpenRedaction({
         enableMultiPass: true,
         multiPassCount: 2
-      }
-
+      });
       const redactor5Pass = new OpenRedaction({
         enableMultiPass: true,
         multiPassCount: 5
-      }
-
+      });
       const text = 'Email: user@company.com, Phone: 07700900123';
 
       const result2 = await redactor2Pass.detect(text);
@@ -229,8 +227,8 @@ describe('Multi-pass Detection', () => {
     }
 
     it('should maintain consistency between single and multi-pass', async () => {
-      const singlePass = new OpenRedaction({ enableMultiPass: false }
-      const multiPass = new OpenRedaction({ enableMultiPass: true }
+      const singlePass = new OpenRedaction({ enableMultiPass: false });
+      const multiPass = new OpenRedaction({ enableMultiPass: true });
 
       const text = 'API Key: AKIA1234567890ABCDEF';
 
@@ -248,11 +246,11 @@ describe('Multi-pass Detection', () => {
     }
 
     it('should not break with no detections', async () => {
-      const redactor = new OpenRedaction({ enableMultiPass: true }
+      const redactor = new OpenRedaction({ enableMultiPass: true });
       const result = await redactor.detect('This is plain text with no PII');
 
       expect(result.detections.length).toBe(0);
       expect(result.redacted).toBe('This is plain text with no PII');
-    }
-  }
-}
+});
+});
+});

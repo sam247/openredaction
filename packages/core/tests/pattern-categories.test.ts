@@ -6,7 +6,7 @@ describe('Pattern Category Filtering', () => {
     const shield = new OpenRedaction({
       categories: ['personal'],
       debug: true
-    }
+    });
 
     const patterns = shield.getPatterns();
     const patternTypes = patterns.map(p => p.type);
@@ -25,8 +25,7 @@ describe('Pattern Category Filtering', () => {
   it('should load only financial category patterns', async () => {
     const shield = new OpenRedaction({
       categories: ['financial']
-    }
-
+    });
     const patterns = shield.getPatterns();
     const patternTypes = patterns.map(p => p.type);
 
@@ -40,8 +39,7 @@ describe('Pattern Category Filtering', () => {
   it('should load multiple categories', async () => {
     const shield = new OpenRedaction({
       categories: ['personal', 'contact', 'network']
-    }
-
+    });
     const patterns = shield.getPatterns();
     const patternTypes = patterns.map(p => p.type);
 
@@ -65,7 +63,7 @@ describe('Pattern Category Filtering', () => {
     // Only personal and network categories
     const shieldFiltered = new OpenRedaction({
       categories: ['personal', 'network']
-    }
+    });
     const startFiltered = performance.now();
     const resultFiltered = await shieldFiltered.detect(text);
     const timeFiltered = performance.now() - startFiltered;
@@ -84,13 +82,12 @@ describe('Pattern Category Filtering', () => {
   it('should handle unknown categories gracefully', async () => {
     const shield = new OpenRedaction({
       categories: ['personal', 'unknown-category', 'financial']
-    }
-
+    });
     const patterns = shield.getPatterns();
 
     // Should still load known categories
     expect(patterns.length).toBeGreaterThan(0);
-  }
+});
 
   it('should prioritize categories over includeNames/includeEmails', async () => {
     // Categories should take priority over include* options
@@ -98,8 +95,7 @@ describe('Pattern Category Filtering', () => {
       categories: ['financial'], // Only financial
       includeNames: false, // This should be ignored when categories are set
       includeEmails: false // This should be ignored when categories are set
-    }
-
+    });
     const patterns = shield.getPatterns();
     const patternTypes = patterns.map(p => p.type);
 
@@ -117,7 +113,7 @@ describe('Pattern Category Filtering', () => {
         placeholder: '[CUSTOM_ID_{n}]',
         description: 'Custom ID format'
       }]
-    }
+});
 
     const patterns = shield.getPatterns();
     const patternTypes = patterns.map(p => p.type);

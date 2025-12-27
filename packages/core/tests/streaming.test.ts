@@ -14,7 +14,7 @@ describe('Streaming API', () => {
 
       expect(streaming).toBeDefined();
       expect(streaming).toBeInstanceOf(StreamingDetector);
-    }
+    });
 
     it('should create streaming detector with custom options', async () => {
       const detector = new OpenRedaction();
@@ -22,10 +22,10 @@ describe('Streaming API', () => {
         chunkSize: 1024,
         overlap: 50,
         progressiveRedaction: false
-      }
+});
 
       expect(streaming).toBeDefined();
-    }
+});
 
     it('should create using helper function', async () => {
       const detector = new OpenRedaction();
@@ -33,8 +33,8 @@ describe('Streaming API', () => {
 
       expect(streaming).toBeDefined();
       expect(streaming).toBeInstanceOf(StreamingDetector);
-    }
-  }
+});
+});
 
   describe('Chunk processing', () => {
     it('should process small text in single chunk', async () => {
@@ -46,7 +46,7 @@ describe('Streaming API', () => {
 
       for await (const chunk of streaming.processStream(text)) {
         chunks.push(chunk);
-      }
+});
 
       expect(chunks.length).toBe(1);
       expect(chunks[0].chunkIndex).toBe(0);
@@ -63,7 +63,7 @@ describe('Streaming API', () => {
 
       for await (const chunk of streaming.processStream(text)) {
         chunks.push(chunk);
-      }
+});
 
       expect(chunks.length).toBeGreaterThan(1);
       expect(chunks[0].chunkIndex).toBe(0);
@@ -75,7 +75,7 @@ describe('Streaming API', () => {
       const streaming = new StreamingDetector(detector, {
         chunkSize: 50,
         overlap: 30
-      }
+});
 
       // Create text where email spans potential chunk boundary
       const text = 'Contact info: john.smith@company.com for more details';
@@ -94,7 +94,7 @@ describe('Streaming API', () => {
     }
 
     it('should provide correct byte offsets', async () => {
-      const detector = new OpenRedaction({ enableContextAnalysis: false }
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const streaming = new StreamingDetector(detector, { chunkSize: 100, overlap: 20 }
 
       const text = 'a'.repeat(100) + 'Email: user@business.co.uk' + 'b'.repeat(100);
@@ -102,7 +102,7 @@ describe('Streaming API', () => {
 
       for await (const chunk of streaming.processStream(text)) {
         chunks.push(chunk);
-      }
+});
 
       // Email should be in second chunk
       const emailDetection = chunks
@@ -118,7 +118,7 @@ describe('Streaming API', () => {
       const streaming = new StreamingDetector(detector, {
         chunkSize: 100,
         progressiveRedaction: true
-      }
+});
 
       const text = 'Email: user@company.com and another email: admin@company.com';
       const chunks: any[] = [];
@@ -141,7 +141,7 @@ describe('Streaming API', () => {
 
       for await (const chunk of streaming.processStream(text)) {
         chunks.push(chunk);
-      }
+});
 
       expect(chunks[0].originalChunk).toBe(text);
       expect(chunks[0].originalChunk).toContain('user@company.com');
@@ -189,7 +189,7 @@ describe('Streaming API', () => {
 
       expect(result.detections.length).toBe(0);
       expect(result.redacted).toBe('');
-    }
+});
 
     it('should handle text with no PII', async () => {
       const detector = new OpenRedaction();
@@ -200,7 +200,7 @@ describe('Streaming API', () => {
 
       expect(result.detections.length).toBe(0);
       expect(result.redacted).toBe(text);
-    }
+});
 
     it('should handle large documents efficiently', async () => {
       const detector = new OpenRedaction();
@@ -233,7 +233,7 @@ describe('Streaming API', () => {
       const streaming = new StreamingDetector(detector, {
         chunkSize: 1000,
         overlap: 100
-      }
+});
 
       const stats = streaming.getChunkStats(5000);
 
@@ -263,11 +263,11 @@ describe('Streaming API', () => {
 
   describe('Edge cases', () => {
     it('should handle PII near chunk boundaries with sufficient overlap', async () => {
-      const detector = new OpenRedaction({ enableContextAnalysis: false }
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const streaming = new StreamingDetector(detector, {
         chunkSize: 50,
         overlap: 30 // Sufficient overlap to catch most patterns
-      }
+});
 
       // Create text with email
       const text = 'For inquiries: user@business.co.uk or call 07700900123';
@@ -294,10 +294,10 @@ describe('Streaming API', () => {
       expect(result.detections.length).toBeGreaterThan(0);
       expect(result.redacted).toContain('测试');
       expect(result.redacted).toContain('🎉');
-    }
+});
 
     it('should handle very long documents', async () => {
-      const detector = new OpenRedaction({ enableContextAnalysis: false }
+      const detector = new OpenRedaction({ enableContextAnalysis: false });
       const streaming = new StreamingDetector(detector, { chunkSize: 100 }
 
       // Create a long document with PII in the middle
@@ -313,7 +313,7 @@ describe('Streaming API', () => {
     }
 
     it('should work with context analysis enabled', async () => {
-      const detector = new OpenRedaction({ enableContextAnalysis: true }
+      const detector = new OpenRedaction({ enableContextAnalysis: true });
       const streaming = new StreamingDetector(detector, { chunkSize: 200 }
 
       const text = `
@@ -331,7 +331,7 @@ describe('Streaming API', () => {
     }
 
     it('should work with caching enabled', async () => {
-      const detector = new OpenRedaction({ enableCache: true }
+      const detector = new OpenRedaction({ enableCache: true });
       const streaming = new StreamingDetector(detector, { chunkSize: 100 }
 
       const text = 'Email: user@company.com. '.repeat(10);
@@ -371,7 +371,7 @@ describe('Streaming API', () => {
 
       for await (const chunk of streaming.processStream(text)) {
         chunkIndices.push(chunk.chunkIndex);
-      }
+});
 
       // Chunks should be processed in order
       expect(chunkIndices).toEqual([...chunkIndices].sort((a, b) => a - b));

@@ -4,7 +4,7 @@ import { OpenRedaction } from '../src/detector';
 describe('Pattern Detection', () => {
   describe('Personal patterns', () => {
     it('should detect email addresses', async () => {
-      const shield = new OpenRedaction({ patterns: ['EMAIL'] }
+      const shield = new OpenRedaction({ patterns: ['EMAIL'] });
 
       const tests = [
         'john@example.com',
@@ -19,21 +19,21 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect names', async () => {
-      const shield = new OpenRedaction({ patterns: ['NAME'] }
+      const shield = new OpenRedaction({ patterns: ['NAME'] });
 
       const result = await shield.detect('Contact John Smith for details');
       expect(result.detections.some(d => d.type === 'NAME')).toBe(true);
     }
 
     it('should detect names with salutations', async () => {
-      const shield = new OpenRedaction({ patterns: ['NAME'] }
+      const shield = new OpenRedaction({ patterns: ['NAME'] });
 
       const result = await shield.detect('Please ask Mr James Smith to join');
       expect(result.detections.some(d => d.type === 'NAME')).toBe(true);
     }
 
     it('should detect Unicode and hyphenated names', async () => {
-      const shield = new OpenRedaction({ patterns: ['NAME'] }
+      const shield = new OpenRedaction({ patterns: ['NAME'] });
 
       const samples = [
         'Contact María-José O’Connor for details',
@@ -47,7 +47,7 @@ describe('Pattern Detection', () => {
     }
 
     it('redacts the same name across casing variants', async () => {
-      const shield = new OpenRedaction({ patterns: ['NAME'] }
+      const shield = new OpenRedaction({ patterns: ['NAME'] });
       const input = 'hi my name is james smith James Smith JAMES SMITH';
 
       const { redacted } = await shield.detect(input);
@@ -59,7 +59,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should avoid matching non-name phrases', async () => {
-      const shield = new OpenRedaction({ patterns: ['NAME'] }
+      const shield = new OpenRedaction({ patterns: ['NAME'] });
 
       const samples = [
         'the system name is james db',
@@ -73,7 +73,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should avoid matching short generic tokens as names', async () => {
-      const shield = new OpenRedaction({ patterns: ['NAME'] }
+      const shield = new OpenRedaction({ patterns: ['NAME'] });
 
       const samples = ['the ACME system rebooted', 'TOKEN ABC triggered an alert'];
       for (const text of samples) {
@@ -83,7 +83,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect employee IDs', async () => {
-      const shield = new OpenRedaction({ patterns: ['EMPLOYEE_ID'] }
+      const shield = new OpenRedaction({ patterns: ['EMPLOYEE_ID'] });
 
       const tests = [
         'EMP-12345',
@@ -100,7 +100,7 @@ describe('Pattern Detection', () => {
 
   describe('Financial patterns', () => {
     it('should detect credit cards with Luhn validation', async () => {
-      const shield = new OpenRedaction({ patterns: ['CREDIT_CARD'] }
+      const shield = new OpenRedaction({ patterns: ['CREDIT_CARD'] });
 
       // Valid cards
       const validCards = [
@@ -122,7 +122,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect IBAN with varied separators and casing', async () => {
-      const shield = new OpenRedaction({ patterns: ['IBAN'] }
+      const shield = new OpenRedaction({ patterns: ['IBAN'] });
 
       const positives = [
         'Account: GB82WEST12345698765432',
@@ -141,7 +141,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect UK bank accounts', async () => {
-      const shield = new OpenRedaction({ patterns: ['BANK_ACCOUNT_UK'] }
+      const shield = new OpenRedaction({ patterns: ['BANK_ACCOUNT_UK'] });
 
       const positives = [
         'Account: 12345678',
@@ -162,7 +162,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect UK sort codes', async () => {
-      const shield = new OpenRedaction({ patterns: ['SORT_CODE_UK'] }
+      const shield = new OpenRedaction({ patterns: ['SORT_CODE_UK'] });
 
       const tests = [
         'Sort code: 12-34-56',
@@ -178,7 +178,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect US routing numbers with separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['ROUTING_NUMBER_US'] }
+      const shield = new OpenRedaction({ patterns: ['ROUTING_NUMBER_US'] });
 
       const positives = [
         'Routing number: 021000021',
@@ -196,7 +196,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect IFSC codes with separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['IFSC'] }
+      const shield = new OpenRedaction({ patterns: ['IFSC'] });
 
       const positives = [
         'IFSC: HDFC 0 000123',
@@ -213,7 +213,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect investment account numbers with separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['INVESTMENT_ACCOUNT'] }
+      const shield = new OpenRedaction({ patterns: ['INVESTMENT_ACCOUNT'] });
 
       const positives = [
         'ISA account: AB12 34-56 78',
@@ -233,7 +233,7 @@ describe('Pattern Detection', () => {
 
   describe('Government patterns', () => {
     it('should detect US SSN', async () => {
-      const shield = new OpenRedaction({ patterns: ['SSN'] }
+      const shield = new OpenRedaction({ patterns: ['SSN'] });
 
       const tests = [
         'SSN: 123-45-6789',
@@ -248,7 +248,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect UK National Insurance with flexible separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['NATIONAL_INSURANCE_UK'] }
+      const shield = new OpenRedaction({ patterns: ['NATIONAL_INSURANCE_UK'] });
 
       const positives = [
         'NINO: AB123456C',
@@ -274,7 +274,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect NHS numbers with mixed separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['NHS_NUMBER'] }
+      const shield = new OpenRedaction({ patterns: ['NHS_NUMBER'] });
 
       const positives = [
         'NHS: 943 476 5919',
@@ -292,7 +292,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect UK passports with varied separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['PASSPORT_UK'] }
+      const shield = new OpenRedaction({ patterns: ['PASSPORT_UK'] });
 
       const tests = [
         'Passport: 123456789',
@@ -307,7 +307,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect US passports with mixed casing and separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['PASSPORT_US'] }
+      const shield = new OpenRedaction({ patterns: ['PASSPORT_US'] });
 
       const tests = [
         'passport: a12 345 678',
@@ -322,7 +322,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect MRZ TD1 blocks with Windows and Unix newlines', async () => {
-      const shield = new OpenRedaction({ patterns: ['PASSPORT_MRZ_TD1'] }
+      const shield = new OpenRedaction({ patterns: ['PASSPORT_MRZ_TD1'] });
 
       const mrz = [
         'I<UTOD231458907<<<<<<<<<<<<<<<',
@@ -335,7 +335,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect MRZ TD3 blocks across newline styles', async () => {
-      const shield = new OpenRedaction({ patterns: ['PASSPORT_MRZ_TD3'] }
+      const shield = new OpenRedaction({ patterns: ['PASSPORT_MRZ_TD3'] });
 
       const mrz = [
         'P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<',
@@ -347,7 +347,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect visa MRZ blocks across newline styles', async () => {
-      const shield = new OpenRedaction({ patterns: ['VISA_MRZ'] }
+      const shield = new OpenRedaction({ patterns: ['VISA_MRZ'] });
 
       const mrz = [
         'V<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<',
@@ -359,7 +359,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect UK driving licenses', async () => {
-      const shield = new OpenRedaction({ patterns: ['DRIVING_LICENSE_UK'] }
+      const shield = new OpenRedaction({ patterns: ['DRIVING_LICENSE_UK'] });
 
       const tests = [
         'License: SMITH901234AB1CD',
@@ -374,14 +374,14 @@ describe('Pattern Detection', () => {
     }
 
     it('should reject invalid UK driving license dates', async () => {
-      const shield = new OpenRedaction({ patterns: ['DRIVING_LICENSE_UK'] }
+      const shield = new OpenRedaction({ patterns: ['DRIVING_LICENSE_UK'] });
 
       const invalid = await shield.detect('License: SMITH903332AB1CD');
       expect(invalid.detections.some(d => d.type === 'DRIVING_LICENSE_UK')).toBe(false);
     }
 
     it('should detect US driving licenses with separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['DRIVING_LICENSE_US'] }
+      const shield = new OpenRedaction({ patterns: ['DRIVING_LICENSE_US'] });
 
       const tests = [
         "driver's license: A123-456-7890",
@@ -395,7 +395,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect tax IDs with dotted or non-breaking separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['TAX_ID'] }
+      const shield = new OpenRedaction({ patterns: ['TAX_ID'] });
 
       const tests = [
         'EIN: 12.3456789',
@@ -409,7 +409,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect travel and immigration document numbers with spacing', async () => {
-      const shield = new OpenRedaction({ patterns: ['TRAVEL_DOCUMENT_NUMBER', 'IMMIGRATION_NUMBER'] }
+      const shield = new OpenRedaction({ patterns: ['TRAVEL_DOCUMENT_NUMBER', 'IMMIGRATION_NUMBER'] });
 
       const travel = await shield.detect('Travel doc: TD 12 34 56 78');
       expect(travel.detections.some(d => d.type === 'TRAVEL_DOCUMENT_NUMBER')).toBe(true);
@@ -419,7 +419,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect visa numbers and border crossing cards with separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['VISA_NUMBER', 'BORDER_CROSSING_CARD'] }
+      const shield = new OpenRedaction({ patterns: ['VISA_NUMBER', 'BORDER_CROSSING_CARD'] });
 
       const visa = await shield.detect('VISA: V12-3456-78');
       expect(visa.detections.some(d => d.type === 'VISA_NUMBER')).toBe(true);
@@ -429,7 +429,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect UK UTR numbers with separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['UTR_UK'] }
+      const shield = new OpenRedaction({ patterns: ['UTR_UK'] });
 
       const positives = [
         'UTR: 12345 67890',
@@ -446,7 +446,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect VAT numbers with separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['VAT_NUMBER'] }
+      const shield = new OpenRedaction({ patterns: ['VAT_NUMBER'] });
 
       const positives = [
         'VAT: GB 123 4567 89',
@@ -465,7 +465,7 @@ describe('Pattern Detection', () => {
 
   describe('Emergency services patterns', () => {
     it('should detect police report numbers with separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['POLICE_REPORT_NUMBER'] }
+      const shield = new OpenRedaction({ patterns: ['POLICE_REPORT_NUMBER'] });
 
       const tests = [
         'Police report: PR-2023-000123',
@@ -482,7 +482,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect fire incident numbers with separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['FIRE_INCIDENT_NUMBER'] }
+      const shield = new OpenRedaction({ patterns: ['FIRE_INCIDENT_NUMBER'] });
 
       const tests = [
         'Fire incident: FD-2024-012345',
@@ -498,7 +498,7 @@ describe('Pattern Detection', () => {
 
   describe('HR patterns', () => {
     it('should detect benefits plan numbers with separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['BENEFITS_PLAN_NUMBER'] }
+      const shield = new OpenRedaction({ patterns: ['BENEFITS_PLAN_NUMBER'] });
 
       const tests = [
         'Benefits plan ID: HL-1234 5678',
@@ -515,7 +515,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect disciplinary action IDs with separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['DISCIPLINARY_ACTION_ID'] }
+      const shield = new OpenRedaction({ patterns: ['DISCIPLINARY_ACTION_ID'] });
 
       const tests = [
         'Disciplinary action: DA-2024-0007',
@@ -534,7 +534,7 @@ describe('Pattern Detection', () => {
 
   describe('Healthcare patterns', () => {
     it('should detect provider licenses with varied separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['PROVIDER_LICENSE'] }
+      const shield = new OpenRedaction({ patterns: ['PROVIDER_LICENSE'] });
 
       const positives = [
         'Physician licence no: CA-1234-5678',
@@ -558,7 +558,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect NPI numbers with dotted or spaced separators', async () => {
-      const shield = new OpenRedaction({ patterns: ['NPI_NUMBER'] }
+      const shield = new OpenRedaction({ patterns: ['NPI_NUMBER'] });
 
       const positives = ['NPI: 1000 0000 08', 'npi# 1000.0000.08'];
       for (const text of positives) {
@@ -571,7 +571,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect DEA numbers with spacing and checksum validation', async () => {
-      const shield = new OpenRedaction({ patterns: ['DEA_NUMBER'] }
+      const shield = new OpenRedaction({ patterns: ['DEA_NUMBER'] });
 
       const positive = await shield.detect('DEA # AB 123 456 3');
       expect(positive.detections.some(d => d.type === 'DEA_NUMBER')).toBe(true);
@@ -581,7 +581,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect medical image references with hyphens and dots', async () => {
-      const shield = new OpenRedaction({ patterns: ['MEDICAL_IMAGE_REF'] }
+      const shield = new OpenRedaction({ patterns: ['MEDICAL_IMAGE_REF'] });
 
       const result = await shield.detect('MRI image file: image_2024-05-01.dcm');
       expect(result.detections.some(d => d.type === 'MEDICAL_IMAGE_REF')).toBe(true);
@@ -591,7 +591,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect biometric identifiers with separators and reject short tokens', async () => {
-      const shield = new OpenRedaction({ patterns: ['BIOMETRIC_ID'] }
+      const shield = new OpenRedaction({ patterns: ['BIOMETRIC_ID'] });
 
       const result = await shield.detect('Biometric hash: biometric-id# FACE_1234-ABCD');
       expect(result.detections.some(d => d.type === 'BIOMETRIC_ID')).toBe(true);
@@ -603,7 +603,7 @@ describe('Pattern Detection', () => {
 
   describe('Contact patterns', () => {
     it('should detect UK mobile phones', async () => {
-      const shield = new OpenRedaction({ patterns: ['PHONE_UK_MOBILE'] }
+      const shield = new OpenRedaction({ patterns: ['PHONE_UK_MOBILE'] });
 
       const tests = [
         '07700900123',
@@ -617,7 +617,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect US phones', async () => {
-      const shield = new OpenRedaction({ patterns: ['PHONE_US'] }
+      const shield = new OpenRedaction({ patterns: ['PHONE_US'] });
 
       const tests = [
         '(555) 123-4567',
@@ -633,7 +633,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect UK mobile and landline formats', async () => {
-      const shield = new OpenRedaction({ patterns: ['PHONE_UK_MOBILE', 'PHONE_UK'] }
+      const shield = new OpenRedaction({ patterns: ['PHONE_UK_MOBILE', 'PHONE_UK'] });
 
       const tests = [
         '+44 7700 900 123',
@@ -649,7 +649,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect international phones with extensions', async () => {
-      const shield = new OpenRedaction({ patterns: ['PHONE_INTERNATIONAL'] }
+      const shield = new OpenRedaction({ patterns: ['PHONE_INTERNATIONAL'] });
 
       const tests = ['+33 1 23 45 67 89', '+81-(3)-1234-5678 x321'];
 
@@ -660,7 +660,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect UK postcodes', async () => {
-      const shield = new OpenRedaction({ patterns: ['POSTCODE_UK'] }
+      const shield = new OpenRedaction({ patterns: ['POSTCODE_UK'] });
 
       const tests = [
         'SW1A 1AA',
@@ -675,7 +675,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect US ZIP codes', async () => {
-      const shield = new OpenRedaction({ patterns: ['ZIP_CODE_US'] }
+      const shield = new OpenRedaction({ patterns: ['ZIP_CODE_US'] });
 
       const tests = [
         '12345',
@@ -689,7 +689,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect street addresses', async () => {
-      const shield = new OpenRedaction({ patterns: ['ADDRESS_STREET'] }
+      const shield = new OpenRedaction({ patterns: ['ADDRESS_STREET'] });
 
       const tests = [
         '123 Main Street',
@@ -705,7 +705,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should parse multiple date formats for DOB', async () => {
-      const shield = new OpenRedaction({ patterns: ['DATE_OF_BIRTH'] }
+      const shield = new OpenRedaction({ patterns: ['DATE_OF_BIRTH'] });
 
       const tests = [
         'DOB: 5-03-1980',
@@ -722,14 +722,14 @@ describe('Pattern Detection', () => {
 
   describe('Network patterns', () => {
     it('should detect IPv4 addresses', async () => {
-      const shield = new OpenRedaction({ patterns: ['IPV4'] }
+      const shield = new OpenRedaction({ patterns: ['IPV4'] });
 
       const result = await shield.detect('Server: 203.0.113.42');
       expect(result.detections.some(d => d.type === 'IPV4')).toBe(true);
     }
 
     it('should not detect private IPv4 addresses', async () => {
-      const shield = new OpenRedaction({ patterns: ['IPV4'] }
+      const shield = new OpenRedaction({ patterns: ['IPV4'] });
 
       const privateIPs = [
         '192.168.1.1',
@@ -744,14 +744,14 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect IPv6 addresses', async () => {
-      const shield = new OpenRedaction({ patterns: ['IPV6'] }
+      const shield = new OpenRedaction({ patterns: ['IPV6'] });
 
       const result = await shield.detect('Server: 2001:0db8:85a3:0000:0000:8a2e:0370:7334');
       expect(result.detections.some(d => d.type === 'IPV6')).toBe(true);
     }
 
     it('should detect MAC addresses', async () => {
-      const shield = new OpenRedaction({ patterns: ['MAC_ADDRESS'] }
+      const shield = new OpenRedaction({ patterns: ['MAC_ADDRESS'] });
 
       const tests = [
         '00:1B:44:11:3A:B7',
@@ -765,7 +765,7 @@ describe('Pattern Detection', () => {
     }
 
     it('should detect URLs with credentials', async () => {
-      const shield = new OpenRedaction({ patterns: ['URL_WITH_AUTH'] }
+      const shield = new OpenRedaction({ patterns: ['URL_WITH_AUTH'] });
 
       const result = await shield.detect('Connect: https://user:pass@example.com/path');
       expect(result.detections.some(d => d.type === 'URL_WITH_AUTH')).toBe(true);
