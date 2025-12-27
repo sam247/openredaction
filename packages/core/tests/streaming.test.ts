@@ -224,8 +224,8 @@ describe('Streaming API', () => {
 
       expect(result.detections.length).toBeGreaterThan(0);
       expect(duration).toBeLessThan(1000); // Should complete in < 1 second
-    }
-  }
+    });
+  });
 
   describe('Chunk statistics', () => {
     it('should calculate chunk statistics correctly', async () => {

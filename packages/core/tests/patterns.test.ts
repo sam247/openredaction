@@ -245,7 +245,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'SSN')).toBe(true);
       }
-    }
+    });
 
     it('should detect UK National Insurance with flexible separators', async () => {
       const shield = new OpenRedaction({ patterns: ['NATIONAL_INSURANCE_UK'] });
