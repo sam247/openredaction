@@ -371,7 +371,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'DRIVING_LICENSE_UK')).toBe(true);
       }
-    }
+    });
 
     it('should reject invalid UK driving license dates', async () => {
       const shield = new OpenRedaction({ patterns: ['DRIVING_LICENSE_UK'] });

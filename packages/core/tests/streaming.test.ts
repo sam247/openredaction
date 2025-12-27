@@ -341,8 +341,8 @@ describe('Streaming API', () => {
       const result2 = await streaming.processComplete(text);
 
       expect(result1.detections.length).toBe(result2.detections.length);
-    }
-  }
+    });
+  });
 
   describe('Memory efficiency', () => {
     it('should not load entire document into memory for streaming', async () => {
