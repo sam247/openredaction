@@ -16,14 +16,14 @@
     "dist/index.js",
     "dist/index.mjs",
     "dist/index.d.ts",
-    "dist/index.d.mts",
-    "dist/chunk-*.mjs",
-    "dist/chunk-*.mjs.map",
     "!dist/*.cli.js",
     "!dist/cli/",
+    "!dist/chunk-*.mjs",
+    "!dist/chunk-*.mjs.map",
     "!dist/workers-*.mjs",
     "!dist/document-*.mjs",
-    "!dist/HealthCheck-*.mjs"
+    "!dist/HealthCheck-*.mjs",
+    "!README.md"
   ],
   "scripts": {
     "build": "tsup",
