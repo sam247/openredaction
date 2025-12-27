@@ -1,6 +1,6 @@
 {
   "name": "openredaction",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Production-ready PII detection and redaction library with 558+ patterns, document processing, OCR, RBAC, and enterprise features",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
