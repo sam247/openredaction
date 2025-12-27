@@ -211,11 +211,18 @@ export const BIOBANK_SAMPLE_ID: PIIPattern = {
  */
 export const PROVIDER_LICENSE: PIIPattern = {
   type: 'PROVIDER_LICENSE',
-  regex: /\b(?:MEDICAL|PHYSICIAN|DOCTOR|NURSE|PROVIDER)[-\s]?(?:LICENSE|LICENCE|LIC)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex:
+    /\b(?:MEDICAL|PHYSICIAN|DOCTOR|NURSE|PROVIDER)[-\s\u00A0]*(?:LICENSE|LICENCE|LIC)[-\s\u00A0]*(?:NO|NUM(?:BER)?)?[-\s\u00A0.:#]*((?:[A-Z0-9]{2,6}[\s\u00A0./-]?){1,3}[A-Z0-9]{2,6})\b/gi,
   placeholder: '[PROVIDER_LIC_{n}]',
   priority: 80,
   severity: 'high',
-  description: 'Healthcare provider license numbers'
+  description: 'Healthcare provider license numbers',
+  validator: (value: string) => {
+    const normalized = value.replace(/[^A-Za-z0-9]/g, '');
+    if (normalized.length < 6 || normalized.length > 18) return false;
+
+    return /[A-Z]/i.test(normalized) && /\d/.test(normalized);
+  }
 };
 
 /**
@@ -224,7 +231,7 @@ export const PROVIDER_LICENSE: PIIPattern = {
  */
 export const NPI_NUMBER: PIIPattern = {
   type: 'NPI_NUMBER',
-  regex: /\b(?:NPI[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*)?(\d{10})\b/g,
+  regex: /\b(?:NPI[-\s\u00A0]*(?:NO|NUM(?:BER)?)?[-\s\u00A0.:#]*)?((?:\d[\s\u00A0.-]?){10})\b/g,
   placeholder: '[NPI_{n}]',
   priority: 85,
   severity: 'high',
@@ -236,7 +243,9 @@ export const NPI_NUMBER: PIIPattern = {
     }
 
     // Luhn checksum validation
-    const digits = value.split('').map(Number);
+    const digits = value.replace(/\D/g, '').split('').map(Number);
+    if (digits.length !== 10) return false;
+
     let sum = 0;
     for (let i = digits.length - 2; i >= 0; i--) {
       let digit = digits[i];
@@ -257,20 +266,23 @@ export const NPI_NUMBER: PIIPattern = {
  */
 export const DEA_NUMBER: PIIPattern = {
   type: 'DEA_NUMBER',
-  regex: /\b(?:DEA[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*)?([A-Z]{2}\d{7})\b/gi,
+  regex: /\b(?:DEA[-\s\u00A0]*(?:NO|NUM(?:BER)?)?[-\s\u00A0.:#]*)?([A-Z]{2}(?:[\s\u00A0.-]?\d){7})\b/gi,
   placeholder: '[DEA_{n}]',
   priority: 90,
   severity: 'high',
   description: 'DEA registration number for controlled substances',
   validator: (value: string, _context: string) => {
+    const normalized = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    if (normalized.length !== 9) return false;
+
     // Must start with valid registrant type
     const validFirstLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'P', 'R', 'S', 'T', 'U'];
-    if (!validFirstLetters.includes(value[0].toUpperCase())) {
+    if (!validFirstLetters.includes(normalized[0])) {
       return false;
     }
 
     // Checksum validation
-    const digits = value.substring(2).split('').map(Number);
+    const digits = normalized.substring(2).split('').map(Number);
     const sum1 = digits[0] + digits[2] + digits[4];
     const sum2 = (digits[1] + digits[3] + digits[5]) * 2;
     const checkDigit = (sum1 + sum2) % 10;
@@ -310,11 +322,18 @@ export const EMERGENCY_CONTACT_MARKER: PIIPattern = {
  */
 export const BIOMETRIC_ID: PIIPattern = {
   type: 'BIOMETRIC_ID',
-  regex: /\b(?:FINGERPRINT|RETINAL?[-\s]?SCAN|IRIS[-\s]?SCAN|VOICE[-\s]?PRINT|FACIAL[-\s]?RECOGNITION|BIOMETRIC)[-\s]?(?:ID|DATA|TEMPLATE|HASH)?[-\s]?[:#]?\s*([A-Z0-9]{8,40})\b/gi,
+  regex:
+    /\b(?:FINGERPRINT|RETINAL?[-\s\u00A0]?SCAN|IRIS[-\s\u00A0]?SCAN|VOICE[-\s\u00A0]?PRINT|FACIAL[-\s\u00A0]?RECOGNITION|BIOMETRIC)[-\s\u00A0]?(?:ID|DATA|TEMPLATE|HASH)?[-\s\u00A0.:#]*([A-Z0-9][A-Z0-9._-]{7,39})\b/gi,
   placeholder: '[BIOMETRIC_{n}]',
   priority: 95,
   severity: 'high',
-  description: 'Biometric identifier references'
+  description: 'Biometric identifier references',
+  validator: (value: string) => {
+    const normalized = value.replace(/[^A-Za-z0-9]/g, '');
+    if (normalized.length < 8 || normalized.length > 40) return false;
+
+    return /[A-Z]/i.test(normalized) && /\d/.test(normalized);
+  }
 };
 
 /**
@@ -361,7 +380,8 @@ export const DRUG_DOSAGE: PIIPattern = {
  */
 export const MEDICAL_IMAGE_REF: PIIPattern = {
   type: 'MEDICAL_IMAGE_REF',
-  regex: /\b(?:X[-\s]?RAY|MRI|CT[-\s]?SCAN|PET[-\s]?SCAN|ULTRASOUND|MAMMOGRAM)[-\s]?(?:IMAGE|FILE|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
+  regex:
+    /\b(?:X[-\s\u00A0]?RAY|MRI|CT[-\s\u00A0]?SCAN|PET[-\s\u00A0]?SCAN|ULTRASOUND|MAMMOGRAM)[-\s\u00A0]?(?:IMAGE|FILE|ID)?[-\s\u00A0.:#]*([A-Z0-9][A-Z0-9_.-]{5,23})\b/gi,
   placeholder: '[IMAGE_{n}]',
   priority: 80,
   severity: 'high',
