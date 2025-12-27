@@ -119,7 +119,7 @@ describe('Pattern Detection', () => {
       // Invalid card (fails Luhn check)
       const invalid = await shield.detect('Card: 1234567890123456');
       expect(invalid.detections.some(d => d.type === 'CREDIT_CARD')).toBe(false);
-    }
+    });
 
     it('should detect IBAN with varied separators and casing', async () => {
       const shield = new OpenRedaction({ patterns: ['IBAN'] });

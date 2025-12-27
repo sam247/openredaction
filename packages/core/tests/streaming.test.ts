@@ -111,7 +111,7 @@ describe('Streaming API', () => {
 
       expect(emailDetection).toBeDefined();
       expect(emailDetection!.position[0]).toBeGreaterThan(90); // Should be past first chunk
-    }
+    });
 
     it('should redact chunks progressively', async () => {
       const detector = new OpenRedaction();
