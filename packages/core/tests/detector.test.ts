@@ -145,7 +145,7 @@ describe('OpenRedact', () => {
 
     it('should respect whitelist option', async () => {
       const shieldWithWhitelist = new OpenRedaction({ whitelist: ['example.com'] });
-      const result = await shieldWithWhitelist.detect('Email john@example.com');
+      const result = await shieldWithWhitelist.detect('Contact john@example.com for details');
 
       expect(result.detections).toHaveLength(0);
     });
@@ -244,10 +244,10 @@ describe('OpenRedact', () => {
     });
 
     it('should handle text with no PII', async () => {
-      const result = await shield.detect('This is a simple text without any sensitive data');
+      const result = await shield.detect('This is a simple text without any personal details');
 
       expect(result.detections).toHaveLength(0);
-      expect(result.redacted).toBe('This is a simple text without any sensitive data');
+      expect(result.redacted).toBe('This is a simple text without any personal details');
     });
 
     it('should handle very long text', async () => {

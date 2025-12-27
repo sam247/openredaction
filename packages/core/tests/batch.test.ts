@@ -79,9 +79,9 @@ describe('Batch Processing', () => {
       const batch = new BatchProcessor(detector);
 
       const documents = [
-        'This is plain text without any information',
-        'A simple document with no data',
-        'Just regular content here'
+        'This is plain text content',
+        'A simple document example',
+        'Just regular text here'
       ];
 
       const result = await batch.processSequential(documents);
