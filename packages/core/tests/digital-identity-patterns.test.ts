@@ -262,7 +262,7 @@ describe('Digital Identity Pattern Detection', () => {
 
   describe('Integration: Multiple Digital Identities', () => {
     it('should detect multiple digital identity patterns', async () => {
-      const detector = new OpenRedaction({ patterns: ['NINTENDO_FRIEND_CODE'] });
+      const detector = new OpenRedaction();
       const text = `
         Discord user: 987654321098765432
         Steam profile: 76561198012345678

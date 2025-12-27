@@ -478,7 +478,7 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('Report: 2023-12');
       expect(negative.detections.some(d => d.type === 'POLICE_REPORT_NUMBER')).toBe(false);
-    }
+    });
 
     it('should detect fire incident numbers with separators', async () => {
       const shield = new OpenRedaction({ patterns: ['FIRE_INCIDENT_NUMBER'] });
