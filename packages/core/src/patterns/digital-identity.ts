@@ -262,7 +262,7 @@ export const NINTENDO_FRIEND_CODE: PIIPattern = {
   type: 'NINTENDO_FRIEND_CODE',
   regex: /\bSW[-\s]?(\d{4}[-\s]?\d{4}[-\s]?\d{4})\b/gi,
   placeholder: '[NINTENDO_FC_{n}]',
-  priority: 85,
+  priority: 90,
   severity: 'medium',
   description: 'Nintendo Switch Friend Code',
   validator: (value: string, context: string) => {

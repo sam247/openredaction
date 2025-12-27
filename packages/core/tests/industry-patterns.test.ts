@@ -217,6 +217,7 @@ describe('Industry-Specific Pattern Detection', () => {
         Customer account number ACC-123456789 for telecom service.
       `;
 
+      const shield = new OpenRedaction({ debug: true });
       const result = await shield.detect(text);
 
       // Debug: Log all detections
