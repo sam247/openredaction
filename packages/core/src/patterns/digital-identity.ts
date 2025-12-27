@@ -269,12 +269,15 @@ export const NINTENDO_FRIEND_CODE: PIIPattern = {
     const digits = value.replace(/\D/g, '');
     if (digits.length !== 12) return false;
 
-    // Context validation - allow if context includes gaming keywords or if value is in SW-XXXX-XXXX-XXXX format
+    // Context validation - allow if context includes gaming keywords
     const hasContext = /nintendo|switch|friend[- ]?code|gaming/i.test(context);
-    const hasFormat = /^SW[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}$/i.test(value);
     
-    // If it's in the correct format, allow it even without explicit context (format is distinctive enough)
-    return hasContext || hasFormat;
+    // The value might be just the digits part (from regex capture) or full "SW-XXXX-XXXX-XXXX"
+    // If we have 12 digits in the correct format, and context mentions Nintendo/Switch, allow it
+    // Also allow if the full context includes "SW-" pattern (distinctive enough)
+    const hasSWPattern = /SW[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}/i.test(context);
+    
+    return hasContext || hasSWPattern;
   }
 };
 
