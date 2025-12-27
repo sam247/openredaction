@@ -228,8 +228,8 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('Investment account: ABC');
       expect(negative.detections.some(d => d.type === 'INVESTMENT_ACCOUNT')).toBe(false);
-    }
-  }
+    });
+  });
 
   describe('Government patterns', () => {
     it('should detect US SSN', async () => {

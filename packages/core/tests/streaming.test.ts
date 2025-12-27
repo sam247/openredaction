@@ -200,11 +200,11 @@ describe('Streaming API', () => {
 
       expect(result.detections.length).toBe(0);
       expect(result.redacted).toBe(text);
-});
+    });
 
     it('should handle large documents efficiently', async () => {
       const detector = new OpenRedaction();
-      const streaming = new StreamingDetector(detector, { chunkSize: 2048 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 2048 });
 
       // Create a large document (~10KB)
       const section = `
