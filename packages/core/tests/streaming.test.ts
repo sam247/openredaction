@@ -56,7 +56,7 @@ describe('Streaming API', () => {
 
     it('should process large text in multiple chunks', async () => {
       const detector = new OpenRedaction();
-      const streaming = new StreamingDetector(detector, { chunkSize: 100, overlap: 20 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 100, overlap: 20 });
 
       const text = 'Email: user1@company.com. '.repeat(20); // ~540 chars
       const chunks: any[] = [];

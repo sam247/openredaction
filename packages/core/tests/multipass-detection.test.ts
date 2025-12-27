@@ -243,7 +243,7 @@ describe('Multi-pass Detection', () => {
       const singleTypes = resultSingle.detections.map(d => d.type).sort();
       const multiTypes = resultMulti.detections.map(d => d.type).sort();
       expect(singleTypes).toEqual(multiTypes);
-    }
+    });
 
     it('should not break with no detections', async () => {
       const redactor = new OpenRedaction({ enableMultiPass: true });

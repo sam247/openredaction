@@ -77,7 +77,7 @@ describe('Pattern Category Filtering', () => {
     console.log(`All patterns: ${shieldAll.getPatterns().length}, time: ${timeAll.toFixed(2)}ms`);
     console.log(`Filtered patterns: ${shieldFiltered.getPatterns().length}, time: ${timeFiltered.toFixed(2)}ms`);
     console.log(`Performance improvement: ${((timeAll - timeFiltered) / timeAll * 100).toFixed(1)}%`);
-  }
+  });
 
   it('should handle unknown categories gracefully', async () => {
     const shield = new OpenRedaction({

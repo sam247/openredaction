@@ -44,7 +44,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'NAME')).toBe(true);
       }
-    }
+    });
 
     it('redacts the same name across casing variants', async () => {
       const shield = new OpenRedaction({ patterns: ['NAME'] });
