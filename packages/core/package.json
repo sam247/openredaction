@@ -35,21 +35,6 @@
     "lint": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
-  "keywords": [
-    "pii",
-    "redaction",
-    "privacy",
-    "gdpr",
-    "hipaa",
-    "data-protection",
-    "sensitive-data",
-    "openredaction",
-    "redact",
-    "anonymization",
-    "pii-detection",
-    "ccpa"
-  ],
-  "author": "OpenRedaction Team",
   "license": "MIT",
   "peerDependencies": {
     "pdf-parse": "^1.1.1",
