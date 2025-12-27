@@ -91,7 +91,7 @@ describe('Streaming API', () => {
       // Should detect email exactly once (no duplicates from overlap)
       const emails = allDetections.filter(d => d.type === 'EMAIL');
       expect(emails.length).toBe(1);
-    }
+    });
 
     it('should provide correct byte offsets', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });

@@ -80,7 +80,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'NAME')).toBe(false);
       }
-    }
+    });
 
     it('should detect employee IDs', async () => {
       const shield = new OpenRedaction({ patterns: ['EMPLOYEE_ID'] });
