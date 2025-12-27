@@ -801,7 +801,7 @@ describe('Pattern Detection', () => {
       expect(result.detections.some(d => d.type === 'CREDIT_CARD')).toBe(true);
       expect(result.detections.some(d => d.type === 'SORT_CODE_UK')).toBe(true);
       expect(result.detections.some(d => d.type === 'IBAN')).toBe(true);
-    }
+    });
 
     it('should handle government form', async () => {
       const shield = new OpenRedaction();
