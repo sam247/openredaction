@@ -426,7 +426,7 @@ describe('Pattern Detection', () => {
 
       const bcc = await shield.detect('Border Crossing Card: BCC 12 34 56789');
       expect(bcc.detections.some(d => d.type === 'BORDER_CROSSING_CARD')).toBe(true);
-    }
+    });
 
     it('should detect UK UTR numbers with separators', async () => {
       const shield = new OpenRedaction({ patterns: ['UTR_UK'] });
