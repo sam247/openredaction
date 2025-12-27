@@ -130,7 +130,7 @@ describe('Streaming API', () => {
       // Redacted chunk should contain placeholders
       expect(chunks[0].redactedChunk).toContain('[EMAIL_');
       expect(chunks[0].redactedChunk).not.toContain('user@company.com');
-    }
+    });
 
     it('should preserve original chunks', async () => {
       const detector = new OpenRedaction();

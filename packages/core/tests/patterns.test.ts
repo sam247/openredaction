@@ -175,7 +175,7 @@ describe('Pattern Detection', () => {
         const result = await shield.detect(text);
         expect(result.detections.some(d => d.type === 'SORT_CODE_UK')).toBe(true);
       }
-    }
+    });
 
     it('should detect US routing numbers with separators', async () => {
       const shield = new OpenRedaction({ patterns: ['ROUTING_NUMBER_US'] });
