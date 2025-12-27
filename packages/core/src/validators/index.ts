@@ -182,6 +182,25 @@ export function validateSortCode(sortCode: string, _context?: string): boolean {
 }
 
 /**
+ * US ABA routing number validator
+ * https://en.wikipedia.org/wiki/ABA_routing_transit_number
+ */
+export function validateRoutingNumber(routingNumber: string, _context?: string): boolean {
+  const cleaned = routingNumber.replace(/[\s\u00A0.-]/g, '');
+  if (!/^\d{9}$/.test(cleaned)) {
+    return false;
+  }
+
+  const digits = cleaned.split('').map(Number);
+  const checksum =
+    (3 * (digits[0] + digits[3] + digits[6]) +
+      7 * (digits[1] + digits[4] + digits[7]) +
+      (digits[2] + digits[5] + digits[8])) % 10;
+
+  return checksum === 0;
+}
+
+/**
  * Context-aware name validator to reduce false positives
  */
 export function validateName(name: string, context: string): boolean {

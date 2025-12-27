@@ -177,6 +177,41 @@ describe('Pattern Detection', () => {
       });
     });
 
+    it('should detect US routing numbers with separators', () => {
+      const shield = new OpenRedaction({ patterns: ['ROUTING_NUMBER_US'] });
+
+      const positives = [
+        'Routing number: 021000021',
+        'ABA# 0210 00021',
+        'RTN 0210.00021'
+      ];
+
+      positives.forEach(text => {
+        const result = shield.detect(text);
+        expect(result.detections.some(d => d.type === 'ROUTING_NUMBER_US')).toBe(true);
+      });
+
+      const negative = shield.detect('Routing number: 021000022');
+      expect(negative.detections.some(d => d.type === 'ROUTING_NUMBER_US')).toBe(false);
+    });
+
+    it('should detect IFSC codes with separators', () => {
+      const shield = new OpenRedaction({ patterns: ['IFSC'] });
+
+      const positives = [
+        'IFSC: HDFC 0 000123',
+        'IFSC HDFC-0-000123'
+      ];
+
+      positives.forEach(text => {
+        const result = shield.detect(text);
+        expect(result.detections.some(d => d.type === 'IFSC')).toBe(true);
+      });
+
+      const negative = shield.detect('IFSC: HDFC 1 000123');
+      expect(negative.detections.some(d => d.type === 'IFSC')).toBe(false);
+    });
+
     it('should detect investment account numbers with separators', () => {
       const shield = new OpenRedaction({ patterns: ['INVESTMENT_ACCOUNT'] });
 
@@ -391,6 +426,40 @@ describe('Pattern Detection', () => {
 
       const bcc = shield.detect('Border Crossing Card: BCC 12 34 56789');
       expect(bcc.detections.some(d => d.type === 'BORDER_CROSSING_CARD')).toBe(true);
+    });
+
+    it('should detect UK UTR numbers with separators', () => {
+      const shield = new OpenRedaction({ patterns: ['UTR_UK'] });
+
+      const positives = [
+        'UTR: 12345 67890',
+        'Unique taxpayer reference 12-345-678-90'
+      ];
+
+      positives.forEach(text => {
+        const result = shield.detect(text);
+        expect(result.detections.some(d => d.type === 'UTR_UK')).toBe(true);
+      });
+
+      const negative = shield.detect('UTR: 12345 6789');
+      expect(negative.detections.some(d => d.type === 'UTR_UK')).toBe(false);
+    });
+
+    it('should detect VAT numbers with separators', () => {
+      const shield = new OpenRedaction({ patterns: ['VAT_NUMBER'] });
+
+      const positives = [
+        'VAT: GB 123 4567 89',
+        'VAT number DE12.345.678.901'
+      ];
+
+      positives.forEach(text => {
+        const result = shield.detect(text);
+        expect(result.detections.some(d => d.type === 'VAT_NUMBER')).toBe(true);
+      });
+
+      const negative = shield.detect('VAT: ZZ123456789');
+      expect(negative.detections.some(d => d.type === 'VAT_NUMBER')).toBe(false);
     });
   });
 

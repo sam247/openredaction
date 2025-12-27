@@ -3,7 +3,12 @@
  */
 
 import { PIIPattern } from '../types';
-import { validateLuhn, validateIBAN, validateSortCode } from '../validators';
+import {
+  validateLuhn,
+  validateIBAN,
+  validateSortCode,
+  validateRoutingNumber
+} from '../validators';
 
 export const financialPatterns: PIIPattern[] = [
   {
@@ -43,8 +48,9 @@ export const financialPatterns: PIIPattern[] = [
   },
   {
     type: 'ROUTING_NUMBER_US',
-    regex: /\b(?:routing|RTN|ABA)[:\s#]*([0-9]{9})\b/gi,
+    regex: /\b(?:routing|RTN|ABA)[-\s\u00A0]*(?:number|no|num)?[-\s\u00A0.:#]*((?:\d[\s\u00A0.-]?){9})\b/gi,
     priority: 90,
+    validator: (match) => validateRoutingNumber(match),
     placeholder: '[ROUTING_NUMBER_{n}]',
     description: 'US routing number',
     severity: 'high'
@@ -59,11 +65,15 @@ export const financialPatterns: PIIPattern[] = [
   },
   {
     type: 'IFSC',
-    regex: /\b[A-Z]{4}0[A-Z0-9]{6}\b/g,
+    regex: /\b([A-Z]{4})[-\s\u00A0.]?0[-\s\u00A0.]?([A-Z0-9]{6})\b/gi,
     priority: 90,
     placeholder: '[IFSC_{n}]',
     description: 'Indian Financial System Code',
-    severity: 'high'
+    severity: 'high',
+    validator: (value: string) => {
+      const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+      return /^[A-Z]{4}0[A-Z0-9]{6}$/.test(cleaned);
+    }
   },
   {
     type: 'CLABE',

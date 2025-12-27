@@ -158,7 +158,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'UTR_UK',
-    regex: /\b(?:UTR|unique taxpayer reference)[:\s#]*(\d{10})\b/gi,
+    regex: /\b(?:UTR|unique taxpayer reference)[:\s#-]*((?:\d[\s\u00A0.-]?){10})\b/gi,
     priority: 95,
     validator: (match) => {
       // UK UTR: 10 digits, typically issued in sequence
@@ -171,11 +171,11 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'VAT_NUMBER',
-    regex: /\b(?:VAT|vat number)[:\s#]*([A-Z]{2}\s?\d{9,12})\b/gi,
+    regex: /\b(?:VAT|vat number)[:\s#-]*([A-Z]{2}(?:[\s\u00A0.-]?[A-Z0-9]){7,12})\b/gi,
     priority: 90,
     validator: (match) => {
       // VAT format varies by country (GB: 9 digits, DE: 9 digits, FR: 11 chars, etc.)
-      const cleaned = match.replace(/\s/g, '');
+      const cleaned = match.replace(/[\s\u00A0.-]/g, '');
 
       // Check for valid country codes
       const countryCode = cleaned.substring(0, 2).toUpperCase();

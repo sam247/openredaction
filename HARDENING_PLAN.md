@@ -2,16 +2,14 @@
 
 This plan groups regex patterns by risk to prioritize hardening work.
 
-## High Risk (265)
+## High Risk (remaining)
 | Pattern | Regex | Proposed hardening | Effort | Tests to add |
 | --- | --- | --- | --- | --- |
 | CREDIT_CARD | `/(?<!\d)(?:(?:\d{4}[\s\u00A0.-]?){3}\d{4}\|\d{4}[\s\u00A0.-]?\d{6}[\s\u00A0.-]?\d{5})(?!\d)/g` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | IBAN | `/\b([A-Z]{2}\d{2}(?:[ \u00A0.-]?[A-Z0-9]){11,30})\b/gi` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | low | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | BANK_ACCOUNT_UK | `/\b(?:account\|acc\|a\/c)[:\s#-]*((?:\d{4}[\s-]?\d{4})\|(?:\d{2}[\s-]?\d{2}[\s-]?\d{4}))\b/gi` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | SORT_CODE_UK | `/\b(?:sort[\s-]*code\|SC)[:\s.-]*((?:\d{2}[\s.-]?){2}\d{2})\b/gi` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
-| ROUTING_NUMBER_US | `/\b(?:routing\|RTN\|ABA)[:\s#]*([0-9]{9})\b/gi` | Pair regex with checksum/context validation to reduce noise. | low | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | CVV | `/\b(?:CVV\|CVC\|CSC\|CVN)[:\s]*(\d{3,4})\b/gi` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | low | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
-| IFSC | `/\b[A-Z]{4}0[A-Z0-9]{6}\b/g` | Pair regex with checksum/context validation to reduce noise. | low | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | SOLANA_ADDRESS | `/\b([1-9A-HJ-NP-Za-km-z]{32,44})\b/g` | Pair regex with checksum/context validation to reduce noise. | low | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | POLKADOT_ADDRESS | `/\b(1[1-9A-HJ-NP-Za-km-z]{46,47})\b/g` | Pair regex with checksum/context validation to reduce noise. | low | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | AVALANCHE_ADDRESS | `/\b([XPC]-(?:avax)?[a-z0-9]{38,43})\b/gi` | Pair regex with checksum/context validation to reduce noise. | low | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
@@ -26,7 +24,6 @@ This plan groups regex patterns by risk to prioritize hardening work.
 | PASSPORT_US | `/\b(?:passport\|pass)[:\s#-]*(([A-Z0-9][\s\u00A0.-]?){5,8}[A-Z0-9])\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | NATIONAL_INSURANCE_UK | `/\b(?:NI\b\|NINO\|national\s+insurance)[:\s#-]*([A-CEGHJ-PR-TW-Z]{2}(?:[\s\u00A0.-]?\d{2}){3}[\s\u00A0.-]?[A-D])\b/gi` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | NHS_NUMBER | `/\b(?:NHS\|nhs number)[:\s#-]*((?:\d{3}[\s\u00A0.-]?){2}\d{4})\b/gi` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
-| DRIVING_LICENSE_UK | `/\b(?:DL\|DRIVING\|DRIVER(?:'S)?\|LICEN[SC]E)?[\s#:-]*(?:NO\|NUM(?:BER)?\|ID)?[\s#:-]*([A-Z]{5}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?[A-Z]{2}[\s\u00A0.-]?\d[\s\u00A0.-]?[A-Z]{2})\b/gi` | ✅ done — added label tolerance, dotted separators, and DOB validation for month/day ranges. | high | Added dotted separators and invalid date negatives. |
 | DRIVING_LICENSE_US | `/\b(?:DL\|driver(?:'s)?\slicense)[:\s#-]*([A-Z0-9](?:[A-Z0-9][\s\u00A0.-]?){3,18}[A-Z0-9])\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | TAX_ID | `/\b(?:TIN\|tax id\|EIN)[:\s#-]*(\d{2}(?:[\s\u00A0.-]?\d){7})\b/gi` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | PASSPORT_MRZ_TD3 | `/P<[A-Z]{3}[A-Z<]{39}\r?\n[A-Z0-9<]{9}[0-9][A-Z]{3}[0-9]{6}[0-9][MF<][0-9]{6}[0-9][A-Z0-9<]{14}[0-9]/g` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
@@ -52,8 +49,6 @@ This plan groups regex patterns by risk to prioritize hardening work.
 | SCHOLARSHIP_ID | `/\b(?:SCHOLARSHIP\|GRANT\|AWARD)[-\s]?(?:ID\|NO\|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | APPLICATION_ID | `/\b(?:APPLICATION\|ADMISSION\|APPLICANT)[-\s]?(?:ID\|NO\|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | EMERGENCY_CALL_REF | `/\b(?:EMERGENCY\|INCIDENT\|CALL\|CAD\|DISPATCH\|EVENT)[-\s]?(?:REF\|NO\|NUM\|NUMBER\|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
-| POLICE_REPORT_NUMBER | `/\b(?:POLICE\|PR\|RPT\|REPORT\|CASE)[-\s\u00A0]*(?:NO\|NUM\|NUMBER\|ID)?[-\s\u00A0.:#]*((?:[A-Z]{2,4}[\s\u00A0./-]?\d{2,4}[\s\u00A0./-]?\d{4,10})\|\d{4}[\s\u00A0./-]?\d{5,10})\b/gi` | ✅ done — expanded separators (dots/slashes/NBSP) for year+sequence and prefixed formats. | high | Added slash/dot formats plus short negative case. |
-| FIRE_INCIDENT_NUMBER | `/\b(?:FIRE\|FI\|FD)[-\s\u00A0]*(?:INCIDENT\|INC\|NO\|NUM\|NUMBER\|ID)?[-\s\u00A0.:#]*((?:[A-Z]{2,4}[\s\u00A0./-]?\d{2,4}[\s\u00A0./-]?\d{4,10})\|\d{4}[\s\u00A0./-]?\d{4,8})\b/gi` | ✅ done — expanded separators (dots/slashes/NBSP) for incident formats. | high | Added slash/dot incident samples. |
 | AMBULANCE_CALL_ID | `/\b(?:AMBULANCE\|AMB\|EMS\|PARAMEDIC)[-\s]?(?:CALL\|ID\|NO\|NUM\|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | EMERGENCY_SHELTER_ID | `/\b(?:SHELTER\|EVACUATION\|REFUGE)[-\s]?(?:REG\|ID\|NO\|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{5,12})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | DISASTER_VICTIM_ID | `/\b(?:DVI\|VICTIM)[-\s]?(?:ID\|NO\|NUMBER)?[-\s]?[:#]?\s*(\d{4}[-\s]?\d{4,8})\b/gi` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
@@ -62,7 +57,6 @@ This plan groups regex patterns by risk to prioritize hardening work.
 | MISSING_PERSON_CASE | `/\b(?:MISSING\|MP\|AMBER)[-\s]?(?:PERSON\|CASE\|ALERT)?[-\s]?(?:NO\|NUMBER\|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | HAZMAT_INCIDENT | `/\b(?:HAZMAT\|HM)[-\s]?(?:INCIDENT\|INC\|NO\|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | SWIFT_BIC | `/\b([A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?)\b/g` | Pair regex with checksum/context validation to reduce noise. | low | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
-| INVESTMENT_ACCOUNT | `/\b(?:ISA\|SIPP\|INV(?:ESTMENT)?\|PENSION\|401K\|IRA)[-\s\u00A0]*(?:ACCOUNT\|ACCT\|A\/C)?[-\s\u00A0]*(?:NO\|NUM(?:BER)?)?[-\s\u00A0.:#]*([A-Z0-9](?:[A-Z0-9][\s\u00A0./-]?){5,18}[A-Z0-9])\b/gi` | ✅ done — allowed dotted/slashed separators and added digit/length validation in context. | high | Added separator variations and short-token negative. |
 | WIRE_TRANSFER_REF | `/\b(?:WIRE\|TRANSFER\|REMITTANCE)[-\s]?(?:REF(?:ERENCE)?\|NO\|NUM(?:BER)?\|ID)?[-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | DD_MANDATE | `/\b(?:DD\|DIRECT[-\s]?DEBIT)[-\s]?(?:MANDATE\|REF(?:ERENCE)?\|NO\|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,18})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | TRADING_ACCOUNT | `/\b(?:TRADING\|BROKERAGE\|STOCK)[-\s]?(?:ACCOUNT\|ACCT\|A\/C)?[-\s]?(?:NO\|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
@@ -111,13 +105,11 @@ This plan groups regex patterns by risk to prioritize hardening work.
 | SALARY_AMOUNT | `/\b(?:SALARY\|COMPENSATION\|PAY\|WAGE\|EARNING)[-\s]?[:#]?\s*(?:[$£€¥]\s?)?(\d{1,3}(?:[,\s]\d{3})*(?:\.\d{2})?)\b/gi` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | PERFORMANCE_REVIEW_ID | `/\b(?:PERFORMANCE\|REVIEW\|APPRAISAL\|EVALUATION)[-\s]?(?:ID\|NO\|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | JOB_APPLICATION_ID | `/\b(?:APPLICATION\|CANDIDATE\|APPLICANT)[-\s]?(?:ID\|NO\|NUM(?:BER)?\|REF)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
-| BENEFITS_PLAN_NUMBER | `/\b(?:BENEFITS?\|INSURANCE\|HEALTH[-\s\u00A0]?PLAN)[-\s\u00A0]*(?:PLAN)?[-\s\u00A0]*(?:NO\|NUM(?:BER)?\|ID)?[-\s\u00A0.:#]*([A-Z0-9](?:[A-Z0-9][\s\u00A0./-]?){5,15}[A-Z0-9])\b/gi` | ✅ done — added separator tolerance and normalized digit/length validation. | high | Added separator positives plus short negative. |
 | RETIREMENT_ACCOUNT | `/\b(?:401K\|403B\|IRA\|RETIREMENT\|PENSION)[-\s]?(?:ACCOUNT)?[-\s]?(?:NO\|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | DIRECT_DEPOSIT_REF | `/\b(?:DIRECT[-\s]?DEPOSIT\|DD\|ROUTING)[-\s]?(?:NO\|NUM(?:BER)?\|ID)?[-\s]?[:#]?\s*(\d{9})\b/g` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | BACKGROUND_CHECK_ID | `/\b(?:BACKGROUND[-\s]?CHECK\|BGC\|SCREENING)[-\s]?(?:ID\|NO\|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | DRUG_TEST_ID | `/\b(?:DRUG[-\s]?TEST\|SCREENING\|URINALYSIS)[-\s]?(?:ID\|NO\|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | EXIT_INTERVIEW_ID | `/\b(?:EXIT\|TERMINATION\|SEPARATION)[-\s]?(?:INTERVIEW)?[-\s]?(?:NO\|NUM(?:BER)?\|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
-| DISCIPLINARY_ACTION_ID | `/\b(?:DISCIPLINARY\|INCIDENT\|WARNING\|VIOLATION)[-\s\u00A0]*(?:ACTION)?[-\s\u00A0]*(?:NO\|NUM(?:BER)?\|ID)?[-\s\u00A0.:#]*([A-Z0-9](?:[A-Z0-9][\s\u00A0./-]?){5,15}[A-Z0-9])\b/gi` | ✅ done — expanded separators and enforced digit presence/length with validator. | high | Added separator positives plus short negative. |
 | EMERGENCY_CONTACT_REF | `/\b(?:EMERGENCY[-\s]?CONTACT\|ICE)[-\s]?(?:NO\|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | WORK_PERMIT | `/\b(?:WORK[-\s]?PERMIT\|VISA\|H1B\|GREEN[-\s]?CARD\|EAD)[-\s]?(?:NO\|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,15})\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | SECURITY_CLEARANCE | `/\b(?:CLEARANCE\|SECURITY[-\s]?LEVEL)[-\s]?[:#]?\s*(TOP[-\s]?SECRET\|SECRET\|CONFIDENTIAL\|[A-Z]{2,3}\/SCI)\b/gi` | Pair regex with checksum/context validation to reduce noise. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
@@ -274,7 +266,7 @@ This plan groups regex patterns by risk to prioritize hardening work.
 | NAME | `/\b(?:(?:Mr\|Mrs\|Ms\|Miss\|Dr\|Prof\|Professor\|Sir\|Madam\|Lady\|Lord\|Rev\|Father\|Sister\|Brother)\.?\s+)?((?:\p{Lu}[\p{L}'’.\-]+)(?:\s+\p{Lu}[\p{L}'’.\-]+){1,3})(?:\s+(?:Jr\|Sr\|II\|III\|IV\|PhD\|MD\|Esq\|DDS\|DVM\|MBA\|CPA)\.?)?\b/gu` | Pair regex with checksum/context validation to reduce noise. | high | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | DATE_OF_BIRTH | `/\b(?:DOB\|date of birth\|birth ?date)[:\s-]*((?:\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4})\|(?:\d{1,2}\s+(?:Jan(?:uary)?\|Feb(?:ruary)?\|Mar(?:ch)?\|Apr(?:il)?\|May\|Jun(?:e)?\|Jul(?:y)?\|Aug(?:ust)?\|Sep(?:tember)?\|Oct(?:ober)?\|Nov(?:ember)?\|Dec(?:ember)?)\s+\d{2,4}))\b/gi` | Permit optional separators and normalize whitespace before matching. Pair regex with checksum/context validation to reduce noise. | high | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 
-## Medium Risk (236)
+## Medium Risk (remaining)
 | Pattern | Regex | Proposed hardening | Effort | Tests to add |
 | --- | --- | --- | --- | --- |
 | PHONE_UK_MOBILE | `/\b(?:\+?44[\s.-]?7\d{3}\|0?7\d{3})[\s.-]?\d{3}[\s.-]?\d{3}\b/g` | Permit optional separators and normalize whitespace before matching. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
@@ -514,7 +506,7 @@ This plan groups regex patterns by risk to prioritize hardening work.
 | EMPLOYEE_ID | `/\b(?:EMP\|EMPL\|EMPLOYEE)[_\s-]?(?:ID\|NUM(?:BER)?)?[:\s-]*([A-Z0-9]{4,10})\b/gi` | Add pre-normalization and fallback ML/contextual detection for variants. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | USERNAME | `/\b(?:user(?:name)?\|login)[:\s]+([a-zA-Z0-9_-]{3,20})\b/gi` | Add pre-normalization and fallback ML/contextual detection for variants. | low | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 
-## Low Risk (60)
+## Low Risk (remaining)
 | Pattern | Regex | Proposed hardening | Effort | Tests to add |
 | --- | --- | --- | --- | --- |
 | POSTCODE_UK | `/\b([A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2})\b/g` | Permit optional separators and normalize whitespace before matching. | low | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
@@ -578,4 +570,16 @@ This plan groups regex patterns by risk to prioritize hardening work.
 | ODOMETER_READING_REF | `/\b(?:ODOMETER\|MILEAGE)[-\s]?[:#]?\s*(\d{1,7})\s*(?:KM\|MILES\|MI)\b/gi` | Permit optional separators and normalize whitespace before matching. | medium | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 | MAC_ADDRESS | `/\b(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\b/g` | Add pre-normalization and fallback ML/contextual detection for variants. | low | Add fixtures for varied locales/obfuscation; verify negatives to avoid business codes. |
 
-Total patterns: 574 (High: 265, Medium: 236, Low: 60)
+## Completed in this pass
+- DRIVING_LICENSE_UK: added label tolerance, dotted separators, and DOB validation for month/day ranges.
+- POLICE_REPORT_NUMBER: expanded separators (dots/slashes/NBSP) for year+sequence and prefixed formats.
+- FIRE_INCIDENT_NUMBER: expanded separators (dots/slashes/NBSP) for incident formats.
+- INVESTMENT_ACCOUNT: allowed dotted/slashed separators with digit/length validation in context.
+- BENEFITS_PLAN_NUMBER: added separator tolerance and normalized digit/length validation.
+- DISCIPLINARY_ACTION_ID: expanded separators and enforced digit presence/length with validator.
+- ROUTING_NUMBER_US: allowed separators with ABA checksum validation.
+- IFSC: added separator tolerance with strict format validation.
+- UTR_UK: accepted spaced/dotted digits with 10-digit validator.
+- VAT_NUMBER: accepted separator variants with existing country validation.
+
+Total patterns tracked in REGEX_AUDIT.md.
