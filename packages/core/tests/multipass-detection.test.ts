@@ -116,7 +116,7 @@ describe('Multi-pass Detection', () => {
       expect(merged.length).toBe(2);
       expect(merged.some(d => d.type === 'API_KEY')).toBe(true);
       expect(merged.some(d => d.type === 'EMAIL')).toBe(true);
-    }
+    });
 
     it('should prioritize earlier passes for overlapping ranges', async () => {
       const passes = defaultPasses;
@@ -151,8 +151,8 @@ describe('Multi-pass Detection', () => {
       // Should only have the API_KEY (higher priority)
       expect(merged.length).toBe(1);
       expect(merged[0].type).toBe('API_KEY');
-    }
-  }
+    });
+  });
 
   describe('Integration with OpenRedact', () => {
     it('should work when multi-pass is disabled (default)', async () => {
