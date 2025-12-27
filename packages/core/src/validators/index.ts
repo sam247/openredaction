@@ -210,13 +210,15 @@ export function validateName(name: string, context: string): boolean {
     'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
     'january', 'february', 'march', 'april', 'may', 'june',
     'july', 'august', 'september', 'october', 'november', 'december',
-    'mr', 'mrs', 'ms', 'dr', 'sir', 'madam', 'lord', 'lady'
+    'mr', 'mrs', 'ms', 'dr', 'sir', 'madam', 'lord', 'lady',
+    'personal', 'sensitive', 'information', 'data', 'details', 'content',
+    'document', 'text', 'example', 'simple', 'regular', 'plain'
   ];
 
   const nameLower = name.toLowerCase();
 
-  // Skip if it's a business term
-  if (businessTerms.some(term => nameLower.includes(term))) {
+  // Skip if it's a business term or common word
+  if (businessTerms.some(term => nameLower === term || nameLower.includes(term))) {
     return false;
   }
 
@@ -235,7 +237,10 @@ export function validateName(name: string, context: string): boolean {
   if (
     contextLower.includes('company ') ||
     contextLower.includes('business ') ||
-    contextLower.includes('organization')
+    contextLower.includes('organization') ||
+    contextLower.includes('without any') ||
+    contextLower.includes('simple text') ||
+    contextLower.includes('plain text')
   ) {
     return false;
   }
