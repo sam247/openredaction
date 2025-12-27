@@ -15,12 +15,12 @@ describe('Result Caching', () => {
       expect(stats.size).toBe(0);
     });
 
-    it('should work normally without cache', () => {
+    it('should work normally without cache', async () => {
       const redactor = new OpenRedaction();
       const text = 'Contact john.smith@company.com';
 
-      const result1 = redactor.detect(text);
-      const result2 = redactor.detect(text);
+      const result1 = await redactor.detect(text);
+      const result2 = await redactor.detect(text);
 
       expect(result1.detections.length).toBeGreaterThan(0);
       expect(result2.detections.length).toBe(result1.detections.length);
@@ -46,12 +46,12 @@ describe('Result Caching', () => {
       expect(stats.maxSize).toBe(50);
     });
 
-    it('should return same result for identical input', () => {
+    it('should return same result for identical input', async () => {
       const redactor = new OpenRedaction({ enableCache: true });
       const text = 'Email: john.smith@company.com, Phone: 07700900123';
 
-      const result1 = redactor.detect(text);
-      const result2 = redactor.detect(text);
+      const result1 = await redactor.detect(text);
+      const result2 = await redactor.detect(text);
 
       // Results should be identical (same reference due to cache)
       expect(result2).toBe(result1);
@@ -72,7 +72,7 @@ describe('Result Caching', () => {
       expect(stats.size).toBe(3);
     });
 
-    it('should improve performance on cache hits', () => {
+    it('should improve performance on cache hits', async () => {
       const redactor = new OpenRedaction({
         enableCache: true,
         enableContextAnalysis: true,
@@ -83,12 +83,12 @@ describe('Result Caching', () => {
 
       // First call (cache miss)
       const start1 = performance.now();
-      redactor.detect(text);
+      await redactor.detect(text);
       const time1 = performance.now() - start1;
 
       // Second call (cache hit)
       const start2 = performance.now();
-      redactor.detect(text);
+      await redactor.detect(text);
       const time2 = performance.now() - start2;
 
       // Cache hit should be significantly faster
@@ -97,36 +97,36 @@ describe('Result Caching', () => {
       expect(time2).toBeLessThan(1.0);
     });
 
-    it('should evict oldest entries when cache is full', () => {
+    it('should evict oldest entries when cache is full', async () => {
       const redactor = new OpenRedaction({
         enableCache: true,
         cacheSize: 3 // Small cache for testing
       });
 
       // Add 4 entries (exceeds cache size)
-      const result1 = redactor.detect('Email 1: user1@company.com');
-      const result2 = redactor.detect('Email 2: user2@company.com');
-      const result3 = redactor.detect('Email 3: user3@company.com');
-      const result4 = redactor.detect('Email 4: user4@company.com');
+      const result1 = await redactor.detect('Email 1: user1@company.com');
+      const result2 = await redactor.detect('Email 2: user2@company.com');
+      const result3 = await redactor.detect('Email 3: user3@company.com');
+      const result4 = await redactor.detect('Email 4: user4@company.com');
 
       // Cache should only hold 3 entries
       const stats = redactor.getCacheStats();
       expect(stats.size).toBe(3);
 
       // First entry should have been evicted
-      const result1Again = redactor.detect('Email 1: user1@company.com');
+      const result1Again = await redactor.detect('Email 1: user1@company.com');
       expect(result1Again).not.toBe(result1); // New instance (not from cache)
 
       // Recent entries should still be cached
-      const result4Again = redactor.detect('Email 4: user4@company.com');
+      const result4Again = await redactor.detect('Email 4: user4@company.com');
       expect(result4Again).toBe(result4); // Same instance (from cache)
     });
 
-    it('should clear cache when requested', () => {
+    it('should clear cache when requested', async () => {
       const redactor = new OpenRedaction({ enableCache: true });
 
-      redactor.detect('Email: user1@company.com');
-      redactor.detect('Email: user2@company.com');
+      await redactor.detect('Email: user1@company.com');
+      await redactor.detect('Email: user2@company.com');
 
       let stats = redactor.getCacheStats();
       expect(stats.size).toBe(2);
@@ -137,7 +137,7 @@ describe('Result Caching', () => {
       expect(stats.size).toBe(0);
     });
 
-    it('should work correctly with deterministic placeholders', () => {
+    it('should work correctly with deterministic placeholders', async () => {
       const redactor = new OpenRedaction({
         enableCache: true,
         deterministic: true
@@ -145,30 +145,30 @@ describe('Result Caching', () => {
 
       const text = 'Email: john.smith@company.com';
 
-      const result1 = redactor.detect(text);
-      const result2 = redactor.detect(text);
+      const result1 = await redactor.detect(text);
+      const result2 = await redactor.detect(text);
 
       expect(result2).toBe(result1); // Cached result
       expect(result1.detections[0].placeholder).toBeDefined();
       expect(result2.detections[0].placeholder).toBe(result1.detections[0].placeholder);
     });
 
-    it('should handle cache with different text correctly', () => {
+    it('should handle cache with different text correctly', async () => {
       const redactor = new OpenRedaction({ enableCache: true });
 
       const text1 = 'Email: user1@company.com';
       const text2 = 'Email: user2@company.com';
 
-      const result1 = redactor.detect(text1);
-      const result2 = redactor.detect(text2);
+      const result1 = await redactor.detect(text1);
+      const result2 = await redactor.detect(text2);
 
       // Should be different results
       expect(result2).not.toBe(result1);
       expect(result1.detections[0].value).not.toBe(result2.detections[0].value);
 
       // But re-detecting should use cache
-      const result1Again = redactor.detect(text1);
-      const result2Again = redactor.detect(text2);
+      const result1Again = await redactor.detect(text1);
+      const result2Again = await redactor.detect(text2);
 
       expect(result1Again).toBe(result1);
       expect(result2Again).toBe(result2);
@@ -176,7 +176,7 @@ describe('Result Caching', () => {
   });
 
   describe('Cache with high-volume scenarios', () => {
-    it('should handle batch processing efficiently', () => {
+    it('should handle batch processing efficiently', async () => {
       const redactor = new OpenRedaction({ enableCache: true });
 
       const texts = [
@@ -188,7 +188,7 @@ describe('Result Caching', () => {
         'Email: user@company.com' // Duplicate
       ];
 
-      const results = texts.map(text => redactor.detect(text));
+      const results = await Promise.all(texts.map(text => redactor.detect(text)));
 
       // Should have cached results for duplicates
       expect(results[0]).toBe(results[2]);
@@ -200,7 +200,7 @@ describe('Result Caching', () => {
       expect(stats.size).toBe(3);
     });
 
-    it('should maintain performance with frequent cache hits', () => {
+    it('should maintain performance with frequent cache hits', async () => {
       const redactor = new OpenRedaction({
         enableCache: true,
         enableContextAnalysis: true
@@ -213,13 +213,13 @@ describe('Result Caching', () => {
       ];
 
       // First pass: populate cache
-      commonTexts.forEach(text => redactor.detect(text));
+      await Promise.all(commonTexts.map(text => redactor.detect(text)));
 
       // Second pass: should all be cache hits
       const start = performance.now();
       for (let i = 0; i < 100; i++) {
         const text = commonTexts[i % commonTexts.length];
-        redactor.detect(text);
+        await redactor.detect(text);
       }
       const totalTime = performance.now() - start;
 

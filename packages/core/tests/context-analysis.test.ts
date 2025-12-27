@@ -205,9 +205,9 @@ describe('Context Analysis', () => {
   });
 
   describe('Integration with OpenRedact', () => {
-    it('should work when context analysis is enabled (default)', () => {
+    it('should work when context analysis is enabled (default)', async () => {
       const redactor = new OpenRedaction();
-      const result = redactor.detect('Contact john@example.com for info');
+      const result = await redactor.detect('Contact john@example.com for info');
 
       expect(result.detections).toHaveLength(1);
       expect(result.detections[0].type).toBe('EMAIL');
@@ -216,9 +216,9 @@ describe('Context Analysis', () => {
       expect(result.detections[0].confidence).toBeLessThanOrEqual(1.0);
     });
 
-    it('should work when context analysis is disabled', () => {
+    it('should work when context analysis is disabled', async () => {
       const redactor = new OpenRedaction({ enableContextAnalysis: false });
-      const result = redactor.detect('Contact john@example.com for info');
+      const result = await redactor.detect('Contact john@example.com for info');
 
       expect(result.detections).toHaveLength(1);
       expect(result.detections[0].type).toBe('EMAIL');
@@ -226,17 +226,17 @@ describe('Context Analysis', () => {
       expect(result.detections[0].confidence).toBe(1.0); // Default when disabled
     });
 
-    it('should filter low-confidence detections when enabled', () => {
+    it('should filter low-confidence detections when enabled', async () => {
       const redactor = new OpenRedaction({
         enableContextAnalysis: true,
         confidenceThreshold: 0.8
       });
 
       // This should be filtered due to "example" in context
-      const result = redactor.detect('This is a sample test with test@example.com dummy data');
+      const result = await redactor.detect('This is a sample test with test@example.com dummy data');
 
       // May or may not detect depending on confidence
-      if (result.detections.length > 0) {
+      if (result.detections && result.detections.length > 0) {
         expect(result.detections[0].confidence).toBeGreaterThanOrEqual(0.8);
       }
     });
