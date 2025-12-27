@@ -138,7 +138,7 @@ describe('Pattern Detection', () => {
 
       const negative = await shield.detect('IBAN: GB00 TEST 1234');
       expect(negative.detections.some(d => d.type === 'IBAN')).toBe(false);
-    }
+    });
 
     it('should detect UK bank accounts', async () => {
       const shield = new OpenRedaction({ patterns: ['BANK_ACCOUNT_UK'] });

@@ -134,7 +134,7 @@ describe('Streaming API', () => {
 
     it('should preserve original chunks', async () => {
       const detector = new OpenRedaction();
-      const streaming = new StreamingDetector(detector, { chunkSize: 100 }
+      const streaming = new StreamingDetector(detector, { chunkSize: 100 });
 
       const text = 'Email: user@company.com, Phone: 07700900123';
       const chunks: any[] = [];
