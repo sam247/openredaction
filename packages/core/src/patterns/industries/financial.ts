@@ -526,7 +526,7 @@ export const UK_SORT_CODE_ACCOUNT: PIIPattern = {
     
     // Extract sort code (first 6 digits) and account number (last 8 digits)
     const sortCode = cleaned.substring(0, 6);
-    const accountNumber = cleaned.substring(6);
+    const _accountNumber = cleaned.substring(6);
     
     // Validate sort code format
     if (!validateSortCode(sortCode)) {
