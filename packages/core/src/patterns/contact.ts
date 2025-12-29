@@ -182,7 +182,7 @@ export const contactPatterns: PIIPattern[] = [
     placeholder: '[POSTCODE_{n}]',
     description: 'UK postcode',
     severity: 'low',
-    validator: (value: string, context: string) => {
+    validator: (value: string, _context: string) => {
       // Normalize separators for validation
       const cleaned = value.replace(/[\s\u00A0.-]/g, '');
       
