@@ -1,6 +1,6 @@
 # OpenRedaction
 
-[![Version](https://img.shields.io/badge/version-1.0.2-brightgreen.svg)](https://github.com/sam247/openredaction)
+[![Version](https://img.shields.io/badge/version-1.0.3-brightgreen.svg)](https://github.com/sam247/openredaction)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-450%20passing-brightgreen.svg)](https://github.com/sam247/openredaction)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
