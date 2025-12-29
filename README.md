@@ -1,21 +1,22 @@
 # OpenRedaction
 
-[![Version](https://img.shields.io/badge/version-1.0-brightgreen.svg)](https://github.com/sam247/openredaction)
+[![Version](https://img.shields.io/badge/version-1.0.2-brightgreen.svg)](https://github.com/sam247/openredaction)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-276%20passing-brightgreen.svg)](https://github.com/sam247/openredaction)
+[![Tests](https://img.shields.io/badge/tests-450%20passing-brightgreen.svg)](https://github.com/sam247/openredaction)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
 
 OpenRedaction is an open-source JavaScript/TypeScript library for detecting and redacting PII with a regex-first approach. It runs locally by default and can be combined with an optional hosted API for AI-assisted detection.
 
 ## What is OpenRedaction?
 
-OpenRedaction is a production-ready library that helps you keep sensitive data out of logs, prompts, and analytics pipelines. It combines 570+ curated regex patterns with context-aware validation, multiple redaction modes, and developer-friendly defaults.
+OpenRedaction is a production-ready library that helps you keep sensitive data out of logs, prompts, and analytics pipelines. It combines 570+ curated regex patterns with advanced context-aware validation, checksum verification, and multiple redaction modes.
 
 **Key principles:**
 - **Regex-first**: Pattern-based detection runs locally, fast, and private
 - **Fully open source**: MIT licensed, no vendor lock-in
 - **Privacy-first**: All detection happens locally by default
-- **Production-ready**: Battle-tested with 276+ passing tests
+- **Production-ready**: Battle-tested with 450+ passing tests
+- **Hardened patterns**: Advanced validation with checksums and context filtering
 
 ## Installation
 
@@ -242,8 +243,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for our workflow, coding standards, and t
 
 ### Hardening & Pattern Development
 
-- **[HARDENING_PLAN.md](HARDENING_PLAN.md)** — Our plan for improving regex patterns and detection accuracy
-- **[REGEX_AUDIT.md](REGEX_AUDIT.md)** — Audit of existing patterns and potential improvements
+We continuously improve our regex patterns and detection accuracy. Recent improvements include:
+- Enhanced checksum validation for financial patterns
+- Context-aware false positive filtering
+- Separator normalization for international formats
+- Advanced validation for government IDs and crypto addresses
 
 ## Community & Support
 
