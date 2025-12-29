@@ -7,7 +7,7 @@ describe('Industry-Specific Pattern Detection', () => {
       const shield = new OpenRedaction({ patterns: ['STUDENT_ID'] });
       const result = await shield.detect('Student ID: S1234567');
       expect(result.detections.some(d => d.type === 'STUDENT_ID')).toBe(true);
-    });
+});
 
     it('should detect exam registration numbers', async () => {
       const shield = new OpenRedaction({ patterns: ['EXAM_REGISTRATION_NUMBER'] });

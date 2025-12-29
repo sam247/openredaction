@@ -49,7 +49,7 @@ describe('Redaction Modes', () => {
       expect(result.redacted).toContain('453');
       expect(result.redacted).toContain('9010');
       expect(result.redacted).toMatch(/\*\*/); // Should have masked middle
-    });
+});
 });
 
   describe('Mask All Mode', () => {

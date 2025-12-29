@@ -265,9 +265,9 @@ describe('Context Analysis', () => {
 
       expect(result.detections && result.detections.length).toBeGreaterThan(0);
       if (result.detections) {
-        result.detections.forEach(detection => {
-          expect(detection.confidence).toBeGreaterThanOrEqual(0.5);
-        });
+      result.detections.forEach(detection => {
+        expect(detection.confidence).toBeGreaterThanOrEqual(0.5);
+      });
       }
     });
   });

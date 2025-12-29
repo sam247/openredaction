@@ -11,14 +11,20 @@ import type { PIIPattern } from '../../types';
  */
 export const VIN_NUMBER: PIIPattern = {
   type: 'VIN_NUMBER',
-  regex: /\bVIN[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-HJ-NPR-Z0-9]{17})\b/gi,
+  regex: /\bVIN[-\s\u00A0]?(?:NO|NUM|NUMBER)?[-\s\u00A0]?[:#]?\s*([A-HJ-NPR-Z0-9]{17})\b/gi,
   placeholder: '[VIN_{n}]',
   priority: 85,
   severity: 'medium',
   description: 'Vehicle Identification Number (VIN)',
   validator: (value: string, context: string) => {
+    // Normalize separators (VINs typically don't have separators, but handle if present)
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+    
+    // Must be exactly 17 characters after normalization
+    if (cleaned.length !== 17) return false;
+    
     // VINs don't use I, O, or Q to avoid confusion with 1, 0
-    if (/[IOQ]/i.test(value)) return false;
+    if (/[IOQ]/.test(cleaned)) return false;
 
     // Must be in vehicle context
     return /vin|vehicle|car|auto|motor|registration|title|insurance/i.test(context);

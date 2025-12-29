@@ -18,16 +18,32 @@ export const SOLANA_ADDRESS: PIIPattern = {
   severity: 'high',
   description: 'Solana (SOL) cryptocurrency address',
   validator: (value: string, context: string) => {
+    // Normalize (remove any whitespace that might have been introduced)
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    
     // Length validation
-    if (value.length < 32 || value.length > 44) return false;
+    if (cleaned.length < 32 || cleaned.length > 44) return false;
 
-    // Must have crypto/Solana context
-    if (!/solana|sol|crypto|wallet|blockchain|address/i.test(context)) {
+    // Must have crypto/Solana context (enhanced keywords)
+    const cryptoKeywords = /solana|sol\b|crypto|wallet|blockchain|address|send|receive|transaction|transfer/i;
+    if (!cryptoKeywords.test(context)) {
       return false;
     }
 
     // Exclude other crypto formats
-    if (/^(bc1|1|3|0x|L|M|D|X|r|cosmos|tz|addr)/.test(value)) {
+    if (/^(bc1|1|3|0x|L|M|D|X|r|cosmos|tz|addr)/.test(cleaned)) {
+      return false;
+    }
+    
+    // Reject if context suggests it's not crypto-related
+    const rejectKeywords = /example|test|sample|demo|fake|dummy|placeholder|version|release/i;
+    if (rejectKeywords.test(context)) {
+      return false;
+    }
+
+    // Base58 validation (Solana uses Base58 encoding)
+    // Valid Base58 characters: 1-9, A-H, J-N, P-Z, a-k, m-z (excludes 0, O, I, l)
+    if (!/^[1-9A-HJ-NP-Za-km-z]+$/.test(cleaned)) {
       return false;
     }
 
@@ -48,14 +64,33 @@ export const POLKADOT_ADDRESS: PIIPattern = {
   severity: 'high',
   description: 'Polkadot (DOT) cryptocurrency address',
   validator: (value: string, context: string) => {
+    // Normalize (remove any whitespace)
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    
     // Length validation
-    if (value.length < 47 || value.length > 48) return false;
+    if (cleaned.length < 47 || cleaned.length > 48) return false;
 
     // Must start with 1
-    if (!value.startsWith('1')) return false;
+    if (!cleaned.startsWith('1')) return false;
 
-    // Must have crypto/Polkadot context
-    return /polkadot|dot|crypto|wallet|blockchain|substrate|address/i.test(context);
+    // Must have crypto/Polkadot context (enhanced)
+    const cryptoKeywords = /polkadot|dot\b|crypto|wallet|blockchain|substrate|address|send|receive|transaction|transfer/i;
+    if (!cryptoKeywords.test(context)) {
+      return false;
+    }
+    
+    // Reject if context suggests it's not crypto-related
+    const rejectKeywords = /example|test|sample|demo|fake|dummy|placeholder|version|release/i;
+    if (rejectKeywords.test(context)) {
+      return false;
+    }
+
+    // SS58 format validation (Base58 with specific prefix)
+    if (!/^1[1-9A-HJ-NP-Za-km-z]+$/.test(cleaned)) {
+      return false;
+    }
+
+    return true;
   }
 };
 
@@ -66,20 +101,34 @@ export const POLKADOT_ADDRESS: PIIPattern = {
  */
 export const AVALANCHE_ADDRESS: PIIPattern = {
   type: 'AVALANCHE_ADDRESS',
-  regex: /\b([XPC]-(?:avax)?[a-z0-9]{38,43})\b/gi,
+  regex: /\b([XPC][-\s\u00A0]?(?:avax)?[a-z0-9]{38,43})\b/gi,
   placeholder: '[AVAX_ADDR_{n}]',
   priority: 85,
   severity: 'high',
   description: 'Avalanche (AVAX) cryptocurrency address',
   validator: (value: string, context: string) => {
-    // Must start with X-, P-, or C-
-    if (!/^[XPC]-/.test(value)) return false;
+    // Normalize separators (handle X-, P-, C- with optional separator)
+    const cleaned = value.replace(/[\s\u00A0]/g, '').toUpperCase();
+    
+    // Must start with X-, P-, or C- (with or without dash)
+    if (!/^[XPC][-]?/.test(cleaned)) return false;
 
-    // Length validation (with prefix)
-    if (value.length < 40 || value.length > 46) return false;
+    // Length validation (with prefix, after normalization)
+    if (cleaned.length < 40 || cleaned.length > 46) return false;
 
-    // Must have crypto/Avalanche context
-    return /avalanche|avax|crypto|wallet|blockchain|address/i.test(context);
+    // Must have crypto/Avalanche context (enhanced)
+    const cryptoKeywords = /avalanche|avax\b|crypto|wallet|blockchain|address|send|receive|transaction|transfer/i;
+    if (!cryptoKeywords.test(context)) {
+      return false;
+    }
+    
+    // Reject if context suggests it's not crypto-related
+    const rejectKeywords = /example|test|sample|demo|fake|dummy|placeholder|version|release/i;
+    if (rejectKeywords.test(context)) {
+      return false;
+    }
+
+    return true;
   }
 };
 
@@ -96,14 +145,33 @@ export const COSMOS_ADDRESS: PIIPattern = {
   severity: 'high',
   description: 'Cosmos (ATOM) cryptocurrency address',
   validator: (value: string, context: string) => {
+    // Normalize (remove any whitespace)
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '').toLowerCase();
+    
     // Must start with cosmos1
-    if (!value.startsWith('cosmos1')) return false;
+    if (!cleaned.startsWith('cosmos1')) return false;
 
     // Length validation
-    if (value.length < 39 || value.length > 45) return false;
+    if (cleaned.length < 39 || cleaned.length > 45) return false;
 
-    // Must have crypto/Cosmos context
-    return /cosmos|atom|crypto|wallet|blockchain|ibc|address/i.test(context);
+    // Must have crypto/Cosmos context (enhanced)
+    const cryptoKeywords = /cosmos|atom\b|crypto|wallet|blockchain|ibc|address|send|receive|transaction|transfer/i;
+    if (!cryptoKeywords.test(context)) {
+      return false;
+    }
+    
+    // Reject if context suggests it's not crypto-related
+    const rejectKeywords = /example|test|sample|demo|fake|dummy|placeholder|version|release/i;
+    if (rejectKeywords.test(context)) {
+      return false;
+    }
+
+    // Bech32 format validation (cosmos1 prefix + bech32 encoded data)
+    if (!/^cosmos1[a-z0-9]+$/.test(cleaned)) {
+      return false;
+    }
+
+    return true;
   }
 };
 
@@ -120,14 +188,28 @@ export const ALGORAND_ADDRESS: PIIPattern = {
   severity: 'high',
   description: 'Algorand (ALGO) cryptocurrency address',
   validator: (value: string, context: string) => {
-    // Must be exactly 58 characters
-    if (value.length !== 58) return false;
+    // Normalize (remove any whitespace, convert to uppercase)
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+    
+    // Must be exactly 58 characters after normalization
+    if (cleaned.length !== 58) return false;
 
     // Must be all uppercase Base32 (A-Z, 2-7)
-    if (!/^[A-Z2-7]+$/.test(value)) return false;
+    if (!/^[A-Z2-7]+$/.test(cleaned)) return false;
 
-    // Must have crypto/Algorand context
-    return /algorand|algo|crypto|wallet|blockchain|address/i.test(context);
+    // Must have crypto/Algorand context (enhanced)
+    const cryptoKeywords = /algorand|algo\b|crypto|wallet|blockchain|address|send|receive|transaction|transfer/i;
+    if (!cryptoKeywords.test(context)) {
+      return false;
+    }
+    
+    // Reject if context suggests it's not crypto-related
+    const rejectKeywords = /example|test|sample|demo|fake|dummy|placeholder|version|release/i;
+    if (rejectKeywords.test(context)) {
+      return false;
+    }
+
+    return true;
   }
 };
 
@@ -144,14 +226,33 @@ export const TEZOS_ADDRESS: PIIPattern = {
   severity: 'high',
   description: 'Tezos (XTZ) cryptocurrency address',
   validator: (value: string, context: string) => {
+    // Normalize (remove any whitespace)
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    
     // Must start with tz1, tz2, or tz3
-    if (!/^tz[123]/.test(value)) return false;
+    if (!/^tz[123]/.test(cleaned)) return false;
 
-    // Must be exactly 36 characters
-    if (value.length !== 36) return false;
+    // Must be exactly 36 characters after normalization
+    if (cleaned.length !== 36) return false;
 
-    // Must have crypto/Tezos context
-    return /tezos|xtz|crypto|wallet|blockchain|address/i.test(context);
+    // Must have crypto/Tezos context (enhanced)
+    const cryptoKeywords = /tezos|xtz\b|crypto|wallet|blockchain|address|send|receive|transaction|transfer/i;
+    if (!cryptoKeywords.test(context)) {
+      return false;
+    }
+    
+    // Reject if context suggests it's not crypto-related
+    const rejectKeywords = /example|test|sample|demo|fake|dummy|placeholder|version|release/i;
+    if (rejectKeywords.test(context)) {
+      return false;
+    }
+
+    // Base58check format validation
+    if (!/^tz[123][1-9A-HJ-NP-Za-km-z]+$/.test(cleaned)) {
+      return false;
+    }
+
+    return true;
   }
 };
 
@@ -168,11 +269,35 @@ export const POLYGON_ADDRESS: PIIPattern = {
   severity: 'high',
   description: 'Polygon (MATIC) cryptocurrency address',
   validator: (value: string, context: string) => {
-    // Must start with 0x and be 42 chars total
-    if (!value.startsWith('0x') || value.length !== 42) return false;
+    // Normalize (remove any whitespace)
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    
+    // Must start with 0x and be 42 chars total after normalization
+    if (!cleaned.startsWith('0x') || cleaned.length !== 42) return false;
 
-    // MUST have Polygon/MATIC context to differentiate from ETH
-    return /polygon|matic|crypto|wallet|blockchain|address/i.test(context);
+    // MUST have Polygon/MATIC context to differentiate from ETH (enhanced)
+    const polygonKeywords = /polygon|matic\b|crypto|wallet|blockchain|address|send|receive|transaction|transfer/i;
+    if (!polygonKeywords.test(context)) {
+      return false;
+    }
+    
+    // Reject if context suggests Ethereum instead
+    if (/ethereum|eth\b|ether/i.test(context) && !/polygon|matic/i.test(context)) {
+      return false;
+    }
+    
+    // Reject if context suggests it's not crypto-related
+    const rejectKeywords = /example|test|sample|demo|fake|dummy|placeholder|version|release/i;
+    if (rejectKeywords.test(context)) {
+      return false;
+    }
+
+    // Hex format validation
+    if (!/^0x[a-fA-F0-9]{40}$/.test(cleaned)) {
+      return false;
+    }
+
+    return true;
   }
 };
 
@@ -189,11 +314,40 @@ export const BINANCE_CHAIN_ADDRESS: PIIPattern = {
   severity: 'high',
   description: 'Binance Smart Chain (BNB) address',
   validator: (value: string, context: string) => {
-    // Must start with 0x and be 42 chars total
-    if (!value.startsWith('0x') || value.length !== 42) return false;
+    // Normalize (remove any whitespace)
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    
+    // Must start with 0x and be 42 chars total after normalization
+    if (!cleaned.startsWith('0x') || cleaned.length !== 42) return false;
 
-    // MUST have Binance/BNB/BSC context to differentiate from ETH
-    return /binance|bnb|bsc|smart[- ]?chain|crypto|wallet|blockchain|address/i.test(context);
+    // MUST have Binance/BNB/BSC context to differentiate from ETH (enhanced)
+    const binanceKeywords = /binance|bnb\b|bsc|smart[- ]?chain|crypto|wallet|blockchain|address|send|receive|transaction|transfer/i;
+    if (!binanceKeywords.test(context)) {
+      return false;
+    }
+    
+    // Reject if context suggests Ethereum instead
+    if (/ethereum|eth\b|ether/i.test(context) && !/binance|bnb|bsc/i.test(context)) {
+      return false;
+    }
+    
+    // Reject if context suggests Polygon instead
+    if (/polygon|matic/i.test(context) && !/binance|bnb|bsc/i.test(context)) {
+      return false;
+    }
+    
+    // Reject if context suggests it's not crypto-related
+    const rejectKeywords = /example|test|sample|demo|fake|dummy|placeholder|version|release/i;
+    if (rejectKeywords.test(context)) {
+      return false;
+    }
+
+    // Hex format validation
+    if (!/^0x[a-fA-F0-9]{40}$/.test(cleaned)) {
+      return false;
+    }
+
+    return true;
   }
 };
 
@@ -210,11 +364,34 @@ export const NEAR_ADDRESS: PIIPattern = {
   severity: 'high',
   description: 'Near Protocol (NEAR) address',
   validator: (value: string, context: string) => {
+    // Normalize (remove any whitespace, convert to lowercase)
+    const cleaned = value.replace(/[\s\u00A0]/g, '').toLowerCase();
+    
     // Must end with .near
-    if (!value.toLowerCase().endsWith('.near')) return false;
+    if (!cleaned.endsWith('.near')) return false;
+    
+    // Extract the account name part
+    const accountName = cleaned.slice(0, -5); // Remove '.near'
+    
+    // Account name must be 2-64 characters
+    if (accountName.length < 2 || accountName.length > 64) return false;
+    
+    // Account name must match pattern (lowercase alphanumeric, hyphens, underscores)
+    if (!/^[a-z0-9_-]+$/.test(accountName)) return false;
 
-    // Must have crypto/Near context
-    return /near|protocol|crypto|wallet|blockchain|address/i.test(context);
+    // Must have crypto/Near context (enhanced)
+    const cryptoKeywords = /near|protocol|crypto|wallet|blockchain|address|send|receive|transaction|transfer/i;
+    if (!cryptoKeywords.test(context)) {
+      return false;
+    }
+    
+    // Reject if context suggests it's not crypto-related
+    const rejectKeywords = /example|test|sample|demo|fake|dummy|placeholder|version|release/i;
+    if (rejectKeywords.test(context)) {
+      return false;
+    }
+
+    return true;
   }
 };
 

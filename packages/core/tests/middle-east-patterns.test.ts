@@ -11,7 +11,7 @@ describe('Middle East National ID Detection', () => {
       const detector = new OpenRedaction({ patterns: ['UAE_EMIRATES_ID'] });
       const result = await detector.detect('Emirates ID: 784-1990-1234567-1');
       expect(result.detections.some(d => d.type === 'UAE_EMIRATES_ID')).toBe(true);
-    });
+});
 
     it('should detect UAE Emirates ID without dashes', async () => {
       const detector = new OpenRedaction({ patterns: ['UAE_EMIRATES_ID'] });
@@ -43,7 +43,7 @@ describe('Middle East National ID Detection', () => {
       const detector = new OpenRedaction({ patterns: ['SAUDI_NATIONAL_ID'] });
       const result = await detector.detect('Iqama number: 2123456789');
       expect(result.detections.some(d => d.type === 'SAUDI_NATIONAL_ID')).toBe(true);
-    });
+});
 
     it('should require starting with 1 or 2', async () => {
       const detector = new OpenRedaction({ patterns: ['SAUDI_NATIONAL_ID'] });

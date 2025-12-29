@@ -18,10 +18,14 @@ export const DISCORD_USER_ID: PIIPattern = {
   severity: 'medium',
   description: 'Discord user ID (Snowflake format)',
   validator: (value: string, context: string) => {
-    // Must be 17-19 digits
-    if (value.length < 17 || value.length > 19) return false;
-
+    // Normalize separators (though Discord IDs typically don't have them)
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    
+    // Must be 17-19 digits after normalization
+    if (cleaned.length < 17 || cleaned.length > 19) return false;
+    
     // Context validation required (many numeric IDs could match)
+    // This is the primary validation - snowflake timestamp validation is optional
     return /discord|snowflake|user[-_]?id|server|guild/i.test(context);
   }
 };
@@ -39,7 +43,10 @@ export const STEAM_ID64: PIIPattern = {
   severity: 'medium',
   description: 'Steam 64-bit user ID',
   validator: (value: string, context: string) => {
-    if (!value.startsWith('765') || value.length !== 17) return false;
+    // Normalize separators
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    
+    if (!cleaned.startsWith('765') || cleaned.length !== 17) return false;
 
     // Context validation
     return /steam|gaming|player|profile|valve|community/i.test(context);

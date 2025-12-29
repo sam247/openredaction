@@ -4,6 +4,7 @@
  */
 
 import { PIIPattern } from '../../types';
+import { validateIBAN, validateSortCode } from '../../validators';
 
 /**
  * SWIFT/BIC Codes
@@ -17,11 +18,19 @@ export const SWIFT_BIC: PIIPattern = {
   severity: 'high',
   description: 'SWIFT/BIC codes for international transfers',
   validator: (value: string, context: string) => {
+    // Normalize separators (though SWIFT codes typically don't have them)
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+    
     // Must be in financial context
     const financialContext = /swift|bic|bank|transfer|wire|international|payment/i.test(context);
-    // Validate format
-    const validLength = value.length === 8 || value.length === 11;
-    return financialContext && validLength;
+    
+    // Validate format: 8 or 11 characters after normalization
+    const validLength = cleaned.length === 8 || cleaned.length === 11;
+    
+    // Format: 4 letters (bank) + 2 letters (country) + 2 chars (location) + optional 3 chars (branch)
+    const validFormat = /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(cleaned);
+    
+    return financialContext && validLength && validFormat;
   }
 };
 
@@ -460,13 +469,38 @@ export const TERMINAL_ID: PIIPattern = {
  */
 export const UK_BANK_ACCOUNT_IBAN: PIIPattern = {
   type: 'UK_BANK_ACCOUNT_IBAN',
-  regex: /\b(GB\d{2}[A-Z]{4}\d{14})\b/g,
+  regex: /\b(GB\d{2}[\s\u00A0.-]?[A-Z]{4}[\s\u00A0.-]?\d{14})\b/gi,
   placeholder: '[UK_IBAN_{n}]',
   priority: 95,
   severity: 'high',
   description: 'UK bank account numbers in IBAN format',
-  validator: (value: string) => {
-    return value.startsWith('GB') && value.length === 22;
+  validator: (value: string, context: string) => {
+    // Normalize separators
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+    
+    // Must start with GB and be exactly 22 characters
+    if (!cleaned.startsWith('GB') || cleaned.length !== 22) {
+      return false;
+    }
+    
+    // Validate with IBAN checksum (MOD-97)
+    if (!validateIBAN(cleaned)) {
+      return false;
+    }
+    
+    // Must have banking context
+    const bankingKeywords = /iban|account|bank|uk|gb|financial|payment|transfer/i;
+    if (!bankingKeywords.test(context)) {
+      return false;
+    }
+    
+    // Reject test/example keywords
+    const rejectKeywords = /example\s+iban|test\s+iban|sample\s+iban|demo\s+iban|fake\s+iban/i;
+    if (rejectKeywords.test(context)) {
+      return false;
+    }
+    
+    return true;
   }
 };
 
@@ -476,11 +510,43 @@ export const UK_BANK_ACCOUNT_IBAN: PIIPattern = {
  */
 export const UK_SORT_CODE_ACCOUNT: PIIPattern = {
   type: 'UK_SORT_CODE_ACCOUNT',
-  regex: /\b(\d{2}[-]\d{2}[-]\d{2}\s?\d{8})\b/g,
+  regex: /\b(\d{2}[\s\u00A0-]?\d{2}[\s\u00A0-]?\d{2}[\s\u00A0]?\d{8})\b/g,
   placeholder: '[UK_ACCOUNT_{n}]',
   priority: 95,
   severity: 'high',
-  description: 'UK sort code and account number combination'
+  description: 'UK sort code and account number combination',
+  validator: (value: string, context: string) => {
+    // Normalize separators
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    
+    // Must be exactly 14 digits (6 for sort code + 8 for account)
+    if (!/^\d{14}$/.test(cleaned)) {
+      return false;
+    }
+    
+    // Extract sort code (first 6 digits) and account number (last 8 digits)
+    const sortCode = cleaned.substring(0, 6);
+    const accountNumber = cleaned.substring(6);
+    
+    // Validate sort code format
+    if (!validateSortCode(sortCode)) {
+      return false;
+    }
+    
+    // Must have banking context
+    const bankingKeywords = /sort\s+code|account|bank|uk|gb|financial|payment|transfer/i;
+    if (!bankingKeywords.test(context)) {
+      return false;
+    }
+    
+    // Reject test/example keywords
+    const rejectKeywords = /example\s+account|test\s+account|sample\s+account|demo\s+account|fake\s+account/i;
+    if (rejectKeywords.test(context)) {
+      return false;
+    }
+    
+    return true;
+  }
 };
 
 // Export all financial patterns

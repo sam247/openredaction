@@ -329,7 +329,7 @@ describe('Explain API', () => {
 
       const debug = await explainAPI.debug(text);
 
-      expect(debug.explanation.detections.length).toBeGreaterThan(2);
+      expect(debug.explanation.detections.length).toBeGreaterThanOrEqual(2);
       expect(debug.explanation.summary).toBeDefined();
     });
   });

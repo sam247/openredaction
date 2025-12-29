@@ -26,12 +26,18 @@ export const GERMAN_TAX_ID: PIIPattern = {
   severity: 'high',
   description: 'German Tax Identification Number (Steueridentifikationsnummer)',
   validator: (value: string, context: string) => {
+    // Normalize separators
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    
+    // Must be exactly 11 digits after normalization
+    if (!/^\d{11}$/.test(cleaned)) return false;
+    
     // Must be in German/tax context
     const relevantContext = /steuer|tax|german|deutschland|finanzamt/i.test(context);
     if (!relevantContext) return false;
 
     // Checksum validation (simplified - full validation is complex)
-    const digits = value.split('').map(Number);
+    const digits = cleaned.split('').map(Number);
 
     // Basic rules: exactly 11 digits, one digit appears 2 or 3 times, others max once
     const digitCounts = new Map<number, number>();
@@ -173,12 +179,18 @@ export const DUTCH_BSN: PIIPattern = {
   severity: 'high',
   description: 'Dutch Citizen Service Number (BSN)',
   validator: (value: string, context: string) => {
+    // Normalize separators
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    
+    // Must be exactly 9 digits after normalization
+    if (!/^\d{9}$/.test(cleaned)) return false;
+    
     // Must be in Dutch context
     const relevantContext = /bsn|dutch|netherlands|nederland|burger/i.test(context);
     if (!relevantContext) return false;
 
     // 11-proof checksum
-    const digits = value.split('').map(Number);
+    const digits = cleaned.split('').map(Number);
     let sum = 0;
     for (let i = 0; i < 8; i++) {
       sum += digits[i] * (9 - i);
@@ -201,13 +213,19 @@ export const POLISH_PESEL: PIIPattern = {
   severity: 'high',
   description: 'Polish National Identification Number (PESEL)',
   validator: (value: string, context: string) => {
+    // Normalize separators
+    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    
+    // Must be exactly 11 digits after normalization
+    if (!/^\d{11}$/.test(cleaned)) return false;
+    
     // Must be in Polish context
     const relevantContext = /pesel|polish|poland|polska/i.test(context);
     if (!relevantContext) return false;
 
     // Checksum validation
     const weights = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
-    const digits = value.split('').map(Number);
+    const digits = cleaned.split('').map(Number);
 
     let sum = 0;
     for (let i = 0; i < 10; i++) {

@@ -14,7 +14,7 @@ describe('Streaming API', () => {
 
       expect(streaming).toBeDefined();
       expect(streaming).toBeInstanceOf(StreamingDetector);
-    });
+});
 
     it('should create streaming detector with custom options', async () => {
       const detector = new OpenRedaction();
@@ -200,7 +200,7 @@ describe('Streaming API', () => {
 
       expect(result.detections.length).toBe(0);
       expect(result.redacted).toBe(text);
-    });
+});
 
     it('should handle large documents efficiently', async () => {
       const detector = new OpenRedaction();
@@ -294,7 +294,7 @@ describe('Streaming API', () => {
       expect(result.detections.length).toBeGreaterThan(0);
       expect(result.redacted).toContain('测试');
       expect(result.redacted).toContain('🎉');
-    });
+});
 
     it('should handle very long documents', async () => {
       const detector = new OpenRedaction({ enableContextAnalysis: false });
