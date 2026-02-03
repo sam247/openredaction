@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsdown';
 
 export default defineConfig([
   // Library build
@@ -6,28 +6,23 @@ export default defineConfig([
     entry: ['src/index.ts'],
     format: ['cjs', 'esm'],
     dts: true,
-    clean: true,
     sourcemap: true,
     outDir: 'dist',
-    external: ['react', 'express']
+    external: ['react', 'express'],
+    fixedExtension: false
   },
   // CLI build
   {
-    entry: ['src/cli/index.ts'],
+    entry: { 'index.cli': 'src/cli/index.ts' },
     format: ['cjs'],
     outDir: 'dist',
-    outExtension: () => ({ js: '.cli.js' }),
-    banner: {
-      js: '#!/usr/bin/env node'
-    }
+    banner: '#!/usr/bin/env node'
   },
   // Pattern testing CLI build
   {
     entry: ['src/cli/test-pattern.ts'],
     format: ['cjs'],
     outDir: 'dist/cli',
-    banner: {
-      js: '#!/usr/bin/env node'
-    }
+    banner: '#!/usr/bin/env node'
   }
 ]);
