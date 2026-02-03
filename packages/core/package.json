@@ -6,27 +6,27 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     }
   },
   "files": [
     "dist/index.js",
     "dist/index.mjs",
     "dist/index.d.ts",
-    "!dist/*.cli.js",
-    "!dist/cli/",
-    "!dist/chunk-*.mjs",
-    "!dist/chunk-*.mjs.map",
-    "!dist/workers-*.mjs",
-    "!dist/document-*.mjs",
-    "!dist/HealthCheck-*.mjs",
-    "!README.md"
+    "dist/index.d.mts",
+    "dist/index.cli.js",
+    "dist/cli/"
   ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "build": "tsdown && node scripts/dual-types.js",
+    "dev": "tsdown --watch",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -57,7 +57,7 @@
     "@types/node": "^20.10.0",
     "@types/react": "^19.2.6",
     "@vitest/coverage-v8": "^1.0.4",
-    "tsup": "^8.0.1",
+    "tsdown": "^0.20.1",
     "typescript": "^5.3.3",
     "vitest": "^1.0.4"
   },
