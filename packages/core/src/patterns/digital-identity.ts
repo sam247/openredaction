@@ -118,23 +118,23 @@ export const FACEBOOK_ID: PIIPattern = {
 
 /**
  * Instagram Username
- * Format: alphanumeric, periods, underscores (1-30 chars)
+ * Format: alphanumeric, periods, underscores (3-30 chars) — min 3 to avoid matching common words
  * Example: user.name_123
  */
 export const INSTAGRAM_USERNAME: PIIPattern = {
   type: 'INSTAGRAM_USERNAME',
-  regex: /\b([a-zA-Z0-9._]{1,30})\b/g,
+  regex: /\b([a-zA-Z0-9._]{3,30})\b/g,
   placeholder: '[IG_USER_{n}]',
   priority: 70,
   severity: 'medium',
   description: 'Instagram username',
   validator: (value: string, context: string) => {
     // Must be valid Instagram format
-    if (value.length < 1 || value.length > 30) return false;
+    if (value.length < 3 || value.length > 30) return false;
     if (!/^[a-zA-Z0-9._]+$/.test(value)) return false;
 
-    // Context validation strongly required
-    return /instagram|ig|insta|profile|handle/i.test(context);
+    // Context validation strongly required (avoid matching email parts)
+    return /instagram|ig|insta|profile|handle|username|follow/i.test(context);
   }
 };
 

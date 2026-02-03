@@ -34,10 +34,11 @@ export const PART_NUMBER: PIIPattern = {
 
 /**
  * Purchase Order Number
+ * Requires space/dash after PO prefix so "portable" etc. are not matched.
  */
 export const PURCHASE_ORDER_NUMBER: PIIPattern = {
   type: 'PURCHASE_ORDER_NUMBER',
-  regex: /\bP(?:URCHASE[-\s]?)?O(?:RDER)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\bP(?:URCHASE[-\s]?)?O(?:RDER)?[-\s]+(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[PO_{n}]',
   priority: 85,
   severity: 'medium',
@@ -197,16 +198,17 @@ export const RFQ_NUMBER: PIIPattern = {
 
 /**
  * Project Code (internal)
+ * Requires space/dash after PROJ(ECT) so "projector" etc. are not matched.
  */
 export const PROJECT_CODE: PIIPattern = {
   type: 'PROJECT_CODE',
-  regex: /\b(?:PROJECT|PROJ)[-\s]?(?:CODE)?[-\s]?[:#]?\s*([A-Z0-9]{4,10})\b/gi,
+  regex: /\b(?:PROJECT|PROJ)[-\s]+(?:CODE)?[-\s]?[:#]?\s*([A-Z0-9]{4,10})\b/gi,
   placeholder: '[PROJECT_{n}]',
   priority: 70,
   severity: 'low',
   description: 'Internal project codes',
   validator: (_value: string, context: string) => {
-    return /project|proj|initiative|program/i.test(context);
+    return /project|proj|initiative|program|code\s*[:#]/i.test(context);
   }
 };
 

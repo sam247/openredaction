@@ -195,6 +195,20 @@ export const commonFalsePositives: FalsePositiveRule[] = [
     severity: 'medium'
   },
 
+  // Common English words mistaken for social usernames (e.g. press release text)
+  {
+    patternType: ['INSTAGRAM_USERNAME', 'TIKTOK_USERNAME'],
+    matcher: (value: string, _context: string) => {
+      const commonWords = new Set([
+        'its', 'and', 'the', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'way', 'who', 'boy', 'did', 'get', 'let', 'put', 'say', 'she', 'too', 'use',
+        'latest', 'design', 'deliver', 'flexible', 'personalized', 'entertainment', 'experience', 'powered', 'portable', 'projector', 'designed', 'announced', 'launch', 'global', 'range', 'spaces', 'more', 'cross', 'wide'
+      ]);
+      return commonWords.has(value.toLowerCase());
+    },
+    description: 'Common English word mistaken for social username',
+    severity: 'high'
+  },
+
   // Programming keywords
   {
     patternType: ['NAME'],
