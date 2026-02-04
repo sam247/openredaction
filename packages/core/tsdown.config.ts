@@ -10,6 +10,9 @@ export default defineConfig([
     outDir: 'dist',
     external: ['react', 'express'],
     fixedExtension: false,
+    outputOptions: {
+      codeSplitting: false,
+    },
     outExtensions({ format }) {
       return { js: format === 'cjs' ? '.js' : '.mjs' };
     },
@@ -21,6 +24,9 @@ export default defineConfig([
     outDir: 'dist',
     dts: false,
     banner: '#!/usr/bin/env node',
+    outputOptions: {
+      codeSplitting: false,
+    },
   },
   // Pattern testing CLI build
   {
@@ -29,5 +35,8 @@ export default defineConfig([
     outDir: 'dist/cli',
     dts: false,
     banner: '#!/usr/bin/env node',
+    outputOptions: {
+      codeSplitting: false,
+    },
   },
 ]);

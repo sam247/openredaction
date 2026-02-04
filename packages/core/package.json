@@ -17,12 +17,7 @@
     }
   },
   "files": [
-    "dist/index.js",
-    "dist/index.mjs",
-    "dist/index.d.ts",
-    "dist/index.d.mts",
-    "dist/index.cli.js",
-    "dist/cli/"
+    "dist"
   ],
   "scripts": {
     "build": "tsdown && node scripts/dual-types.js",
