@@ -34,7 +34,8 @@
   "peerDependencies": {
     "pdf-parse": "^1.1.1",
     "mammoth": "^1.6.0",
-    "tesseract.js": "^5.0.0"
+    "tesseract.js": "^5.0.0",
+    "react": ">=18"
   },
   "peerDependenciesMeta": {
     "pdf-parse": {
@@ -44,6 +45,9 @@
       "optional": true
     },
     "tesseract.js": {
+      "optional": true
+    },
+    "react": {
       "optional": true
     }
   },
