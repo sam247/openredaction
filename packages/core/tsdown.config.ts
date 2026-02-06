@@ -39,4 +39,21 @@ export default defineConfig([
       codeSplitting: false,
     },
   },
+  // React subpath: openredaction/react (bundles core + hooks, react external)
+  {
+    entry: ['src/integrations/react.ts'],
+    format: ['esm', 'cjs'],
+    dts: true,
+    sourcemap: true,
+    outDir: 'dist',
+    clean: false,
+    external: ['react'],
+    fixedExtension: false,
+    outputOptions: {
+      codeSplitting: false,
+    },
+    outExtensions({ format }) {
+      return { js: format === 'cjs' ? '.js' : '.mjs' };
+    },
+  },
 ]);

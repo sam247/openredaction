@@ -300,14 +300,7 @@ export type {
   OpenRedactionRequest
 } from './integrations/express';
 
-// React integration
-export {
-  useOpenRedaction,
-  usePIIDetector,
-  useFormFieldValidator,
-  useBatchDetector,
-  useAutoRedact
-} from './integrations/react';
+// React integration is available via subpath: import from 'openredaction/react'
 
 // Error handling
 export {

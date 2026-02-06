@@ -14,6 +14,16 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/react.d.mts",
+        "default": "./dist/react.mjs"
+      },
+      "require": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.js"
+      }
     }
   },
   "files": [
@@ -34,7 +44,8 @@
   "peerDependencies": {
     "pdf-parse": "^1.1.1",
     "mammoth": "^1.6.0",
-    "tesseract.js": "^5.0.0"
+    "tesseract.js": "^5.0.0",
+    "react": "^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
     "pdf-parse": {
@@ -44,6 +55,9 @@
       "optional": true
     },
     "tesseract.js": {
+      "optional": true
+    },
+    "react": {
       "optional": true
     }
   },

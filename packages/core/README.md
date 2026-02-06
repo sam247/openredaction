@@ -20,6 +20,20 @@ console.log(result.redacted);
 // "Email [EMAIL_9619] or call [PHONE_UK_MOBILE_9478]"
 ```
 
+## React (optional)
+
+React hooks are on a separate entry so the main package stays React-free. If you use React:
+
+```bash
+npm install openredaction react
+```
+
+```tsx
+import { useOpenRedaction, usePIIDetector } from 'openredaction/react';
+```
+
+`react` is an optional peer dependency; only install it if you use the React entry.
+
 ## Optional AI Assist
 
 OpenRedaction supports an optional AI-assisted detection mode that enhances regex-based detection by calling a hosted AI endpoint. This feature is **OFF by default** and requires explicit configuration.

@@ -10,7 +10,7 @@ import {
   useFormFieldValidator,
   useBatchDetector,
   useAutoRedact
-} from 'openredaction';
+} from 'openredaction/react';
 
 // Example 1: Basic detection with manual control
 export function BasicDetectionExample() {

@@ -1,10 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 const dist = path.join(__dirname, '..', 'dist');
-const dTs = path.join(dist, 'index.d.ts');
-const dMts = path.join(dist, 'index.d.mts');
-const dCts = path.join(dist, 'index.d.cts');
 
-if (!fs.existsSync(dCts)) process.exit(0);
-fs.copyFileSync(dTs, dMts);
-fs.copyFileSync(dCts, dTs);
+function dualTypes(base) {
+  const dTs = path.join(dist, `${base}.d.ts`);
+  const dMts = path.join(dist, `${base}.d.mts`);
+  const dCts = path.join(dist, `${base}.d.cts`);
+  if (!fs.existsSync(dCts)) return;
+  fs.copyFileSync(dTs, dMts);
+  fs.copyFileSync(dCts, dTs);
+}
+
+dualTypes('index');
+dualTypes('react');
