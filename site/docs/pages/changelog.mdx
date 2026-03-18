@@ -1,0 +1,124 @@
+---
+title: 'OpenRedaction Changelog - Version History & Release Notes'
+description: 'Complete changelog and version history for OpenRedaction. Track new features, bug fixes, API changes, and updates to PII detection patterns and compliance presets.'
+---
+
+# Changelog
+
+All notable changes to OpenRedaction will be documented in this file.
+
+**Note:** OpenRedaction is offered as an open-source library for self-hosted use. A previously offered hosted API and Pro tier are no longer available. For enterprise support and custom deployments, see [Enterprise support](https://openredaction.com/pricing).
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Planned
+- Enhanced AI assist accuracy
+- Additional PII detection patterns
+- Performance improvements
+
+## [1.0.0] - 2025-01-15
+
+### Added
+- Initial public release
+- Regex-first PII detection with 500+ patterns
+- Optional AI assist for enhanced detection
+- npm library for Node.js
+- Hosted API with AI assist
+- Support for GDPR, HIPAA, and CCPA presets
+- Multiple redaction modes (placeholder, mask, remove)
+- Self-hosting capabilities
+- Comprehensive documentation
+
+### Hosted API (deprecated)
+The following applied to a previously offered hosted API, which is no longer available. Use the library and self-host for production.
+- `POST /v1/ai-detect` endpoint (deprecated)
+- API key authentication (deprecated)
+- Rate limiting and usage tracking (deprecated)
+
+### Library Features
+- `redact()` function for simple text redaction
+- `OpenRedaction` class for advanced usage
+- TypeScript type definitions
+- Browser and Node.js support
+
+### Detection Types
+- Email addresses
+- Phone numbers
+- Person names (with AI assist)
+- Social Security Numbers
+- Credit card numbers
+- IP addresses
+- Dates of birth
+- Physical addresses
+- Passport numbers
+- Driver's license numbers
+- And many more
+
+## Versioning Policy
+
+OpenRedaction follows [Semantic Versioning](https://semver.org/):
+
+- **MAJOR** version for incompatible API changes
+- **MINOR** version for backwards-compatible functionality additions
+- **PATCH** version for backwards-compatible bug fixes
+
+### Library Versioning
+
+The npm library follows Semantic Versioning. Backward compatibility is maintained within a major version; breaking changes require a new major version.
+
+## Migration Guides
+
+### Library Updates
+
+No breaking changes in the npm library API. All existing code should continue to work.
+
+## Release Notes
+
+### 2025-01-15 - Initial Release
+
+We're excited to announce the initial public release of OpenRedaction!
+
+**What's New**:
+- Complete regex-first PII detection library
+- Optional AI assist for enhanced detection
+- Hosted API for easy integration
+- Comprehensive documentation and examples
+
+**Getting Started**:
+- Install the npm library: `npm install openredaction`
+- Try the [playground](https://openredaction.com/playground)
+- Read the [getting started guide](/getting-started)
+- Check out the [API reference](/api-reference)
+
+**Feedback**:
+We'd love to hear your feedback! Please reach out via the [contact page](https://openredaction.com/contact) or open an issue on [GitHub](https://github.com/sam247/openredaction).
+
+## Upcoming Features
+
+Features planned for future releases:
+
+- **v1.1.0** (Planned):
+  - Additional PII detection patterns
+  - Performance optimizations
+  - Enhanced error messages
+
+- **v1.2.0** (Planned):
+  - Custom pattern support
+  - Batch processing API endpoint
+  - Webhook support for usage tracking
+
+- **v2.0.0** (Future):
+  - New API endpoints
+  - Enhanced AI assist capabilities
+  - Advanced configuration options
+
+## Support
+
+For questions, issues, or feature requests:
+- [GitHub Issues](https://github.com/sam247/openredaction/issues)
+- [Contact Support](https://openredaction.com/contact)
+- [Documentation](/)
+

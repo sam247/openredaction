@@ -1,5 +1,5 @@
 {
-  "name": "openredaction",
+  "name": "@sam247/openredaction",
   "version": "1.0.7",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

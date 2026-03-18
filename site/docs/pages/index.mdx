@@ -1,0 +1,58 @@
+---
+title: 'OpenRedaction Documentation - PII Detection & Redaction Guide'
+description: 'Complete documentation for OpenRedaction, an open-source PII detection and redaction library with 500+ regex patterns and optional AI assist. Learn how to detect and redact personally identifiable information for GDPR, HIPAA, and CCPA compliance.'
+---
+
+# OpenRedaction Documentation
+
+Welcome to the OpenRedaction documentation. OpenRedaction is an open-source PII (Personally Identifiable Information) detection and redaction library with optional AI assist.
+
+## What is OpenRedaction?
+
+OpenRedaction is a regex-first PII redaction engine that:
+
+- **Detects PII** using 500+ tested regex patterns
+- **Redacts sensitive data** with configurable strategies
+- **Optional AI assist** for better detection on unstructured text
+- **Self-hostable** for complete privacy and control
+- **Open source** and free to use
+
+## Quick Start
+
+```bash
+npm install openredaction
+```
+
+```javascript
+import { redact } from 'openredaction';
+
+const text = "My name is John Doe and my email is john@example.com";
+const result = await redact(text);
+console.log(result.redacted_text);
+// "My name is [REDACTED] and my email is [REDACTED]"
+```
+
+## Key Features
+
+- **Regex-first detection** - Transparent, deterministic, and fast
+- **Optional AI assist** - Better coverage on messy, unstructured text
+- **Self-hostable** - Run entirely on your infrastructure
+- **Privacy-first** - No data leaves your environment by default
+- **GDPR/HIPAA/CCPA ready** - Built for compliance
+
+## Next Steps
+
+- [Getting Started](/getting-started) - Install and configure OpenRedaction
+- [Tutorials](/tutorials) - Real-world use cases and step-by-step guides
+- [Examples](/examples) - Code examples and use cases
+- [Self Hosting](/self-hosting) - Deploy on your own infrastructure
+- [Security & Compliance](/security) - Security practices and compliance information
+- [Changelog](/changelog) - Version history and release notes
+
+## Resources
+
+- [GitHub Repository](https://github.com/sam247/openredaction)
+- [Main Website](https://openredaction.com)
+- [Playground](https://openredaction.com/playground)
+- [Contact Support](https://openredaction.com/contact)
+

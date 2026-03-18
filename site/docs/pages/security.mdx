@@ -1,0 +1,182 @@
+---
+title: 'OpenRedaction Security & Compliance - GDPR, HIPAA, CCPA'
+description: 'Security practices, data handling policies, and compliance information for OpenRedaction. Learn about stateless processing, data privacy, GDPR, HIPAA, and CCPA compliance features.'
+---
+
+# Security & Compliance
+
+OpenRedaction is designed with privacy and security as core principles. This document outlines our security practices, data handling policies, and compliance considerations.
+
+## Data Handling
+
+### Stateless Processing
+
+OpenRedaction processes text **in memory only** and does not store any data:
+
+- **No storage**: Input text is never written to disk or databases
+- **No logging**: We do not log request content or responses
+- **In-memory only**: Text is processed in memory and discarded immediately after processing
+- **No persistence**: No data persists beyond the request/response cycle
+
+### Data Flow
+
+When you use the npm library:
+
+- **Local processing**: All processing happens in your process on your infrastructure
+- **No network calls**: Data does not leave your environment by default
+- **In-memory only**: Text is processed in memory and not persisted
+
+### Data Retention
+
+**Zero retention policy**: We do not retain any user data.
+
+- No data is stored after processing
+- No backups or archives of request content
+- No analytics or monitoring of request content
+- No data sharing with third parties
+
+## Privacy
+
+### GDPR / UK-GDPR Compliance
+
+OpenRedaction follows data minimization principles:
+
+- **Minimal data collection**: We only process the text you provide
+- **No personal data storage**: We do not store any personal data
+- **Purpose limitation**: Data is used solely for PII detection
+- **Data subject rights**: Since we don't store data, there's nothing to delete or export
+
+**Important**: While OpenRedaction helps you comply with GDPR by detecting and redacting PII, we are not a GDPR-certified service. You are responsible for ensuring your use of OpenRedaction complies with applicable regulations.
+
+### Data Residency
+
+The npm library runs entirely on your infrastructure, so you control where data is processed and stored. For strict data residency requirements, run OpenRedaction in your own region or environment.
+
+### Third-Party Services
+
+When using the library alone, no data is sent to third parties. If you integrate with external services (e.g. your own AI or logging), ensure those services comply with your data and residency policies.
+
+## Security
+
+### Transport Security
+
+If you expose an API that uses OpenRedaction, use HTTPS and follow standard API security practices. The library itself does not perform network I/O.
+
+### Secrets and Credentials
+
+If you integrate OpenRedaction with external services (databases, third-party APIs), follow standard practices:
+
+- Store credentials in environment variables or a secret manager (e.g. AWS Secrets Manager, HashiCorp Vault)
+- Never commit secrets to version control
+- Rotate credentials periodically
+- Use different credentials per environment (dev, staging, production)
+
+### Input Validation
+
+Validate and sanitize input in your application before passing it to the library. The library will process whatever text you provide; length and format limits are up to your application.
+
+### Output Guarantees
+
+- **Consistent format**: Response format is guaranteed to be consistent
+- **No data leakage**: Responses only contain detection results, never original text
+- **Error handling**: Errors do not expose sensitive information
+
+## Compliance Disclaimers
+
+### No Certifications
+
+OpenRedaction is **not certified** under:
+- ISO 27001
+- SOC 2
+- HIPAA (as a Business Associate)
+- PCI DSS
+
+**Important**: If you require certified services, you should:
+- Self-host OpenRedaction on certified infrastructure
+- Use OpenRedaction as part of a certified system
+- Consult with your compliance team
+
+### Best-Effort Redaction
+
+**User Responsibility**: You are responsible for verifying redacted output.
+
+- OpenRedaction provides **best-effort** PII detection and redaction
+- No guarantee of 100% detection accuracy
+- False positives and false negatives are possible
+- Manual review is recommended for highly sensitive data
+
+**Recommendations**:
+- Test with known PII patterns before production use
+- Implement manual review processes for critical data
+- Use multiple detection methods for high-risk scenarios
+- Regularly audit redaction effectiveness
+
+### Legal Disclaimer
+
+OpenRedaction is provided "as is" without warranty of any kind. We are not responsible for:
+- Data breaches or security incidents
+- Compliance violations
+- Incorrect redaction results
+- Any damages arising from use of the service
+
+**You are responsible for**:
+- Ensuring compliance with applicable regulations
+- Verifying redaction accuracy
+- Implementing appropriate security controls
+- Protecting any credentials used by your application
+
+## Self-Hosting for Enhanced Security
+
+For organizations with strict security or compliance requirements, self-hosting provides:
+
+- **Complete control**: Full control over data flow and processing
+- **Data residency**: Process data in your own region or infrastructure
+- **No external dependencies**: No data leaves your environment
+- **Customization**: Modify detection patterns and behavior as needed
+- **Audit trails**: Implement your own logging and monitoring
+
+See the [Self Hosting](/self-hosting) guide for deployment instructions.
+
+## Security Best Practices
+
+1. **Keep updated**: Regularly update the library for security patches
+2. **Review code**: Review library and dependency code when self-hosting
+3. **Secure configuration**: Protect configuration files and secrets
+4. **Validate inputs**: Validate and sanitize input before passing to the library
+5. **Handle errors**: Implement proper error handling; avoid leaking sensitive data in errors
+6. **Test thoroughly**: Test with known PII patterns before production use
+
+## Reporting Security Issues
+
+If you discover a security vulnerability, please:
+
+1. **Do not** open a public GitHub issue
+2. Email security concerns to: [security@openredaction.com](mailto:security@openredaction.com)
+3. Include:
+   - Description of the vulnerability
+   - Steps to reproduce
+   - Potential impact
+   - Suggested fix (if any)
+
+We will respond within 48 hours and work with you to resolve the issue.
+
+## Updates and Notifications
+
+- **Security updates**: Critical security updates will be announced via GitHub releases
+- **Version updates**: See the [Changelog](/changelog) for version history
+- **Breaking changes**: Breaking changes are announced at least 6 months in advance
+
+## Additional Resources
+
+- [Self Hosting](/self-hosting) - Deploy on your own infrastructure
+- [Getting Started](/getting-started) - Installation and configuration
+- [GitHub Repository](https://github.com/sam247/openredaction) - Source code and issues
+- [Contact Support](https://openredaction.com/contact) - Questions or concerns
+
+## Related Pages
+
+- [GDPR Redaction Guide](https://openredaction.com/gdpr-redaction) - GDPR-compliant PII redaction
+- [HIPAA Redaction Guide](https://openredaction.com/hipaa-redaction) - HIPAA-compliant PHI redaction
+- [Self Hosting](/self-hosting) - Deploy on your own infrastructure for enhanced security
+- [Getting Started](/getting-started) - Installation and configuration
+

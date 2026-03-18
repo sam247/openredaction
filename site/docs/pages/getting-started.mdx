@@ -1,0 +1,106 @@
+---
+title: 'Getting Started with OpenRedaction - Installation & Quick Start'
+description: 'Get started with OpenRedaction in minutes. Learn how to install the npm package, configure PII detection presets (GDPR, HIPAA, CCPA), and start redacting sensitive data with code examples.'
+---
+
+# Getting Started
+
+Get up and running with OpenRedaction in minutes.
+
+## Installation
+
+Install OpenRedaction via npm:
+
+```bash
+npm install openredaction
+```
+
+Or using yarn:
+
+```bash
+yarn add openredaction
+```
+
+Or using pnpm:
+
+```bash
+pnpm add openredaction
+```
+
+## Basic Usage
+
+### Simple Redaction
+
+The simplest way to use OpenRedaction is to import and call the `redact` function:
+
+```javascript
+import { redact } from 'openredaction';
+
+const text = "My name is John Doe and my email is john@example.com";
+const result = await redact(text);
+
+console.log(result.redacted_text);
+// "My name is [REDACTED] and my email is [REDACTED]"
+
+console.log(result.detections);
+// [
+//   { type: 'NAME', text: 'John Doe', start: 11, end: 19 },
+//   { type: 'EMAIL', text: 'john@example.com', start: 38, end: 54 }
+// ]
+```
+
+### With Configuration
+
+You can configure OpenRedaction with various options:
+
+```javascript
+import { redact } from 'openredaction';
+
+const result = await redact(text, {
+  preset: 'gdpr', // 'gdpr', 'hipaa', 'ccpa', or 'default'
+  redactionMode: 'placeholder', // 'placeholder', 'mask', or 'remove'
+  // Add custom options as needed
+});
+```
+
+## Configuration Options
+
+### Presets
+
+OpenRedaction comes with built-in presets for different compliance requirements:
+
+- **`gdpr`** - GDPR compliance (default)
+- **`hipaa`** - HIPAA compliance
+- **`ccpa`** - CCPA compliance
+- **`default`** - General purpose
+
+### Redaction Modes
+
+- **`placeholder`** - Replace with [REDACTED] or [TYPE] (default)
+- **`mask`** - Mask with asterisks (e.g., `j***@example.com`)
+- **`remove`** - Remove the text entirely
+
+### AI Assist
+
+To enable AI assist for better detection on unstructured text:
+
+```javascript
+const result = await redact(text, {
+  useAI: true,
+  apiKey: process.env.OPENREDACTION_API_KEY, // Required for AI assist
+});
+```
+
+## Next Steps
+
+- Learn about the [API Reference](/api-reference)
+- Check out [Examples](/examples) for common use cases
+- Read about [Self Hosting](/self-hosting) for production deployments
+
+## Related Pages
+
+- [Node.js Redaction Guide](https://openredaction.com/nodejs-redaction) - Integration guide for Node.js applications
+- [PII Detection Guide](https://openredaction.com/pii-detection) - Learn about PII detection basics
+- [Tutorials](/tutorials) - Real-world integration examples
+- [Security & Compliance](/security) - Security practices and compliance information
+

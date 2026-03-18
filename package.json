@@ -5,7 +5,8 @@
   "description": "Production-ready PII detection and redaction library",
   "packageManager": "npm@10.0.0",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "site"
   ],
   "scripts": {
     "build": "turbo run build",

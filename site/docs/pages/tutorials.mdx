@@ -1,0 +1,828 @@
+---
+title: 'OpenRedaction Tutorials - Real-World Integration Guides'
+description: 'Step-by-step tutorials for integrating OpenRedaction into your applications. Learn log sanitization, email scrubbing, chat redaction, API gateway integration, and batch processing with code examples.'
+---
+
+# Tutorials
+
+Real-world use cases and step-by-step guides for integrating OpenRedaction into your applications.
+
+## Table of Contents
+
+- [Log Sanitization](#log-sanitization)
+- [Email Scrubbing](#email-scrubbing)
+- [Chat Redaction](#chat-redaction)
+- [Data Export](#data-export)
+- [API Gateway Integration](#api-gateway-integration)
+- [Batch Processing](#batch-processing)
+
+## Log Sanitization
+
+Redact PII from application logs before storage or analysis to prevent sensitive data from leaking into log management tools.
+
+### Problem
+
+Application logs often contain PII such as:
+- User email addresses in error messages
+- Phone numbers in request logs
+- IP addresses and session IDs
+- Personal information in debug traces
+
+This PII can end up in centralized logging systems, making compliance difficult and increasing breach risk.
+
+### Solution
+
+Process log entries through OpenRedaction before forwarding to your logging infrastructure.
+
+### Implementation
+
+#### Node.js Example
+
+```javascript
+import { redact } from 'openredaction';
+import winston from 'winston';
+
+// Create a custom log formatter that redacts PII
+const redactLogFormatter = winston.format.printf((info) => {
+  // Redact PII from log message
+  return redact(info.message, {
+    preset: 'gdpr',
+    redactionMode: 'placeholder',
+  }).then((result) => {
+    return {
+      ...info,
+      message: result.redacted_text,
+      piiDetected: result.detections.length > 0,
+    };
+  });
+});
+
+// Configure logger with PII redaction
+const logger = winston.createLogger({
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    redactLogFormatter
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'app.log' }),
+  ],
+});
+
+// Usage
+logger.info('User john@example.com logged in from 192.168.1.1');
+// Logs: "User [REDACTED] logged in from [REDACTED]"
+```
+
+#### Python Example
+
+```python
+import logging
+from openredaction import redact
+
+class PIIRedactionFilter(logging.Filter):
+    def filter(self, record):
+        # Redact PII from log message
+        result = redact(record.getMessage(), preset='gdpr')
+        record.msg = result['redacted_text']
+        record.pii_detected = len(result['detections']) > 0
+        return True
+
+# Configure logger
+logger = logging.getLogger(__name__)
+logger.addFilter(PIIRedactionFilter())
+handler = logging.StreamHandler()
+logger.addHandler(handler)
+
+# Usage
+logger.info('User john@example.com logged in from 192.168.1.1')
+# Logs: "User [REDACTED] logged in from [REDACTED]"
+```
+
+#### Log Forwarder Integration (Fluent Bit)
+
+```lua
+-- fluent-bit-lua-filter.lua
+function redact_pii(tag, timestamp, record)
+    local http = require("socket.http")
+    local ltn12 = require("ltn12")
+    
+    local response_body = {}
+    local res, code = http.request{
+        url = "http://localhost:3000/redact",
+        method = "POST",
+        headers = {
+            ["Content-Type"] = "application/json"
+        },
+        source = ltn12.source.string(json.encode({text = record["message"]})),
+        sink = ltn12.sink.table(response_body)
+    }
+    
+    if code == 200 then
+        local result = json.decode(table.concat(response_body))
+        record["message"] = result.redacted_text
+        record["pii_detected"] = #result.detections > 0
+    end
+    
+    return 1, timestamp, record
+end
+```
+
+### Best Practices
+
+- Redact logs at the source (application level) before forwarding
+- Use regex-only mode for performance in high-throughput scenarios
+- Enable AI assist for support tickets and user-generated content
+- Monitor `piiDetected` flags to identify logs that may need manual review
+- Test with known PII patterns to verify redaction works correctly
+
+## Email Scrubbing
+
+Clean email content before forwarding, sharing, or storing to protect recipient privacy.
+
+### Problem
+
+Emails often contain:
+- Sender and recipient email addresses
+- Phone numbers in signatures
+- Physical addresses
+- Personal information in email bodies
+
+Forwarding or sharing emails can inadvertently expose PII to unauthorized parties.
+
+### Solution
+
+Process email content through OpenRedaction before forwarding or storing.
+
+### Implementation
+
+#### Node.js Example
+
+```javascript
+import { redact } from 'openredaction';
+
+async function scrubEmail(emailContent) {
+  // Redact PII from email body
+  const result = await redact(emailContent.body, {
+    preset: 'gdpr',
+    redactionMode: 'placeholder',
+    useAI: true, // Use AI assist for better name detection
+  });
+  
+  return {
+    ...emailContent,
+    body: result.redacted_text,
+    piiDetected: result.detections.length > 0,
+    detections: result.detections,
+  };
+}
+
+// Usage
+const email = {
+  from: 'sender@example.com',
+  to: 'recipient@example.com',
+  subject: 'Meeting Request',
+  body: 'Hi John, can we meet at 123 Main St tomorrow? Call me at 555-123-4567.',
+};
+
+const scrubbed = await scrubEmail(email);
+console.log(scrubbed.body);
+// "Hi [REDACTED], can we meet at [REDACTED] tomorrow? Call me at [REDACTED]."
+```
+
+#### Python Example
+
+```python
+from openredaction import redact
+
+def scrub_email(email_content):
+    # Redact PII from email body
+    result = redact(
+        email_content['body'],
+        preset='gdpr',
+        redaction_mode='placeholder',
+        use_ai=True  # Use AI assist for better name detection
+    )
+    
+    return {
+        **email_content,
+        'body': result['redacted_text'],
+        'pii_detected': len(result['detections']) > 0,
+        'detections': result['detections'],
+    }
+
+# Usage
+email = {
+    'from': 'sender@example.com',
+    'to': 'recipient@example.com',
+    'subject': 'Meeting Request',
+    'body': 'Hi John, can we meet at 123 Main St tomorrow? Call me at 555-123-4567.',
+}
+
+scrubbed = scrub_email(email)
+print(scrubbed['body'])
+# "Hi [REDACTED], can we meet at [REDACTED] tomorrow? Call me at [REDACTED]."
+```
+
+### Best Practices
+
+- Redact email bodies before forwarding or sharing
+- Consider redacting email headers (From/To) in some scenarios
+- Use AI assist for better detection of names and addresses
+- Preserve email structure (line breaks, formatting) after redaction
+- Log redaction events for audit purposes
+
+## Chat Redaction
+
+Real-time PII detection in chat applications to protect user privacy.
+
+### Problem
+
+Chat messages can contain:
+- User names and personal information
+- Email addresses and phone numbers
+- Location data
+- Financial information
+
+Storing or displaying chat messages without redaction can expose PII to unauthorized users or in data breaches.
+
+### Solution
+
+Process chat messages through OpenRedaction before storing or displaying.
+
+### Implementation
+
+#### Node.js Example (Express.js)
+
+```javascript
+import express from 'express';
+import { redact } from 'openredaction';
+
+const app = express();
+app.use(express.json());
+
+// Middleware to redact PII from chat messages
+async function redactChatMessage(req, res, next) {
+  if (req.body.message) {
+    const result = await redact(req.body.message, {
+      preset: 'gdpr',
+      redactionMode: 'placeholder',
+      useAI: true, // Use AI assist for better name detection
+    });
+    
+    req.body.message = result.redacted_text;
+    req.body.piiDetected = result.detections.length > 0;
+    req.body.detections = result.detections;
+  }
+  next();
+}
+
+// Chat message endpoint
+app.post('/api/messages', redactChatMessage, async (req, res) => {
+  const { message, userId } = req.body;
+  
+  // Store redacted message
+  const savedMessage = await saveMessage({
+    userId,
+    message, // Already redacted
+    piiDetected: req.body.piiDetected,
+    timestamp: new Date(),
+  });
+  
+  res.json({ success: true, message: savedMessage });
+});
+
+// Real-time chat with WebSocket
+import { WebSocketServer } from 'ws';
+
+const wss = new WebSocketServer({ port: 8080 });
+
+wss.on('connection', (ws) => {
+  ws.on('message', async (data) => {
+    const message = JSON.parse(data);
+    
+    // Redact PII before broadcasting
+    const result = await redact(message.text, {
+      preset: 'gdpr',
+      redactionMode: 'placeholder',
+      useAI: true,
+    });
+    
+    // Broadcast redacted message to all clients
+    wss.clients.forEach((client) => {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({
+          ...message,
+          text: result.redacted_text,
+        }));
+      }
+    });
+  });
+});
+```
+
+#### Python Example (Flask)
+
+```python
+from flask import Flask, request, jsonify
+from openredaction import redact
+from flask_socketio import SocketIO, emit
+
+app = Flask(__name__)
+socketio = SocketIO(app)
+
+def redact_chat_message(message):
+    result = redact(
+        message,
+        preset='gdpr',
+        redaction_mode='placeholder',
+        use_ai=True  # Use AI assist for better name detection
+    )
+    return result
+
+@app.route('/api/messages', methods=['POST'])
+def create_message():
+    data = request.json
+    message = data.get('message')
+    
+    # Redact PII
+    result = redact_chat_message(message)
+    
+    # Store redacted message
+    saved_message = save_message({
+        'user_id': data.get('userId'),
+        'message': result['redacted_text'],
+        'pii_detected': len(result['detections']) > 0,
+    })
+    
+    return jsonify({'success': True, 'message': saved_message})
+
+@socketio.on('message')
+def handle_message(data):
+    message = data.get('text')
+    
+    # Redact PII before broadcasting
+    result = redact_chat_message(message)
+    
+    # Broadcast redacted message
+    emit('message', {
+        **data,
+        'text': result['redacted_text'],
+    }, broadcast=True)
+```
+
+### Best Practices
+
+- Redact messages before storing in database
+- Redact messages before displaying to other users
+- Use AI assist for better detection of names and personal information
+- Consider client-side redaction for real-time preview
+- Log redaction events for audit purposes
+- Handle rate limiting for high-volume chat applications
+
+## Data Export
+
+Sanitize user data exports for GDPR compliance and safe data sharing.
+
+### Problem
+
+Data exports often contain:
+- User personal information
+- Email addresses and phone numbers
+- Financial information
+- Location data
+
+Exporting data without redaction can violate privacy regulations and expose sensitive information.
+
+### Solution
+
+Process exported data through OpenRedaction before generating export files.
+
+### Implementation
+
+#### Node.js Example
+
+```javascript
+import { redact } from 'openredaction';
+import fs from 'fs/promises';
+
+async function exportUserData(userId) {
+  // Fetch user data
+  const userData = await getUserData(userId);
+  
+  // Redact PII from all text fields
+  const redactedData = await redactUserData(userData);
+  
+  // Generate export file
+  const exportData = JSON.stringify(redactedData, null, 2);
+  await fs.writeFile(`export-${userId}.json`, exportData);
+  
+  return exportData;
+}
+
+async function redactUserData(data) {
+  const redacted = { ...data };
+  
+  // Redact email
+  if (redacted.email) {
+    const emailResult = await redact(redacted.email, {
+      preset: 'gdpr',
+      redactionMode: 'placeholder',
+    });
+    redacted.email = emailResult.redacted_text;
+  }
+  
+  // Redact notes/comments (may contain PII)
+  if (redacted.notes) {
+    const notesResult = await redact(redacted.notes, {
+      preset: 'gdpr',
+      redactionMode: 'placeholder',
+      useAI: true, // Use AI assist for better detection
+    });
+    redacted.notes = notesResult.redacted_text;
+  }
+  
+  // Redact nested objects
+  if (redacted.profile) {
+    redacted.profile = await redactUserData(redacted.profile);
+  }
+  
+  return redacted;
+}
+
+// Usage
+const exportData = await exportUserData('user123');
+```
+
+#### Python Example
+
+```python
+from openredaction import redact
+import json
+
+async def export_user_data(user_id):
+    # Fetch user data
+    user_data = await get_user_data(user_id)
+    
+    # Redact PII from all text fields
+    redacted_data = redact_user_data(user_data)
+    
+    # Generate export file
+    export_data = json.dumps(redacted_data, indent=2)
+    with open(f'export-{user_id}.json', 'w') as f:
+        f.write(export_data)
+    
+    return export_data
+
+def redact_user_data(data):
+    redacted = data.copy()
+    
+    # Redact email
+    if 'email' in redacted:
+        email_result = redact(redacted['email'], preset='gdpr')
+        redacted['email'] = email_result['redacted_text']
+    
+    # Redact notes/comments (may contain PII)
+    if 'notes' in redacted:
+        notes_result = redact(
+            redacted['notes'],
+            preset='gdpr',
+            use_ai=True  # Use AI assist for better detection
+        )
+        redacted['notes'] = notes_result['redacted_text']
+    
+    # Redact nested objects
+    if 'profile' in redacted:
+        redacted['profile'] = redact_user_data(redacted['profile'])
+    
+    return redacted
+
+# Usage
+export_data = await export_user_data('user123')
+```
+
+### Best Practices
+
+- Redact all text fields in exported data
+- Use AI assist for better detection in free-form text fields
+- Preserve data structure and relationships after redaction
+- Generate audit logs of redaction operations
+- Test exports with known PII patterns
+- Consider partial masking for debugging purposes
+
+## API Gateway Integration
+
+Middleware for automatic PII redaction in API requests and responses.
+
+### Problem
+
+API requests and responses can contain:
+- User personal information in request bodies
+- PII in query parameters
+- Sensitive data in response payloads
+
+Without redaction, PII can leak into logs, monitoring tools, and third-party services.
+
+### Solution
+
+Add OpenRedaction middleware to your API gateway to automatically redact PII from requests and responses.
+
+### Implementation
+
+#### Node.js Example (Express.js Middleware)
+
+```javascript
+import express from 'express';
+import { redact } from 'openredaction';
+
+const app = express();
+app.use(express.json());
+
+// Middleware to redact PII from request body
+async function redactRequestBody(req, res, next) {
+  if (req.body && typeof req.body === 'object') {
+    const bodyString = JSON.stringify(req.body);
+    const result = await redact(bodyString, {
+      preset: 'gdpr',
+      redactionMode: 'placeholder',
+    });
+    
+    // Parse redacted JSON back to object
+    try {
+      req.body = JSON.parse(result.redacted_text);
+    } catch (e) {
+      // If parsing fails, use original body
+      console.error('Failed to parse redacted body:', e);
+    }
+    
+    req.piiDetected = result.detections.length > 0;
+  }
+  next();
+}
+
+// Middleware to redact PII from response
+async function redactResponseBody(req, res, next) {
+  const originalJson = res.json;
+  
+  res.json = function(data) {
+    // Redact PII from response
+    return redact(JSON.stringify(data), {
+      preset: 'gdpr',
+      redactionMode: 'placeholder',
+    }).then((result) => {
+      const redactedData = JSON.parse(result.redacted_text);
+      return originalJson.call(this, redactedData);
+    });
+  };
+  
+  next();
+}
+
+// Apply middleware to all routes
+app.use(redactRequestBody);
+app.use(redactResponseBody);
+
+// Example route
+app.post('/api/users', async (req, res) => {
+  // Request body is already redacted
+  const user = await createUser(req.body);
+  res.json(user); // Response will be redacted
+});
+```
+
+#### Python Example (Flask Middleware)
+
+```python
+from flask import Flask, request, jsonify
+from openredaction import redact
+import json
+
+app = Flask(__name__)
+
+@app.before_request
+def redact_request_body():
+    if request.is_json and request.json:
+        body_string = json.dumps(request.json)
+        result = redact(body_string, preset='gdpr')
+        
+        try:
+            request.json = json.loads(result['redacted_text'])
+        except json.JSONDecodeError:
+            # If parsing fails, use original body
+            pass
+
+@app.after_request
+def redact_response_body(response):
+    if response.is_json:
+        data = response.get_json()
+        data_string = json.dumps(data)
+        result = redact(data_string, preset='gdpr')
+        redacted_data = json.loads(result['redacted_text'])
+        response.set_data(json.dumps(redacted_data))
+    return response
+
+@app.route('/api/users', methods=['POST'])
+def create_user():
+    # Request body is already redacted
+    user = create_user(request.json)
+    return jsonify(user)  # Response will be redacted
+```
+
+### Best Practices
+
+- Apply redaction middleware selectively (not all endpoints need it)
+- Use regex-only mode for performance in high-throughput scenarios
+- Consider redacting query parameters and headers in some cases
+- Log redaction events for audit purposes
+- Test middleware with various request/response formats
+- Handle JSON parsing errors gracefully
+
+## Batch Processing
+
+Process large datasets efficiently with OpenRedaction.
+
+### Problem
+
+Processing large datasets (thousands of records) requires:
+- Efficient batch processing
+- Error handling for individual records
+- Progress tracking
+- Resource management
+
+### Solution
+
+Implement batch processing with parallel execution and error handling.
+
+### Implementation
+
+#### Node.js Example
+
+```javascript
+import { redact } from 'openredaction';
+import { chunk } from 'lodash';
+
+async function processBatch(texts, options = {}) {
+  const {
+    batchSize = 10,
+    concurrency = 5,
+    preset = 'gdpr',
+    redactionMode = 'placeholder',
+    useAI = false,
+  } = options;
+  
+  // Split into batches
+  const batches = chunk(texts, batchSize);
+  const results = [];
+  
+  // Process batches with concurrency limit
+  for (let i = 0; i < batches.length; i += concurrency) {
+    const batchGroup = batches.slice(i, i + concurrency);
+    
+    const batchResults = await Promise.allSettled(
+      batchGroup.map(async (batch) => {
+        return Promise.all(
+          batch.map(async (text) => {
+            try {
+              const result = await redact(text, {
+                preset,
+                redactionMode,
+                useAI,
+              });
+              return {
+                success: true,
+                original: text,
+                redacted: result.redacted_text,
+                detections: result.detections,
+              };
+            } catch (error) {
+              return {
+                success: false,
+                original: text,
+                error: error.message,
+              };
+            }
+          })
+        );
+      })
+    );
+    
+    results.push(...batchResults);
+    
+    // Log progress
+    console.log(`Processed ${Math.min(i + concurrency, batches.length)}/${batches.length} batches`);
+  }
+  
+  return results.flat();
+}
+
+// Usage
+const texts = [
+  'Contact john@example.com',
+  'Call 555-123-4567',
+  'Email sarah@example.com',
+  // ... thousands more
+];
+
+const results = await processBatch(texts, {
+  batchSize: 100,
+  concurrency: 5,
+  useAI: true,
+});
+
+// Filter successful results
+const successful = results.filter(r => r.success);
+const failed = results.filter(r => !r.success);
+
+console.log(`Processed ${successful.length} successfully, ${failed.length} failed`);
+```
+
+#### Python Example
+
+```python
+from openredaction import redact
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import math
+
+def process_batch(texts, options=None):
+    if options is None:
+        options = {}
+    
+    batch_size = options.get('batch_size', 10)
+    max_workers = options.get('concurrency', 5)
+    preset = options.get('preset', 'gdpr')
+    redaction_mode = options.get('redaction_mode', 'placeholder')
+    use_ai = options.get('use_ai', False)
+    
+    def process_text(text):
+        try:
+            result = redact(
+                text,
+                preset=preset,
+                redaction_mode=redaction_mode,
+                use_ai=use_ai
+            )
+            return {
+                'success': True,
+                'original': text,
+                'redacted': result['redacted_text'],
+                'detections': result['detections'],
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'original': text,
+                'error': str(e),
+            }
+    
+    # Process in parallel batches
+    results = []
+    num_batches = math.ceil(len(texts) / batch_size)
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = []
+        for i in range(0, len(texts), batch_size):
+            batch = texts[i:i + batch_size]
+            future = executor.submit(
+                lambda batch: [process_text(text) for text in batch],
+                batch
+            )
+            futures.append(future)
+        
+        for i, future in enumerate(as_completed(futures)):
+            batch_results = future.result()
+            results.extend(batch_results)
+            print(f'Processed {i + 1}/{num_batches} batches')
+    
+    return results
+
+# Usage
+texts = [
+    'Contact john@example.com',
+    'Call 555-123-4567',
+    'Email sarah@example.com',
+    # ... thousands more
+]
+
+results = process_batch(texts, {
+    'batch_size': 100,
+    'concurrency': 5,
+    'use_ai': True,
+})
+
+# Filter successful results
+successful = [r for r in results if r['success']]
+failed = [r for r in results if not r['success']]
+
+print(f'Processed {len(successful)} successfully, {len(failed)} failed')
+```
+
+### Best Practices
+
+- Process in batches to manage memory and API rate limits
+- Use parallel processing for better performance
+- Implement error handling for individual records
+- Track progress for long-running operations
+- Use regex-only mode for better performance in batch scenarios
+- Consider using a queue system (e.g., RabbitMQ, Redis) for very large datasets
+- Monitor resource usage (CPU, memory) during batch processing
+

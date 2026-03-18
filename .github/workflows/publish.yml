@@ -57,6 +57,6 @@ jobs:
           echo "Version match confirmed: $TAG_VERSION"
 
       - name: Publish to npm
-        run: npm publish
+        run: npm publish --access public
         working-directory: ./packages/core
 

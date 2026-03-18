@@ -21,7 +21,7 @@ OpenRedaction is a production-ready library that helps you keep sensitive data o
 ## Installation
 
 ```bash
-npm install openredaction
+npm install @sam247/openredaction
 ```
 
 ## Basic Usage (Regex-Only)
@@ -29,7 +29,7 @@ npm install openredaction
 The library works entirely with regex patterns by default. All detection happens locally in your application.
 
 ```typescript
-import { OpenRedaction } from 'openredaction';
+import { OpenRedaction } from '@sam247/openredaction';
 
 const redactor = new OpenRedaction({
   redactionMode: 'placeholder'
@@ -47,7 +47,7 @@ console.log(result.detections);
 ### Simple Redaction Example
 
 ```typescript
-import { OpenRedaction } from 'openredaction';
+import { OpenRedaction } from '@sam247/openredaction';
 
 const redactor = new OpenRedaction({
   includeNames: true,
@@ -66,7 +66,7 @@ console.log(redacted);
 ### Pre-processing for LLM Pipelines
 
 ```typescript
-import { OpenRedaction } from 'openredaction';
+import { OpenRedaction } from '@sam247/openredaction';
 
 const redactor = new OpenRedaction({
   preset: 'gdpr',
@@ -180,7 +180,7 @@ const redactor = new OpenRedaction({
 
 OpenRedaction is part of a broader ecosystem:
 
-- **openredaction** (this package) — Core library for local, regex-based PII detection and redaction
+- **@sam247/openredaction** (this package) — Core library for local, regex-based PII detection and redaction
 - **[openredaction-api](https://github.com/sam247/openredaction-api)** — Optional hosted API that wraps this library and provides AI-assisted detection with API keys and rate limiting
 - **[openredaction-site](https://openredaction.com)** — Website and playground where you can try the library and hosted API in your browser
 

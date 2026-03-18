@@ -1,0 +1,185 @@
+---
+title: 'OpenRedaction Code Examples - PII Detection & Redaction Examples'
+description: 'Code examples and use cases for OpenRedaction. Learn how to redact emails, phone numbers, credit cards, SSNs, and other PII types with JavaScript, Node.js, and TypeScript examples.'
+---
+
+# Examples
+
+Common use cases and code examples for OpenRedaction.
+
+## Basic Examples
+
+### Redacting Email Addresses
+
+```javascript
+import { redact } from 'openredaction';
+
+const text = "Contact us at support@example.com";
+const result = await redact(text);
+
+console.log(result.redacted_text);
+// "Contact us at [REDACTED]"
+```
+
+### Redacting Phone Numbers
+
+```javascript
+const text = "Call me at (555) 123-4567";
+const result = await redact(text);
+
+console.log(result.redacted_text);
+// "Call me at [REDACTED]"
+```
+
+### Redacting Multiple PII Types
+
+```javascript
+const text = `
+  Name: John Doe
+  Email: john@example.com
+  Phone: 555-123-4567
+  SSN: 123-45-6789
+`;
+
+const result = await redact(text);
+console.log(result.redacted_text);
+```
+
+## Advanced Examples
+
+### Using AI Assist
+
+```javascript
+const text = "My colleague Sarah in the London office can help";
+
+const result = await redact(text, {
+  useAI: true,
+  apiKey: process.env.OPENREDACTION_API_KEY,
+});
+
+// AI assist can detect names and locations that regex might miss
+```
+
+### Custom Redaction Mode
+
+```javascript
+// Mask mode - shows partial information
+const result = await redact(text, {
+  redactionMode: 'mask',
+});
+
+// "Contact j***@example.com"
+```
+
+### Processing Files
+
+```javascript
+import fs from 'fs';
+import { redact } from 'openredaction';
+
+const fileContent = fs.readFileSync('document.txt', 'utf8');
+const result = await redact(fileContent);
+
+fs.writeFileSync('redacted.txt', result.redacted_text);
+```
+
+## Integration Examples
+
+### Express.js Middleware
+
+```javascript
+import express from 'express';
+import { redact } from 'openredaction';
+
+const app = express();
+
+app.use(express.json());
+
+app.post('/api/redact', async (req, res) => {
+  const { text } = req.body;
+  const result = await redact(text);
+  res.json(result);
+});
+```
+
+### Log Processing
+
+```javascript
+import { redact } from 'openredaction';
+
+async function processLog(logEntry) {
+  const redacted = await redact(logEntry.message);
+  
+  return {
+    ...logEntry,
+    message: redacted.redacted_text,
+    piiDetected: redacted.detections.length > 0,
+  };
+}
+```
+
+### Batch Processing
+
+```javascript
+const texts = [
+  "Email: user1@example.com",
+  "Phone: 555-111-2222",
+  "Name: Jane Smith",
+];
+
+const results = await Promise.all(
+  texts.map(text => redact(text))
+);
+
+results.forEach((result, index) => {
+  console.log(`Text ${index + 1}:`, result.redacted_text);
+});
+```
+
+## Use Cases
+
+### Chat Application
+
+Redact PII from chat messages before storing or displaying:
+
+```javascript
+app.post('/api/messages', async (req, res) => {
+  const { message } = req.body;
+  const redacted = await redact(message);
+  
+  // Store redacted version
+  await saveMessage(redacted.redacted_text);
+  
+  res.json({ success: true });
+});
+```
+
+### Data Export
+
+Redact PII before exporting data:
+
+```javascript
+async function exportUserData(userId) {
+  const data = await getUserData(userId);
+  
+  const redacted = await redact(JSON.stringify(data));
+  
+  return JSON.parse(redacted.redacted_text);
+}
+```
+
+### API Gateway
+
+Redact PII from API requests/responses:
+
+```javascript
+app.use(async (req, res, next) => {
+  if (req.body && typeof req.body === 'object') {
+    const bodyString = JSON.stringify(req.body);
+    const redacted = await redact(bodyString);
+    req.body = JSON.parse(redacted.redacted_text);
+  }
+  next();
+});
+```
+

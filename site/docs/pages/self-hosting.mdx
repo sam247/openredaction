@@ -1,0 +1,77 @@
+---
+title: 'Self-Host OpenRedaction - Library Deployment Guide'
+description: 'Learn how to run OpenRedaction on your own infrastructure. Install the npm library and use it in your Node.js application for complete privacy and control.'
+---
+
+# Self Hosting
+
+Run OpenRedaction on your own infrastructure for complete control and privacy. The library processes data in-process; there is no separate API server to deploy.
+
+## Why Self Host?
+
+- **Complete privacy** - Data never leaves your infrastructure
+- **Full control** - Customize detection patterns and behavior
+- **No vendor lock-in** - Own your entire stack
+- **Compliance** - Meet strict data residency requirements
+- **Cost control** - No per-request fees; only your infrastructure costs
+
+## Installation
+
+Install the OpenRedaction library in your Node.js project:
+
+```bash
+npm install openredaction
+```
+
+Or using yarn:
+
+```bash
+yarn add openredaction
+```
+
+## Using the Library
+
+Use OpenRedaction inside your own application. All processing runs in-process:
+
+```javascript
+import { redact } from 'openredaction';
+
+const result = await redact(yourText, {
+  preset: 'gdpr',
+  redactionMode: 'placeholder',
+});
+
+console.log(result.redacted_text);
+```
+
+## Deployment
+
+Deploy your application (the one that uses OpenRedaction) to your preferred platform:
+
+- **Your own server** – Run Node.js on a VM or bare metal
+- **Docker** – Build a Docker image that includes your app and the OpenRedaction dependency
+- **Serverless** – Use the library inside AWS Lambda, Google Cloud Functions, or similar (bundle with your handler)
+- **Kubernetes** – Run your app as a deployment; no special OpenRedaction configuration needed
+
+The library has no built-in server. You expose it through your own API or batch jobs.
+
+## Configuration
+
+Configure via the options you pass to `redact()` or when creating an `OpenRedaction` instance. No environment variables are required for basic regex-only detection.
+
+For custom patterns or presets, see [Getting Started](/getting-started) and [Examples](/examples).
+
+## Security
+
+- **No API keys** – The library runs in your process; there is no separate service to authenticate to.
+- **Secrets** – If you integrate with external services (e.g. for optional AI), store any keys in environment variables or a secret manager, never in code.
+- **HTTPS** – If you expose an API that uses OpenRedaction, serve it over HTTPS and follow standard API security practices.
+
+## Support
+
+For self-hosting and integration help:
+
+- [GitHub Issues](https://github.com/sam247/openredaction/issues)
+- [Contact Support](https://openredaction.com/contact)
+
+For enterprise support and custom deployments, see [Enterprise support](https://openredaction.com/pricing).
