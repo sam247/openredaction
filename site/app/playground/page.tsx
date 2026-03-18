@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
-import { Loader2, Copy, Check, ArrowRight } from 'lucide-react';
+import { Loader2, Copy, Check, ArrowRight, ChevronDown } from 'lucide-react';
 import { analytics } from '@/lib/analytics';
 
 interface Detection {
@@ -48,8 +48,11 @@ export default function Playground() {
     if (typeof window !== 'undefined' && !libraryLoaded) {
       const loadLibrary = async () => {
         try {
-          // Load the CommonJS build from public folder at runtime
-          const response = await fetch('/lib/openredaction.js');
+          // Load the CommonJS build from public folder at runtime (version query busts cache)
+          const version = typeof process.env.NEXT_PUBLIC_OPENREDACTION_VERSION !== 'undefined'
+            ? process.env.NEXT_PUBLIC_OPENREDACTION_VERSION
+            : '0';
+          const response = await fetch(`/lib/openredaction.js?v=${version}`);
           const code = await response.text();
 
           // Create a module-like environment
@@ -92,7 +95,10 @@ export default function Playground() {
     if (libraryLoaded && detectorRef.current && typeof window !== 'undefined') {
       const updateDetector = async () => {
         try {
-          const response = await fetch('/lib/openredaction.js');
+          const version = typeof process.env.NEXT_PUBLIC_OPENREDACTION_VERSION !== 'undefined'
+            ? process.env.NEXT_PUBLIC_OPENREDACTION_VERSION
+            : '0';
+          const response = await fetch(`/lib/openredaction.js?v=${version}`);
           const code = await response.text();
 
           const moduleObj = { exports: {} };
@@ -289,38 +295,44 @@ export default function Playground() {
             <div className="p-4 border-b border-gray-800 space-y-3 bg-gray-900/50">
               <div>
                 <label className="block text-sm text-gray-400 mb-2">Detection preset:</label>
-                <select
-                  value={selectedPreset}
-                  onChange={(e) => handleApiPreset(e.target.value)}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-gray-600"
-                >
-                  <option value="">None (default)</option>
-                  {Object.entries(apiPresets).map(([key, label]) => (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={selectedPreset}
+                    onChange={(e) => handleApiPreset(e.target.value)}
+                    className="w-full bg-gray-900 border border-gray-800 rounded-md pl-3 pr-9 py-2.5 text-sm text-white focus:outline-none focus:border-gray-600 appearance-none cursor-pointer"
+                  >
+                    <option value="">None (default)</option>
+                    {Object.entries(apiPresets).map(([key, label]) => (
+                      <option key={key} value={key}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={18} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" aria-hidden />
+                </div>
               </div>
               <div>
                 <label className="block text-sm text-gray-400 mb-2">Load Sample Text:</label>
-                <select
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      handleTextPreset(e.target.value);
-                      e.target.value = ''; // Reset to placeholder
-                    }
-                  }}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-gray-600"
-                  defaultValue=""
-                >
-                  <option value="" disabled>Select sample text...</option>
-                  {Object.keys(textPresets).map((preset) => (
-                    <option key={preset} value={preset}>
-                      {preset}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        handleTextPreset(e.target.value);
+                        e.target.value = ''; // Reset to placeholder
+                      }
+                    }}
+                    className="w-full bg-gray-900 border border-gray-800 rounded-md pl-3 pr-9 py-2.5 text-sm text-white focus:outline-none focus:border-gray-600 appearance-none cursor-pointer"
+                    defaultValue=""
+                  >
+                    <option value="" disabled>Select sample text...</option>
+                    {Object.keys(textPresets).map((preset) => (
+                      <option key={preset} value={preset}>
+                        {preset}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={18} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" aria-hidden />
+                </div>
               </div>
             </div>
             <div className="flex-1 p-4 flex flex-col">

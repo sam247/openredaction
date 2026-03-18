@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Github, Twitter, Instagram } from 'lucide-react';
 import Logo from './Logo';
 import { analytics } from '@/lib/analytics';
 
@@ -164,32 +164,24 @@ export default function Footer() {
                     <Github size={20} />
                   </a>
                   <a 
-                    href="https://twitter.com" 
+                    href="https://x.com/openredaction" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-white transition-colors"
-                    aria-label="Twitter"
-                    onClick={() => analytics.externalLinkClick('twitter', 'footer_social', 'Twitter')}
+                    aria-label="X (Twitter)"
+                    onClick={() => analytics.externalLinkClick('x', 'footer_social', 'X')}
                   >
                     <Twitter size={20} />
                   </a>
                   <a 
-                    href="https://linkedin.com" 
+                    href="https://instagram.com/openredaction" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-white transition-colors"
-                    aria-label="LinkedIn"
-                    onClick={() => analytics.externalLinkClick('linkedin', 'footer_social', 'LinkedIn')}
+                    aria-label="Instagram"
+                    onClick={() => analytics.externalLinkClick('instagram', 'footer_social', 'Instagram')}
                   >
-                    <Linkedin size={20} />
-                  </a>
-                  <a 
-                    href="mailto:support@openredaction.com" 
-                    className="text-gray-400 hover:text-white transition-colors"
-                    aria-label="Email"
-                    onClick={() => analytics.externalLinkClick('mailto', 'footer_social', 'Email')}
-                  >
-                    <Mail size={20} />
+                    <Instagram size={20} />
                   </a>
                 </div>
                 <div className="hidden md:block ml-4 pl-4 border-l border-gray-800">

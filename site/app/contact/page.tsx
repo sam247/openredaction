@@ -70,15 +70,6 @@ export default function Contact() {
             </div>
           </div>
 
-          <div className="mt-12 text-center">
-            <p className="text-gray-400 mb-4">Prefer to schedule a call?</p>
-            <a
-              href="mailto:support@openredaction.com"
-              className="text-white hover:text-gray-300 underline"
-            >
-              Email us at support@openredaction.com
-            </a>
-          </div>
         </div>
       </main>
 

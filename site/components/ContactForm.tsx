@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Send, Check } from 'lucide-react';
+import { Send, Check, ChevronDown } from 'lucide-react';
 import { analytics } from '@/lib/analytics';
 
 interface ContactFormData {
@@ -172,21 +172,24 @@ export default function ContactForm() {
         <label htmlFor="interest" className="block text-sm font-medium text-gray-300 mb-2">
           Interested In *
         </label>
-        <select
-          id="interest"
-          name="interest"
-          required
-          value={formData.interest}
-          onChange={handleChange}
-          className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white focus:outline-none focus:border-gray-700"
-        >
-          <option value="">Select an option...</option>
-          <option value="self-hosted">Self-Hosted Deployment Support</option>
-          <option value="github-issue">GitHub Issue / Bug Report</option>
-          <option value="contribution">Contribution / Pull Request</option>
-          <option value="disclosurely">Disclosurely.com Platform</option>
-          <option value="other">Other</option>
-        </select>
+        <div className="relative">
+          <select
+            id="interest"
+            name="interest"
+            required
+            value={formData.interest}
+            onChange={handleChange}
+            className="w-full bg-gray-900 border border-gray-800 rounded-md pl-4 pr-10 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gray-700 appearance-none cursor-pointer"
+          >
+            <option value="">Select an option...</option>
+            <option value="self-hosted">Self-Hosted Deployment Support</option>
+            <option value="github-issue">GitHub Issue / Bug Report</option>
+            <option value="contribution">Contribution / Pull Request</option>
+            <option value="disclosurely">Disclosurely.com Platform</option>
+            <option value="other">Other</option>
+          </select>
+          <ChevronDown size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" aria-hidden />
+        </div>
       </div>
 
       <div>

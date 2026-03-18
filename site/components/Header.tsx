@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown, FileText, Code, Github, BookOpen } from 'lucide-react';
+import { Menu, X, ChevronDown, FileText, Code, Github, BookOpen, Coffee } from 'lucide-react';
 import Logo from './Logo';
 import GitHubBadge from './GitHubBadge';
 import { analytics } from '@/lib/analytics';
@@ -129,6 +129,16 @@ export default function Header() {
 
           {/* Right Side - CTA */}
           <div className="hidden md:flex items-center space-x-4">
+            <a
+              href="https://buymeacoffee.com/openredaction"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-amber-400 transition-colors p-1 rounded focus:outline-none focus:ring-2 focus:ring-gray-600"
+              aria-label="Support OpenRedaction on Buy Me a Coffee"
+              onClick={() => analytics.externalLinkClick('buymeacoffee', 'header', 'Buy Me a Coffee')}
+            >
+              <Coffee size={22} className="animate-shake" />
+            </a>
             <GitHubBadge repo="sam247/openredaction" />
             <Link
               href="/playground"
@@ -194,6 +204,19 @@ export default function Header() {
               }}
             >
               GitHub
+            </a>
+            <a
+              href="https://buymeacoffee.com/openredaction"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-gray-300 hover:text-amber-400 transition-colors"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                analytics.externalLinkClick('buymeacoffee', 'mobile', 'Buy Me a Coffee');
+              }}
+            >
+              <Coffee size={20} className="animate-shake" />
+              Buy Me a Coffee
             </a>
             <Link
               href="/playground"
