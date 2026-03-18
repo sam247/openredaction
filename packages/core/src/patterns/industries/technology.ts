@@ -19,6 +19,19 @@ export const AWS_ACCESS_KEY: PIIPattern = {
 };
 
 /**
+ * OpenAI API Key
+ * Format: sk-proj- (~160 chars) or legacy sk- (51 chars)
+ */
+export const OPENAI_API_KEY: PIIPattern = {
+  type: 'OPENAI_API_KEY',
+  regex: /\b(sk-proj-[A-Za-z0-9_-]{100,200}|sk-[A-Za-z0-9_-]{48,52})\b/g,
+  placeholder: '[OPENAI_API_KEY_{n}]',
+  priority: 99,
+  severity: 'high',
+  description: 'OpenAI API Key'
+};
+
+/**
  * AWS Secret Access Key
  * Format: 40 base64 characters
  */
@@ -437,6 +450,7 @@ export const OAUTH_TOKEN: PIIPattern = {
 // Export all technology patterns
 export const technologyPatterns: PIIPattern[] = [
   AWS_ACCESS_KEY,
+  OPENAI_API_KEY,
   AWS_SECRET_KEY,
   GOOGLE_API_KEY,
   STRIPE_API_KEY,

@@ -104,6 +104,7 @@ export const DEFAULT_SEVERITY_MAP: Record<string, SeverityLevel> = {
   'AWS_ACCESS_KEY': 'high',
   'STRIPE_KEY': 'high',
   'GOOGLE_API_KEY': 'high',
+  'OPENAI_API_KEY': 'high',
   'PRESCRIPTION': 'high',
   'BIOMETRIC': 'high',
 

@@ -208,6 +208,33 @@ describe('Industry-Specific Pattern Detection', () => {
 });
 });
 
+  describe('OpenAI API key (Issue #27)', () => {
+    it('should detect sk-proj- project-scoped OpenAI API keys', async () => {
+      const redactor = new OpenRedaction({ redactionMode: 'placeholder' });
+      const key = 'sk-proj-' + 'a1B2c3D4e5F6g7H8i9J0'.repeat(7) + 'abcdefghijklmnop';
+      const result = await redactor.detect(`My OpenAI API key is ${key} and it should be secret`);
+      expect(result.detections.some(d => d.type === 'OPENAI_API_KEY')).toBe(true);
+      expect(result.detections.some(d => d.type === 'AWS_SECRET_KEY')).toBe(false);
+    });
+
+    it('should detect legacy sk- OpenAI API keys (51 chars)', async () => {
+      const redactor = new OpenRedaction({ redactionMode: 'placeholder' });
+      const key = 'sk-' + 'a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2w3X4Y5Z6'; // 48 chars after sk- = 51 total
+      const result = await redactor.detect(`OPENAI_API_KEY=${key}`);
+      expect(result.detections.some(d => d.type === 'OPENAI_API_KEY')).toBe(true);
+    });
+
+    it('should redact OpenAI key and not misclassify as AWS_SECRET_KEY', async () => {
+      const redactor = new OpenRedaction({ redactionMode: 'placeholder' });
+      const key = 'sk-proj-AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AbCdEfGhIjKlMnOpQrStUvWxYz01';
+      const result = await redactor.detect(`My OpenAI API key is ${key} and it should be secret`);
+      expect(result.detections.every(d => d.type !== 'AWS_SECRET_KEY')).toBe(true);
+      expect(result.detections.some(d => d.type === 'OPENAI_API_KEY')).toBe(true);
+      expect(result.redacted).toContain('[OPENAI_API_KEY_');
+      expect(result.redacted).not.toMatch(/sk-proj-[A-Za-z0-9_-]{50,}/);
+    });
+  });
+
   describe('Integration: Multiple industry patterns', () => {
     it('should detect patterns from multiple industries in one text', async () => {
       const shield = new OpenRedaction({ debug: true });

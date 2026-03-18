@@ -32,7 +32,7 @@ export const defaultPasses: DetectionPass[] = [
     name: 'critical-credentials',
     minPriority: 95,
     maxPriority: 100,
-    includeTypes: ['API_KEY', 'TOKEN', 'SECRET', 'PASSWORD', 'PRIVATE_KEY', 'AWS', 'GITHUB', 'STRIPE'],
+    includeTypes: ['API_KEY', 'TOKEN', 'SECRET', 'PASSWORD', 'PRIVATE_KEY', 'AWS', 'GITHUB', 'STRIPE', 'OPENAI'],
     description: 'Critical credentials and API keys (priority 95-100)'
   },
   {
@@ -216,7 +216,7 @@ export function createSimpleMultiPass(options?: {
       name: 'credentials',
       minPriority: 90,
       maxPriority: 100,
-      includeTypes: ['API_KEY', 'TOKEN', 'SECRET', 'PASSWORD', 'AWS', 'GITHUB', 'STRIPE', 'JWT'],
+      includeTypes: ['API_KEY', 'TOKEN', 'SECRET', 'PASSWORD', 'AWS', 'GITHUB', 'STRIPE', 'JWT', 'OPENAI'],
       description: 'Credentials and API keys'
     });
   }

@@ -210,9 +210,9 @@ export function calculateContextConfidence(
     }
   }
 
-  // Feature-based adjustments
-  if (context.features.hasExampleContext) {
-    // Moderate penalty for example/test context (reduced from 0.4)
+  // Feature-based adjustments: only apply example-context penalty to EMAIL
+  // so dummy-domain emails don't suppress other PII (e.g. CREDIT_CARD) in same text
+  if (context.features.hasExampleContext && patternType === 'EMAIL') {
     confidence -= 0.15;
   }
 
@@ -224,7 +224,7 @@ export function calculateContextConfidence(
   }
 
   // Financial context boost
-  const financialPatterns = ['ACCOUNT', 'TRANSACTION', 'SWIFT', 'IBAN', 'BITCOIN', 'ETHEREUM', 'CRYPTO', 'PAYMENT'];
+  const financialPatterns = ['ACCOUNT', 'TRANSACTION', 'SWIFT', 'IBAN', 'BITCOIN', 'ETHEREUM', 'CRYPTO', 'PAYMENT', 'CREDIT_CARD'];
   if (context.features.hasFinancialContext && financialPatterns.some(p => patternType.includes(p))) {
     // Boost financial patterns in financial context
     confidence += 0.15;

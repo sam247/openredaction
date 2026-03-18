@@ -142,10 +142,13 @@ export const DEFAULT_PROXIMITY_RULES: ProximityRule[] = [
     description: 'Account number near account-related keywords'
   },
 
-  // CREDIT CARD rules
+  // CREDIT CARD rules (English + Japanese and other card-related terms)
   {
     patternType: 'CREDIT_CARD',
-    keywords: ['card', 'credit card', 'debit card', 'visa', 'mastercard', 'amex', 'discover'],
+    keywords: [
+      'card', 'credit card', 'debit card', 'visa', 'mastercard', 'amex', 'discover',
+      'カード', 'クレジット', '番号'
+    ],
     proximityWindow: 8,
     confidenceBoost: 0.2,
     description: 'Card number near card-related keywords'

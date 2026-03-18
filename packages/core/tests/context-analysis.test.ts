@@ -146,7 +146,7 @@ describe('Context Analysis', () => {
       expect(confidence).toBeGreaterThanOrEqual(0.7); // At or above base confidence
     });
 
-    it('should penalize example context', () => {
+    it('should penalize example context for EMAIL only', () => {
       const confidence = calculateContextConfidence('test@example.com', 'EMAIL', {
         before: 'sample',
         after: 'dummy',
@@ -164,6 +164,25 @@ describe('Context Analysis', () => {
 
       expect(confidence).toBeLessThan(0.7); // Reduced (0.8 - 0.15 = 0.65)
       expect(confidence).toBeGreaterThan(0.6);
+    });
+
+    it('should not penalize CREDIT_CARD when hasExampleContext is true (Issue #26)', () => {
+      const confidence = calculateContextConfidence('4111-1111-1111-1111', 'CREDIT_CARD', {
+        before: 'taro@example.com でカード番号は',
+        after: 'です。',
+        sentence: 'メールは taro@example.com でカード番号は 4111-1111-1111-1111 です。',
+        documentType: 'document',
+        features: {
+          hasTechnicalContext: false,
+          hasBusinessContext: false,
+          hasMedicalContext: false,
+          hasFinancialContext: false,
+          hasExampleContext: true,
+          relativePosition: 0.5
+        }
+      });
+      // Example-context penalty applies only to EMAIL, so CREDIT_CARD keeps base confidence
+      expect(confidence).toBeGreaterThanOrEqual(0.8);
     });
 
     it('should boost confidence for positive indicators', () => {
@@ -269,6 +288,14 @@ describe('Context Analysis', () => {
         expect(detection.confidence).toBeGreaterThanOrEqual(0.5);
       });
       }
+    });
+
+    it('should detect CREDIT_CARD in Japanese text with dummy email (Issue #26)', async () => {
+      const redactor = new OpenRedaction({ redactionMode: 'placeholder' });
+      const text = 'メールは taro@example.com でカード番号は 4111-1111-1111-1111 です。';
+      const result = await redactor.detect(text);
+      const types = result.detections.map(d => d.type);
+      expect(types).toContain('CREDIT_CARD');
     });
   });
 });
