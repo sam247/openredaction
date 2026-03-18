@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { checkBotId } from 'botid/server';
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const TO_EMAIL = 'sampettiford@googlemail.com';
@@ -10,6 +11,11 @@ const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export async function POST(request: NextRequest) {
   try {
+    const verification = await checkBotId();
+    if (verification.isBot) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
     const { name, email, company, useCase, interest, message } = await request.json();
 
     // Validate required fields
