@@ -51,14 +51,16 @@ jobs:
           fi
           echo "Version match confirmed: $TAG_VERSION"
 
-      - name: Publish to npm
+      - name: Configure npm auth for publish
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # Trim newlines/carriage returns (common when pasting token) to avoid "not a legal HTTP header value"
+          # Write at repo root: npm ignores .npmrc inside workspace packages (packages/core)
           TOKEN=$(printf '%s' "$NPM_TOKEN" | tr -d '\n\r')
           echo "//registry.npmjs.org/:_authToken=$TOKEN" > .npmrc
           echo "registry=https://registry.npmjs.org/" >> .npmrc
-          npm publish --access public
+
+      - name: Publish to npm
+        run: npm publish --access public
         working-directory: ./packages/core
 
