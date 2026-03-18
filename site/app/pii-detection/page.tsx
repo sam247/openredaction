@@ -7,7 +7,7 @@ import { Search, Eye, Shield, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'PII Detection - Identify Personally Identifiable Information | OpenRedaction',
-  description: 'Detect PII in text with 500+ regex patterns and optional AI assist. Open-source PII detection library for emails, phones, SSNs, credit cards, and more. GDPR/HIPAA compliant.',
+  description: 'Detect PII in text with 500+ regex patterns. Open-source PII detection library for emails, phones, SSNs, credit cards, and more. GDPR/HIPAA compliant.',
   path: '/pii-detection',
 });
 
@@ -23,7 +23,7 @@ export default function PiiDetection() {
               PII Detection Made Simple
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-              Automatically detect personally identifiable information (PII) in text using 500+ tested regex patterns. Optional AI-assist for better coverage on unstructured data.
+              Automatically detect personally identifiable information (PII) in text using 500+ tested regex patterns. Fast, deterministic, and fully offline.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -101,9 +101,9 @@ export default function PiiDetection() {
 
             <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
               <Eye className="text-white mb-4" size={32} />
-              <h2 className="text-2xl font-semibold mb-3">AI-Assisted Detection</h2>
+              <h2 className="text-2xl font-semibold mb-3">Context-Aware Detection</h2>
               <p className="text-gray-300">
-                Optional AI assist for better coverage on messy, unstructured text. Finds names, locations, and context-based PII that patterns might miss.
+                Proximity rules and confidence scoring improve accuracy. Multi-pass detection and industry patterns (e.g. API keys, credentials) for robust coverage.
               </p>
             </div>
 
@@ -162,7 +162,7 @@ export default function PiiDetection() {
           <div className="bg-gray-900 rounded-lg p-8 border border-gray-800">
             <h2 className="text-3xl font-semibold mb-4">Start Detecting PII Today</h2>
             <p className="text-gray-300 mb-6">
-              OpenRedaction provides both pattern-based and AI-assisted PII detection. The open-source library is free and works entirely offline.
+              OpenRedaction provides pattern-based PII detection with 500+ regex patterns. The open-source library is free and works entirely offline.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link

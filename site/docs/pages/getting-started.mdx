@@ -80,17 +80,6 @@ OpenRedaction comes with built-in presets for different compliance requirements:
 - **`mask`** - Mask with asterisks (e.g., `j***@example.com`)
 - **`remove`** - Remove the text entirely
 
-### AI Assist
-
-To enable AI assist for better detection on unstructured text:
-
-```javascript
-const result = await redact(text, {
-  useAI: true,
-  apiKey: process.env.OPENREDACTION_API_KEY, // Required for AI assist
-});
-```
-
 ## Next Steps
 
 - Learn about the [API Reference](/api-reference)

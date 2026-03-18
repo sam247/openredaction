@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'About OpenRedaction | Open-Source PII Redaction',
-  description: 'Learn about OpenRedaction, an open-source PII detection and redaction library built with regex-first patterns and optional AI assist.',
+  description: 'Learn about OpenRedaction, an open-source PII detection and redaction library built with regex-first patterns.',
   path: '/about',
 });
 
@@ -37,7 +37,7 @@ export default function About() {
                 <li>500+ tested regex patterns for comprehensive PII detection</li>
                 <li>Open-source and self-hostable for complete data control</li>
                 <li>Zero data retention - all processing happens in memory</li>
-                <li>Optional AI assist for messy, unstructured text</li>
+                <li>Context-aware validation and checksum verification</li>
                 <li>Fast, deterministic, and transparent detection</li>
                 <li>GDPR, HIPAA, and CCPA compliant architecture</li>
               </ul>

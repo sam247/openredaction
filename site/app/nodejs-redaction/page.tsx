@@ -7,7 +7,7 @@ import { Code, Package, Zap, Shield, CheckCircle2 } from 'lucide-react';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'Node.js Redaction API - Automated PII Detection & Redaction | OpenRedaction',
-  description: 'Automated redaction for Node.js applications. Open-source library with 500+ regex patterns for PII detection. Optional AI-assist API. Easy npm integration, GDPR/HIPAA compliant.',
+  description: 'Automated redaction for Node.js applications. Open-source library with 500+ regex patterns for PII detection. Easy npm integration, GDPR/HIPAA compliant.',
   path: '/nodejs-redaction',
 });
 
@@ -23,7 +23,7 @@ export default function NodejsRedaction() {
               Automated Redaction for Node.js
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-              Open-source PII detection and redaction library for Node.js. 500+ tested regex patterns, optional AI-assist, GDPR/HIPAA compliant. Easy npm integration.
+              Open-source PII detection and redaction library for Node.js. 500+ tested regex patterns, GDPR/HIPAA compliant. Easy npm integration.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -93,7 +93,7 @@ console.log(result.redacted_text);`}</code>
                 <div>
                   <h2 className="text-2xl font-semibold mb-3">Privacy-First</h2>
                   <p className="text-gray-300">
-                    All processing happens locally by default. No data leaves your infrastructure. Optional AI-assist available when needed.
+                    All processing happens locally. No data leaves your infrastructure. No external API calls.
                   </p>
                 </div>
               </div>

@@ -38,23 +38,6 @@ export default function Privacy() {
             </section>
 
             <section className="mb-12">
-              <h2 className="text-2xl font-semibold mb-4">Hosted AI Assist</h2>
-              <p className="text-gray-300 mb-4">
-                When AI assist is enabled, your text is sent to our hosted AI proxy for entity detection. Here&apos;s what happens:
-              </p>
-              <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
-                <li>Text is sent to our hosted AI proxy</li>
-                <li>The proxy forwards it to our model provider strictly for entity detection</li>
-                <li>We do not log or store your text</li>
-                <li>Everything is processed in memory and discarded</li>
-                <li>No persistent storage of any kind</li>
-              </ul>
-              <p className="text-gray-300">
-                AI assist is optional. Regex-only mode works completely offline and requires no external services.
-              </p>
-            </section>
-
-            <section className="mb-12">
               <h2 className="text-2xl font-semibold mb-4">Self-Hosted Option</h2>
               <p className="text-gray-300 mb-4">
                 For complete privacy and control, you can self-host OpenRedaction on your own infrastructure:
@@ -62,7 +45,7 @@ export default function Privacy() {
               <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
                 <li>Your data never leaves your environment</li>
                 <li>You control all processing and logging</li>
-                <li>You can configure your own AI endpoint if needed</li>
+                <li>No external API calls — all detection runs locally</li>
                 <li>Complete control over data handling</li>
               </ul>
               <p className="text-gray-300">

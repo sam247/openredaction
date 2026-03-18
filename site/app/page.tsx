@@ -7,11 +7,11 @@ import HomepageCTAs from '@/components/HomepageCTAs';
 import DemoCTA from '@/components/DemoCTA';
 import { generatePageMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
-import { Rocket, Search, CheckCircle2, Shield, Package, BarChart3, Lock, Target, Zap, Home as HomeIcon, Eye, DollarSign, Key, Trash2, Brain } from 'lucide-react';
+import { Rocket, Search, CheckCircle2, Shield, Package, BarChart3, Lock, Target, Zap, Home as HomeIcon, Eye, DollarSign, Key, Trash2 } from 'lucide-react';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'Open Source PII Detection & Redaction | OpenRedaction',
-  description: 'Regex-first PII redaction. Open-source library with 500+ tested patterns. Optional hosted AI assist for messy, unstructured text. Self-host for complete privacy and control. GDPR, HIPAA, CCPA compliant.',
+  description: 'Regex-first PII redaction. Open-source library with 500+ tested patterns. Self-host for complete privacy and control. GDPR, HIPAA, CCPA compliant.',
   path: '/',
 });
 
@@ -31,12 +31,12 @@ export default function Home() {
 
             {/* Headline */}
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight max-w-7xl mx-auto">
-              Open-source, Automated PII Redaction.<br className="hidden md:block" /> AI Assisted PII Detection, Regex first.
+              Open-source, Automated PII Redaction.<br className="hidden md:block" /> Regex-first PII detection.
             </h1>
 
             {/* Subtitle */}
             <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto">
-              Library + regex = free. AI-assist API = paid with key.
+              500+ patterns. Free, open-source. Self-host for full control.
             </p>
 
             {/* CTA Buttons */}
@@ -157,7 +157,7 @@ export default function Home() {
                 <Rocket className="text-white" size={24} />
                 <div>
                   <p className="text-white font-semibold group-hover:text-green-400 transition-colors">
-                    New: Read how OpenRedaction evolved into a hybrid AI-assisted redaction API
+                    New: Read the OpenRedaction developer journey
                   </p>
                   <p className="text-gray-400 text-sm mt-1">Developer Journey →</p>
                 </div>
@@ -278,144 +278,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Hosted AI Assist Section */}
-        <div className="mt-32 bg-gray-900 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-12">
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">Hosted AI Assist (Optional)</h2>
-              <p className="text-xl text-gray-300 mb-8">
-                For messy, unstructured text, we offer an optional hosted AI assist. 
-                AI assist is best-effort and may miss some entities; for highly sensitive workloads, we recommend using regex-only mode or manual review.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              <div className="bg-black rounded-lg p-6 border border-gray-800">
-                <h3 className="text-2xl font-semibold mb-4">When AI Helps</h3>
-                <ul className="space-y-3 text-gray-300">
-                  <li className="flex items-start">
-                    <span className="text-green-400 mr-2">✓</span>
-                    <span>Messy chat logs and transcripts</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-green-400 mr-2">✓</span>
-                    <span>Unstructured text with typos</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-green-400 mr-2">✓</span>
-                    <span>Context-dependent entity detection</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="bg-black rounded-lg p-6 border border-gray-800">
-                <h3 className="text-2xl font-semibold mb-4">Trade-offs</h3>
-                <ul className="space-y-3 text-gray-300">
-                  <li className="flex items-start">
-                    <span className="text-yellow-400 mr-2">⚠</span>
-                    <span>Higher latency (seconds vs milliseconds)</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-yellow-400 mr-2">⚠</span>
-                    <span>Increased cost per request</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-yellow-400 mr-2">⚠</span>
-                    <span>Less predictable results</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div className="text-center mt-8">
-              <p className="text-lg text-gray-300 mb-4">
-                <strong>Use AI layer only when necessary.</strong> For most structured data, regex patterns are faster, cheaper, and more reliable. 
-                AI layer is slower, costlier, and less predictable than regex patterns.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Regex vs AI Trade-offs Table */}
-        <div className="mt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Regex vs AI Assist: Choose the Right Tool</h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Regex is the default and works great for most use cases. AI assist is optional for messy, unstructured text.
-            </p>
-          </div>
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
-              <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-800">
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-4 text-center">Regex Patterns (Default)</h3>
-                  <ul className="space-y-3">
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      <span className="text-gray-300">Fast - processes in milliseconds</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      <span className="text-gray-300">Deterministic - same input, same output</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      <span className="text-gray-300">Self-hostable - fully open-source</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      <span className="text-gray-300">Easy to audit - patterns are visible</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      <span className="text-gray-300">Transparent - no black box</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      <span className="text-gray-300">Predictable costs - no per-token fees</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      <span className="text-gray-300">Local processing - no external APIs</span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-4 text-center">AI Assist (Optional)</h3>
-                  <ul className="space-y-3">
-                    <li className="flex items-start">
-                      <span className="text-yellow-400 mr-2">⚠</span>
-                      <span className="text-gray-300">Better detection on natural language / unstructured text</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-yellow-400 mr-2">⚠</span>
-                      <span className="text-gray-300">Best for free text and messy inputs</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-yellow-400 mr-2">⚠</span>
-                      <span className="text-gray-300">Slower - seconds vs milliseconds</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-yellow-400 mr-2">⚠</span>
-                      <span className="text-gray-300">Less predictable - may vary by run</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-yellow-400 mr-2">⚠</span>
-                      <span className="text-gray-300">Optional - not required for most use cases</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-yellow-400 mr-2">⚠</span>
-                      <span className="text-gray-300">Harder to audit - black box model</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-400 italic">
-                AI assist is best-effort; for highly sensitive data, we recommend manual review or regex-only mode.
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* How It Works Section */}
         <div className="mt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -445,22 +307,9 @@ export default function Home() {
                     2
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold mb-2">Optional AI assist via hosted proxy</h3>
+                    <h3 className="text-xl font-semibold mb-2">Redact</h3>
                     <p className="text-gray-400">
-                      If AI assist is enabled, we send the text to our hosted AI proxy, which identifies extra PII spans. This step is optional and only used when explicitly enabled.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
-                <div className="flex items-start">
-                  <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center text-lg font-bold mr-4 flex-shrink-0">
-                    3
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">Merge & redact</h3>
-                    <p className="text-gray-400">
-                      Regex + AI spans are merged, and the text is redacted deterministically by the OpenRedaction engine. All processing happens in memory.
+                      Detected spans are redacted in memory by the OpenRedaction engine. All processing is local; nothing is sent to external services.
                     </p>
                   </div>
                 </div>

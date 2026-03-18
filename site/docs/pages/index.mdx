@@ -1,11 +1,11 @@
 ---
 title: 'OpenRedaction Documentation - PII Detection & Redaction Guide'
-description: 'Complete documentation for OpenRedaction, an open-source PII detection and redaction library with 500+ regex patterns and optional AI assist. Learn how to detect and redact personally identifiable information for GDPR, HIPAA, and CCPA compliance.'
+description: 'Complete documentation for OpenRedaction, an open-source PII detection and redaction library with 500+ regex patterns. Learn how to detect and redact personally identifiable information for GDPR, HIPAA, and CCPA compliance.'
 ---
 
 # OpenRedaction Documentation
 
-Welcome to the OpenRedaction documentation. OpenRedaction is an open-source PII (Personally Identifiable Information) detection and redaction library with optional AI assist.
+Welcome to the OpenRedaction documentation. OpenRedaction is an open-source PII (Personally Identifiable Information) detection and redaction library built on regex-first patterns.
 
 ## What is OpenRedaction?
 
@@ -13,7 +13,7 @@ OpenRedaction is a regex-first PII redaction engine that:
 
 - **Detects PII** using 500+ tested regex patterns
 - **Redacts sensitive data** with configurable strategies
-- **Optional AI assist** for better detection on unstructured text
+- **Context-aware** with proximity rules and confidence scoring
 - **Self-hostable** for complete privacy and control
 - **Open source** and free to use
 
@@ -35,7 +35,7 @@ console.log(result.redacted_text);
 ## Key Features
 
 - **Regex-first detection** - Transparent, deterministic, and fast
-- **Optional AI assist** - Better coverage on messy, unstructured text
+- **Context-aware** - Proximity rules and multi-pass detection
 - **Self-hostable** - Run entirely on your infrastructure
 - **Privacy-first** - No data leaves your environment by default
 - **GDPR/HIPAA/CCPA ready** - Built for compliance

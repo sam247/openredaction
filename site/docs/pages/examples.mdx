@@ -47,19 +47,6 @@ console.log(result.redacted_text);
 
 ## Advanced Examples
 
-### Using AI Assist
-
-```javascript
-const text = "My colleague Sarah in the London office can help";
-
-const result = await redact(text, {
-  useAI: true,
-  apiKey: process.env.OPENREDACTION_API_KEY,
-});
-
-// AI assist can detect names and locations that regex might miss
-```
-
 ### Custom Redaction Mode
 
 ```javascript

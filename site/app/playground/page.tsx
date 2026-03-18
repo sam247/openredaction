@@ -559,7 +559,7 @@ export default function Playground() {
                   </li>
                   <li className="flex items-start">
                     <span className="text-white mr-2">•</span>
-                    <span>For high-volume or AI-assist needs, self-host the library or <Link href="/pricing" className="text-white hover:text-gray-300 underline">contact us for enterprise support</Link></span>
+                    <span>For high-volume use, self-host the library or <Link href="/pricing" className="text-white hover:text-gray-300 underline">contact us for enterprise support</Link></span>
                   </li>
                 </ul>
               </div>
