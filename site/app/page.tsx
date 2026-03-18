@@ -1016,10 +1016,10 @@ console.log(result.redacted_text);`}
                 </p>
               </div>
               <div className="text-center">
-                <Brain className="text-white mb-3 mx-auto" size={32} />
-                <h3 className="text-lg font-semibold mb-2">Optional AI-Assist</h3>
+                <Zap className="text-white mb-3 mx-auto" size={32} />
+                <h3 className="text-lg font-semibold mb-2">Fully Offline</h3>
                 <p className="text-gray-400 text-sm">
-                  AI assist is optional via external provider. Regex-only mode works completely offline.
+                  All detection runs locally. No external APIs or third-party services.
                 </p>
               </div>
             </div>
