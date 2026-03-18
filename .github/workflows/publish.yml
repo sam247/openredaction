@@ -53,7 +53,12 @@ jobs:
 
       - name: Publish to npm
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # Trim newlines/carriage returns (common when pasting token) to avoid "not a legal HTTP header value"
+          TOKEN=$(printf '%s' "$NPM_TOKEN" | tr -d '\n\r')
+          echo "//registry.npmjs.org/:_authToken=$TOKEN" > .npmrc
+          echo "registry=https://registry.npmjs.org/" >> .npmrc
+          npm publish --access public
         working-directory: ./packages/core
 
