@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "npm run copy-openredaction && npm run docs:export && next build",
-    "copy-openredaction": "mkdir -p public/lib && cp node_modules/@sam247/openredaction/dist/index.js public/lib/openredaction.js",
+    "copy-openredaction": "mkdir -p public/lib && cp ../packages/core/dist/index.js public/lib/openredaction.js",
     "start": "next start",
     "lint": "next lint",
     "docs:export": "cd docs && npm ci && npm run build && rm -rf ../public/docs && mkdir -p ../public && cp -R out ../public/docs"
