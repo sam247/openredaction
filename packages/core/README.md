@@ -5,13 +5,13 @@ Production-ready PII detection and redaction library with 571+ built-in patterns
 ## Installation
 
 ```bash
-npm install @sam247/openredaction
+npm install openredaction
 ```
 
 ## Quick Start
 
 ```typescript
-import { OpenRedaction } from '@sam247/openredaction';
+import { OpenRedaction } from 'openredaction';
 
 const shield = new OpenRedaction();
 const result = shield.detect("Email john@example.com or call 07700900123");
@@ -25,11 +25,11 @@ console.log(result.redacted);
 React hooks are on a separate entry so the main package stays React-free. If you use React:
 
 ```bash
-npm install @sam247/openredaction react
+npm install openredaction react
 ```
 
 ```tsx
-import { useOpenRedaction, usePIIDetector } from '@sam247/openredaction/react';
+import { useOpenRedaction, usePIIDetector } from 'openredaction/react';
 ```
 
 `react` is an optional peer dependency; only install it if you use the React entry.
@@ -41,7 +41,7 @@ OpenRedaction supports an optional AI-assisted detection mode that enhances rege
 ### Configuration
 
 ```typescript
-import { OpenRedaction } from '@sam247/openredaction';
+import { OpenRedaction } from 'openredaction';
 
 const detector = new OpenRedaction({
   // ... other options ...

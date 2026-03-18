@@ -14,7 +14,7 @@ const nextConfig = {
     unoptimized: false,
   },
   // Transpile the openredaction package to handle ESM chunks
-  transpilePackages: ['@sam247/openredaction'],
+  transpilePackages: ['openredaction'],
   webpack: (config, { isServer }) => {
     // Ignore Node.js modules that aren't available in the browser
     if (!isServer) {

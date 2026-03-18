@@ -17,7 +17,7 @@
     "lucide-react": "^0.344.0",
     "next": "^14.2.0",
     "nodemailer": "^7.0.12",
-    "@sam247/openredaction": "file:../packages/core",
+    "openredaction": "file:../packages/core",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "resend": "^6.4.2",

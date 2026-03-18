@@ -23,13 +23,8 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Configure npm authentication
-        run: |
-          npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
-
       - name: Install dependencies
         run: npm ci
-        working-directory: ./packages/core
 
       - name: Run tests
         run: npm test
@@ -57,6 +52,8 @@ jobs:
           echo "Version match confirmed: $TAG_VERSION"
 
       - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public
         working-directory: ./packages/core
 

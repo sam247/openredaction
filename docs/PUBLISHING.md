@@ -1,14 +1,12 @@
 # Publishing to npm
 
-The package is published as **@sam247/openredaction** (scoped under your npm user so you own it). The GitHub Action publishes on every tag `v*.*.*` (e.g. `v1.0.7`).
+The package is published as **openredaction** (unscoped). The GitHub Action publishes on every tag `v*.*.*` (e.g. `v1.0.7`).
 
 ## One-time setup
 
 ### 1. Create an npm account (if needed)
 
 - Sign up at [npmjs.com](https://www.npmjs.com/signup).
-- Use the same username as your scope (e.g. **sam247** for `@sam247/openredaction`).
-
 ### 2. Create an Automation token
 
 - Log in at [npmjs.com](https://www.npmjs.com/).
@@ -30,14 +28,14 @@ The package is published as **@sam247/openredaction** (scoped under your npm use
    git tag -a v1.0.8 -m "Release 1.0.8"
    git push origin v1.0.8
    ```
-4. The **Publish to npm** workflow runs and publishes `@sam247/openredaction@1.0.8` to npm.
+4. The **Publish to npm** workflow runs and publishes **openredaction@1.0.8** to npm.
 
 ## Install for users
 
 ```bash
-npm install @sam247/openredaction
+npm install openredaction
 ```
 
 ```ts
-import { OpenRedaction } from '@sam247/openredaction';
+import { OpenRedaction } from 'openredaction';
 ```
