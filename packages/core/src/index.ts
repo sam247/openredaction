@@ -1,5 +1,9 @@
 /**
  * OpenRedaction - Production-ready PII detection and redaction library
+ *
+ * Node `http` listeners (`APIServer`, `PrometheusServer`) live under
+ * `openredaction/server`, not this entry.
+ *
  * @packageDocumentation
  */
 
@@ -11,7 +15,6 @@ export type {
   PIIMatch,
   DetectionResult,
   OpenRedactionOptions,
-  AIOptions,
   PresetName,
   RedactionMode,
   Validator,
@@ -44,16 +47,8 @@ export type {
   AuditQueryFilter
 } from './audit';
 
-// Metrics collection
-export {
-  InMemoryMetricsCollector,
-  PrometheusServer,
-  createPrometheusServer,
-  GRAFANA_DASHBOARD_TEMPLATE
-} from './metrics';
-export type {
-  PrometheusServerOptions
-} from './metrics';
+// Metrics collection (in-memory only on this entry; HTTP metrics server → `openredaction/server`)
+export { InMemoryMetricsCollector } from './metrics';
 
 // RBAC (Role-Based Access Control)
 export {
@@ -121,6 +116,10 @@ export {
   validateUKPassport,
   validateSSN,
   validateSortCode,
+  validateRoutingNumber,
+  validateSWIFTBIC,
+  validateCanadianSIN,
+  validateAustralianTFN,
   validateName,
   validateEmail
 } from './validators';
@@ -134,6 +133,8 @@ export {
   financePreset,
   educationPreset,
   transportLogisticsPreset,
+  pciDssPreset,
+  soc2Preset,
   getPreset
 } from './utils/presets';
 
@@ -307,7 +308,6 @@ export {
   OpenRedactionError,
   createInvalidPatternError,
   createValidationError,
-  createHighMemoryError,
   createConfigLoadError,
   createLearningDisabledError,
   createOptimizationDisabledError,
@@ -348,16 +348,7 @@ export type {
   WebhookStats
 } from './webhooks';
 
-// REST API Server (Phase 3)
-export {
-  APIServer,
-  createAPIServer
-} from './api';
-export type {
-  APIServerConfig,
-  APIRequest,
-  APIResponse
-} from './api';
+// REST API server → import from `openredaction/server` (keeps `node:http` off the default bundle)
 
 // Configuration Import/Export (Phase 3)
 export {
@@ -395,6 +386,3 @@ export type {
   SafeRegexOptions
 } from './utils/safe-regex';
 
-// AI Assist utilities
-export { getAIEndpoint, callAIDetect, mergeAIEntities, validateAIEntity, detectionsOverlap, convertAIEntityToDetection } from './utils/ai-assist';
-export type { AIEntity, AIResponse } from './utils/ai-assist';

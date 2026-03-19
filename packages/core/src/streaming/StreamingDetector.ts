@@ -3,6 +3,7 @@
  * Allows efficient processing of documents in chunks
  */
 
+import { Readable } from 'stream';
 import { PIIDetection, DetectionResult } from '../types';
 import { OpenRedaction } from '../detector';
 
@@ -217,11 +218,22 @@ export class StreamingDetector {
         }
       }
     } else {
-      // Node.js Stream (legacy)
-      const nodeStream = readableStream as NodeJS.ReadableStream;
+      // Node.js Readable: use async iteration when available; otherwise Readable.from()
+      const nodeStream = readableStream as NodeJS.ReadableStream & {
+        [Symbol.asyncIterator]?: () => AsyncIterator<Buffer | string | Uint8Array>;
+      };
+      const iterable: AsyncIterable<Buffer | string | Uint8Array> =
+        typeof nodeStream[Symbol.asyncIterator] === 'function'
+          ? (nodeStream as AsyncIterable<Buffer | string | Uint8Array>)
+          : Readable.from(nodeStream as Readable);
 
-      for await (const chunk of nodeStream) {
-        buffer += decoder.decode(chunk as Uint8Array, { stream: true });
+      for await (const chunk of iterable) {
+        if (typeof chunk === 'string') {
+          buffer += chunk;
+        } else {
+          const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array);
+          buffer += decoder.decode(buf, { stream: true });
+        }
 
         // Process complete chunks from buffer
         while (buffer.length >= this.options.chunkSize) {

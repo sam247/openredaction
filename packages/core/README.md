@@ -1,6 +1,6 @@
 # OpenRedaction
 
-Production-ready PII detection and redaction library with 571+ built-in patterns, multiple redaction modes, compliance presets, enterprise SaaS features, and zero dependencies.
+Production-ready PII detection and redaction library with 571+ built-in patterns, multiple redaction modes, compliance presets, and optional enterprise-style modules. The published package lists **no required runtime dependencies**; optional peers (e.g. React, PDF) apply only when you use those integrations.
 
 ## Installation
 
@@ -36,6 +36,14 @@ import { useOpenRedaction, usePIIDetector } from 'openredaction/react';
 
 `react` is an optional peer dependency; only install it if you use the React entry.
 
+## Node HTTP API & Prometheus (optional)
+
+`APIServer`, `createAPIServer`, `PrometheusServer`, and `createPrometheusServer` use Node’s built-in `http` module. They are **not** re-exported from the main entry (`openredaction`) so the default bundle stays free of `node:http` for clearer static analysis.
+
+```typescript
+import { APIServer, createPrometheusServer } from 'openredaction/server';
+```
+
 ## Documentation
 
 - Site & playground: [openredaction.com](https://openredaction.com)
@@ -46,7 +54,7 @@ import { useOpenRedaction, usePIIDetector } from 'openredaction/react';
 - 🚀 **Fast & Accurate** - 10-20ms for 2-3KB text
 - 🎯 **571+ PII Patterns** - Comprehensive coverage across multiple categories
 - 🔐 **Enterprise SaaS Ready** - Multi-tenancy, persistent audit logging, webhooks, REST API
-- 📊 **Production Monitoring** - Prometheus metrics, Grafana dashboards, health checks
+- 📊 **Production Monitoring** - In-memory metrics collector; optional Prometheus HTTP server via `openredaction/server`
 - 🧠 **Semantic Detection** - Hybrid NER + regex with 40+ contextual rules
 - 🎨 **Multiple Redaction Modes** - Placeholder, mask-middle, mask-all, format-preserving, token-replace
 - ✅ **Built-in Validators** - Luhn, IBAN, NHS, National ID checksums
@@ -54,9 +62,9 @@ import { useOpenRedaction, usePIIDetector } from 'openredaction/react';
 - 🎭 **Deterministic Placeholders** - Consistent redaction for same values
 - 🌍 **Global Coverage** - 50+ countries
 - 📄 **Structured Data Support** - JSON, CSV, XLSX with path/cell tracking
-- 🌳 **Zero Dependencies** - No external packages required (core)
+- 🌳 **No required runtime deps** - Core redaction does not pull mandatory npm packages
 - 📝 **TypeScript Native** - Full type safety and IntelliSense
-- 🧪 **Battle Tested** - 276+ passing tests
+- 🧪 **Battle Tested** - Large automated test suite
 
 ## Pattern Categories
 
@@ -82,9 +90,9 @@ Retail, Legal, Real Estate, Logistics, Insurance, Healthcare, Emergency Response
 
 - **Persistent Audit Logging** - SQLite/PostgreSQL with cryptographic hashing
 - **Multi-Tenancy** - Tenant isolation, quotas, usage tracking
-- **Prometheus Metrics** - HTTP server with Grafana dashboards
+- **Prometheus Metrics** - Optional scrape endpoint (`openredaction/server`)
 - **Webhook System** - Event-driven alerts with retry logic
-- **REST API** - Production-ready HTTP API with authentication
+- **REST API** - Optional HTTP API (`openredaction/server`)
 
 ## License
 

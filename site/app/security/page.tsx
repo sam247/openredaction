@@ -65,13 +65,13 @@ export default function Security() {
               <div className="flex items-start">
                 <Key className="text-white mr-4 mt-1 flex-shrink-0" size={24} />
                 <div>
-                  <h2 className="text-2xl font-semibold mb-3">Hosted API Security</h2>
+                  <h2 className="text-2xl font-semibold mb-3">Library & self-hosted deployments</h2>
                   <p className="text-gray-300">
-                    When using the hosted API, your text is processed in memory and never stored. Minimal metadata may be logged for rate limiting and abuse prevention. See our{' '}
+                    The npm library runs in your process: text is handled in memory according to your code. If you expose an HTTP API yourself, apply your own authentication, rate limiting, and logging policies. See our{' '}
                     <Link href="/privacy" className="text-white hover:text-gray-300 underline">
                       Privacy Policy
                     </Link>{' '}
-                    for details.
+                    for how we handle data on this website.
                   </p>
                 </div>
               </div>

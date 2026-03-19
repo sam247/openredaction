@@ -137,6 +137,28 @@ export const transportLogisticsPreset: Partial<OpenRedactionOptions> = {
 };
 
 /**
+ * PCI-DSS oriented preset — cardholder data and common payment identifiers
+ */
+export const pciDssPreset: Partial<OpenRedactionOptions> = {
+  includeNames: true,
+  includeEmails: true,
+  includePhones: true,
+  includeAddresses: true,
+  categories: ['personal', 'contact', 'financial', 'network']
+};
+
+/**
+ * SOC 2 oriented preset — broad PII and credentials for trust services contexts
+ */
+export const soc2Preset: Partial<OpenRedactionOptions> = {
+  includeNames: true,
+  includeEmails: true,
+  includePhones: true,
+  includeAddresses: true,
+  categories: ['personal', 'contact', 'financial', 'government', 'network', 'digital-identity']
+};
+
+/**
  * Get preset configuration by name
  */
 export function getPreset(name: string): Partial<OpenRedactionOptions> {
@@ -163,6 +185,12 @@ export function getPreset(name: string): Partial<OpenRedactionOptions> {
     case 'transportation':
     case 'logistics':
       return transportLogisticsPreset;
+    case 'pci-dss':
+    case 'pci_dss':
+      return pciDssPreset;
+    case 'soc2':
+    case 'soc-2':
+      return soc2Preset;
     default:
       return {};
   }

@@ -170,7 +170,7 @@ export class ConfigLoader {
   static createDefaultConfig(outputPath: string = '.openredaction.config.js'): void {
     const defaultConfig = `/**
  * OpenRedaction Configuration
- * @see https://github.com/openredact/openredact
+ * @see https://github.com/sam247/openredaction
  */
 export default {
   // Extend built-in presets

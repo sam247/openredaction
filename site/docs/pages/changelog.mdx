@@ -15,9 +15,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Enhanced AI assist accuracy
 - Additional PII detection patterns
 - Performance improvements
+
+## [1.1.0] - 2026-03-18
+
+### Fixed
+- API server routing uses request method and pathname correctly
+- Worker bundle included in build for `WorkerPool`
+- Streaming file processing compatible with Node `Readable` streams without async iteration
+- Request body size limits enforced on the API server
+
+### Changed
+- `enableFalsePositiveFilter` defaults to `on`
+- Removed hosted AI assist options and exports from the core library
+- **`APIServer` / `PrometheusServer` moved to `openredaction/server`** so the main `openredaction` entry does not bundle `node:http` (supply-chain / static analysis friendly). Replace `import { APIServer } from 'openredaction'` with `import { APIServer } from 'openredaction/server'` (same for `createAPIServer`, `PrometheusServer`, `createPrometheusServer`, and related types).
+
+### Added
+- NER-only entities merged into the hybrid pipeline when NER is enabled
+- Validators: SWIFT/BIC format, Canadian SIN (Luhn), Australian TFN (weighted checksum)
+- Presets: `pci-dss`, `soc2`
+- Tests for Express middleware, JSON/CSV document processors, and `LocalLearningStore`
 
 ## [1.0.0] - 2025-01-15
 

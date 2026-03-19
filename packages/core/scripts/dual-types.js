@@ -13,3 +13,4 @@ function dualTypes(base) {
 
 dualTypes('index');
 dualTypes('react');
+dualTypes('server');

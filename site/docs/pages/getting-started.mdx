@@ -29,56 +29,51 @@ pnpm add openredaction
 
 ## Basic Usage
 
-### Simple Redaction
+### Simple redaction
 
-The simplest way to use OpenRedaction is to import and call the `redact` function:
+Create an `OpenRedaction` instance and call `detect()` (async):
 
 ```javascript
-import { redact } from 'openredaction';
+import { OpenRedaction } from 'openredaction';
 
+const redactor = new OpenRedaction();
 const text = "My name is John Doe and my email is john@example.com";
-const result = await redact(text);
+const result = await redactor.detect(text);
 
-console.log(result.redacted_text);
-// "My name is [REDACTED] and my email is [REDACTED]"
+console.log(result.redacted);
+// e.g. placeholders or masked text depending on redactionMode
 
 console.log(result.detections);
-// [
-//   { type: 'NAME', text: 'John Doe', start: 11, end: 19 },
-//   { type: 'EMAIL', text: 'john@example.com', start: 38, end: 54 }
-// ]
+// [{ type: 'NAME', value: 'John Doe', ... }, { type: 'EMAIL', value: 'john@example.com', ... }]
 ```
 
-### With Configuration
-
-You can configure OpenRedaction with various options:
+### With configuration
 
 ```javascript
-import { redact } from 'openredaction';
+import { OpenRedaction } from 'openredaction';
 
-const result = await redact(text, {
-  preset: 'gdpr', // 'gdpr', 'hipaa', 'ccpa', or 'default'
-  redactionMode: 'placeholder', // 'placeholder', 'mask', or 'remove'
-  // Add custom options as needed
+const redactor = new OpenRedaction({
+  preset: 'gdpr',
+  redactionMode: 'placeholder',
 });
+
+const result = await redactor.detect(text);
 ```
 
 ## Configuration Options
 
 ### Presets
 
-OpenRedaction comes with built-in presets for different compliance requirements:
+OpenRedaction includes presets for compliance and industries, for example:
 
-- **`gdpr`** - GDPR compliance (default)
-- **`hipaa`** - HIPAA compliance
-- **`ccpa`** - CCPA compliance
-- **`default`** - General purpose
+- **`gdpr`**, **`hipaa`**, **`ccpa`**
+- **`pci-dss`**, **`soc2`**
+- **`finance`**, **`education`**, **`healthcare`**, **`transportation`**
 
-### Redaction Modes
+### Redaction modes
 
-- **`placeholder`** - Replace with [REDACTED] or [TYPE] (default)
-- **`mask`** - Mask with asterisks (e.g., `j***@example.com`)
-- **`remove`** - Remove the text entirely
+- **`placeholder`** — `[TYPE_n]` style tokens (default)
+- **`mask-middle`**, **`mask-all`**, **`format-preserving`**, **`token-replace`**
 
 ## Next Steps
 
@@ -92,4 +87,3 @@ OpenRedaction comes with built-in presets for different compliance requirements:
 - [PII Detection Guide](https://openredaction.com/pii-detection) - Learn about PII detection basics
 - [Tutorials](/tutorials) - Real-world integration examples
 - [Security & Compliance](/security) - Security practices and compliance information
-

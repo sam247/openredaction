@@ -34,14 +34,15 @@ yarn add openredaction
 Use OpenRedaction inside your own application. All processing runs in-process:
 
 ```javascript
-import { redact } from 'openredaction';
+import { OpenRedaction } from 'openredaction';
 
-const result = await redact(yourText, {
+const redactor = new OpenRedaction({
   preset: 'gdpr',
   redactionMode: 'placeholder',
 });
 
-console.log(result.redacted_text);
+const result = await redactor.detect(yourText);
+console.log(result.redacted);
 ```
 
 ## Deployment

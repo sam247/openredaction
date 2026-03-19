@@ -24,7 +24,7 @@ node example.js
 
 ```bash
 cd express-api
-npm install express openredact
+npm install express openredaction
 node server.js
 ```
 
@@ -49,7 +49,7 @@ node server.js
 
 ```bash
 cd react-form
-npm install react react-dom openredact
+npm install react react-dom openredaction
 npm run dev
 ```
 
@@ -69,20 +69,22 @@ npm run dev
 
 ## 🚀 Quick Start
 
-Install OpenRedact:
 ```bash
-npm install openredact
+npm install openredaction
 ```
 
-Basic usage:
 ```javascript
-const { OpenRedaction } = require('openredact');
+const { OpenRedaction } = require('openredaction');
 
-const detector = new OpenRedaction();
-const result = detector.detect('Contact john@example.com');
+async function main() {
+  const detector = new OpenRedaction();
+  const result = await detector.detect('Contact john@example.com');
 
-console.log(result.redacted); // "Contact [EMAIL_1]"
-console.log(result.detections); // [{ type: 'EMAIL', value: 'john@example.com', ... }]
+  console.log(result.redacted);
+  console.log(result.detections);
+}
+
+main();
 ```
 
 ## 📖 Documentation
@@ -101,11 +103,10 @@ These examples cover common use cases:
 
 ## 🔒 Privacy First
 
-All examples run **100% locally**:
-- No external API calls
-- No data leaves your application
-- Zero network dependencies
-- Works completely offline
+Examples run **locally** in your runtime:
+- No vendor API is required for core detection
+- No data leaves your application unless you add integrations
+- Works offline for library-only usage
 
 ## 📝 License
 

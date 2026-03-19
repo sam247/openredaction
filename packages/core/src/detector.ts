@@ -37,7 +37,6 @@ import {
   createOptimizationDisabledError
 } from './errors/OpenRedactionError.js';
 import { safeExec, validatePattern, RegexTimeoutError } from './utils/safe-regex.js';
-import { getAIEndpoint, callAIDetect, mergeAIEntities } from './utils/ai-assist.js';
 
 /**
  * Main OpenRedaction class for detecting and redacting PII
@@ -72,7 +71,6 @@ export class OpenRedaction {
     debug: boolean;
     maxInputSize: number; // Maximum input size in bytes (default: 10MB)
     regexTimeout: number; // Regex execution timeout in ms (default: 100ms)
-    ai?: { enabled?: boolean; endpoint?: string };
   };
   private multiPassConfig?: DetectionPass[];
   private resultCache?: LRUCache<string, DetectionResult>;
@@ -120,7 +118,7 @@ export class OpenRedaction {
       redactionMode: 'placeholder' as RedactionMode, // Default: [EMAIL_1234]
       enableContextAnalysis: true, // Enabled by default (fine-tuned)
       confidenceThreshold: 0.5, // Balanced threshold (filters <50% confidence)
-      enableFalsePositiveFilter: false, // Disabled by default (experimental)
+      enableFalsePositiveFilter: true,
       falsePositiveThreshold: 0.7,
       enableMultiPass: false, // Disabled by default (opt-in for better accuracy)
       multiPassCount: 3, // Default: 3 passes when enabled
@@ -546,10 +544,10 @@ export class OpenRedaction {
       }
     }
 
-    // Apply NER hybrid detection for confidence boosting
-    if (this.nerDetector && detections.length > 0) {
-      // Convert detections to PIIMatch format
-      const piiMatches: PIIMatch[] = detections.map(det => ({
+    // NER: hybrid confidence boost + merge entities only found by NER (no regex overlap)
+    if (this.nerDetector && this.nerDetector.isAvailable()) {
+      const nerMatches = this.nerDetector.detect(text);
+      let piiMatches: PIIMatch[] = detections.map(det => ({
         type: det.type,
         value: det.value,
         start: det.position[0],
@@ -561,14 +559,44 @@ export class OpenRedaction {
         }
       }));
 
-      // Apply hybrid detection
-      const hybridMatches = this.nerDetector.hybridDetection(piiMatches, text);
+      if (detections.length > 0) {
+        const hybridMatches = this.nerDetector.hybridDetection(piiMatches, text);
+        detections = detections.map((det, index) => ({
+          ...det,
+          confidence: hybridMatches[index].confidence
+        }));
+        piiMatches = detections.map(det => ({
+          type: det.type,
+          value: det.value,
+          start: det.position[0],
+          end: det.position[1],
+          confidence: det.confidence || 1.0,
+          context: {
+            before: text.substring(Math.max(0, det.position[0] - 50), det.position[0]),
+            after: text.substring(det.position[1], Math.min(text.length, det.position[1] + 50))
+          }
+        }));
+      }
 
-      // Update detections with NER-boosted confidence
-      detections = detections.map((det, index) => ({
-        ...det,
-        confidence: hybridMatches[index].confidence
-      }));
+      const nerOnly = this.nerDetector.extractNEROnly(nerMatches, piiMatches);
+      for (const ner of nerOnly) {
+        const syntheticPattern: PIIPattern = {
+          type: `NER_${ner.type}`,
+          regex: /.^/,
+          priority: 1,
+          placeholder: `[NER_${ner.type}_{n}]`,
+          severity: 'medium'
+        };
+        const placeholder = this.generatePlaceholder(ner.text, syntheticPattern);
+        detections.push({
+          type: syntheticPattern.type,
+          value: ner.text,
+          placeholder,
+          position: [ner.start, ner.end],
+          severity: 'medium',
+          confidence: ner.confidence
+        });
+      }
     }
 
     // Apply domain-based confidence boosting
@@ -601,7 +629,7 @@ export class OpenRedaction {
 
   /**
    * Detect PII in text
-   * Now async to support optional AI assist
+   * Async API for detection pipeline (NER, multi-pass, etc.)
    */
   async detect(text: string): Promise<DetectionResult> {
     // Check RBAC permission
@@ -683,42 +711,6 @@ export class OpenRedaction {
     } else {
       // Single-pass detection (original behavior)
       detections = this.processPatterns(text, this.patterns, processedRanges);
-    }
-
-    // AI Assist: Call AI endpoint if enabled
-    if (this.options.ai?.enabled) {
-      const aiEndpoint = getAIEndpoint(this.options.ai);
-      if (aiEndpoint) {
-        try {
-          if (this.options.debug) {
-            console.log('[OpenRedaction] AI assist enabled, calling AI endpoint...');
-          }
-          
-          const aiEntities = await callAIDetect(text, aiEndpoint, this.options.debug);
-          
-          if (aiEntities && aiEntities.length > 0) {
-            if (this.options.debug) {
-              console.log(`[OpenRedaction] AI returned ${aiEntities.length} additional entities`);
-            }
-            
-            // Merge AI entities with regex detections (regex takes precedence on conflicts)
-            detections = mergeAIEntities(detections, aiEntities, text);
-            
-            if (this.options.debug) {
-              console.log(`[OpenRedaction] After AI merge: ${detections.length} total detections`);
-            }
-          } else if (this.options.debug) {
-            console.log('[OpenRedaction] AI endpoint returned no additional entities');
-          }
-        } catch (error) {
-          // Silently fall back to regex-only - AI must never break core functionality
-          if (this.options.debug) {
-            console.warn(`[OpenRedaction] AI assist failed, using regex-only: ${error instanceof Error ? error.message : 'Unknown error'}`);
-          }
-        }
-      } else if (this.options.debug) {
-        console.warn('[OpenRedaction] AI assist enabled but no endpoint configured. Set ai.endpoint or OPENREDACTION_AI_ENDPOINT env var.');
-      }
     }
 
     // Sort detections by position (descending) for proper replacement

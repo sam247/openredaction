@@ -95,30 +95,6 @@ export function createValidationError(value: string, patternType: string): OpenR
   );
 }
 
-export function createHighMemoryError(textSize: number): OpenRedactionError {
-  const sizeMB = (textSize / 1024 / 1024).toFixed(2);
-
-  return new OpenRedactionError(
-    `Text size is ${sizeMB}MB. Consider using streaming API for large documents.`,
-    'HIGH_MEMORY_USAGE',
-    {
-      message: 'Use StreamingDetector for memory-efficient processing of large documents',
-      code: `import { createStreamingDetector } from 'openredaction';
-
-const streaming = createStreamingDetector(redactor, {
-  chunkSize: 2048,
-  overlap: 100
-});
-
-for await (const chunk of streaming.processStream(largeText)) {
-  console.log(chunk.detections);
-}`,
-      docs: 'https://github.com/sam247/openredaction#streaming-api'
-    },
-    { textSize, sizeMB }
-  );
-}
-
 export function createConfigLoadError(path: string, reason: string): OpenRedactionError {
   return new OpenRedactionError(
     `Failed to load config from '${path}': ${reason}`,

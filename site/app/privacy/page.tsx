@@ -27,7 +27,7 @@ export default function Privacy() {
             <section className="mb-12">
               <h2 className="text-2xl font-semibold mb-4">No Data Storage</h2>
               <p className="text-gray-300 mb-4">
-                We do not store or log your text. When you use OpenRedaction (whether via the playground, API, or library), your data is processed in memory and discarded immediately after processing.
+                We do not store or log your text. When you use OpenRedaction on this site (e.g. the playground) or the npm library in your own app, your data is processed in memory and discarded immediately after processing unless your deployment adds persistence.
               </p>
               <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
                 <li>No persistent databases</li>

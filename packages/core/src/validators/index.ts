@@ -201,6 +201,65 @@ export function validateRoutingNumber(routingNumber: string, _context?: string):
 }
 
 /**
+ * Luhn check for arbitrary digit string (e.g. Canadian SIN)
+ */
+function validateLuhnDigits(digits: string): boolean {
+  let sum = 0;
+  let isEven = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let d = parseInt(digits[i], 10);
+    if (Number.isNaN(d)) return false;
+    if (isEven) {
+      d *= 2;
+      if (d > 9) d -= 9;
+    }
+    sum += d;
+    isEven = !isEven;
+  }
+  return sum % 10 === 0;
+}
+
+/**
+ * SWIFT/BIC format validation (ISO 9362: 8 or 11 characters)
+ */
+export function validateSWIFTBIC(bic: string, _context?: string): boolean {
+  const cleaned = bic.replace(/\s/g, '').toUpperCase();
+  return /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(cleaned);
+}
+
+/**
+ * Canadian Social Insurance Number — Luhn checksum on 9 digits
+ */
+export function validateCanadianSIN(sin: string, _context?: string): boolean {
+  const cleaned = sin.replace(/[\s-]/g, '');
+  if (!/^\d{9}$/.test(cleaned)) {
+    return false;
+  }
+  if (cleaned === '000000000') {
+    return false;
+  }
+  return validateLuhnDigits(cleaned);
+}
+
+/**
+ * Australian Tax File Number — weighted checksum (8 or 9 digits)
+ */
+export function validateAustralianTFN(tfn: string, _context?: string): boolean {
+  const cleaned = tfn.replace(/\s/g, '');
+  if (!/^\d{8}$/.test(cleaned) && !/^\d{9}$/.test(cleaned)) {
+    return false;
+  }
+  const weights8 = [1, 4, 3, 7, 5, 8, 6, 9];
+  const weights9 = [1, 4, 3, 7, 5, 8, 6, 9, 10];
+  const weights = cleaned.length === 8 ? weights8 : weights9;
+  let sum = 0;
+  for (let i = 0; i < cleaned.length; i++) {
+    sum += parseInt(cleaned[i], 10) * weights[i];
+  }
+  return sum % 11 === 0;
+}
+
+/**
  * Context-aware name validator to reduce false positives
  */
 export function validateName(name: string, context: string): boolean {

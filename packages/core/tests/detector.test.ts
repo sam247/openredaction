@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { OpenRedaction } from '../src/detector';
 
-describe('OpenRedact', () => {
-  let shield: OpenRedact;
+describe('OpenRedaction', () => {
+  let shield: OpenRedaction;
 
   beforeEach(() => {
-    shield = new OpenRedaction();
+    shield = new OpenRedaction({ enableFalsePositiveFilter: false });
   });
 
   describe('Basic detection', () => {
@@ -91,7 +91,8 @@ describe('OpenRedact', () => {
     it('should generate same placeholder for same value', async () => {
       const shield = new OpenRedaction({
         deterministic: true,
-        enableContextAnalysis: false  // Disable context analysis for this test
+        enableContextAnalysis: false, // Disable context analysis for this test
+        enableFalsePositiveFilter: false
       });
       const text = 'john@example.com and john@example.com';
       const result = await shield.detect(text);
@@ -104,7 +105,8 @@ describe('OpenRedact', () => {
     it('should generate different placeholders for different values', async () => {
       const shield = new OpenRedaction({
         deterministic: true,
-        enableContextAnalysis: false  // Disable context analysis for this test
+        enableContextAnalysis: false,
+        enableFalsePositiveFilter: false
       });
       const text = 'john@example.com and jane@example.com';
       const result = await shield.detect(text);
@@ -117,7 +119,8 @@ describe('OpenRedact', () => {
     it('should use incremental counters in non-deterministic mode', async () => {
       const shield = new OpenRedaction({
         deterministic: false,
-        enableContextAnalysis: false  // Disable context analysis for this test
+        enableContextAnalysis: false,
+        enableFalsePositiveFilter: false
       });
       const text = 'john@example.com and john@example.com';
       const result = await shield.detect(text);
@@ -136,7 +139,10 @@ describe('OpenRedact', () => {
     });
 
     it('should respect pattern whitelist', async () => {
-      const shieldEmailOnly = new OpenRedaction({ patterns: ['EMAIL'] });
+      const shieldEmailOnly = new OpenRedaction({
+        patterns: ['EMAIL'],
+        enableFalsePositiveFilter: false
+      });
       const result = await shieldEmailOnly.detect('Email john@example.com call 07700900123');
 
       expect(result.detections).toHaveLength(1);

@@ -7,7 +7,10 @@ import {
   validateSSN,
   validateSortCode,
   validateEmail,
-  validateName
+  validateName,
+  validateSWIFTBIC,
+  validateCanadianSIN,
+  validateAustralianTFN
 } from '../src/validators';
 
 describe('Validators', () => {
@@ -166,6 +169,44 @@ describe('Validators', () => {
 
     it('should reject business context', () => {
       expect(validateName('Smith Corp', 'Company Smith Corp')).toBe(false);
+    });
+  });
+
+  describe('validateSWIFTBIC', () => {
+    it('should accept 8- and 11-character BICs', () => {
+      expect(validateSWIFTBIC('DEUTDEFF')).toBe(true);
+      expect(validateSWIFTBIC('CHASUS33XXX')).toBe(true);
+      expect(validateSWIFTBIC('deut de ff')).toBe(true);
+    });
+
+    it('should reject invalid BICs', () => {
+      expect(validateSWIFTBIC('DEUTDE')).toBe(false);
+      expect(validateSWIFTBIC('12345678')).toBe(false);
+    });
+  });
+
+  describe('validateCanadianSIN', () => {
+    it('should validate SINs that pass Luhn', () => {
+      expect(validateCanadianSIN('046 454 286')).toBe(true);
+      expect(validateCanadianSIN('046454286')).toBe(true);
+    });
+
+    it('should reject invalid SINs', () => {
+      expect(validateCanadianSIN('123456789')).toBe(false);
+      expect(validateCanadianSIN('000000000')).toBe(false);
+      expect(validateCanadianSIN('12345')).toBe(false);
+    });
+  });
+
+  describe('validateAustralianTFN', () => {
+    it('should validate TFNs with correct weighted checksum', () => {
+      expect(validateAustralianTFN('100000001')).toBe(true);
+      expect(validateAustralianTFN('00000013')).toBe(true);
+    });
+
+    it('should reject invalid TFNs', () => {
+      expect(validateAustralianTFN('12345678')).toBe(false);
+      expect(validateAustralianTFN('123456789')).toBe(false);
     });
   });
 });

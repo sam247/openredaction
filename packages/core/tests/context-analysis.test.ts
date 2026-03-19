@@ -223,9 +223,9 @@ describe('Context Analysis', () => {
     });
   });
 
-  describe('Integration with OpenRedact', () => {
+  describe('Integration with OpenRedaction', () => {
     it('should work when context analysis is enabled (default)', async () => {
-      const redactor = new OpenRedaction();
+      const redactor = new OpenRedaction({ enableFalsePositiveFilter: false });
       const result = await redactor.detect('Contact john@example.com for info');
 
       expect(result.detections).toHaveLength(1);
@@ -236,7 +236,10 @@ describe('Context Analysis', () => {
     });
 
     it('should work when context analysis is disabled', async () => {
-      const redactor = new OpenRedaction({ enableContextAnalysis: false });
+      const redactor = new OpenRedaction({
+        enableContextAnalysis: false,
+        enableFalsePositiveFilter: false
+      });
       const result = await redactor.detect('Contact john@example.com for info');
 
       expect(result.detections).toHaveLength(1);
@@ -263,7 +266,8 @@ describe('Context Analysis', () => {
     it('should include confidence scores when enabled', async () => {
       const redactor = new OpenRedaction({
         enableContextAnalysis: true,
-        confidenceThreshold: 0.3
+        confidenceThreshold: 0.3,
+        enableFalsePositiveFilter: false
       });
 
       const result = await redactor.detect('Contact john@example.com for information');
@@ -291,7 +295,10 @@ describe('Context Analysis', () => {
     });
 
     it('should detect CREDIT_CARD in Japanese text with dummy email (Issue #26)', async () => {
-      const redactor = new OpenRedaction({ redactionMode: 'placeholder' });
+      const redactor = new OpenRedaction({
+        redactionMode: 'placeholder',
+        enableFalsePositiveFilter: false
+      });
       const text = 'メールは taro@example.com でカード番号は 4111-1111-1111-1111 です。';
       const result = await redactor.detect(text);
       const types = result.detections.map(d => d.type);

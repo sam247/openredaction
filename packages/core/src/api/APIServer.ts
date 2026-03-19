@@ -8,7 +8,6 @@ import { OpenRedaction } from '../detector';
 import type { TenantManager } from '../tenancy/TenantManager';
 import type { WebhookManager } from '../webhooks/WebhookManager';
 import type { PersistentAuditLogger } from '../audit/PersistentAuditLogger';
-import type { PrometheusServer } from '../metrics/PrometheusServer';
 
 /**
  * API Server configuration
@@ -38,8 +37,6 @@ export interface APIServerConfig {
   webhookManager?: WebhookManager;
   /** Persistent audit logger */
   auditLogger?: PersistentAuditLogger;
-  /** Prometheus server */
-  prometheusServer?: PrometheusServer;
   /** Default OpenRedaction options (for non-tenant mode) */
   defaultOptions?: OpenRedactionOptions;
 }
@@ -48,6 +45,10 @@ export interface APIServerConfig {
  * API request with authentication
  */
 export interface APIRequest {
+  /** HTTP method (e.g. GET, POST) */
+  method: string;
+  /** URL pathname (e.g. /api/detect) */
+  pathname: string;
   /** Request body */
   body: any;
   /** Headers */
@@ -80,8 +81,8 @@ export interface APIResponse {
  */
 export class APIServer {
   private server?: any;
-  private config: Required<Omit<APIServerConfig, 'apiKey' | 'tenantManager' | 'webhookManager' | 'auditLogger' | 'prometheusServer' | 'defaultOptions' | 'corsOrigin'>> &
-    Pick<APIServerConfig, 'apiKey' | 'tenantManager' | 'webhookManager' | 'auditLogger' | 'prometheusServer' | 'defaultOptions' | 'corsOrigin'>;
+  private config: Required<Omit<APIServerConfig, 'apiKey' | 'tenantManager' | 'webhookManager' | 'auditLogger' | 'defaultOptions' | 'corsOrigin'>> &
+    Pick<APIServerConfig, 'apiKey' | 'tenantManager' | 'webhookManager' | 'auditLogger' | 'defaultOptions' | 'corsOrigin'>;
   private detector?: OpenRedaction;
   private isRunning: boolean = false;
   private rateLimitTracking: Map<string, number[]> = new Map();
@@ -100,7 +101,6 @@ export class APIServer {
       tenantManager: config?.tenantManager,
       webhookManager: config?.webhookManager,
       auditLogger: config?.auditLogger,
-      prometheusServer: config?.prometheusServer,
       defaultOptions: config?.defaultOptions
     };
 
@@ -250,9 +250,17 @@ export class APIServer {
       this.sendResponse(res, response);
     } catch (error: any) {
       console.error('[APIServer] Request handler error:', error);
+      const msg = error?.message || '';
+      if (msg.includes('exceeds limit')) {
+        this.sendResponse(res, {
+          status: 413,
+          body: { error: 'Payload Too Large', message: msg }
+        });
+        return;
+      }
       this.sendResponse(res, {
         status: 500,
-        body: { error: 'Internal Server Error', message: error.message }
+        body: { error: 'Internal Server Error', message: msg }
       });
     }
   }
@@ -271,6 +279,8 @@ export class APIServer {
     }
 
     return {
+      method: (req.method || 'GET').toUpperCase(),
+      pathname: url.pathname || '/',
       body,
       headers: req.headers,
       query: Object.fromEntries(url.searchParams),
@@ -280,17 +290,38 @@ export class APIServer {
   }
 
   /**
+   * Parse body size limit (e.g. "10mb", "512kb") to bytes
+   */
+  private parseBodyLimitBytes(limit: string): number {
+    const m = /^(\d+(?:\.\d+)?)\s*(b|kb|mb|gb)?$/i.exec(limit.trim());
+    if (!m) return 10 * 1024 * 1024;
+    const n = parseFloat(m[1]);
+    const unit = (m[2] || 'b').toLowerCase();
+    const mult = unit === 'gb' ? 1024 ** 3 : unit === 'mb' ? 1024 ** 2 : unit === 'kb' ? 1024 : 1;
+    return Math.floor(n * mult);
+  }
+
+  /**
    * Parse request body
    */
   private async parseBody(req: any): Promise<any> {
+    const maxBytes = this.parseBodyLimitBytes(this.config.bodyLimit);
     return new Promise((resolve, reject) => {
-      let body = '';
-      req.on('data', (chunk: any) => {
-        body += chunk.toString();
+      const chunks: Buffer[] = [];
+      let total = 0;
+      req.on('data', (chunk: Buffer | string) => {
+        const buf = typeof chunk === 'string' ? Buffer.from(chunk) : chunk;
+        total += buf.length;
+        if (total > maxBytes) {
+          reject(new Error(`Request body exceeds limit (${this.config.bodyLimit})`));
+          return;
+        }
+        chunks.push(buf);
       });
       req.on('end', () => {
         try {
-          resolve(JSON.parse(body || '{}'));
+          const raw = Buffer.concat(chunks).toString('utf8');
+          resolve(JSON.parse(raw || '{}'));
         } catch {
           resolve({});
         }
@@ -303,9 +334,8 @@ export class APIServer {
    * Route request to appropriate handler
    */
   private async routeRequest(req: APIRequest): Promise<APIResponse> {
-    const url = new URL(req.headers.host ? `http://${req.headers.host}` : 'http://localhost');
-    const path = url.pathname;
-    const method = req.headers[':method'] || 'GET';
+    const path = req.pathname;
+    const method = req.method;
 
     // API routes
     if (path === '/api/detect' && method === 'POST') {
@@ -623,8 +653,7 @@ export class APIServer {
         multiTenant: !!this.config.tenantManager,
         features: {
           audit: !!this.config.auditLogger,
-          webhooks: !!this.config.webhookManager,
-          prometheus: !!this.config.prometheusServer
+          webhooks: !!this.config.webhookManager
         }
       }
     };

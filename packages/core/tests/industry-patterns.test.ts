@@ -45,7 +45,7 @@ describe('Industry-Specific Pattern Detection', () => {
 
     it('should detect loyalty card numbers', async () => {
       const shield = new OpenRedaction({ patterns: ['LOYALTY_CARD_NUMBER'] });
-      const result = await shield.detect('Loyalty card: LOYALTY-1234567890123');
+      const result = await shield.detect('Loyalty card: LOYALTY-4521897630192837');
       expect(result.detections.some(d => d.type === 'LOYALTY_CARD_NUMBER')).toBe(true);
 });
 
@@ -57,7 +57,7 @@ describe('Industry-Specific Pattern Detection', () => {
 
     it('should detect gift card numbers', async () => {
       const shield = new OpenRedaction({ patterns: ['GIFT_CARD_NUMBER'] });
-      const result = await shield.detect('Gift card: GC-1234567890123');
+      const result = await shield.detect('Gift card: GC-4521897630192837');
       expect(result.detections.some(d => d.type === 'GIFT_CARD_NUMBER')).toBe(true);
 });
 });
@@ -89,7 +89,7 @@ describe('Industry-Specific Pattern Detection', () => {
 
     it('should detect SIM card numbers', async () => {
       const shield = new OpenRedaction({ patterns: ['SIM_CARD_NUMBER'] });
-      const result = await shield.detect('SIM card: SIM-12345678901234567890');
+      const result = await shield.detect('SIM card: SIM-45218976301928376501');
       expect(result.detections.some(d => d.type === 'SIM_CARD_NUMBER')).toBe(true);
 });
 });

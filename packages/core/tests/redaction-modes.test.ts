@@ -8,7 +8,7 @@ import { OpenRedaction } from '../src/detector';
 describe('Redaction Modes', () => {
   describe('Placeholder Mode (Default)', () => {
     it('should use placeholder format [TYPE_ID]', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'placeholder' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'placeholder' });
       const result = await shield.detect('Contact john@example.com or call 555-123-4567');
 
       expect(result.redacted).toContain('[EMAIL_');
@@ -18,7 +18,7 @@ describe('Redaction Modes', () => {
 
   describe('Mask Middle Mode', () => {
     it('should mask middle of email while preserving domain', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'mask-middle' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'mask-middle' });
       const result = await shield.detect('Contact john@example.com');
 
       // Email should be partially masked: j***@example.com
@@ -26,7 +26,7 @@ describe('Redaction Modes', () => {
 });
 
     it('should mask middle digits of phone number', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'mask-middle' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'mask-middle' });
       const result = await shield.detect('Call 555-123-4567');
 
       // Phone should show area code and last 4: 555-**-4567
@@ -34,7 +34,7 @@ describe('Redaction Modes', () => {
 });
 
     it('should mask SSN showing only last 4', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'mask-middle' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'mask-middle' });
       const result = await shield.detect('SSN: 123-45-6789');
 
       // SSN should be: ***-**-6789
@@ -42,7 +42,7 @@ describe('Redaction Modes', () => {
 });
 
     it('should mask middle of credit card showing first 4 and last 4', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'mask-middle' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'mask-middle' });
       const result = await shield.detect('Card: 4532-1234-5678-9010');
 
       // Should show first 4 and last 4 (may vary based on formatting)
@@ -54,7 +54,7 @@ describe('Redaction Modes', () => {
 
   describe('Mask All Mode', () => {
     it('should replace entire value with asterisks', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'mask-all' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'mask-all' });
       const result = await shield.detect('Email: john@example.com');
 
       // Should be all asterisks matching length
@@ -66,7 +66,7 @@ describe('Redaction Modes', () => {
 
   describe('Format Preserving Mode', () => {
     it('should preserve structure with Xs', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'format-preserving' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'format-preserving' });
       const result = await shield.detect('SSN: 123-45-6789');
 
       // Should preserve dashes: XXX-XX-XXXX
@@ -74,7 +74,7 @@ describe('Redaction Modes', () => {
 });
 
     it('should preserve email format with Xs', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'format-preserving' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'format-preserving' });
       const result = await shield.detect('Email: john@example.com');
 
       // Should preserve @ and . : xxxx@xxxxxxx.xxx
@@ -82,7 +82,7 @@ describe('Redaction Modes', () => {
 });
 
     it('should preserve phone number format', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'format-preserving' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'format-preserving' });
       const result = await shield.detect('Call (555) 123-4567');
 
       // Should preserve () and -: (XXX) XXX-XXXX
@@ -92,7 +92,7 @@ describe('Redaction Modes', () => {
 
   describe('Token Replace Mode', () => {
     it('should replace with realistic fake email', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'token-replace' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'token-replace' });
       const result = await shield.detect('Contact john@example.com');
 
       // Should have a fake email with @ and domain
@@ -101,7 +101,7 @@ describe('Redaction Modes', () => {
 });
 
     it('should replace with fake phone number', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'token-replace' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'token-replace' });
       const result = await shield.detect('Call 555-123-4567');
 
       // Should have a fake phone with () and -
@@ -109,7 +109,7 @@ describe('Redaction Modes', () => {
 });
 
     it('should replace with fake SSN', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'token-replace' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'token-replace' });
       const result = await shield.detect('SSN: 123-45-6789');
 
       // Should have a fake SSN with correct format
@@ -119,6 +119,7 @@ describe('Redaction Modes', () => {
 
     it('should be deterministic for same value', async () => {
       const shield = new OpenRedaction({
+        enableFalsePositiveFilter: false,
         redactionMode: 'token-replace',
         deterministic: true
       });
@@ -136,7 +137,7 @@ describe('Redaction Modes', () => {
 
   describe('Multiple Values', () => {
     it('should handle multiple PII with consistent mode', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'mask-middle' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'mask-middle' });
       const result = await shield.detect(
         'Contact john@example.com or jane@test.com, call 555-123-4567 or 555-987-6543'
       );
@@ -151,7 +152,7 @@ describe('Redaction Modes', () => {
 
   describe('Redaction Map', () => {
     it('should maintain redaction map regardless of mode', async () => {
-      const shield = new OpenRedaction({ redactionMode: 'mask-middle' });
+      const shield = new OpenRedaction({ enableFalsePositiveFilter: false, redactionMode: 'mask-middle' });
       const result = await shield.detect('Email: john@example.com');
 
       // Should still have redaction map

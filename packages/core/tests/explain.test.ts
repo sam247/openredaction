@@ -129,7 +129,8 @@ describe('Explain API', () => {
     it('should explain low confidence filtering', async () => {
       const detector = new OpenRedaction({
         enableContextAnalysis: true,
-        confidenceThreshold: 0.6
+        confidenceThreshold: 0.6,
+        enableFalsePositiveFilter: false
       });
       const explainAPI = detector.explain();
 
@@ -184,7 +185,10 @@ describe('Explain API', () => {
     });
 
     it('should include pattern information in detection explanation', async () => {
-      const detector = new OpenRedaction({ enableContextAnalysis: false });
+      const detector = new OpenRedaction({
+        enableContextAnalysis: false,
+        enableFalsePositiveFilter: false
+      });
       const explainAPI = detector.explain();
 
       const text = 'Email: test@business.co.uk';

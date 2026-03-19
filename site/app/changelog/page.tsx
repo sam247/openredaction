@@ -13,6 +13,20 @@ export const metadata: Metadata = generatePageMetadata({
 
 const changelogEntries = [
   {
+    date: '2026-03-18',
+    version: '1.1.0',
+    title: 'Library: routing, streaming, NER merge, validators, presets',
+    changes: [
+      'Fix API server request routing (method/path) and enforce body size limits',
+      'Emit worker bundle for WorkerPool; improve Node stream iteration in streaming detector',
+      'Remove hosted AI assist from public API and docs; false-positive filter on by default',
+      'Merge NER-only spans into hybrid pipeline when NER is enabled',
+      'Add SWIFT/BIC, Canadian SIN (Luhn), and Australian TFN validators; PCI-DSS and SOC 2 presets',
+      'Tests: Express middleware, JSON/CSV processors, LocalLearningStore',
+      'HTTP API and Prometheus server: import from `openredaction/server` so main entry has no `node:http`',
+    ],
+  },
+  {
     date: '2026-03-19',
     version: '1.0.10',
     title: 'Library: npm README — no AI-assist section',

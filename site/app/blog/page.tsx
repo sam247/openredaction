@@ -20,7 +20,7 @@ const blogPosts = [
   {
     id: 2,
     title: 'From Regex Library to Real API: Building OpenRedaction\'s Developer Journey',
-    excerpt: 'How OpenRedaction evolved from a simple regex-based redaction library into a hosted API with AI-assist, billing and product-grade infrastructure.',
+    excerpt: 'How OpenRedaction evolved from a simple regex-based redaction library into a production-grade open-source toolkit.',
     date: '2025-12-04',
     category: 'Guide',
     slug: 'building-openredaction-developer-journey',
@@ -28,7 +28,7 @@ const blogPosts = [
   {
     id: 3,
     title: 'PII Detection for AI: How to Safely Use User Data with LLMs',
-    excerpt: 'Learn how PII detection fits into AI workflows, where personal data typically leaks, and how to design a PII-aware architecture using a hybrid pattern-first + AI assist approach.',
+    excerpt: 'Learn how PII detection fits into AI workflows, where personal data typically leaks, and how to design a PII-aware architecture with pattern-first local redaction.',
     date: '2025-12-05',
     category: 'Guide',
     slug: 'pii-detection-for-ai',

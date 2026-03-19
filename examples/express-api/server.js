@@ -8,8 +8,9 @@ const {
   OpenRedaction,
   openredactionMiddleware,
   detectPII,
-  generateReport
-} = require('openredact');
+  generateReport,
+  createBatchProcessor
+} = require('openredaction');
 
 const app = express();
 app.use(express.json());
@@ -33,7 +34,6 @@ app.use('/api/strict', openredactionMiddleware({
 
 // Example 3: Basic route with middleware
 app.post('/api/secure/submit', (req, res) => {
-  // PII is automatically redacted by middleware
   console.log('Received (redacted):', req.body);
 
   res.json({
@@ -46,7 +46,6 @@ app.post('/api/secure/submit', (req, res) => {
 
 // Example 4: Strict endpoint that rejects PII
 app.post('/api/strict/comment', (req, res) => {
-  // This will be rejected by middleware if PII is found
   res.json({
     success: true,
     message: 'Comment accepted (no PII detected)'
@@ -84,9 +83,8 @@ app.post('/api/analyze', async (req, res) => {
     ...options
   });
 
-  const result = detector.detect(text);
+  const result = await detector.detect(text);
 
-  // Custom response with additional metadata
   res.json({
     hasPII: result.detections.length > 0,
     count: result.detections.length,
@@ -96,7 +94,6 @@ app.post('/api/analyze', async (req, res) => {
       severity: d.severity,
       confidence: d.confidence,
       position: d.position
-      // Note: Not returning actual 'value' for privacy
     })),
     stats: result.stats,
     breakdown: result.detections.reduce((acc, d) => {
@@ -114,13 +111,12 @@ app.post('/api/batch', async (req, res) => {
     return res.status(400).json({ error: 'Documents array is required' });
   }
 
-  const { createBatchProcessor } = require('openredact');
   const detector = new OpenRedaction({ enableContextAnalysis: true });
   const batch = createBatchProcessor(detector);
 
   const result = parallel
     ? await batch.processParallel(documents)
-    : batch.processSequential(documents);
+    : await batch.processSequential(documents);
 
   const stats = batch.getAggregatedStats(result.results);
 
@@ -136,9 +132,9 @@ app.post('/api/batch', async (req, res) => {
 });
 
 // Example 10: Health check with PII detection status
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
   const detector = new OpenRedaction();
-  const testResult = detector.detect('test@example.com');
+  await detector.detect('test@example.com');
 
   res.json({
     status: 'healthy',

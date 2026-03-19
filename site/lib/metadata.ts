@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://openredaction.com';
 const siteName = 'OpenRedaction';
-const siteDescription = 'Regex-first PII redaction. Open-source library with 500+ tested patterns. Optional hosted AI assist for messy, unstructured text. Self-host for complete privacy and control.';
+const siteDescription = 'Regex-first PII redaction. Open-source library with 500+ tested patterns. Runs locally in your app for privacy and control.';
 
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(siteUrl),

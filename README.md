@@ -1,8 +1,8 @@
 # OpenRedaction
 
-[![Version](https://img.shields.io/badge/version-1.0.10-brightgreen.svg)](https://www.npmjs.com/package/openredaction)
+[![Version](https://img.shields.io/badge/version-1.1.0-brightgreen.svg)](https://www.npmjs.com/package/openredaction)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-450%20passing-brightgreen.svg)](https://github.com/sam247/openredaction)
+[![Tests](https://img.shields.io/badge/tests-469%20passing-brightgreen.svg)](https://github.com/sam247/openredaction)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
 
 OpenRedaction is an open-source JavaScript/TypeScript library for detecting and redacting PII with a regex-first approach. It runs locally by default and can be combined with an optional hosted API for AI-assisted detection.
@@ -15,7 +15,7 @@ OpenRedaction is a production-ready library that helps you keep sensitive data o
 - **Regex-first**: Pattern-based detection runs locally, fast, and private
 - **Fully open source**: MIT licensed, no vendor lock-in
 - **Privacy-first**: All detection happens locally by default
-- **Production-ready**: Battle-tested with 450+ passing tests
+- **Production-ready**: Large automated test suite covering detection, redaction, and integrations
 - **Hardened patterns**: Advanced validation with checksums and context filtering
 
 ## Installation
@@ -159,7 +159,7 @@ const redactor = new OpenRedaction({
   redactionMode: 'mask-all', // placeholder | mask-middle | mask-all | format-preserving | token-replace
   
   // Compliance presets
-  preset: 'hipaa', // gdpr | hipaa | ccpa | finance | education | transportation
+  preset: 'hipaa', // gdpr | hipaa | ccpa | pci-dss | soc2 | finance | education | transportation
   
   // Advanced options
   deterministic: true,           // Stable placeholders for same value
@@ -175,48 +175,18 @@ const redactor = new OpenRedaction({
 - `hipaa` — Health data emphasis (US)
 - `ccpa` — Consumer privacy defaults (California)
 - `finance`, `education`, `transportation` — Sector-focused bundles
+- `pci-dss`, `soc2` — Compliance-oriented pattern bundles
 
 ## Ecosystem
 
-OpenRedaction is part of a broader ecosystem:
-
 - **[openredaction](https://www.npmjs.com/package/openredaction)** (this package) — Core library for local, regex-based PII detection and redaction
-- **[openredaction-api](https://github.com/sam247/openredaction-api)** — Optional hosted API that wraps this library and provides AI-assisted detection with API keys and rate limiting
-- **[openredaction-site](https://openredaction.com)** — Website and playground where you can try the library and hosted API in your browser
-
-### Using the Hosted API (Optional)
-
-If you want AI-assisted detection or don't want to run your own server, you can call the OpenRedaction hosted API with an API key. **Note:** Regex-based self-hosted usage is completely free and doesn't require any API key.
-
-```typescript
-// Call the hosted API directly with fetch
-const response = await fetch('https://api.openredaction.com/ai-detect', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'x-api-key': process.env.OPENREDACTION_API_KEY!,
-  },
-  body: JSON.stringify({ 
-    text: 'John Smith, john@example.com' 
-  }),
-});
-
-const data = await response.json();
-console.log(data);
-// { entities: [...], aiUsed: true }
-```
-
-**Important:**
-- The hosted API provides AI-assisted detection and requires an API key
-- The core library (this package) runs entirely locally and is free
-- AI-assisted detection is provided via the hosted API, not via this library package
-- For maximum privacy, use the library locally without any API calls
+- **[Website & playground](https://openredaction.com)** — Try the library in the browser
+- **Source & issues**: [github.com/sam247/openredaction](https://github.com/sam247/openredaction)
 
 ## Limitations & Disclaimers
 
 - **Best-effort detection**: Regex-based detection is best-effort and may miss edge cases or context-dependent PII
 - **Pattern coverage**: While we maintain 570+ patterns, the set is not exhaustive and may not cover all PII types
-- **AI-assisted detection**: AI-assisted detection is provided via the hosted API service, not via this library package
 - **Manual review recommended**: For highly sensitive use cases, manually review redacted output
 - **No guarantees**: This library is provided as-is without warranties. Use at your own risk
 

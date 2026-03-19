@@ -39,6 +39,16 @@ export default defineConfig([
       codeSplitting: false,
     },
   },
+  // Worker thread (WorkerPool loads dist/workers/worker.js)
+  {
+    entry: ['src/workers/worker.ts'],
+    format: ['cjs'],
+    outDir: 'dist/workers',
+    dts: false,
+    outputOptions: {
+      codeSplitting: false,
+    },
+  },
   // React subpath: openredaction/react (bundles core + hooks, react external)
   {
     entry: ['src/integrations/react.ts'],
@@ -48,6 +58,23 @@ export default defineConfig([
     outDir: 'dist',
     clean: false,
     external: ['react'],
+    fixedExtension: false,
+    outputOptions: {
+      codeSplitting: false,
+    },
+    outExtensions({ format }) {
+      return { js: format === 'cjs' ? '.js' : '.mjs' };
+    },
+  },
+  // Node HTTP: APIServer + PrometheusServer (node:http) — not in main entry
+  {
+    entry: ['src/server.ts'],
+    format: ['esm', 'cjs'],
+    dts: true,
+    sourcemap: true,
+    outDir: 'dist',
+    clean: false,
+    external: ['express'],
     fixedExtension: false,
     outputOptions: {
       codeSplitting: false,

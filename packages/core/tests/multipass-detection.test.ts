@@ -154,7 +154,7 @@ describe('Multi-pass Detection', () => {
     });
   });
 
-  describe('Integration with OpenRedact', () => {
+  describe('Integration with OpenRedaction', () => {
     it('should work when multi-pass is disabled (default)', async () => {
       const redactor = new OpenRedaction();
       const result = await redactor.detect('API Key: AKIA1234567890ABCDEF, Email: user@company.com');

@@ -24,12 +24,12 @@ npm install openredaction
 ```
 
 ```javascript
-import { redact } from 'openredaction';
+import { OpenRedaction } from 'openredaction';
 
+const redactor = new OpenRedaction();
 const text = "My name is John Doe and my email is john@example.com";
-const result = await redact(text);
-console.log(result.redacted_text);
-// "My name is [REDACTED] and my email is [REDACTED]"
+const result = await redactor.detect(text);
+console.log(result.redacted);
 ```
 
 ## Key Features
@@ -55,4 +55,3 @@ console.log(result.redacted_text);
 - [Main Website](https://openredaction.com)
 - [Playground](https://openredaction.com/playground)
 - [Contact Support](https://openredaction.com/contact)
-

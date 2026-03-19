@@ -1,5 +1,5 @@
 /**
- * Performance benchmarks for OpenRedact
+ * Performance benchmarks for OpenRedaction
  * Run with: npm run bench
  */
 
