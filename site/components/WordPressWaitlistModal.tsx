@@ -1,0 +1,285 @@
+'use client';
+
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { X } from 'lucide-react';
+import { analytics } from '@/lib/analytics';
+
+export type WordPressWaitlistSource =
+  | 'playground'
+  | 'roadmap'
+  | 'pricing'
+  | 'changelog'
+  | string;
+
+type SubmitState = 'idle' | 'loading' | 'success' | 'error';
+
+export default function WordPressWaitlistModal({
+  source,
+  triggerLabel = 'WordPress plugin — join waitlist',
+  className = '',
+  triggerClassName = '',
+}: {
+  source: WordPressWaitlistSource;
+  triggerLabel?: string;
+  /** Wrapper around the trigger button */
+  className?: string;
+  triggerClassName?: string;
+}) {
+  const titleId = useId();
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [clientError, setClientError] = useState<string | null>(null);
+  const [submitState, setSubmitState] = useState<SubmitState>('idle');
+  const [alreadySubscribed, setAlreadySubscribed] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const lastFocusRef = useRef<HTMLElement | null>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  const close = useCallback(() => {
+    setOpen(false);
+    setClientError(null);
+    if (submitState !== 'loading') {
+      setSubmitState('idle');
+      setAlreadySubscribed(false);
+    }
+  }, [submitState]);
+
+  const openModal = useCallback(() => {
+    lastFocusRef.current = document.activeElement as HTMLElement | null;
+    setOpen(true);
+    setClientError(null);
+    setSubmitState('idle');
+    setAlreadySubscribed(false);
+    analytics.wordpressWaitlistOpen(source);
+  }, [source]);
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = 'hidden';
+    const t = requestAnimationFrame(() => nameInputRef.current?.focus());
+    return () => {
+      cancelAnimationFrame(t);
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+      }
+      if (e.key === 'Tab' && dialogRef.current) {
+        const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const list = Array.from(focusables).filter((el) => !el.hasAttribute('disabled'));
+        if (list.length === 0) return;
+        const first = list[0];
+        const last = list[list.length - 1];
+        if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        } else if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open, close]);
+
+  useEffect(() => {
+    if (!open && lastFocusRef.current) {
+      lastFocusRef.current.focus();
+      lastFocusRef.current = null;
+    }
+  }, [open]);
+
+  const validate = (): boolean => {
+    if (!name.trim()) {
+      setClientError('Please enter your name.');
+      return false;
+    }
+    if (!email.trim()) {
+      setClientError('Please enter your email.');
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setClientError('Please enter a valid email address.');
+      return false;
+    }
+    setClientError(null);
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    setSubmitState('loading');
+    analytics.wordpressWaitlistSubmit(source);
+
+    try {
+      const response = await fetch('/api/wordpress-waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          source,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const errType =
+          response.status === 403
+            ? 'forbidden'
+            : response.status === 503
+              ? 'unavailable'
+              : 'http_error';
+        analytics.wordpressWaitlistError(source, errType);
+        setSubmitState('error');
+        setClientError(
+          typeof data.error === 'string' ? data.error : 'Something went wrong. Please try again.'
+        );
+        return;
+      }
+
+      setAlreadySubscribed(!!data.alreadySubscribed);
+      setSubmitState('success');
+      analytics.wordpressWaitlistSuccess(source);
+    } catch {
+      analytics.wordpressWaitlistError(source, 'network');
+      setSubmitState('error');
+      setClientError('Network error. Check your connection and try again.');
+    }
+  };
+
+  const modal =
+    open &&
+    typeof document !== 'undefined' &&
+    createPortal(
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70"
+        role="presentation"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) close();
+        }}
+      >
+        <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          className="relative w-full max-w-md rounded-lg border border-gray-800 bg-gray-950 text-white shadow-2xl"
+        >
+          <button
+            type="button"
+            onClick={close}
+            className="absolute right-3 top-3 rounded-md p-1 text-gray-400 hover:bg-gray-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-600"
+            aria-label="Close dialog"
+          >
+            <X size={20} />
+          </button>
+
+          <div className="p-6 pt-10">
+            <h2 id={titleId} className="text-lg font-semibold text-white pr-8">
+              WordPress plugin waitlist
+            </h2>
+            <p className="mt-2 text-sm text-gray-400 leading-relaxed">
+              We&apos;re exploring a future plugin for forms, comments, and UGC redaction. Join for
+              updates only — no spam. We use your email only for plugin-related updates.
+            </p>
+
+            {submitState === 'success' ? (
+              <div className="mt-6 space-y-4">
+                <p className="text-sm text-gray-300">
+                  {alreadySubscribed
+                    ? "You're already on the list — we'll keep you posted."
+                    : "You're on the list. We'll email you when there's news."}
+                </p>
+                <button
+                  type="button"
+                  onClick={close}
+                  className="w-full rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-black hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+                <div>
+                  <label htmlFor={`${titleId}-name`} className="block text-sm font-medium text-gray-300 mb-1">
+                    Name
+                  </label>
+                  <input
+                    ref={nameInputRef}
+                    id={`${titleId}-name`}
+                    type="text"
+                    name="name"
+                    autoComplete="name"
+                    value={name}
+                    onChange={(ev) => setName(ev.target.value)}
+                    className="w-full rounded-md border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-gray-600 focus:outline-none"
+                    placeholder="Your name"
+                    disabled={submitState === 'loading'}
+                  />
+                </div>
+                <div>
+                  <label htmlFor={`${titleId}-email`} className="block text-sm font-medium text-gray-300 mb-1">
+                    Email
+                  </label>
+                  <input
+                    id={`${titleId}-email`}
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(ev) => setEmail(ev.target.value)}
+                    className="w-full rounded-md border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-gray-600 focus:outline-none"
+                    placeholder="you@example.com"
+                    disabled={submitState === 'loading'}
+                  />
+                </div>
+                {clientError && (
+                  <p className="text-sm text-red-400" role="alert">
+                    {clientError}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={submitState === 'loading'}
+                  className="w-full rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-black hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  {submitState === 'loading' ? 'Joining…' : 'Join waitlist'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+
+  return (
+    <div className={className}>
+      <button
+        type="button"
+        onClick={openModal}
+        className={
+          triggerClassName ||
+          'inline-flex items-center justify-center rounded-md border border-gray-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600'
+        }
+      >
+        {triggerLabel}
+      </button>
+      {modal}
+    </div>
+  );
+}

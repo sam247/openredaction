@@ -195,6 +195,16 @@ export const analytics = {
       ...(linkText && { link_text: linkText }),
     });
   },
+
+  /** Buy Me a Coffee — header / mobile menu */
+  buyMeACoffeeClick: (location: 'header' | 'mobile') => {
+    trackEvent('bmc_click', 'conversion', { link_location: location });
+  },
+
+  /** Wall of love / community CTAs (GitHub Discussions, view all, etc.) */
+  wallOfLoveClick: (action: 'submit_discussion' | 'get_listed' | 'inline_discussions' | 'view_all') => {
+    trackEvent('wall_of_love_click', 'navigation', { action });
+  },
   
   // Blog events
   blogPostView: (postSlug: string, postTitle: string) => {
@@ -209,6 +219,29 @@ export const analytics = {
     trackEvent('docs_page_view', 'navigation', {
       doc_path: docPath,
       ...(docSection && { doc_section: docSection }),
+    });
+  },
+
+  roadmapPageView: () => {
+    trackEvent('roadmap_view', 'navigation');
+  },
+
+  wordpressWaitlistOpen: (source: string) => {
+    trackEvent('wordpress_waitlist_open', 'form', { source });
+  },
+
+  wordpressWaitlistSubmit: (source: string) => {
+    trackEvent('wordpress_waitlist_submit', 'form', { source });
+  },
+
+  wordpressWaitlistSuccess: (source: string) => {
+    trackEvent('wordpress_waitlist_success', 'conversion', { source });
+  },
+
+  wordpressWaitlistError: (source: string, errorType?: string) => {
+    trackEvent('wordpress_waitlist_error', 'form', {
+      source,
+      ...(errorType && { error_type: errorType }),
     });
   },
 };

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown, FileText, Code, Github, BookOpen, Coffee, Heart } from 'lucide-react';
+import { Menu, X, ChevronDown, FileText, Code, Github, BookOpen, Coffee, Heart, Map } from 'lucide-react';
 import Logo from './Logo';
 import GitHubBadge from './GitHubBadge';
 import { analytics } from '@/lib/analytics';
@@ -135,6 +135,22 @@ export default function Header() {
                             <div className="text-gray-400 text-xs leading-relaxed">Who uses Open Redaction — get listed via GitHub</div>
                           </div>
                         </Link>
+                        <Link 
+                          href="/roadmap" 
+                          className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
+                          onClick={() => {
+                            setResourcesOpen(false);
+                            analytics.navClick('/roadmap', 'header');
+                          }}
+                        >
+                          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                            <Map size={20} className="text-gray-300" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white font-medium text-sm mb-1">Roadmap</div>
+                            <div className="text-gray-400 text-xs leading-relaxed">Direction and what shipped recently</div>
+                          </div>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -151,7 +167,7 @@ export default function Header() {
               rel="noopener noreferrer"
               className="text-gray-300 hover:text-amber-400 transition-colors p-1 rounded focus:outline-none focus:ring-2 focus:ring-gray-600"
               aria-label="Support OpenRedaction on Buy Me a Coffee"
-              onClick={() => analytics.externalLinkClick('buymeacoffee', 'header', 'Buy Me a Coffee')}
+              onClick={() => analytics.buyMeACoffeeClick('header')}
             >
               <Coffee size={22} className="animate-shake" />
             </a>
@@ -219,6 +235,16 @@ export default function Header() {
             >
               Community
             </Link>
+            <Link
+              href="/roadmap"
+              className="block text-gray-300 hover:text-white transition-colors"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                analytics.navClick('/roadmap', 'mobile');
+              }}
+            >
+              Roadmap
+            </Link>
             <a
               href="https://github.com/sam247/openredaction"
               target="_blank"
@@ -238,7 +264,7 @@ export default function Header() {
               className="flex items-center gap-2 text-gray-300 hover:text-amber-400 transition-colors"
               onClick={() => {
                 setMobileMenuOpen(false);
-                analytics.externalLinkClick('buymeacoffee', 'mobile', 'Buy Me a Coffee');
+                analytics.buyMeACoffeeClick('mobile');
               }}
             >
               <Coffee size={20} className="animate-shake" />

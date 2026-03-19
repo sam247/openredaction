@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { Heart, ExternalLink } from 'lucide-react';
+import { analytics } from '@/lib/analytics';
 import {
   WALL_OF_LOVE_ENTRIES,
   WALL_OF_LOVE_SUBMIT_URL,
@@ -87,6 +90,7 @@ export default function WallOfLove({ variant = 'full', id = 'wall-of-love' }: Wa
             target="_blank"
             rel="noopener noreferrer"
             className="text-white underline hover:text-gray-200"
+            onClick={() => analytics.wallOfLoveClick('inline_discussions')}
           >
             GitHub Discussions
           </a>
@@ -105,6 +109,7 @@ export default function WallOfLove({ variant = 'full', id = 'wall-of-love' }: Wa
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center bg-white text-black px-6 py-3 rounded-md font-semibold hover:bg-gray-100 transition-colors"
+            onClick={() => analytics.wallOfLoveClick('submit_discussion')}
           >
             Share on GitHub Discussions
           </a>
@@ -121,6 +126,7 @@ export default function WallOfLove({ variant = 'full', id = 'wall-of-love' }: Wa
               <Link
                 href="/community"
                 className="text-white font-medium hover:text-gray-300 underline underline-offset-4"
+                onClick={() => analytics.wallOfLoveClick('view_all')}
               >
                 View all {WALL_OF_LOVE_ENTRIES.length} listings →
               </Link>
@@ -136,6 +142,7 @@ export default function WallOfLove({ variant = 'full', id = 'wall-of-love' }: Wa
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-gray-500 hover:text-gray-400"
+            onClick={() => analytics.wallOfLoveClick('get_listed')}
           >
             Using Open Redaction? Get listed →
           </a>

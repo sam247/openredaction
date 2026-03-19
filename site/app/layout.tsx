@@ -20,7 +20,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const protectedRoutes = [{ path: "/api/contact", method: "POST" as const }];
+  const protectedRoutes = [
+    { path: "/api/contact", method: "POST" as const },
+    { path: "/api/wordpress-waitlist", method: "POST" as const },
+  ];
 
   return (
     <html lang="en">

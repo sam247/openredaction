@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import WordPressWaitlistModal from '@/components/WordPressWaitlistModal';
 import Link from 'next/link';
 import { Loader2, Copy, Check, ArrowRight, ChevronDown } from 'lucide-react';
 import { analytics } from '@/lib/analytics';
@@ -638,6 +639,52 @@ export default function Playground() {
                 >
                   <span>Enterprise support</span>
                   <ArrowRight size={18} />
+                </Link>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-800 pt-6 mt-6">
+              <h3 className="text-lg font-semibold mb-3 text-white">What&apos;s next</h3>
+              <p className="text-gray-400 text-sm mb-4">
+                Explore the project, read the docs, see what we&apos;re building, or get in touch.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href="https://github.com/sam247/openredaction"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center rounded-md border border-gray-700 bg-gray-900 px-3 py-2 text-xs font-medium text-white hover:bg-gray-800"
+                >
+                  GitHub
+                </a>
+                <Link
+                  href="/docs"
+                  className="inline-flex items-center rounded-md border border-gray-700 bg-gray-900 px-3 py-2 text-xs font-medium text-white hover:bg-gray-800"
+                >
+                  Docs
+                </Link>
+                <Link
+                  href="/roadmap"
+                  className="inline-flex items-center rounded-md border border-gray-700 bg-gray-900 px-3 py-2 text-xs font-medium text-white hover:bg-gray-800"
+                >
+                  Roadmap
+                </Link>
+                <WordPressWaitlistModal
+                  source="playground"
+                  triggerLabel="WP waitlist"
+                  triggerClassName="inline-flex items-center rounded-md border border-gray-700 bg-gray-900 px-3 py-2 text-xs font-medium text-white hover:bg-gray-800"
+                />
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center rounded-md border border-gray-700 bg-gray-900 px-3 py-2 text-xs font-medium text-white hover:bg-gray-800"
+                >
+                  Contact
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center rounded-md border border-gray-700 bg-gray-900 px-3 py-2 text-xs font-medium text-white hover:bg-gray-800"
+                >
+                  Enterprise
                 </Link>
               </div>
             </div>

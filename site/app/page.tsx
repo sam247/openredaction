@@ -158,9 +158,9 @@ export default function Home() {
                 <Rocket className="text-white" size={24} />
                 <div>
                   <p className="text-white font-semibold group-hover:text-green-400 transition-colors">
-                    New: Read the OpenRedaction developer journey
+                    How we built OpenRedaction — regex-first, open source, lessons learned
                   </p>
-                  <p className="text-gray-400 text-sm mt-1">Developer Journey →</p>
+                  <p className="text-gray-400 text-sm mt-1">Read the story →</p>
                 </div>
               </div>
               <span className="text-gray-500 group-hover:text-white transition-colors">→</span>

@@ -178,10 +178,10 @@ export default function PiiDetection() {
                 Installation Guide →
               </Link>
               <Link
-                href="/blog/understanding-pii-detection"
+                href="/blog/pii-detection-for-ai"
                 className="bg-gray-800 text-white px-6 py-3 rounded-md font-semibold hover:bg-gray-700 transition-colors border border-gray-700 text-center"
               >
-                Learn More →
+                PII &amp; LLMs →
               </Link>
             </div>
           </div>

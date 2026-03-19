@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import WordPressWaitlistModal from '@/components/WordPressWaitlistModal';
 import Link from 'next/link';
 import { Calendar, ExternalLink } from 'lucide-react';
 import { generatePageMetadata } from '@/lib/metadata';
@@ -137,6 +138,16 @@ export default function Changelog() {
               GitHub releases
               <ExternalLink size={16} />
             </Link>
+          </div>
+
+          <div className="mt-12 max-w-xl mx-auto text-center border-t border-gray-800 pt-10">
+            <p className="text-gray-400 text-sm mb-4">
+              Interested in a future WordPress plugin for UGC redaction? Join the waitlist for
+              updates.
+            </p>
+            <div className="flex justify-center">
+              <WordPressWaitlistModal source="changelog" triggerLabel="WordPress plugin waitlist" />
+            </div>
           </div>
         </div>
       </main>

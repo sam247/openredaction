@@ -43,6 +43,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/roadmap" className="text-gray-400 hover:text-white transition-colors" onClick={() => analytics.navClick('/roadmap', 'footer')}>
+                  Roadmap
+                </Link>
+              </li>
+              <li>
                 <Link href="/contact" className="text-gray-400 hover:text-white transition-colors" onClick={() => analytics.navClick('/contact', 'footer')}>
                   Support
                 </Link>

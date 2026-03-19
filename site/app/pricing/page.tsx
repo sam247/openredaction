@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import WordPressWaitlistModal from '@/components/WordPressWaitlistModal';
 import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { generatePageMetadata } from '@/lib/metadata';
@@ -55,6 +56,15 @@ export default function Pricing() {
               >
                 Contact us
               </Link>
+            </div>
+
+            <div className="mt-8 rounded-lg border border-gray-800 bg-gray-950/40 p-6 text-left">
+              <h3 className="text-lg font-semibold text-white mb-2">WordPress</h3>
+              <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                A plugin for redacting sensitive data in forms and comments is exploratory. Join the
+                waitlist for updates — no obligation.
+              </p>
+              <WordPressWaitlistModal source="pricing" triggerLabel="Join WordPress plugin waitlist" />
             </div>
           </div>
 
