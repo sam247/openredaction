@@ -23,6 +23,34 @@ interface RedactResponse {
 
 const MAX_INPUT_REGEX = 500; // 500 characters for regex-only demo limit
 
+/** Presets exposed in the playground UI (must match OpenRedaction `PresetName` where applicable). */
+const PLAYGROUND_PRESET_IDS = new Set([
+  'gdpr',
+  'hipaa',
+  'ccpa',
+  'finance',
+  'education',
+  'transportation',
+]);
+
+function playgroundPreset(selected: string): string {
+  return PLAYGROUND_PRESET_IDS.has(selected) ? selected : 'gdpr';
+}
+
+/**
+ * Demo detector options. FP filter off avoids domain blocklists; samples should still use
+ * non-`@example.com` addresses — the core EMAIL validator skips common test domains unless
+ * the surrounding text looks like a test/spec context.
+ */
+function playgroundDetectorOptions(preset: string) {
+  return {
+    preset: playgroundPreset(preset),
+    redactionMode: 'placeholder' as const,
+    customPatterns: [] as const,
+    enableFalsePositiveFilter: false,
+  };
+}
+
 export default function Playground() {
   const [inputText, setInputText] = useState('');
   const [output, setOutput] = useState<RedactResponse | null>(null);
@@ -67,16 +95,8 @@ export default function Playground() {
           const { OpenRedaction } = moduleObj.exports as any;
           console.log('OpenRedaction loaded:', !!OpenRedaction);
 
-          detectorRef.current = new OpenRedaction({
-            preset: selectedPreset as any,
-            redactionMode: 'placeholder' as any,
-            customPatterns: []
-          } as any);
-          console.log('Detector created with config:', {
-            preset: selectedPreset,
-            redactionMode: 'placeholder',
-            customPatterns: []
-          });
+          detectorRef.current = new OpenRedaction(playgroundDetectorOptions(selectedPreset) as any);
+          console.log('Detector created with config:', playgroundDetectorOptions(selectedPreset));
           console.log('Detector has detect method:', !!detectorRef.current?.detect);
           setLibraryLoaded(true);
           analytics.playgroundPageView(true);
@@ -108,15 +128,7 @@ export default function Playground() {
 
           const { OpenRedaction } = moduleObj.exports as any;
 
-          const presetValue = (selectedPreset === 'gdpr' || selectedPreset === 'hipaa' || selectedPreset === 'ccpa')
-            ? selectedPreset as 'gdpr' | 'hipaa' | 'ccpa'
-            : 'gdpr';
-
-          detectorRef.current = new OpenRedaction({
-            preset: presetValue as any,
-            redactionMode: 'placeholder' as any,
-            customPatterns: []
-          } as any);
+          detectorRef.current = new OpenRedaction(playgroundDetectorOptions(selectedPreset) as any);
         } catch (err) {
           console.error('Failed to update detector:', err);
         }
@@ -137,13 +149,13 @@ export default function Playground() {
 
   // Sample text presets for quick testing
   const textPresets = {
-    'General chat input': 'Hi, my name is John Doe and my email is john.doe@example.com. You can reach me at 555-123-4567.',
+    'General chat input': 'Hi, my name is John Doe and my email is john.doe@acmecorp.io. You can reach me at 555-123-4567.',
     'Customer support log': 'Customer: Sarah Johnson\nEmail: sarah.j@company.com\nPhone: (555) 987-6543\nIssue: Account access problem\nSSN: 123-45-6789',
     'System log with IDs': 'User ID: 12345\nIP Address: 192.168.1.100\nEmail: admin@system.com\nPhone: +1-555-000-1234\nTimestamp: 2024-01-15',
     'JSON API payload': JSON.stringify({
       user: {
         name: 'Jane Smith',
-        email: 'jane@example.com',
+        email: 'jane.smith@acmecorp.io',
         phone: '555-111-2222',
         address: '123 Main St, City, State 12345',
       },
@@ -197,25 +209,15 @@ export default function Playground() {
       console.log('Initial detections:', allDetections);
       console.log('Number of detections:', allDetections.length);
 
-      // Sort detections by start position
       allDetections.sort((a: any, b: any) => {
         const aStart = Array.isArray(a.position) ? a.position[0] : (a.start || 0);
         const bStart = Array.isArray(b.position) ? b.position[0] : (b.start || 0);
         return aStart - bStart;
       });
-      
-      // Apply redaction to the text with all detections
-      let redactedText = inputText;
-      // Apply redactions in reverse order to maintain positions
-      for (let i = allDetections.length - 1; i >= 0; i--) {
-        const det = allDetections[i];
-        const start = Array.isArray(det.position) ? det.position[0] : (det.start || 0);
-        const end = Array.isArray(det.position) ? det.position[1] : (det.end || 0);
-        const placeholder = det.placeholder || `[${det.type || 'PII'}]`;
-        redactedText = redactedText.slice(0, start) + placeholder + redactedText.slice(end);
-      }
-      
-      // Transform to expected format
+
+      // Use library output so overlaps, ordering, and modes stay consistent with core
+      const redactedText = regexResult.redacted ?? inputText;
+
       const transformedData: RedactResponse = {
         redacted_text: redactedText,
         detections: allDetections.map((det: any) => ({
@@ -280,6 +282,7 @@ export default function Playground() {
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
                       Nothing is logged or stored. Regex-only detection runs in your browser using the open-source library.
+                      Sample payloads use generic domains; <code className="text-gray-400">@example.com</code> is often skipped by built-in email rules.
                     </p>
                   </div>
                 </div>
@@ -289,7 +292,7 @@ export default function Playground() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-          <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-200px)] border border-gray-800 rounded-lg overflow-hidden bg-black">
+          <div className="flex flex-col lg:flex-row h-auto lg:min-h-[min(560px,calc(100vh-12rem))] border border-gray-800 rounded-lg overflow-hidden bg-black">
             {/* Left Side - Input */}
             <div className="flex-1 lg:border-r border-b lg:border-b-0 border-gray-800 flex flex-col bg-black">
             <div className="p-4 border-b border-gray-800 space-y-3 bg-gray-900/50">
@@ -335,7 +338,7 @@ export default function Playground() {
                 </div>
               </div>
             </div>
-            <div className="flex-1 p-4 flex flex-col">
+            <div className="p-4 flex flex-col shrink-0">
               <textarea
                 value={inputText}
                 onChange={(e) => {
@@ -344,7 +347,8 @@ export default function Playground() {
                   }
                 }}
                 placeholder="Paste chat logs, emails, or JSON here…"
-                className="w-full flex-1 bg-gray-900/50 border border-gray-800 rounded-lg p-4 font-mono text-sm text-white placeholder-gray-500 focus:outline-none focus:border-gray-600 focus:ring-1 focus:ring-gray-600 resize-none transition-all"
+                rows={10}
+                className="w-full min-h-[10rem] max-h-[14rem] bg-gray-900/50 border border-gray-800 rounded-lg p-4 font-mono text-sm text-white placeholder-gray-500 focus:outline-none focus:border-gray-600 focus:ring-1 focus:ring-gray-600 resize-y transition-all"
               />
               <div className="mt-2 flex justify-between items-center text-xs">
                 <span className={`${inputText.length > MAX_INPUT_REGEX ? 'text-red-400' : 'text-gray-500'}`}>
