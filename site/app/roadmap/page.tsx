@@ -1,7 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import RoadmapViewTracker from '@/components/RoadmapViewTracker';
-import WordPressWaitlistModal from '@/components/WordPressWaitlistModal';
+import WordPressWaitlistTrigger from '@/components/WordPressWaitlistTrigger';
 import { generatePageMetadata } from '@/lib/metadata';
 import {
   roadmapInProgress,
@@ -87,7 +87,7 @@ export default function RoadmapPage() {
               other user-generated content — still early. If you want updates or possible early access,
               join the waitlist.
             </p>
-            <WordPressWaitlistModal source="roadmap" triggerLabel="Join WordPress plugin waitlist" />
+            <WordPressWaitlistTrigger source="roadmap" triggerLabel="Join WordPress plugin waitlist" />
           </div>
 
           <p className="text-center text-gray-500 text-sm mt-12">

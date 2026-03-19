@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import WordPressWaitlistModal from '@/components/WordPressWaitlistModal';
+import WordPressWaitlistTrigger from '@/components/WordPressWaitlistTrigger';
 import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { generatePageMetadata } from '@/lib/metadata';
@@ -64,7 +64,7 @@ export default function Pricing() {
                 A plugin for redacting sensitive data in forms and comments is exploratory. Join the
                 waitlist for updates — no obligation.
               </p>
-              <WordPressWaitlistModal source="pricing" triggerLabel="Join WordPress plugin waitlist" />
+              <WordPressWaitlistTrigger source="pricing" triggerLabel="Join WordPress plugin waitlist" />
             </div>
           </div>
 

@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import WordPressWaitlistModal from '@/components/WordPressWaitlistModal';
+import WordPressWaitlistTrigger from '@/components/WordPressWaitlistTrigger';
 import Link from 'next/link';
 import { Calendar, ExternalLink } from 'lucide-react';
 import { generatePageMetadata } from '@/lib/metadata';
@@ -146,7 +146,7 @@ export default function Changelog() {
               updates.
             </p>
             <div className="flex justify-center">
-              <WordPressWaitlistModal source="changelog" triggerLabel="WordPress plugin waitlist" />
+              <WordPressWaitlistTrigger source="changelog" triggerLabel="WordPress plugin waitlist" />
             </div>
           </div>
         </div>

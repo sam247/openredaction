@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import PageViewTracker from "@/components/PageViewTracker";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { BotIdClient } from "botid/client";
+import WordPressWaitlistRoot from "@/components/WordPressWaitlistRoot";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
@@ -34,6 +35,7 @@ export default function RootLayout({
         <PageViewTracker />
         {children}
         <Analytics />
+        <WordPressWaitlistRoot />
       </body>
     </html>
   );

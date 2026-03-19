@@ -42,6 +42,9 @@ function writeDismissedNow(storageKey: string) {
   }
 }
 
+/** Dispatched to open the singleton waitlist modal (see `WordPressWaitlistRoot` in layout). */
+export const WP_WAITLIST_OPEN_EVENT = 'openredaction:open-wp-waitlist';
+
 export type WordPressWaitlistSource =
   | 'playground'
   | 'roadmap'
@@ -56,14 +59,25 @@ export default function WordPressWaitlistModal({
   triggerLabel = 'WordPress plugin — join waitlist',
   className = '',
   triggerClassName = '',
+  autoOpenAfterMs,
+  dismissalStorageKey,
+  /** Layout singleton: no button; use `WP_WAITLIST_OPEN_EVENT` from page triggers. */
+  hideTrigger = false,
+  listenForOpenEvent = false,
 }: {
   source: WordPressWaitlistSource;
   triggerLabel?: string;
   /** Wrapper around the trigger button */
   className?: string;
   triggerClassName?: string;
+  autoOpenAfterMs?: number;
+  dismissalStorageKey?: string;
+  hideTrigger?: boolean;
+  listenForOpenEvent?: boolean;
 }) {
   const titleId = useId();
+  /** Submitted + analytics source (overridden when opened via custom event from a page trigger). */
+  const [effectiveSource, setEffectiveSource] = useState<WordPressWaitlistSource>(source);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -75,7 +89,8 @@ export default function WordPressWaitlistModal({
   const nameInputRef = useRef<HTMLInputElement>(null);
   /** Avoid SSR / hydration mismatch; portal only attaches after mount. */
   const [mounted, setMounted] = useState(false);
-  const autoOpenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** DOM timers are numeric IDs in the browser (Node typings use `Timeout`). */
+  const autoOpenTimerRef = useRef<number | null>(null);
 
   /** Same key everywhere: closing the waitlist on any page suppresses timed auto-open for 48h. */
   const storageKey = dismissalStorageKey ?? DEFAULT_DISMISSAL_STORAGE_KEY;
@@ -85,42 +100,55 @@ export default function WordPressWaitlistModal({
   }, []);
 
   const clearAutoOpenTimer = useCallback(() => {
-    if (autoOpenTimerRef.current != null) {
-      clearTimeout(autoOpenTimerRef.current);
+    if (autoOpenTimerRef.current != null && typeof window !== 'undefined') {
+      window.clearTimeout(autoOpenTimerRef.current);
       autoOpenTimerRef.current = null;
     }
   }, []);
 
   const close = useCallback(() => {
     setOpen(false);
+    setEffectiveSource(source);
     setClientError(null);
     if (submitState !== 'loading') {
       setSubmitState('idle');
       setAlreadySubscribed(false);
     }
     writeDismissedNow(storageKey);
-  }, [submitState, storageKey]);
+  }, [submitState, storageKey, source]);
 
-  const openModal = useCallback(() => {
-    clearAutoOpenTimer();
-    lastFocusRef.current = document.activeElement as HTMLElement | null;
-    setClientError(null);
-    setSubmitState('idle');
-    setAlreadySubscribed(false);
-    setOpen(true);
-    safeTrackWaitlistOpen(source);
-  }, [source, clearAutoOpenTimer]);
+  const openModal = useCallback(
+    (overrideSource?: WordPressWaitlistSource) => {
+      clearAutoOpenTimer();
+      setEffectiveSource(overrideSource ?? source);
+      lastFocusRef.current = document.activeElement as HTMLElement | null;
+      setClientError(null);
+      setSubmitState('idle');
+      setAlreadySubscribed(false);
+      setOpen(true);
+      safeTrackWaitlistOpen(overrideSource ?? source);
+    },
+    [source, clearAutoOpenTimer]
+  );
 
-  /** Delayed auto-open (e.g. playground): skipped if dismissed within 48h on any page using this modal. */
+  useEffect(() => {
+    if (!listenForOpenEvent || typeof window === 'undefined') return undefined;
+    const handler = (e: Event) => {
+      const ce = e as CustomEvent<{ source?: string }>;
+      const next =
+        typeof ce.detail?.source === 'string' ? ce.detail.source : source;
+      openModal(next as WordPressWaitlistSource);
+    };
+    window.addEventListener(WP_WAITLIST_OPEN_EVENT, handler as EventListener);
+    return () => window.removeEventListener(WP_WAITLIST_OPEN_EVENT, handler as EventListener);
+  }, [listenForOpenEvent, source, openModal]);
+
+  /** Delayed auto-open: skipped if dismissed within 48h (any close writes the same storage key). */
   useEffect(() => {
     if (!mounted || autoOpenAfterMs == null || autoOpenAfterMs <= 0) {
       return undefined;
     }
     if (typeof window === 'undefined') return undefined;
-
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
-      return undefined;
-    }
 
     if (isDismissedWithin48h(storageKey)) {
       return undefined;
@@ -129,22 +157,17 @@ export default function WordPressWaitlistModal({
     const tid = window.setTimeout(() => {
       autoOpenTimerRef.current = null;
       if (isDismissedWithin48h(storageKey)) return;
-      lastFocusRef.current = document.activeElement as HTMLElement | null;
-      setClientError(null);
-      setSubmitState('idle');
-      setAlreadySubscribed(false);
-      setOpen(true);
-      safeTrackWaitlistOpen(source);
-    }, autoOpenAfterMs);
+      openModal('sitewide_auto');
+    }, autoOpenAfterMs) as unknown as number;
 
     autoOpenTimerRef.current = tid;
     return () => {
-      clearTimeout(tid);
+      window.clearTimeout(tid);
       if (autoOpenTimerRef.current === tid) {
         autoOpenTimerRef.current = null;
       }
     };
-  }, [mounted, storageKey, autoOpenAfterMs, source]);
+  }, [mounted, storageKey, autoOpenAfterMs, openModal]);
 
   useEffect(() => {
     if (!open) return;
@@ -212,7 +235,7 @@ export default function WordPressWaitlistModal({
     e.preventDefault();
     if (!validate()) return;
     setSubmitState('loading');
-    analytics.wordpressWaitlistSubmit(source);
+    analytics.wordpressWaitlistSubmit(effectiveSource);
 
     try {
       const response = await fetch('/api/wordpress-waitlist', {
@@ -221,7 +244,7 @@ export default function WordPressWaitlistModal({
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          source,
+          source: effectiveSource,
         }),
       });
 
@@ -234,7 +257,7 @@ export default function WordPressWaitlistModal({
             : response.status === 503
               ? 'unavailable'
               : 'http_error';
-        analytics.wordpressWaitlistError(source, errType);
+        analytics.wordpressWaitlistError(effectiveSource, errType);
         setSubmitState('error');
         setClientError(
           typeof data.error === 'string' ? data.error : 'Something went wrong. Please try again.'
@@ -244,9 +267,9 @@ export default function WordPressWaitlistModal({
 
       setAlreadySubscribed(!!data.alreadySubscribed);
       setSubmitState('success');
-      analytics.wordpressWaitlistSuccess(source);
+      analytics.wordpressWaitlistSuccess(effectiveSource);
     } catch {
-      analytics.wordpressWaitlistError(source, 'network');
+      analytics.wordpressWaitlistError(effectiveSource, 'network');
       setSubmitState('error');
       setClientError('Network error. Check your connection and try again.');
     }
@@ -360,18 +383,20 @@ export default function WordPressWaitlistModal({
 
   return (
     <>
-      <div className={className}>
-        <button
-          type="button"
-          onClick={openModal}
-          className={
-            triggerClassName ||
-            'inline-flex items-center justify-center rounded-md border border-gray-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600'
-          }
-        >
-          {triggerLabel}
-        </button>
-      </div>
+      {!hideTrigger && (
+        <div className={className}>
+          <button
+            type="button"
+            onClick={() => openModal()}
+            className={
+              triggerClassName ||
+              'inline-flex items-center justify-center rounded-md border border-gray-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600'
+            }
+          >
+            {triggerLabel}
+          </button>
+        </div>
+      )}
       {overlay}
     </>
   );

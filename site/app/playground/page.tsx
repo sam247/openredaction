@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import WordPressWaitlistModal from '@/components/WordPressWaitlistModal';
+import WordPressWaitlistTrigger from '@/components/WordPressWaitlistTrigger';
 import Link from 'next/link';
 import { Loader2, Copy, Check, ArrowRight, ChevronDown } from 'lucide-react';
 import { analytics } from '@/lib/analytics';
@@ -669,11 +669,10 @@ export default function Playground() {
                 >
                   Roadmap
                 </Link>
-                <WordPressWaitlistModal
+                <WordPressWaitlistTrigger
                   source="playground"
                   triggerLabel="WP waitlist"
                   triggerClassName="inline-flex items-center rounded-md border border-gray-700 bg-gray-900 px-3 py-2 text-xs font-medium text-white hover:bg-gray-800"
-                  autoOpenAfterMs={10_000}
                 />
                 <Link
                   href="/contact"
