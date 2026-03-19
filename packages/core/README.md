@@ -10,11 +10,13 @@ npm install openredaction
 
 ## Quick Start
 
+`detect()` is **async** — use `await` (inside an `async` function or with top-level `await` in ESM).
+
 ```typescript
 import { OpenRedaction } from 'openredaction';
 
 const shield = new OpenRedaction();
-const result = shield.detect("Email john@example.com or call 07700900123");
+const result = await shield.detect("Email john@example.com or call 07700900123");
 
 console.log(result.redacted);
 // "Email [EMAIL_9619] or call [PHONE_UK_MOBILE_9478]"
@@ -51,7 +53,6 @@ const detector = new OpenRedaction({
   }
 });
 
-// detect() is now async when AI is enabled
 const result = await detector.detect('Contact John Doe at john@example.com');
 ```
 
@@ -74,7 +75,7 @@ export OPENREDACTION_AI_ENDPOINT=https://your-api.example.com
 
 - **AI is optional**: The library works exactly as before when `ai.enabled` is `false` or omitted
 - **Regex is primary**: AI only adds additional entities; regex detections always take precedence
-- **No breaking changes**: When AI is disabled, behavior is identical to previous versions
+- **No breaking changes**: When AI is disabled, detection is still regex-only; `detect()` always returns a `Promise`
 - **Browser support**: In browsers, you must provide an explicit `ai.endpoint` (env vars not available)
 - **Network dependency**: AI mode requires network access to the endpoint
 
@@ -92,7 +93,8 @@ const detector = new OpenRedaction({
 
 ## Documentation
 
-Full documentation available at [GitHub](https://github.com/sam247/openredaction)
+- Site & playground: [openredaction.com](https://openredaction.com)
+- Source & issues: [GitHub](https://github.com/sam247/openredaction)
 
 ## Features
 

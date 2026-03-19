@@ -13,6 +13,15 @@ export const metadata: Metadata = generatePageMetadata({
 
 const changelogEntries = [
   {
+    date: '2026-03-19',
+    version: '1.0.8',
+    title: 'Library: npm README and docs sync',
+    changes: [
+      'npm package page README updated: `detect()` is async (`await`); links to openredaction.com and GitHub',
+      'Patch release for consumers reading examples on npmjs.com',
+    ],
+  },
+  {
     date: '2025-03-01',
     version: '1.2.0',
     title: 'Focus on open source and enterprise support',
