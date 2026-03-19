@@ -1,8 +1,8 @@
 # OpenRedaction
 
-[![Version](https://img.shields.io/badge/version-1.1.1-brightgreen.svg)](https://www.npmjs.com/package/openredaction)
+[![Version](https://img.shields.io/badge/version-1.1.2-brightgreen.svg)](https://www.npmjs.com/package/openredaction)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-469%20passing-brightgreen.svg)](https://github.com/sam247/openredaction)
+[![Tests](https://img.shields.io/badge/tests-471%20passing-brightgreen.svg)](https://github.com/sam247/openredaction)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
 
 OpenRedaction is an open-source JavaScript/TypeScript library for detecting and redacting PII with a regex-first approach. It runs locally by default and can be combined with an optional hosted API for AI-assisted detection.

@@ -14,25 +14,17 @@ export const metadata: Metadata = generatePageMetadata({
 const changelogEntries = [
   {
     date: '2026-03-19',
-    version: '1.1.1',
-    title: 'npm: 1.1.1 (full 1.1.x codebase; 1.1.0 tarball was already published)',
+    version: '1.1.2',
+    title: 'OpenRedaction 1.1.2',
     changes: [
-      'Same feature set as tagged v1.1.0 on GitHub; publish as 1.1.1 because npm registry already had 1.1.0',
-      'Package metadata: repository, bugs, homepage',
-    ],
-  },
-  {
-    date: '2026-03-18',
-    version: '1.1.0',
-    title: 'Library: routing, streaming, NER merge, validators, presets',
-    changes: [
-      'Fix API server request routing (method/path) and enforce body size limits',
-      'Emit worker bundle for WorkerPool; improve Node stream iteration in streaming detector',
-      'Remove hosted AI assist from public API and docs; false-positive filter on by default',
-      'Merge NER-only spans into hybrid pipeline when NER is enabled',
-      'Add SWIFT/BIC, Canadian SIN (Luhn), and Australian TFN validators; PCI-DSS and SOC 2 presets',
-      'Tests: Express middleware, JSON/CSV processors, LocalLearningStore',
-      'HTTP API and Prometheus server: import from `openredaction/server` so main entry has no `node:http`',
+      'API server: correct HTTP method/path routing; enforce configurable request body size limits',
+      'Build: worker bundle for WorkerPool; streaming detector compatible with Node Readable streams',
+      'Detection: hosted AI assist removed from the library; false-positive filter on by default; NER-only entities merged when NER is enabled',
+      'Validators: SWIFT/BIC, Canadian SIN (Luhn), Australian TFN; compliance presets: pci-dss, soc2',
+      'Security / bundle shape: `APIServer` and `PrometheusServer` live under `openredaction/server` so the main entry does not reference `node:http`',
+      'Tests: Express middleware, JSON/CSV processors, LocalLearningStore, server entry smoke tests',
+      'CI: GitHub Release created automatically when a version tag successfully publishes to npm',
+      'Package metadata: repository, bugs, homepage on npm',
     ],
   },
   {
@@ -50,7 +42,7 @@ const changelogEntries = [
     title: 'Library: npm README and docs sync',
     changes: [
       'npm README: `detect()` is async (`await`); links to openredaction.com and GitHub',
-      'Use **1.0.9** on npm if you hit “cannot republish” on 1.0.8 — registries never allow the same version twice',
+      'Use 1.0.9 on npm if you hit “cannot republish” on 1.0.8 — registries never allow the same version twice',
     ],
   },
   {
@@ -126,25 +118,24 @@ export default function Changelog() {
             ))}
           </div>
 
-          <div className="mt-12 bg-gray-900 rounded-lg p-6 border border-gray-800 text-center">
-            <p className="text-gray-300 mb-4">
-              For the latest updates and releases, check out our{' '}
-              <a
-                href="https://github.com/sam247/openredaction/releases"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white hover:text-gray-300 underline inline-flex items-center gap-1"
-              >
-                GitHub releases
-                <ExternalLink size={14} />
-              </a>
-            </p>
+          <div className="mt-12 flex flex-wrap justify-center gap-6 text-center">
             <Link
-              href="/docs"
-              prefetch={false}
-              className="inline-block text-white hover:text-gray-300 underline"
+              href="https://www.npmjs.com/package/openredaction"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors"
             >
-              View Documentation →
+              npm package
+              <ExternalLink size={16} />
+            </Link>
+            <Link
+              href="https://github.com/sam247/openredaction/releases"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors"
+            >
+              GitHub releases
+              <ExternalLink size={16} />
             </Link>
           </div>
         </div>
@@ -154,4 +145,3 @@ export default function Changelog() {
     </div>
   );
 }
-

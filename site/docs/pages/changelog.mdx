@@ -18,32 +18,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Additional PII detection patterns
 - Performance improvements
 
-## [1.1.1] - 2026-03-19
+## [1.1.2] - 2026-03-19
 
-### Note
-Published as **1.1.1** on npm because **1.1.0** was already present on the registry. Git tag **v1.1.0** matches this codebase; use **1.1.1** on npm for the current build.
-
-### Added
-- `repository`, `bugs`, and `homepage` fields in `package.json` for npm metadata
-
-## [1.1.0] - 2026-03-18
+**Install:** `npm install openredaction@1.1.2` — this is the current **npm**, **git tag (`v1.1.2`)**, **GitHub Release**, and **site** headline version.
 
 ### Fixed
-- API server routing uses request method and pathname correctly
-- Worker bundle included in build for `WorkerPool`
-- Streaming file processing compatible with Node `Readable` streams without async iteration
-- Request body size limits enforced on the API server
+- API server uses correct HTTP method and pathname for routing
+- Worker bundle emitted for `WorkerPool`
+- Streaming file processing compatible with Node `Readable` streams when async iteration is unavailable
+- Request body size limits enforced on the bundled API server
 
 ### Changed
 - `enableFalsePositiveFilter` defaults to `on`
-- Removed hosted AI assist options and exports from the core library
-- **`APIServer` / `PrometheusServer` moved to `openredaction/server`** so the main `openredaction` entry does not bundle `node:http` (supply-chain / static analysis friendly). Replace `import { APIServer } from 'openredaction'` with `import { APIServer } from 'openredaction/server'` (same for `createAPIServer`, `PrometheusServer`, `createPrometheusServer`, and related types).
+- Removed hosted AI assist from the library public API and documentation
+- **`APIServer`, `createAPIServer`, `PrometheusServer`, and `createPrometheusServer`** are exported from **`openredaction/server`** only, so the main package entry does not reference `node:http`
 
 ### Added
 - NER-only entities merged into the hybrid pipeline when NER is enabled
-- Validators: SWIFT/BIC format, Canadian SIN (Luhn), Australian TFN (weighted checksum)
+- Validators: SWIFT/BIC, Canadian SIN (Luhn), Australian TFN (weighted checksum)
 - Presets: `pci-dss`, `soc2`
-- Tests for Express middleware, JSON/CSV document processors, and `LocalLearningStore`
+- Tests: Express middleware, JSON/CSV processors, `LocalLearningStore`, server entry
+- CI: GitHub Release created when a `v*.*.*` tag successfully publishes to npm
+- `repository`, `bugs`, and `homepage` in published `package.json`
 
 ## [1.0.0] - 2025-01-15
 
@@ -97,9 +93,21 @@ The npm library follows Semantic Versioning. Backward compatibility is maintaine
 
 ## Migration Guides
 
-### Library Updates
+### 1.1.x — HTTP server imports
 
-No breaking changes in the npm library API. All existing code should continue to work.
+If you used the REST API server or Prometheus HTTP server from the main package entry, switch to the server subpath:
+
+```ts
+// Before
+import { APIServer, createPrometheusServer } from 'openredaction';
+
+// After
+import { APIServer, createPrometheusServer } from 'openredaction/server';
+```
+
+### Library updates
+
+Other `openredaction` imports remain backward-compatible within 1.x unless noted in release notes.
 
 ## Release Notes
 
@@ -108,10 +116,9 @@ No breaking changes in the npm library API. All existing code should continue to
 We're excited to announce the initial public release of OpenRedaction!
 
 **What's New**:
-- Complete regex-first PII detection library
-- Optional AI assist for enhanced detection
-- Hosted API for easy integration
-- Comprehensive documentation and examples
+- Regex-first PII detection library
+- Self-hosted, local-first processing
+- Documentation and examples
 
 **Getting Started**:
 - Install the npm library: `npm install openredaction`
@@ -122,24 +129,12 @@ We're excited to announce the initial public release of OpenRedaction!
 **Feedback**:
 We'd love to hear your feedback! Please reach out via the [contact page](https://openredaction.com/contact) or open an issue on [GitHub](https://github.com/sam247/openredaction).
 
-## Upcoming Features
+## Upcoming features
 
-Features planned for future releases:
+Roadmap items (not committed to a date):
 
-- **v1.1.0** (Planned):
-  - Additional PII detection patterns
-  - Performance optimizations
-  - Enhanced error messages
-
-- **v1.2.0** (Planned):
-  - Custom pattern support
-  - Batch processing API endpoint
-  - Webhook support for usage tracking
-
-- **v2.0.0** (Future):
-  - New API endpoints
-  - Enhanced AI assist capabilities
-  - Advanced configuration options
+- **Next minors**: more patterns, performance work, clearer error surfaces where it helps operators
+- **Later**: expanded structured-data processors, deeper integration examples, configuration tooling
 
 ## Support
 

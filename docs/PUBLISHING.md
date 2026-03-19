@@ -1,6 +1,6 @@
 # Publishing to npm
 
-The package is published as **openredaction** (unscoped). The GitHub Action publishes on every tag `v*.*.*` (e.g. `v1.0.10`).
+The package is published as **openredaction** (unscoped). The GitHub Action publishes on every tag `v*.*.*` (e.g. `v1.1.2`) and opens a matching **GitHub Release**.
 
 ## One-time setup
 
@@ -24,14 +24,14 @@ The package is published as **openredaction** (unscoped). The GitHub Action publ
 
 ## Releasing a new version
 
-1. Bump version in `packages/core/package.json` (e.g. `1.0.11`).
+1. Bump version in `packages/core/package.json` (e.g. `1.1.2`).
 2. Commit and push to `main`.
 3. Create and push a tag:
    ```bash
-   git tag -a v1.0.11 -m "Release 1.0.11"
-   git push origin v1.0.11
+   git tag -a v1.1.2 -m "Release 1.1.2"
+   git push origin v1.1.2
    ```
-4. The **Publish to npm** workflow runs and publishes **openredaction@1.0.11** to npm.
+4. The **Publish to npm** workflow runs, publishes **openredaction@1.1.2** to npm, and creates a GitHub Release for that tag.
 
 **Note:** npm never allows republishing the same version. If CI fails with “cannot publish over previously published versions”, bump the version and use a **new** tag (do not reuse an already-published semver).
 
