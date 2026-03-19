@@ -1,6 +1,6 @@
 # Publishing to npm
 
-The package is published as **openredaction** (unscoped). The GitHub Action publishes on every tag `v*.*.*` (e.g. `v1.0.8`).
+The package is published as **openredaction** (unscoped). The GitHub Action publishes on every tag `v*.*.*` (e.g. `v1.0.9`).
 
 ## One-time setup
 
@@ -24,14 +24,16 @@ The package is published as **openredaction** (unscoped). The GitHub Action publ
 
 ## Releasing a new version
 
-1. Bump version in `packages/core/package.json` (e.g. `1.0.9`).
+1. Bump version in `packages/core/package.json` (e.g. `1.0.10`).
 2. Commit and push to `main`.
 3. Create and push a tag:
    ```bash
-   git tag -a v1.0.9 -m "Release 1.0.9"
-   git push origin v1.0.9
+   git tag -a v1.0.10 -m "Release 1.0.10"
+   git push origin v1.0.10
    ```
-4. The **Publish to npm** workflow runs and publishes **openredaction@1.0.9** to npm.
+4. The **Publish to npm** workflow runs and publishes **openredaction@1.0.10** to npm.
+
+**Note:** npm never allows republishing the same version. If CI fails with “cannot publish over previously published versions”, bump the version and use a **new** tag (do not reuse an already-published semver).
 
 **npm package page README:** Comes from `packages/core/README.md` in the published tarball. To refresh npmjs.com text, change that file and publish a new version (npm does not allow in-place README edits).
 

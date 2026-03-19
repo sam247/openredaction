@@ -14,11 +14,11 @@ export const metadata: Metadata = generatePageMetadata({
 const changelogEntries = [
   {
     date: '2026-03-19',
-    version: '1.0.8',
+    version: '1.0.9',
     title: 'Library: npm README and docs sync',
     changes: [
-      'npm package page README updated: `detect()` is async (`await`); links to openredaction.com and GitHub',
-      'Patch release for consumers reading examples on npmjs.com',
+      'npm README: `detect()` is async (`await`); links to openredaction.com and GitHub',
+      'Use **1.0.9** on npm if you hit “cannot republish” on 1.0.8 — registries never allow the same version twice',
     ],
   },
   {
