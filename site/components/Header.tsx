@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown, FileText, Code, Github, BookOpen, Coffee } from 'lucide-react';
+import { Menu, X, ChevronDown, FileText, Code, Github, BookOpen, Coffee, Heart } from 'lucide-react';
 import Logo from './Logo';
 import GitHubBadge from './GitHubBadge';
 import { analytics } from '@/lib/analytics';
@@ -119,6 +119,22 @@ export default function Header() {
                             <div className="text-gray-400 text-xs leading-relaxed">Guides and updates on PII detection</div>
                           </div>
                         </Link>
+                        <Link 
+                          href="/community" 
+                          className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
+                          onClick={() => {
+                            setResourcesOpen(false);
+                            analytics.navClick('/community', 'header');
+                          }}
+                        >
+                          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                            <Heart size={20} className="text-red-400" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white font-medium text-sm mb-1">Community</div>
+                            <div className="text-gray-400 text-xs leading-relaxed">Who uses Open Redaction — get listed via GitHub</div>
+                          </div>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -192,6 +208,16 @@ export default function Header() {
               }}
             >
               Blog
+            </Link>
+            <Link
+              href="/community"
+              className="block text-gray-300 hover:text-white transition-colors"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                analytics.navClick('/community', 'mobile');
+              }}
+            >
+              Community
             </Link>
             <a
               href="https://github.com/sam247/openredaction"

@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 import TestimonialCard from '@/components/TestimonialCard';
+import WallOfLove from '@/components/WallOfLove';
 import FAQAccordion from '@/components/FAQAccordion';
 import HomepageCTAs from '@/components/HomepageCTAs';
 import DemoCTA from '@/components/DemoCTA';
@@ -466,6 +467,11 @@ console.log(result.redacted_text);`}
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Wall of love — curated from GitHub Discussions */}
+        <div className="mt-32">
+          <WallOfLove variant="homepage" />
         </div>
 
         {/* Testimonials Section */}

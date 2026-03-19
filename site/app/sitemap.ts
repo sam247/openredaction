@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/playground',
     '/docs',
     '/blog',
+    '/community',
     '/contact',
     '/pricing',
     '/about',
