@@ -5,6 +5,14 @@ import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { analytics } from '@/lib/analytics';
 
+function safeTrackWaitlistOpen(source: string) {
+  try {
+    analytics.wordpressWaitlistOpen(source);
+  } catch {
+    /* never block modal open on analytics */
+  }
+}
+
 export type WordPressWaitlistSource =
   | 'playground'
   | 'roadmap'
@@ -36,6 +44,12 @@ export default function WordPressWaitlistModal({
   const dialogRef = useRef<HTMLDivElement>(null);
   const lastFocusRef = useRef<HTMLElement | null>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  /** Avoid SSR / hydration mismatch; portal only attaches after mount. */
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -48,11 +62,11 @@ export default function WordPressWaitlistModal({
 
   const openModal = useCallback(() => {
     lastFocusRef.current = document.activeElement as HTMLElement | null;
-    setOpen(true);
     setClientError(null);
     setSubmitState('idle');
     setAlreadySubscribed(false);
-    analytics.wordpressWaitlistOpen(source);
+    setOpen(true);
+    safeTrackWaitlistOpen(source);
   }, [source]);
 
   useEffect(() => {
@@ -161,12 +175,12 @@ export default function WordPressWaitlistModal({
     }
   };
 
-  const modal =
+  const overlay =
+    mounted &&
     open &&
-    typeof document !== 'undefined' &&
     createPortal(
       <div
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70"
+        className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/70"
         role="presentation"
         onClick={(e) => {
           if (e.target === e.currentTarget) close();
@@ -268,18 +282,20 @@ export default function WordPressWaitlistModal({
     );
 
   return (
-    <div className={className}>
-      <button
-        type="button"
-        onClick={openModal}
-        className={
-          triggerClassName ||
-          'inline-flex items-center justify-center rounded-md border border-gray-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600'
-        }
-      >
-        {triggerLabel}
-      </button>
-      {modal}
-    </div>
+    <>
+      <div className={className}>
+        <button
+          type="button"
+          onClick={openModal}
+          className={
+            triggerClassName ||
+            'inline-flex items-center justify-center rounded-md border border-gray-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600'
+          }
+        >
+          {triggerLabel}
+        </button>
+      </div>
+      {overlay}
+    </>
   );
 }

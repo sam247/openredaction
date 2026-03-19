@@ -49,23 +49,26 @@ export default function Header() {
                 Enterprise
               </Link>
               
-              {/* Resources Dropdown */}
-              <div 
+              {/* Resources dropdown: padding-top on the flyout bridges the gap under the label so
+                  the pointer never crosses "dead air" (margin) that would fire mouseleave on the parent. */}
+              <div
                 className="relative"
                 onMouseEnter={() => setResourcesOpen(true)}
                 onMouseLeave={() => setResourcesOpen(false)}
               >
-                <button className="flex items-center space-x-1 text-gray-300 hover:text-white transition-colors cursor-pointer">
+                <button
+                  type="button"
+                  className="flex items-center space-x-1 text-gray-300 hover:text-white transition-colors cursor-pointer"
+                  aria-expanded={resourcesOpen}
+                  aria-haspopup="true"
+                >
                   <span>Resources</span>
                   <ChevronDown size={16} className={resourcesOpen ? 'rotate-180 transition-transform' : 'transition-transform'} />
                 </button>
-                
+
                 {resourcesOpen && (
-                  <div 
-                    className="absolute top-full left-0 mt-1 w-96 bg-gray-950 border border-gray-800 rounded-lg shadow-2xl overflow-hidden"
-                    onMouseEnter={() => setResourcesOpen(true)}
-                    onMouseLeave={() => setResourcesOpen(false)}
-                  >
+                  <div className="absolute left-0 top-full z-50 w-96 pt-2">
+                    <div className="rounded-lg border border-gray-800 bg-gray-950 shadow-2xl overflow-hidden">
                     <div className="p-1">
                       <div className="space-y-1">
                         <Link 
@@ -152,6 +155,7 @@ export default function Header() {
                           </div>
                         </Link>
                       </div>
+                    </div>
                     </div>
                   </div>
                 )}
