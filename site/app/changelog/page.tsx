@@ -13,6 +13,15 @@ export const metadata: Metadata = generatePageMetadata({
 
 const changelogEntries = [
   {
+    date: '2026-03-19',
+    version: '1.1.1',
+    title: 'npm: 1.1.1 (full 1.1.x codebase; 1.1.0 tarball was already published)',
+    changes: [
+      'Same feature set as tagged v1.1.0 on GitHub; publish as 1.1.1 because npm registry already had 1.1.0',
+      'Package metadata: repository, bugs, homepage',
+    ],
+  },
+  {
     date: '2026-03-18',
     version: '1.1.0',
     title: 'Library: routing, streaming, NER merge, validators, presets',
