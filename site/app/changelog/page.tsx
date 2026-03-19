@@ -14,6 +14,15 @@ export const metadata: Metadata = generatePageMetadata({
 const changelogEntries = [
   {
     date: '2026-03-19',
+    version: '1.0.10',
+    title: 'Library: npm README — no AI-assist section',
+    changes: [
+      'npm package README focuses on local regex-first usage; removed optional hosted-AI configuration block',
+      'Advanced integration options stay documented on the site and GitHub repo README',
+    ],
+  },
+  {
+    date: '2026-03-19',
     version: '1.0.9',
     title: 'Library: npm README and docs sync',
     changes: [
