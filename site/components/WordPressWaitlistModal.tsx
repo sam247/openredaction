@@ -5,11 +5,40 @@ import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { analytics } from '@/lib/analytics';
 
+const FORTY_EIGHT_HOURS_MS = 48 * 60 * 60 * 1000;
+const DEFAULT_DISMISSAL_STORAGE_KEY = 'openredaction_wp_waitlist_dismissed_at';
+
 function safeTrackWaitlistOpen(source: string) {
   try {
     analytics.wordpressWaitlistOpen(source);
   } catch {
     /* never block modal open on analytics */
+  }
+}
+
+function readDismissedAt(storageKey: string): number | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return null;
+    const t = parseInt(raw, 10);
+    return Number.isNaN(t) ? null : t;
+  } catch {
+    return null;
+  }
+}
+
+function isDismissedWithin48h(storageKey: string): boolean {
+  const at = readDismissedAt(storageKey);
+  if (at == null) return false;
+  return Date.now() - at < FORTY_EIGHT_HOURS_MS;
+}
+
+function writeDismissedNow(storageKey: string) {
+  try {
+    localStorage.setItem(storageKey, String(Date.now()));
+  } catch {
+    /* private mode / quota */
   }
 }
 
@@ -46,9 +75,20 @@ export default function WordPressWaitlistModal({
   const nameInputRef = useRef<HTMLInputElement>(null);
   /** Avoid SSR / hydration mismatch; portal only attaches after mount. */
   const [mounted, setMounted] = useState(false);
+  const autoOpenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /** Same key everywhere: closing the waitlist on any page suppresses timed auto-open for 48h. */
+  const storageKey = dismissalStorageKey ?? DEFAULT_DISMISSAL_STORAGE_KEY;
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  const clearAutoOpenTimer = useCallback(() => {
+    if (autoOpenTimerRef.current != null) {
+      clearTimeout(autoOpenTimerRef.current);
+      autoOpenTimerRef.current = null;
+    }
   }, []);
 
   const close = useCallback(() => {
@@ -58,16 +98,53 @@ export default function WordPressWaitlistModal({
       setSubmitState('idle');
       setAlreadySubscribed(false);
     }
-  }, [submitState]);
+    writeDismissedNow(storageKey);
+  }, [submitState, storageKey]);
 
   const openModal = useCallback(() => {
+    clearAutoOpenTimer();
     lastFocusRef.current = document.activeElement as HTMLElement | null;
     setClientError(null);
     setSubmitState('idle');
     setAlreadySubscribed(false);
     setOpen(true);
     safeTrackWaitlistOpen(source);
-  }, [source]);
+  }, [source, clearAutoOpenTimer]);
+
+  /** Delayed auto-open (e.g. playground): skipped if dismissed within 48h on any page using this modal. */
+  useEffect(() => {
+    if (!mounted || autoOpenAfterMs == null || autoOpenAfterMs <= 0) {
+      return undefined;
+    }
+    if (typeof window === 'undefined') return undefined;
+
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      return undefined;
+    }
+
+    if (isDismissedWithin48h(storageKey)) {
+      return undefined;
+    }
+
+    const tid = window.setTimeout(() => {
+      autoOpenTimerRef.current = null;
+      if (isDismissedWithin48h(storageKey)) return;
+      lastFocusRef.current = document.activeElement as HTMLElement | null;
+      setClientError(null);
+      setSubmitState('idle');
+      setAlreadySubscribed(false);
+      setOpen(true);
+      safeTrackWaitlistOpen(source);
+    }, autoOpenAfterMs);
+
+    autoOpenTimerRef.current = tid;
+    return () => {
+      clearTimeout(tid);
+      if (autoOpenTimerRef.current === tid) {
+        autoOpenTimerRef.current = null;
+      }
+    };
+  }, [mounted, storageKey, autoOpenAfterMs, source]);
 
   useEffect(() => {
     if (!open) return;
