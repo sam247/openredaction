@@ -154,8 +154,8 @@ export const commonFalsePositives: FalsePositiveRule[] = [
       const techPlaceholders = /\b(foo|bar|baz|qux|example|test|demo|sample|placeholder|dummy|mock)\b/i;
       if (techPlaceholders.test(value.toLowerCase())) return true;
 
-      // Code comment context
-      const codeCommentContext = /(\/\/|\/\*|\*|#|--|<!--|;)/;
+      // Code comment context only (avoid matching ordinary prose with '#' like "Candidate #1.1")
+      const codeCommentContext = /(\/\/|\/\*|<!--|(^|\n)\s*#|(^|\n)\s*--)/;
       return codeCommentContext.test(context);
     },
     description: 'Technical placeholder mistaken for PII',

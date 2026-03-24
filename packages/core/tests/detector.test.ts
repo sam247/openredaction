@@ -239,6 +239,26 @@ describe('OpenRedaction', () => {
       expect(patterns.some(p => p.type === 'EMAIL')).toBe(true);
       expect(patterns.some(p => p.type === 'SSN')).toBe(true);
     });
+
+    it('should detect candidate names with GDPR preset (issue #29)', async () => {
+      const gdprShield = new OpenRedaction({
+        preset: 'gdpr',
+        redactionMode: 'placeholder'
+      });
+      const text = `
+· Candidate #1.1: Joseph Barchi and Joseph Hallaren / Blue
+
+· Candidate #1.2: Adam Cramer and Greg Vuocolo / Yellow
+
+· Candidate #1.3: Daniel Court and Amy Blumhardt / Purple
+
+· Candidate #1.4: Alvin Boone and James Lian / Orange
+`;
+
+      const result = await gdprShield.detect(text);
+      const nameDetections = result.detections.filter(d => d.type === 'NAME');
+      expect(nameDetections.length).toBeGreaterThan(0);
+    });
   });
 
   describe('Edge cases', () => {
