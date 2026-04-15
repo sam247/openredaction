@@ -125,13 +125,21 @@ type EcosystemCarouselItem = {
 
 const ecosystemCarouselItems: EcosystemCarouselItem[] = [
   { name: 'AlphaWave', iconSrc: '/logo_repo/logos_icons/AlphaWave.svg' },
-  { name: 'Segment', iconSrc: '/logo_repo/logos_icons/Segment.svg', wordmarkSrc: '/logo_repo/logos/Segment.svg' },
   { name: 'Constellation', iconSrc: '/logo_repo/logos_icons/Constellation.svg' },
+  { name: 'Euphoria', iconSrc: '/logo_repo/logos_icons/Euphoria.svg', wordmarkSrc: '/logo_repo/logos/Euphoria.svg' },
+  { name: 'Cubekit', iconSrc: '/logo_repo/logos_icons/Cubekit.svg' },
+  { name: 'Segment', iconSrc: '/logo_repo/logos_icons/Segment.svg', wordmarkSrc: '/logo_repo/logos/Segment.svg' },
   { name: 'Luminary', iconSrc: '/logo_repo/logos_icons/Luminary.svg', wordmarkSrc: '/logo_repo/logos/Luminary.svg' },
   { name: 'Biosynthesis', iconSrc: '/logo_repo/logos_icons/Biosynthesis.svg' },
-  { name: 'Euphoria', iconSrc: '/logo_repo/logos_icons/Euphoria.svg', wordmarkSrc: '/logo_repo/logos/Euphoria.svg' },
+  { name: 'Watchtower', iconSrc: '/logo_repo/logos_icons/Watchtower.svg' },
+  { name: 'Kintsugi', iconSrc: '/logo_repo/logos_icons/Kintsugi.svg', wordmarkSrc: '/logo_repo/logos/Kintsugi.svg' },
+  { name: 'Hexsmith', iconSrc: '/logo_repo/logos_icons/Hexsmith.svg' },
   { name: 'Elasticware', iconSrc: '/logo_repo/logos_icons/Elasticware.svg' },
   { name: 'Capsule', iconSrc: '/logo_repo/logos_icons/Capsule.svg', wordmarkSrc: '/logo_repo/logos/Capsule.svg' },
+  { name: 'FocalPoint', iconSrc: '/logo_repo/logos_icons/FocalPoint.svg' },
+  { name: 'Pagemanage', iconSrc: '/logo_repo/logos_icons/Pagemanage.svg', wordmarkSrc: '/logo_repo/logos/Pagemanage.svg' },
+  { name: 'Norse Star', iconSrc: '/logo_repo/logos_icons/Norse Star.svg' },
+  { name: 'LaunchSimple', iconSrc: '/logo_repo/logos_icons/LaunchSimple.svg', wordmarkSrc: '/logo_repo/logos/LaunchSimple.svg' },
 ] as const;
 
 const trustCardLogos = [
@@ -146,28 +154,28 @@ const comingSoonItems = [
     platform: 'OpenAI',
     title: 'OpenAI wrapper',
     description:
-      'Redact sensitive data from prompts before sending requests to OpenAI. Prevent emails, names, and other PII from leaving your application while keeping the same API usage pattern.',
+      'Redact sensitive data from your prompts and inputs before sending requests to OpenAI.
     logo: 'openai',
   },
   {
     platform: 'Express.js',
     title: 'Express middleware',
     description:
-      'Sanitise incoming request data automatically before it reaches your application logic. Helps prevent sensitive user information from being logged, stored, or forwarded unintentionally in backend services.',
+      'Sanitise incoming request data automatically before it reaches your application logic. 
     logo: 'express',
   },
   {
     platform: 'Logging',
     title: 'Logging integrations',
     description:
-      'Redact sensitive fields before writing logs to tools like Pino or Winston. Avoid storing emails, phone numbers, and personal data while keeping logs useful for debugging and monitoring.',
+      'Redact sensitive fields before writing logs to tools like Pino or Winston and avoid storing emails, phone numbers and other PII'.
     logo: 'logs',
   },
   {
     platform: 'Webhook',
     title: 'Webhook safety',
     description:
-      'Redact data before sending outbound requests to third-party APIs and webhooks. Prevent sensitive information from leaving your system when integrating with external services or automation workflows.',
+      'Redact data before sending outbound requests to third-party APIs and webhooks.',
     logo: 'webhook',
   },
 ] as const;
@@ -265,7 +273,7 @@ export default function Home() {
           </div>
 
           <div className="mt-20 overflow-hidden border-t border-gray-900 pt-8">
-            <div className="trust-strip-continuous flex w-max items-center gap-4 whitespace-nowrap">
+            <div className="trust-strip-continuous flex w-max items-center gap-5 whitespace-nowrap">
               {Array.from({ length: 3 }).flatMap((_, index) =>
                 ecosystemCarouselItems.map((logo) => (
                   <div

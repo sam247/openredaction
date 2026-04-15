@@ -13,103 +13,107 @@ const blogPosts: { [key: string]: any } = {
     title: 'Building OpenRedaction: A Regex-First Open Source Story',
     date: '2025-12-04',
     category: 'Guide',
+    authorName: 'Sam Pettiford',
+    authorImage: '/author.jpg',
+    authorLinkedIn: 'https://www.linkedin.com/in/sampettiford/',
+    authorBio:
+      'Founder of OpenRedaction, focused on building practical privacy infrastructure for developers shipping AI and data-heavy applications.',
     excerpt:
-      'How a small deterministic redaction experiment became a tested open-source library—patterns, trust, and what we learned shipping for privacy-minded developers.',
+      'Why OpenRedaction was built regex-first, what broke in production, and how deterministic redaction became a practical open-source foundation.',
     content: `
-      <p>You ship a tiny open-source utility. Then come stars, forks, issues, and pull requests — and a clear message: <em>people want PII-safe text without black boxes.</em></p>
+      <p>Most open-source stories start with a vague idea and end with a maintainer's backlog.</p>
+      <p>OpenRedaction started with something much more practical: a need for deterministic, self-hosted PII redaction that developers could trust in production. Not a black box. Not a model that behaves differently depending on prompt wording. Not a hosted service that quietly moves sensitive text through infrastructure you do not control. Just a library that takes text in, finds sensitive spans, and redacts them in a way you can inspect, test, and deploy on your own terms.</p>
+      <p>That sounds simple, and in many ways it is. But the moment you start applying it to real-world text, the simplicity gets tested. Production text is messy, jurisdiction-specific, full of edge cases, and often far more ambiguous than the clean examples that make it into docs. That tension, between a clean deterministic core and the messy reality of developer workflows, is where OpenRedaction became a real project.</p>
+      <p>What follows is the story of why we built it this way, what broke when we tried to apply it at scale, and why the combination of regex-first detection, validators, presets, and aggressive testing turned out to be the right foundation.</p>
 
-      <p>That’s the arc behind <a href="/">OpenRedaction</a>: a regex-first, self-hostable library built for developers who need <strong>deterministic</strong>, <strong>auditable</strong> redaction. This post is the honest story — what we optimized for, where real-world text pushed us, and what stuck.</p>
-
-      <h2>1. The start: privacy-first, local, boring (in a good way)</h2>
-
+      <h2>The starting point</h2>
+      <p>The original problem was straightforward: teams needed a way to strip names, emails, phone numbers, addresses, account references, and other identifiers out of text before that text hit logs, exports, analytics pipelines, or external systems.</p>
+      <p>At first glance, this looks like a solved problem. In reality, most teams end up with one of three weak patterns:</p>
       <ul>
-        <li><strong>Origins</strong> — A practical need: strip names, emails, phones, addresses, and dozens of other identifiers from text before logs, exports, or workflows touched the wrong systems.</li>
-        <li><strong>Why regex-first</strong> — Same input → same output. No mystery calls, no opaque models in the default path. That matters for compliance conversations, security reviews, and sleep at night.</li>
-        <li><strong>Open source</strong> — MIT, GitHub, tests, and docs. If someone doubts a pattern, they can read it. Trust scales when the behavior is inspectable.</li>
+        <li>They rely on manual review, which does not scale.</li>
+        <li>They use a third-party API, which introduces privacy, residency, and procurement friction.</li>
+        <li>They bolt together a few regexes, which works until the first false positive, formatting variation, or new jurisdiction-specific identifier.</li>
       </ul>
+      <p>The design goal for OpenRedaction was to avoid all three failure modes. We wanted something you could run locally, inside your own infrastructure, without shipping raw text to a vendor. We wanted deterministic output so the same input would always produce the same redacted result. And we wanted the codebase to be readable enough that a security engineer, privacy lead, or skeptical platform team could inspect the patterns and understand exactly what the system would do.</p>
+      <p>That is why the project is regex-first. Regex gives you a predictable detection layer. It is not magical, but it is auditable, fast, and easy to reason about. In security-adjacent tooling, that matters more than many people admit.</p>
 
-      <p><strong>What “good” looked like:</strong> a library you could drop into Node, run entirely on your infra, and defend in an architecture review.</p>
+      <h2>Why regex-first won</h2>
+      <p>Regex is often dismissed as basic, but for PII detection it is the right primitive for a large part of the problem space.</p>
+      <p>Structured identifiers tend to have structure for a reason. Email addresses, phone numbers, bank identifiers, tax numbers, card formats, and many national ID types are not arbitrary free text. They follow patterns, include delimiters, and often have checksum or format constraints that can be validated without machine learning. That makes them ideal for rule-based detection.</p>
+      <p>The key advantage is not just accuracy. It is predictability.</p>
+      <p>If a pattern matches, it matches the same way every time. There is no model drift, no hidden inference layer, no surprise dependence on prompt formatting, and no need to explain why one deployment redacted a value while another did not. That matters in compliance reviews, incident response, audit trails, and internal architecture discussions. It also matters to developers who just need a tool they can trust under load.</p>
+      <p>That said, regex alone is not enough if you want the tool to survive in production. Real text does not arrive as tidy examples.</p>
 
-      <h2>2. Real-world text fights back</h2>
-
-      <p>Production text is messy: mixed casing, odd phone formats, jurisdiction-specific IDs, JSON blobs, support tickets, pasted addresses, and false positives that look like PII but aren’t.</p>
-
-      <p>Raw regex alone isn’t enough — so we invested in the <em>boring</em> adjacent layers that make regex usable at scale:</p>
-
+      <h2>What production text actually looks like</h2>
+      <p>Once OpenRedaction moved beyond simple demo cases, the edge cases showed up immediately.</p>
+      <p>Support tickets include broken formatting, copied signatures, accidental JSON fragments, concatenated messages, and quoted history. Logs contain escaped characters, stack traces, query strings, and partial payloads. CSV exports often blur together user input, internal metadata, and cells that are technically text but semantically sensitive. Chat transcripts can contain repeated turns, nested quotes, pasted documents, and partial redactions from upstream systems that need to be recognized rather than treated as fresh text.</p>
+      <p>This is where just write a regex stops being a complete answer.</p>
+      <p>The real work is in the layers around the patterns:</p>
       <ul>
-        <li><strong>More (and better) patterns</strong> — Hundreds of maintained types, priorities, and categories — not one mega-regex.</li>
-        <li><strong>Validators &amp; context</strong> — Cut false positives without giving up recall on the formats that matter.</li>
-        <li><strong>Presets &amp; modes</strong> — GDPR / HIPAA / sector bundles and redaction styles teams actually deploy.</li>
-        <li><strong>Tests as the contract</strong> — If it isn’t tested, it isn’t guaranteed. The suite is the product as much as the API surface.</li>
+        <li><strong>Pattern coverage.</strong> You need a broad, maintained library of patterns across multiple jurisdictions and data types, not a single mega-regex that claims to solve everything.</li>
+        <li><strong>Validation.</strong> Some identifiers need checksum checks, context checks, or format-aware rules to avoid false positives.</li>
+        <li><strong>Priority ordering.</strong> When two patterns overlap, the engine has to know which one wins.</li>
+        <li><strong>Redaction modes.</strong> Teams need different output styles depending on whether they are masking for internal use, sanitizing logs, or preparing data for external models.</li>
+        <li><strong>Test coverage.</strong> The test suite is not a side effect of the product. It is part of the product.</li>
       </ul>
+      <p>That last point became one of the strongest lessons from building the library. In privacy tooling, the test suite is the contract.</p>
 
-      <p>The through-line: <strong>stay deterministic</strong>, but don’t pretend edge cases don’t exist — engineer for them in the open.</p>
+      <h2>What we engineered around</h2>
+      <p>The project matured by focusing on the boring things that make a privacy library usable in the real world.</p>
+      <h3>Pattern breadth</h3>
+      <p>Instead of relying on a handful of broad patterns, we expanded the library into a large set of maintained, categorized patterns. That gives teams coverage across common identifiers while still letting them tune what gets detected in their environment.</p>
+      <p>This matters because privacy use cases are rarely uniform. A support system in the UK may care about phone numbers, emails, addresses, NHS-style identifiers, and payment references. A healthcare workflow may care more about medical context and patient identifiers. A SaaS product processing enterprise documents may need a very different default profile. A practical redaction engine needs to support those differences without forcing one global opinion.</p>
+      <h3>Context and validators</h3>
+      <p>Pure pattern matching can overmatch. A number looks like an identifier until it is actually an invoice line item, an internal reference, or part of a benign code sample. That is why we invested in validators and contextual rules that reduce false positives without weakening the detection layer too much.</p>
+      <p>This is especially important in developer tools, where false positives can break workflows and cause people to distrust the product. If a privacy tool redacts too aggressively, teams start disabling it. If it redacts too little, they stop relying on it. The balance is hard, but it is the difference between a library that gets installed and one that gets adopted.</p>
+      <h3>Presets and modes</h3>
+      <p>Another design decision was to make the tool feel deployable rather than theoretical. Teams do not want to assemble a privacy policy from scratch every time. They want sensible defaults they can understand and override.</p>
+      <p>That is why presets matter. Different redaction modes are useful in different environments: stricter modes for external outputs, more permissive masking for internal debugging, and compliance-oriented bundles for regulated workflows. The goal is to reduce decision fatigue while still allowing teams to adapt the engine to their risk model.</p>
+      <h3>Testing as infrastructure</h3>
+      <p>We also treated tests as part of the runtime architecture, not just as a CI checkbox.</p>
+      <p>If a pattern changes, the relevant test should fail immediately. If a new jurisdiction-specific format is added, the suite should show whether it creates regressions elsewhere. If a validator improves recall but hurts precision, the tradeoff should be visible in code review. This is how a redaction engine stays honest over time.</p>
+      <p>In a project like this, tests are not only about correctness. They are about preserving trust.</p>
 
-      <h2>3. What we doubled down on</h2>
+      <h2>Why open source mattered</h2>
+      <p>Open source was not a branding choice. It was a trust choice.</p>
+      <p>Privacy tools are evaluated differently from generic developer libraries. People want to know where the code runs, how the patterns behave, and whether the system introduces a hidden dependency on some external inference service. They want to read the implementation, inspect the rules, and reproduce the output locally.</p>
+      <p>MIT licensing, public tests, and visible documentation all support that expectation. If someone doubts a pattern, they can read it. If someone wants to contribute a new detector for a format in their region, they can submit it. If a team wants to run the library in a locked-down environment, they can do that without negotiating a vendor contract.</p>
+      <p>That visibility is not just philosophically nice. It is operationally useful. Trust scales when behavior is inspectable.</p>
 
-      <ul>
-        <li><strong>Documentation &amp; examples</strong> — Integration should be faster than reinventing regex from scratch.</li>
-        <li><strong>Playground on the site</strong> — Try redaction in the browser against sample text; no account, no storage — just the library doing its job.</li>
-        <li><strong>Developer ergonomics</strong> — Hooks and patterns that fit real apps, not just demo snippets.</li>
-        <li><strong>Enterprise path</strong> — When teams need support, review, or rollout help, <a href="/pricing">we’re reachable</a> — without compromising the open core.</li>
-      </ul>
+      <h2>Developer experience became the product</h2>
+      <p>As the project matured, it became obvious that correctness alone would not be enough. The library had to be easy to adopt.</p>
+      <p>That meant documentation that answered real implementation questions instead of only describing the API surface. It meant examples that showed how the library fits into Node apps, middleware, ingestion jobs, and data pipelines. It meant a browser <a href="/playground">playground</a> where people could test the behavior instantly without creating an account or uploading data into a system they did not trust.</p>
+      <p>Developer tools are rarely won by raw capability alone. They are won by reducing friction at the exact moment someone is deciding whether to try them.</p>
+      <p>We also found that the more boring the setup looked, the more serious teams engaged with it. A library that can run locally, has clear usage examples, and exposes deterministic behavior is easier to defend internally than a tool that promises magic.</p>
 
-      <h2>4. Distribution is trust</h2>
+      <h2>The enterprise path without breaking the core</h2>
+      <p>One of the hardest balancing acts in open source is deciding where the project ends and the support layer begins.</p>
+      <p>The answer for OpenRedaction was to keep the core open and self-hostable, while making it possible for teams to get help when they need it. Some teams just want the library. Others need review support, rollout guidance, or help integrating it into larger workflows. The important thing is that the open core remains useful on its own.</p>
+      <p>That separation protects the integrity of the project. It also keeps the main promise intact: use it locally, understand it, and keep control of your data path.</p>
 
-      <p>Open source isn’t only code — it’s proof. Issues and PRs surface what breaks in the wild; discussions (and a growing <a href="/community">community wall</a>) show who’s betting on the same constraints you are.</p>
+      <h2>What we learned</h2>
+      <p>A few lessons became very clear along the way.</p>
+      <p>First, transparency beats hype. Security-adjacent libraries do not win by sounding clever. They win by being understandable.</p>
+      <p>Second, pattern depth becomes a moat only if you keep pruning false positives. Coverage without maintenance is just technical debt.</p>
+      <p>Third, documentation is part of the sales process whether you want it to be or not. If a tool is hard to evaluate, serious teams move on.</p>
+      <p>Fourth, limits matter. No pattern-based system will ever guarantee 100 percent detection of every possible PII instance. Saying that clearly builds more trust than claiming perfection.</p>
+      <p>Finally, maintenance is the product. Formats drift, regulations change, new identifier types emerge, and customers keep finding new ways to paste sensitive data into places they should not. A redaction engine has to keep pace with that reality.</p>
 
-      <p>If you’re evaluating a redaction tool, ask: <em>Can I read the rules? Can I run it locally? Can I reproduce the output?</em> That’s the bar we optimize for.</p>
-
-      <h2>5. Lessons that generalize</h2>
-
-      <h3>What worked</h3>
-      <ul>
-        <li>Transparency beats feature hype for security-adjacent libraries.</li>
-        <li>A large, tested pattern set is a moat — but only if you keep pruning false positives.</li>
-        <li>Clear docs convert evaluators who already burned time on brittle regex.</li>
-      </ul>
-
-      <h3>Hard truths</h3>
-      <ul>
-        <li>You will never win “100% PII” with patterns alone — honesty in the README beats overclaiming.</li>
-        <li>Maintenance is the product: locales, formats, and regulations drift; the library has to keep pace.</li>
-        <li>Privacy tools are judged on defaults — keep the safe path obvious.</li>
-      </ul>
-
-      <h2>6. Where things stand</h2>
-
-      <p>OpenRedaction today is an open-source, regex-first toolkit: npm package, docs, playground, and patterns you can audit. Self-host for control; engage us when you need enterprise support — not the other way around.</p>
-
-      <p>If that matches how you build, we’d love you in the repo — and on the <a href="/community">community page</a> if you’re happy to say you’re using it.</p>
-
-      <p>If you want the broader intent page, start with the <a href="/pii-redaction">PII redaction guide</a>.</p>
-      <p>For a tool comparison, see <a href="/open-source-ai-redaction-tools">open source AI redaction tools</a>.</p>
-      <p>For a quick implementation guide, read <a href="/redact-pii-before-openai">How to Redact PII Before Sending Data to OpenAI (Node.js)</a>.</p>
-
-      <h2>7. If you’re building a dev tool in the same lane</h2>
-
-      <ul>
-        <li>Ship a <strong>deterministic core</strong> people can reason about.</li>
-        <li>Invest early in <strong>tests and docs</strong> — they’re your sales team.</li>
-        <li>Prefer <strong>incremental credibility</strong> (real patterns, real users) over a roadmap slide.</li>
-        <li>Be explicit about <strong>limits</strong>; developers respect that more than marketing superlatives.</li>
-      </ul>
-
-      <h2>Conclusion</h2>
-
-      <p>OpenRedaction’s story isn’t “magic box fixes PII.” It’s <strong>disciplined pattern work</strong>, <strong>open code</strong>, and <strong>operator-friendly defaults</strong> — the kind of foundation teams can actually deploy.</p>
-
-      <p>Explore the code on <a href="https://github.com/sam247/openredaction" target="_blank" rel="noopener noreferrer">GitHub</a>, try the <a href="/playground">playground</a>, or read the <a href="/docs">docs</a> to integrate in your stack.</p>
+      <h2>Where it stands now</h2>
+      <p>OpenRedaction today is a regex-first, open-source PII detection and redaction library built for developers who want deterministic, auditable, self-hostable behavior. It is designed to run locally, fit into real applications, and provide enough visibility that teams can explain and defend how it works.</p>
+      <p>That is the real story.</p>
+      <p>Not that PII is easy. Not that regex solves everything. But that a disciplined, inspectable, local-first approach can get you much farther than most people expect when they first start building privacy tooling.</p>
+      <p>If you are building developer infrastructure in the same lane, the lessons are probably similar: ship a deterministic core, invest early in tests and docs, be honest about limits, and let the code earn trust.</p>
+      <p>OpenRedaction is still evolving, but the principle has not changed. Make the safe path obvious. Make the behavior inspectable. And make privacy a property of the system, not a promise in the README.</p>
 
       <div style="margin-top: 3rem; padding: 1.5rem; background-color: #111827; border: 1px solid #374151; border-radius: 0.5rem;">
-        <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600; color: #fff;">Next steps</h3>
-        <ul style="margin-bottom: 1rem; padding-left: 1.5rem; list-style-type: disc; color: #d1d5db;">
-          <li style="margin-bottom: 0.5rem;"><a href="/pii-detection" style="color: #fff; text-decoration: underline;">PII detection guide</a> — concepts and implementation</li>
-          <li style="margin-bottom: 0.5rem;"><a href="/blog/pii-detection-for-ai" style="color: #fff; text-decoration: underline;">PII Detection for AI workflows</a> — pattern-first guardrails around LLMs</li>
-          <li style="margin-bottom: 0.5rem;"><a href="/nodejs-redaction" style="color: #fff; text-decoration: underline;">Node.js redaction</a> — integration-oriented guide</li>
-          <li style="margin-bottom: 0.5rem;"><a href="/community" style="color: #fff; text-decoration: underline;">Community</a> — who’s using Open Redaction</li>
-          <li style="margin-bottom: 0.5rem;"><a href="/pricing" style="color: #fff; text-decoration: underline;">Enterprise</a> — support when you need it</li>
-          <li style="margin-bottom: 0.5rem;"><a href="/playground" style="color: #fff; text-decoration: underline;">Playground</a> — try it in the browser</li>
+        <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600; color: #fff;">Related</h3>
+        <ul style="margin-bottom: 0; padding-left: 1.5rem; list-style-type: disc; color: #d1d5db;">
+          <li style="margin-bottom: 0.5rem;"><a href="/blog/pii-detection-for-ai" style="color: #fff; text-decoration: underline;">PII detection for AI workflows</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/blog/pii-in-support-tickets" style="color: #fff; text-decoration: underline;">PII in support tickets &amp; chat</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/pii-redaction" style="color: #fff; text-decoration: underline;">PII redaction guide</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/open-source-ai-redaction-tools" style="color: #fff; text-decoration: underline;">Open source AI redaction tools</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/playground" style="color: #fff; text-decoration: underline;">Playground</a></li>
           <li style="margin-bottom: 0.5rem;"><a href="/docs" style="color: #fff; text-decoration: underline;">Documentation</a></li>
         </ul>
       </div>
@@ -119,8 +123,11 @@ const blogPosts: { [key: string]: any } = {
     title: 'PII Detection for AI: How to Safely Use User Data with LLMs',
     date: '2025-12-05',
     category: 'Guide',
-    authorName: '[Your Name]',
-    authorBio: 'Placeholder profile text for author credentials and background.',
+    authorName: 'Sam Pettiford',
+    authorImage: '/author.jpg',
+    authorLinkedIn: 'https://www.linkedin.com/in/sampettiford/',
+    authorBio:
+      'Founder of OpenRedaction, focused on privacy-safe LLM pipelines and production-grade data redaction patterns for modern teams.',
     excerpt:
       'How to detect and redact PII across LLM pipelines with pattern-first controls, optional NER, and infrastructure-level privacy safeguards.',
     content: `
@@ -279,11 +286,6 @@ async function safeCompletion(prompt) {
       <p>In the era of generative computation, the true measure of responsible AI is not what models can learn, but what data they never see.</p>
       <p>Detection and redaction are invisible victories: each scrubbed identifier represents one less compliance nightmare, one more proof of operational maturity. Redaction is not bureaucracy, it is architecture.</p>
 
-      <div style="margin-top: 2.5rem; padding: 1.25rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem;">
-        <h3 style="margin-top: 0; margin-bottom: 0.5rem; font-size: 1.1rem; font-weight: 600; color: #fff;">Author</h3>
-        <p style="margin: 0; color: #cbd5e1;"><strong>[Your Name]</strong> — Placeholder profile text for author credentials and background.</p>
-      </div>
-
       <p style="margin-top: 2rem;">Questions or rollout help: <a href="/contact">contact</a> · <a href="/pricing">enterprise</a>.</p>
 
       <div style="margin-top: 3rem; padding: 1.5rem; background-color: #111827; border: 1px solid #374151; border-radius: 0.5rem;">
@@ -302,7 +304,10 @@ async function safeCompletion(prompt) {
     date: '2025-12-11',
     category: 'Guide',
     authorName: 'Sam Pettiford',
-    authorBio: 'Placeholder bio: privacy engineer and builder focused on practical data protection systems for modern support operations.',
+    authorImage: '/author.jpg',
+    authorLinkedIn: 'https://www.linkedin.com/in/sampettiford/',
+    authorBio:
+      'Founder of OpenRedaction, writing about practical controls for handling sensitive data in real-world support and product workflows.',
     excerpt: 'Minimize what support channels store, redact early, and keep agents aligned — practical controls for tickets, email, and chat.',
     content: `
       <p>Customer support is a paradoxical frontline in data security: it is where users come seeking help and often hand over their most private information in the process. Between urgent troubleshooting and unscripted human dialogue, sensitive identifiers appear freely in emails, ticket comments, and live chat. Passwords, card numbers, tax IDs, and even medical context routinely find their way into support threads, creating high exposure risk across systems never designed for long-term storage of personal data.</p>
@@ -416,11 +421,6 @@ async function safeCompletion(prompt) {
       <p>The goal is clear: make privacy enforcement routine, not exceptional. By treating PII handling as part of core architecture design, just like scalability or uptime, you create a support environment resilient by default.</p>
       <p>In every ticket, email, or chat, PII risk is operational, not incidental. Build your systems to detect, redact, and forget. The most secure support platform is not the one with the hardest encryption, it is the one that retains the least data possible and can prove it continuously.</p>
 
-      <div style="margin-top: 2.5rem; padding: 1.25rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem;">
-        <h3 style="margin-top: 0; margin-bottom: 0.5rem; font-size: 1.1rem; font-weight: 600; color: #fff;">Author</h3>
-        <p style="margin: 0; color: #cbd5e1;"><strong>Sam Pettiford</strong> — Placeholder profile text for author bio and credentials.</p>
-      </div>
-
       <div style="margin-top: 3rem; padding: 1.5rem; background-color: #111827; border: 1px solid #374151; border-radius: 0.5rem;">
         <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600; color: #fff;">Related</h3>
         <ul style="margin-bottom: 0; padding-left: 1.5rem; list-style-type: disc; color: #d1d5db;">
@@ -513,6 +513,38 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
                 </span>
               )}
             </div>
+
+            {post.authorName && (
+              <div className="mb-10 rounded-xl border border-gray-800 bg-gray-950/70 p-4 sm:p-5">
+                <div className="flex items-start gap-4">
+                  {post.authorImage ? (
+                    <img
+                      src={post.authorImage}
+                      alt={`${post.authorName} profile`}
+                      className="h-14 w-14 rounded-full border border-gray-700 object-cover"
+                    />
+                  ) : (
+                    <div className="h-14 w-14 rounded-full border border-gray-700 bg-gray-900" />
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-white">{post.authorName}</p>
+                    <p className="mt-1 text-sm leading-6 text-gray-300">
+                      {post.authorBio || 'Author profile coming soon.'}
+                    </p>
+                    {post.authorLinkedIn ? (
+                      <a
+                        href={post.authorLinkedIn}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex text-sm text-gray-200 underline underline-offset-4 hover:text-white"
+                      >
+                        LinkedIn profile
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div 
               className="blog-content prose prose-invert prose-lg max-w-none
