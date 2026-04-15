@@ -25,21 +25,25 @@ const trustStripItems = [
     quote: 'We run this before OpenAI calls so names and emails do not leave the app.',
     name: 'Alex Morgan',
     company: 'Stackforge',
+    avatar: 'https://i.pravatar.cc/96?img=12',
   },
   {
     quote: 'Dropped into our logging pipeline and started cleaning support notes straight away.',
     name: 'Priya Shah',
     company: 'Northline',
+    avatar: 'https://i.pravatar.cc/96?img=32',
   },
   {
     quote: 'Useful for sanitising user input before storage and before anything touches an API.',
     name: 'Ben Carter',
     company: 'Patchlayer',
+    avatar: 'https://i.pravatar.cc/96?img=15',
   },
   {
     quote: 'Simple enough to keep in a self-hosted AI app without another external service.',
     name: 'Mina Lee',
     company: 'Harbor Systems',
+    avatar: 'https://i.pravatar.cc/96?img=47',
   },
 ] as const;
 
@@ -193,47 +197,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 border-t border-gray-900 pt-12">
-          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-start">
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Trust</p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                <div>
-                  <div className="text-2xl font-semibold">GitHub stars</div>
-                  <p className="mt-1 text-sm text-gray-400">100+</p>
-                </div>
-                <div>
-                  <div className="text-2xl font-semibold">Maintained</div>
-                  <p className="mt-1 text-sm text-gray-400">Actively maintained</p>
-                </div>
-                <div>
-                  <div className="text-2xl font-semibold">Dependencies</div>
-                  <p className="mt-1 text-sm text-gray-400">No external dependencies</p>
-                </div>
-              </div>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="border-l border-gray-800 pl-4">
-                <p className="text-sm text-gray-200">
-                  “Using this before OpenAI calls to strip emails and names.”
-                </p>
-                <p className="mt-3 text-xs uppercase tracking-[0.18em] text-gray-500">
-                  Alex Morgan · Stackforge
-                </p>
-              </div>
-              <div className="border-l border-gray-800 pl-4">
-                <p className="text-sm text-gray-200">
-                  “Dropped into our logging pipeline — works well.”
-                </p>
-                <p className="mt-3 text-xs uppercase tracking-[0.18em] text-gray-500">
-                  Priya Shah · Northline
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 overflow-hidden">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 overflow-hidden border-t border-gray-900 pt-12">
           <div className="trust-strip flex w-max items-stretch gap-4 whitespace-nowrap">
             {Array.from({ length: 2 }).flatMap((_, index) =>
               trustStripItems.map((item) => (
@@ -242,9 +206,16 @@ console.log(redactedText);`}
                   className="flex w-[300px] shrink-0 flex-col justify-between rounded-2xl border border-gray-900 bg-gray-950/75 p-5 whitespace-normal"
                 >
                   <p className="text-sm leading-6 text-gray-200">&ldquo;{item.quote}&rdquo;</p>
-                  <div className="mt-5">
-                    <p className="text-sm font-medium text-white">{item.name}</p>
-                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-gray-500">{item.company}</p>
+                  <div className="mt-5 flex items-center gap-3">
+                    <img
+                      src={item.avatar}
+                      alt={`${item.name} portrait`}
+                      className="h-12 w-12 rounded-full border border-gray-800 object-cover"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-white">{item.name}</p>
+                      <p className="mt-1 text-xs uppercase tracking-[0.18em] text-gray-500">{item.company}</p>
+                    </div>
                   </div>
                 </article>
               )),
@@ -252,7 +223,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-start">
             <div className="min-w-0">
               <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
@@ -283,7 +254,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 border-t border-gray-900 pt-12">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 border-t border-gray-900 pt-14">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {featureItems.map((feature) => {
               const Icon = feature.icon;
@@ -299,13 +270,18 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
           <div className="border-t border-gray-900 pt-14 text-center">
             <p className="mx-auto max-w-3xl text-2xl sm:text-3xl font-semibold tracking-tight text-white">
               &ldquo;We run this before every OpenAI request to avoid leaking user data.&rdquo;
             </p>
-            <div className="mt-6">
-              <p className="text-sm font-medium text-white">Daniel Reeves</p>
+            <div className="mt-6 flex flex-col items-center">
+              <img
+                src="https://i.pravatar.cc/112?img=22"
+                alt="Daniel Reeves portrait"
+                className="h-16 w-16 rounded-full border border-gray-800 object-cover"
+              />
+              <p className="mt-4 text-sm font-medium text-white">Daniel Reeves</p>
               <p className="mt-1 text-xs uppercase tracking-[0.22em] text-gray-500">
                 Node.js developer · Northline
               </p>
@@ -313,7 +289,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
           <div className="rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
             <h2 className="text-2xl font-semibold">OpenRedaction vs AWS / Google DLP</h2>
             <div className="mt-5 overflow-x-auto">
@@ -337,7 +313,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
           <div className="overflow-hidden rounded-3xl border border-gray-800 bg-gradient-to-br from-gray-950 via-[#07101f] to-black p-6 sm:p-8 lg:p-10">
             <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
               <div className="max-w-2xl">
