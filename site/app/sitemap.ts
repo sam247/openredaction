@@ -46,6 +46,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const seoLandingPages = [
     '/nodejs-redaction',
     '/pii-detection',
+    '/pii-redaction',
+    '/open-source-ai-redaction-tools',
+    '/redact-pii-before-openai',
     '/gdpr-redaction',
     '/hipaa-redaction',
   ];
@@ -59,4 +62,3 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === '' ? 1 : route.startsWith('/blog') ? 0.7 : 0.8,
   }));
 }
-

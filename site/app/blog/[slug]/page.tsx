@@ -82,6 +82,10 @@ const blogPosts: { [key: string]: any } = {
 
       <p>If that matches how you build, we’d love you in the repo — and on the <a href="/community">community page</a> if you’re happy to say you’re using it.</p>
 
+      <p>If you want the broader intent page, start with the <a href="/pii-redaction">PII redaction guide</a>.</p>
+      <p>For a tool comparison, see <a href="/open-source-ai-redaction-tools">open source AI redaction tools</a>.</p>
+      <p>For a quick implementation guide, read <a href="/redact-pii-before-openai">How to Redact PII Before Sending Data to OpenAI (Node.js)</a>.</p>
+
       <h2>7. If you’re building a dev tool in the same lane</h2>
 
       <ul>
@@ -120,6 +124,10 @@ const blogPosts: { [key: string]: any } = {
       <p>LLMs excel at messy text — and they will happily absorb names, emails, IDs, and pasted documents unless you control what crosses the boundary. If user data reaches a model or a log, you need <strong>visibility</strong> and a <strong>repeatable redaction layer</strong>, not hope.</p>
 
       <p>This guide maps where PII appears around AI systems, how to think about risk, and how a <strong>pattern-first</strong>, self-hosted detector (like <a href="/">OpenRedaction</a>) fits at gateways, RAG ingestion, and logging. For implementation detail, start with the <a href="/pii-detection">PII detection guide</a> and <a href="/docs/getting-started">docs</a>.</p>
+
+      <p>For a shorter overview, read the <a href="/pii-redaction">PII redaction guide</a>.</p>
+      <p>To compare tools side by side, read <a href="/open-source-ai-redaction-tools">open source AI redaction tools</a>.</p>
+      <p>If you need the implementation steps, read <a href="/redact-pii-before-openai">How to Redact PII Before Sending Data to OpenAI (Node.js)</a>.</p>
 
       <h2>Where PII hides</h2>
       <ul>
