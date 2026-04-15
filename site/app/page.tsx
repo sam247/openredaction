@@ -161,21 +161,21 @@ const comingSoonItems = [
     platform: 'Express.js',
     title: 'Express middleware',
     description:
-      'Sanitise incoming request data automatically before it reaches your application logic. Helps prevent sensitive user information from being logged, stored, or forwarded unintentionally in backend services.',
+      'Sanitise incoming request data automatically before it reaches your application logic. Helps prevent sensitive user information from being logged, stored, or forwarded.',
     logo: 'express',
   },
   {
     platform: 'Logging',
     title: 'Logging integrations',
     description:
-      'Redact sensitive fields before writing logs to tools like Pino or Winston. Avoid storing emails, phone numbers, and personal data while keeping logs useful for debugging and monitoring.',
+      'Redact sensitive fields before writing logs to tools like Pino or Winston. Avoid storing emails, phone numbers, and personal data while keeping logs.',
     logo: 'logs',
   },
   {
     platform: 'Webhook',
     title: 'Webhook safety',
     description:
-      'Redact data before sending outbound requests to third-party APIs and webhooks.',
+      'Redact data before sending outbound requests to third-party like Slack or Zapier.',
     logo: 'webhook',
   },
 ] as const;
@@ -279,19 +279,19 @@ export default function Home() {
                   <div
                     key={`${logo.name}-${index}`}
                     aria-label={logo.name}
-                    className="flex items-center justify-center rounded-full border border-gray-900 bg-gray-950/75 px-6 py-3.5"
+                    className="flex items-center justify-center px-6 py-3.5"
                   >
                     {logo.wordmarkSrc ? (
                       <img
                         src={logo.wordmarkSrc}
                         alt={`${logo.name} logo`}
-                        className="h-[22px] w-auto max-w-[118px] object-contain opacity-70 grayscale-[20%] brightness-90"
+                        className="h-[20px] w-auto max-w-[110px] object-contain opacity-70 grayscale-[20%] brightness-90"
                       />
                     ) : (
                       <img
                         src={logo.iconSrc}
                         alt={`${logo.name} icon`}
-                        className="h-7 w-7 object-contain opacity-70 grayscale-[20%] brightness-90"
+                        className="h-5 w-5 object-contain opacity-70 grayscale-[20%] brightness-90"
                       />
                     )}
                   </div>
