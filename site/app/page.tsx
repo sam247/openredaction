@@ -117,7 +117,7 @@ const featureItems = [
   },
 ] as const;
 
-const ecosystemLogos = ['Linear', 'PostHog', 'Clerk', 'Neon', 'Sentry', 'Railway', 'Render', 'Fly.io'] as const;
+const ecosystemLogos = ['OpenAI', 'Vercel', 'Supabase', 'Sentry', 'GitHub', 'Cloudflare', 'Stripe', 'Netlify'] as const;
 
 const comingSoonItems = [
   {
@@ -143,71 +143,71 @@ const comingSoonItems = [
 ] as const;
 
 function BrandLogo({ name }: { name: typeof ecosystemLogos[number] }) {
-  if (name === 'Linear') {
+  if (name === 'OpenAI') {
     return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
-        <path d="M6 5.5h12M6 12h8M6 18.5h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem] text-gray-100" fill="none" aria-hidden="true">
+        <path
+          d="M12 3.25a3.4 3.4 0 0 1 3.07 1.93l.22.46.52-.03a3.4 3.4 0 0 1 3.4 5.11l-.27.45.27.45a3.4 3.4 0 0 1-3.4 5.12l-.52-.03-.22.46a3.4 3.4 0 0 1-6.14 0l-.22-.46-.52.03a3.4 3.4 0 0 1-3.4-5.12l.27-.45-.27-.45a3.4 3.4 0 0 1 3.4-5.11l.52.03.22-.46A3.4 3.4 0 0 1 12 3.25Z"
+          stroke="currentColor"
+          strokeWidth="1.35"
+        />
+        <path d="M9.3 7.7 14.8 11v6.1M14.7 7.7 9.2 11m0 0v6.1m5.6-9.4 2.7 4.7-2.7 4.7H9.2l-2.7-4.7 2.7-4.7Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
       </svg>
     );
   }
 
-  if (name === 'PostHog') {
+  if (name === 'Vercel') {
     return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
-        <path d="M6 5h6l6 7v7H6V5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-        <circle cx="12" cy="12" r="2.2" fill="currentColor" />
+      <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem] text-gray-100" fill="currentColor" aria-hidden="true">
+        <path d="M12 4 20 18H4l8-14Z" />
       </svg>
     );
   }
 
-  if (name === 'Clerk') {
+  if (name === 'Supabase') {
     return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M9 12.5 11 14.5 15.5 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-
-  if (name === 'Neon') {
-    return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
-        <rect x="5" y="5" width="14" height="14" rx="3" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M8.5 15.5v-7l7 7v-7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem] text-gray-100" fill="currentColor" aria-hidden="true">
+        <path d="M14.8 3.5c.39-.48 1.16-.2 1.16.42v9.14h2.13c.73 0 1.13.84.67 1.4l-8.54 9.97c-.4.46-1.15.18-1.15-.43v-9.03H6.93c-.73 0-1.12-.85-.66-1.41L14.8 3.5Z" />
       </svg>
     );
   }
 
   if (name === 'Sentry') {
     return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
+      <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem] text-gray-100" fill="none" aria-hidden="true">
         <path d="M5.5 9.5a6.5 6.5 0 1 1 11 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         <path d="M7 14c1.4-2.8 5.8-2.8 7.2 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     );
   }
 
-  if (name === 'Railway') {
+  if (name === 'GitHub') {
     return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
-        <path d="M6 18V6h5.5a4 4 0 0 1 0 8H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M13 13.5 18 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem] text-gray-100" fill="currentColor" aria-hidden="true">
+        <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.42-4.04-1.42-.55-1.37-1.34-1.73-1.34-1.73-1.09-.73.08-.72.08-.72 1.2.08 1.84 1.21 1.84 1.21 1.08 1.81 2.82 1.29 3.5.99.11-.76.42-1.29.76-1.59-2.66-.3-5.47-1.31-5.47-5.81 0-1.28.47-2.33 1.23-3.15-.12-.3-.53-1.52.12-3.17 0 0 1.01-.32 3.3 1.2A11.6 11.6 0 0 1 12 6.6c1.02 0 2.05.14 3.01.41 2.28-1.52 3.29-1.2 3.29-1.2.65 1.65.24 2.87.12 3.17.77.82 1.23 1.87 1.23 3.15 0 4.51-2.81 5.5-5.49 5.8.43.37.82 1.1.82 2.23v3.31c0 .32.21.7.83.58A12 12 0 0 0 12 .5Z" />
       </svg>
     );
   }
 
-  if (name === 'Render') {
+  if (name === 'Cloudflare') {
     return (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
-        <path d="M6 18V6h5.2a4.1 4.1 0 0 1 0 8.2H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M11.7 14.2 18 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem] text-gray-100" fill="none" aria-hidden="true">
+        <path d="M7 15.5h11.5a2.5 2.5 0 0 0-2.2-3.6 4 4 0 0 0-7.5-.5A2.3 2.3 0 0 0 7 15.5Z" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (name === 'Stripe') {
+    return (
+      <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem] text-gray-100" fill="none" aria-hidden="true">
+        <path d="M6.5 15.5h6.2a2.5 2.5 0 1 0 0-5H9.4a2.5 2.5 0 1 1 0-5h8.1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     );
   }
 
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
-      <path d="M12 4v16M4 12h16M6.5 6.5l11 11M17.5 6.5l-11 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <svg viewBox="0 0 24 24" className="h-[1.35rem] w-[1.35rem] text-gray-100" fill="none" aria-hidden="true">
+      <path d="M12 4 20 12 12 20 4 12 12 4Z" stroke="currentColor" strokeWidth="1.4" />
     </svg>
   );
 }
@@ -215,14 +215,14 @@ function BrandLogo({ name }: { name: typeof ecosystemLogos[number] }) {
 function ComingSoonLogo({ logo }: { logo: 'openai' | 'express' | 'logs' | 'webhook' }) {
   if (logo === 'openai') {
     return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-800 bg-black text-gray-100">
-        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+      <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-800 bg-black text-gray-100">
+        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
           <path
             d="M12 3.25a3.4 3.4 0 0 1 3.07 1.93l.22.46.52-.03a3.4 3.4 0 0 1 3.4 5.11l-.27.45.27.45a3.4 3.4 0 0 1-3.4 5.12l-.52-.03-.22.46a3.4 3.4 0 0 1-6.14 0l-.22-.46-.52.03a3.4 3.4 0 0 1-3.4-5.12l.27-.45-.27-.45a3.4 3.4 0 0 1 3.4-5.11l.52.03.22-.46A3.4 3.4 0 0 1 12 3.25Z"
             stroke="currentColor"
             strokeWidth="1.4"
           />
-          <path d="M9.3 7.7 14.8 11v6.1M14.7 7.7 9.2 11m0 0v6.1m5.6-9.4 2.7 4.7-2.7 4.7H9.2l-2.7-4.7 2.7-4.7Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+          <path d="M9.3 7.7 14.8 11v6.1M14.7 7.7 9.2 11m0 0v6.1m5.6-9.4 2.7 4.7-2.7 4.7H9.2l-2.7-4.7 2.7-4.7Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
         </svg>
       </div>
     );
@@ -230,24 +230,24 @@ function ComingSoonLogo({ logo }: { logo: 'openai' | 'express' | 'logs' | 'webho
 
   if (logo === 'express') {
     return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-800 bg-black text-[7px] font-semibold uppercase tracking-[0.2em] text-gray-200">
-        <span className="-ml-[0.6px]">exp</span>
+      <div className="flex h-12 min-w-12 items-center justify-center rounded-lg border border-gray-800 bg-black px-2 text-[9px] font-medium lowercase tracking-[0.08em] text-gray-100">
+        express
       </div>
     );
   }
 
   if (logo === 'webhook') {
     return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-800 bg-black text-gray-300">
-        <Webhook size={16} />
+      <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-800 bg-black text-gray-300">
+        <Webhook size={18} />
       </div>
     );
   }
 
   if (logo === 'logs') {
     return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-800 bg-black text-gray-300">
-        <Bug size={16} />
+      <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-800 bg-black text-gray-300">
+        <Bug size={18} />
       </div>
     );
   }
@@ -336,7 +336,7 @@ export default function Home() {
                   <div
                     key={`${logo}-${index}`}
                     aria-label={logo}
-                    className="flex items-center justify-center rounded-full border border-gray-900 bg-gray-950/75 px-4 py-2.5"
+                    className="flex items-center justify-center rounded-full border border-gray-900 bg-gray-950/75 px-5 py-3"
                   >
                     <BrandLogo name={logo} />
                   </div>
