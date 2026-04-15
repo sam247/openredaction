@@ -12,12 +12,27 @@ export const metadata: Metadata = generatePageMetadata({
   path: '/',
 });
 
-const comparisonRows = [
-  ['Runs locally', 'Cloud service'],
-  ['No API calls', 'Sends data externally'],
-  ['Deterministic (regex)', 'ML-based'],
-  ['Open source', 'Closed'],
-  ['Self-hosted', 'Vendor managed'],
+const comparisonCards = [
+  {
+    name: 'OpenRedaction',
+    type: 'Open source',
+    notes: ['Node.js', 'Runs locally', 'Deterministic regex', 'Self-hosted'],
+  },
+  {
+    name: 'AWS Comprehend',
+    type: 'Managed',
+    notes: ['Cloud API', 'External processing', 'ML detection', 'AWS setup'],
+  },
+  {
+    name: 'Microsoft Presidio',
+    type: 'Open source',
+    notes: ['Python', 'NLP + regex', 'More setup', 'Self-hosted'],
+  },
+  {
+    name: 'Google DLP',
+    type: 'Managed',
+    notes: ['Cloud service', 'External processing', 'ML detection', 'Google stack'],
+  },
 ] as const;
 
 const trustStripItems = [
@@ -90,6 +105,59 @@ const featureItems = [
   },
 ] as const;
 
+const fakeLogos = [
+  'Northline',
+  'Patchlayer',
+  'Harbor',
+  'Stackforge',
+  'SignalOS',
+  'Logframe',
+  'Aperture',
+  'Datacove',
+] as const;
+
+const comingSoonItems = [
+  {
+    title: 'OpenAI wrapper',
+    description: 'Redact before API calls',
+    logo: 'openai',
+  },
+  {
+    title: 'Express middleware',
+    description: 'Sanitise requests and logs',
+    logo: 'express',
+  },
+  {
+    title: 'Logging integrations',
+    description: 'Safe structured logging',
+    logo: 'logs',
+  },
+] as const;
+
+function ComingSoonLogo({ logo }: { logo: 'openai' | 'express' | 'logs' }) {
+  if (logo === 'openai') {
+    return (
+      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-200">
+        AI
+      </div>
+    );
+  }
+
+  if (logo === 'express') {
+    return (
+      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-200">
+        ex
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-gray-300">
+      <FileStack size={16} />
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white">
@@ -160,7 +228,25 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-16 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="mt-20 overflow-hidden border-t border-gray-900 pt-8">
+            <div className="trust-strip flex w-max items-center gap-4 whitespace-nowrap">
+              {Array.from({ length: 2 }).flatMap((_, index) =>
+                fakeLogos.map((logo) => (
+                  <div
+                    key={`${logo}-${index}`}
+                    className="flex items-center gap-3 rounded-full border border-gray-900 bg-gray-950/75 px-5 py-3 text-sm text-gray-400"
+                  >
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-800 bg-black text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-300">
+                      {logo.slice(0, 2)}
+                    </span>
+                    <span className="font-medium tracking-[0.04em]">{logo}</span>
+                  </div>
+                )),
+              )}
+            </div>
+          </div>
+
+          <div className="mt-20 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="min-w-0 rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <Code2 size={16} />
@@ -197,7 +283,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 overflow-hidden border-t border-gray-900 pt-12">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32 overflow-hidden border-t border-gray-900 pt-14">
           <div className="trust-strip flex w-max items-stretch gap-4 whitespace-nowrap">
             {Array.from({ length: 2 }).flatMap((_, index) =>
               trustStripItems.map((item) => (
@@ -223,7 +309,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32">
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-start">
             <div className="min-w-0">
               <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
@@ -254,7 +340,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 border-t border-gray-900 pt-14">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32 border-t border-gray-900 pt-16">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {featureItems.map((feature) => {
               const Icon = feature.icon;
@@ -270,14 +356,40 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28">
+          <div className="border-t border-gray-900 pt-10">
+            <div className="max-w-2xl">
+              <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Coming soon</p>
+              <p className="mt-3 text-sm text-gray-400">
+                Working on simple wrappers for common use cases:
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {comingSoonItems.map((item) => (
+                <div
+                  key={item.title}
+                  className="flex items-start gap-3 rounded-xl border border-gray-900/80 bg-transparent px-1 py-2"
+                >
+                  <ComingSoonLogo logo={item.logo} />
+                  <div>
+                    <p className="text-sm font-medium text-white">{item.title}</p>
+                    <p className="mt-1 text-sm text-gray-500">{item.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32">
           <div className="border-t border-gray-900 pt-14 text-center">
             <p className="mx-auto max-w-3xl text-2xl sm:text-3xl font-semibold tracking-tight text-white">
               &ldquo;We run this before every OpenAI request to avoid leaking user data.&rdquo;
             </p>
             <div className="mt-6 flex flex-col items-center">
               <img
-                src="https://i.pravatar.cc/112?img=22"
+                src="https://i.pravatar.cc/112?img=60"
                 alt="Daniel Reeves portrait"
                 className="h-16 w-16 rounded-full border border-gray-800 object-cover"
               />
@@ -289,31 +401,46 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
-          <div className="rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
-            <h2 className="text-2xl font-semibold">OpenRedaction vs AWS / Google DLP</h2>
-            <div className="mt-5 overflow-x-auto">
-              <table className="w-full min-w-[560px] border-separate border-spacing-0 text-left text-sm">
-                <thead>
-                  <tr className="text-gray-400">
-                    <th className="border-b border-gray-800 px-4 py-3 font-medium">OpenRedaction</th>
-                    <th className="border-b border-gray-800 px-4 py-3 font-medium">AWS / Google DLP</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparisonRows.map(([left, right]) => (
-                    <tr key={left}>
-                      <td className="border-b border-gray-900 px-4 py-3">{left}</td>
-                      <td className="border-b border-gray-900 px-4 py-3 text-gray-400">{right}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32">
+          <div className="rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6 lg:p-8">
+            <div className="max-w-2xl">
+              <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Alternatives</p>
+              <h2 className="mt-3 text-2xl sm:text-3xl font-semibold">
+                OpenRedaction alongside AWS, Presidio, and Google DLP
+              </h2>
+              <p className="mt-3 text-sm text-gray-400">
+                A simple Node.js option if you want local redaction, plus common managed and Python-based alternatives.
+              </p>
+            </div>
+
+            <div className="mt-8 grid gap-4 lg:grid-cols-4">
+              {comparisonCards.map((card, index) => (
+                <div
+                  key={card.name}
+                  className={`rounded-2xl border p-5 ${
+                    index === 0 ? 'border-gray-700 bg-black' : 'border-gray-900 bg-black/40'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-base font-medium text-white">{card.name}</h3>
+                    <span className="rounded-full border border-gray-800 px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-gray-500">
+                      {card.type}
+                    </span>
+                  </div>
+                  <div className="mt-5 space-y-3">
+                    {card.notes.map((note) => (
+                      <div key={note} className="border-t border-gray-900 pt-3 text-sm text-gray-300">
+                        {note}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32">
           <div className="overflow-hidden rounded-3xl border border-gray-800 bg-gradient-to-br from-gray-950 via-[#07101f] to-black p-6 sm:p-8 lg:p-10">
             <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
               <div className="max-w-2xl">
