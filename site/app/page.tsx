@@ -26,9 +26,9 @@ export default function Home() {
       <Header />
 
       <main className="pt-[116px] pb-20">
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-            <div className="max-w-3xl">
+            <div className="min-w-0 max-w-3xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-gray-800 bg-gray-950 px-3 py-1 text-xs text-gray-400">
                 <Lock size={14} />
                 Open-source PII redaction for Node.js
@@ -70,7 +70,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-gray-800 bg-gradient-to-b from-gray-950 to-black p-5 sm:p-6">
+            <div className="min-w-0 rounded-2xl border border-gray-800 bg-gradient-to-b from-gray-950 to-black p-5 sm:p-6">
               <div className="flex items-center justify-between text-xs uppercase tracking-[0.18em] text-gray-500">
                 <span>Input</span>
                 <span>Output</span>
@@ -91,7 +91,7 @@ export default function Home() {
           </div>
 
           <div className="mt-12 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
+            <div className="min-w-0 rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <Code2 size={16} />
                 Before / after
@@ -107,7 +107,7 @@ console.log(redactedText);
               </pre>
             </div>
 
-            <div className="border-t border-gray-800 pt-5 sm:pt-6 lg:pt-10">
+            <div className="min-w-0 border-t border-gray-800 pt-5 sm:pt-6 lg:pt-10">
               <h2 className="text-lg font-medium">Quick usage</h2>
               <p className="mt-2 text-sm text-gray-400">
                 Install it, import it, and redact before you send anything to an API.
@@ -127,7 +127,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 border-t border-gray-900 pt-10">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 border-t border-gray-900 pt-10">
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-start">
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Trust</p>
@@ -157,9 +157,9 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-start">
-            <div>
+            <div className="min-w-0">
               <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
                 Use case: prevent leaking PII to AI APIs
               </p>
@@ -169,7 +169,7 @@ console.log(redactedText);`}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
+            <div className="min-w-0 rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <div className="text-xs uppercase tracking-[0.18em] text-gray-500">Input</div>
@@ -188,7 +188,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 border-t border-gray-900 pt-10">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 border-t border-gray-900 pt-10">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="p-1">
               <Shield className="text-white" size={20} />
@@ -213,11 +213,11 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
           <div className="rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
             <h2 className="text-2xl font-semibold">OpenRedaction vs AWS / Google DLP</h2>
             <div className="mt-5 overflow-x-auto">
-              <table className="w-full min-w-[640px] border-separate border-spacing-0 text-left text-sm">
+              <table className="w-full min-w-[560px] border-separate border-spacing-0 text-left text-sm">
                 <thead>
                   <tr className="text-gray-400">
                     <th className="border-b border-gray-800 px-4 py-3 font-medium">OpenRedaction</th>
@@ -237,7 +237,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
           <div className="rounded-2xl border border-gray-800 bg-gray-950 p-6 sm:p-8">
             <p className="text-lg text-gray-200">Use it locally in your app.</p>
             <div className="mt-5 flex flex-col sm:flex-row gap-3">
