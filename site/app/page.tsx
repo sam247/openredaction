@@ -257,18 +257,18 @@ export default function Home() {
           </div>
 
           <div className="mt-20 overflow-hidden border-t border-gray-900 pt-8">
-            <div className="trust-strip flex w-max items-center gap-4 whitespace-nowrap">
-              {Array.from({ length: 2 }).flatMap((_, index) =>
+            <div className="trust-strip-continuous flex w-max items-center gap-4 whitespace-nowrap">
+              {Array.from({ length: 3 }).flatMap((_, index) =>
                 ecosystemCarouselItems.map((logo) => (
                   <div
                     key={`${logo.name}-${index}`}
                     aria-label={logo.name}
-                    className="flex items-center justify-center rounded-full border border-gray-900 bg-gray-950/75 px-5 py-3"
+                    className="flex items-center justify-center rounded-full border border-gray-900 bg-gray-950/75 px-6 py-3.5"
                   >
                     <div className="flex items-center gap-2.5">
-                      <img src={logo.iconSrc} alt={`${logo.name} icon`} className="h-7 w-7 object-contain" />
+                      <img src={logo.iconSrc} alt={`${logo.name} icon`} className="h-8.5 w-8.5 object-contain" />
                       {logo.wordmarkSrc ? (
-                        <img src={logo.wordmarkSrc} alt={`${logo.name} logo`} className="h-[18px] w-auto max-w-[86px] object-contain opacity-90" />
+                        <img src={logo.wordmarkSrc} alt={`${logo.name} logo`} className="h-[22px] w-auto max-w-[104px] object-contain opacity-90" />
                       ) : null}
                     </div>
                   </div>

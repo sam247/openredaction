@@ -43,8 +43,19 @@ body {
   will-change: transform;
 }
 
+@keyframes trust-strip-scroll-continuous {
+  from { transform: translateX(0); }
+  to { transform: translateX(-33.333333%); }
+}
+
+.trust-strip-continuous {
+  animation: trust-strip-scroll-continuous 36s linear infinite;
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .trust-strip {
+  .trust-strip,
+  .trust-strip-continuous {
     animation: none;
   }
 }
