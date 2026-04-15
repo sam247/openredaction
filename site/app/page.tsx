@@ -12,12 +12,27 @@ export const metadata: Metadata = generatePageMetadata({
   path: '/',
 });
 
-const comparisonRows = [
-  ['Runs locally', 'Cloud service'],
-  ['No API calls', 'Sends data externally'],
-  ['Deterministic (regex)', 'ML-based'],
-  ['Open source', 'Closed'],
-  ['Self-hosted', 'Vendor managed'],
+const comparisonCards = [
+  {
+    name: 'OpenRedaction',
+    type: 'Open source',
+    notes: ['Node.js', 'Runs locally', 'Deterministic regex', 'Self-hosted'],
+  },
+  {
+    name: 'AWS Comprehend',
+    type: 'Managed',
+    notes: ['Cloud API', 'External processing', 'ML detection', 'AWS setup'],
+  },
+  {
+    name: 'Microsoft Presidio',
+    type: 'Open source',
+    notes: ['Python', 'NLP + regex', 'More setup', 'Self-hosted'],
+  },
+  {
+    name: 'Google DLP',
+    type: 'Managed',
+    notes: ['Cloud service', 'External processing', 'ML detection', 'Google stack'],
+  },
 ] as const;
 
 const trustStripItems = [
@@ -87,6 +102,24 @@ const featureItems = [
     title: 'Lightweight',
     description: 'No external dependencies to pull in.',
     icon: TerminalSquare,
+  },
+] as const;
+
+const comingSoonItems = [
+  {
+    title: 'OpenAI wrapper',
+    description: 'Redact before API calls',
+    icon: Sparkles,
+  },
+  {
+    title: 'Express middleware',
+    description: 'Sanitise requests and logs',
+    icon: Code2,
+  },
+  {
+    title: 'Logging integrations',
+    description: 'Safe structured logging',
+    icon: FileStack,
   },
 ] as const;
 
@@ -270,6 +303,38 @@ console.log(redactedText);`}
           </div>
         </section>
 
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+          <div className="border-t border-gray-900 pt-10">
+            <div className="max-w-2xl">
+              <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Coming soon</p>
+              <p className="mt-3 text-sm text-gray-400">
+                Working on simple wrappers for common use cases:
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {comingSoonItems.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <div
+                    key={item.title}
+                    className="flex items-start gap-3 rounded-xl border border-gray-900/80 bg-transparent px-1 py-2"
+                  >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-gray-300">
+                      <Icon size={16} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">{item.title}</p>
+                      <p className="mt-1 text-sm text-gray-500">{item.description}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
           <div className="border-t border-gray-900 pt-14 text-center">
             <p className="mx-auto max-w-3xl text-2xl sm:text-3xl font-semibold tracking-tight text-white">
@@ -277,7 +342,7 @@ console.log(redactedText);`}
             </p>
             <div className="mt-6 flex flex-col items-center">
               <img
-                src="https://i.pravatar.cc/112?img=22"
+                src="https://i.pravatar.cc/112?img=60"
                 alt="Daniel Reeves portrait"
                 className="h-16 w-16 rounded-full border border-gray-800 object-cover"
               />
@@ -290,25 +355,42 @@ console.log(redactedText);`}
         </section>
 
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
-          <div className="rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
-            <h2 className="text-2xl font-semibold">OpenRedaction vs AWS / Google DLP</h2>
-            <div className="mt-5 overflow-x-auto">
-              <table className="w-full min-w-[560px] border-separate border-spacing-0 text-left text-sm">
-                <thead>
-                  <tr className="text-gray-400">
-                    <th className="border-b border-gray-800 px-4 py-3 font-medium">OpenRedaction</th>
-                    <th className="border-b border-gray-800 px-4 py-3 font-medium">AWS / Google DLP</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparisonRows.map(([left, right]) => (
-                    <tr key={left}>
-                      <td className="border-b border-gray-900 px-4 py-3">{left}</td>
-                      <td className="border-b border-gray-900 px-4 py-3 text-gray-400">{right}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6 lg:p-8">
+            <div className="max-w-2xl">
+              <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Alternatives</p>
+              <h2 className="mt-3 text-2xl sm:text-3xl font-semibold">
+                OpenRedaction alongside AWS, Presidio, and Google DLP
+              </h2>
+              <p className="mt-3 text-sm text-gray-400">
+                A simple Node.js option if you want local redaction, plus common managed and Python-based alternatives.
+              </p>
+            </div>
+
+            <div className="mt-8 grid gap-4 lg:grid-cols-4">
+              {comparisonCards.map((card, index) => (
+                <div
+                  key={card.name}
+                  className={`rounded-2xl border p-5 ${
+                    index === 0
+                      ? 'border-gray-700 bg-black'
+                      : 'border-gray-900 bg-black/40'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-base font-medium text-white">{card.name}</h3>
+                    <span className="rounded-full border border-gray-800 px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-gray-500">
+                      {card.type}
+                    </span>
+                  </div>
+                  <div className="mt-5 space-y-3">
+                    {card.notes.map((note) => (
+                      <div key={note} className="border-t border-gray-900 pt-3 text-sm text-gray-300">
+                        {note}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
