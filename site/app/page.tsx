@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { generatePageMetadata } from '@/lib/metadata';
-import { ArrowRight, Check, Shield, Zap, Code2, Lock, Sparkles, ScanSearch, TerminalSquare, FileStack } from 'lucide-react';
+import { ArrowRight, Check, Shield, Zap, Code2, Lock, Sparkles, ScanSearch, TerminalSquare, FileStack, Globe } from 'lucide-react';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'OpenRedaction | Open-source PII redaction for Node.js',
@@ -105,15 +105,15 @@ const featureItems = [
   },
 ] as const;
 
-const fakeLogos = [
-  'Northline',
-  'Patchlayer',
-  'Harbor',
-  'Stackforge',
-  'SignalOS',
-  'Logframe',
-  'Aperture',
-  'Datacove',
+const ecosystemLogos = [
+  'OpenAI',
+  'Vercel',
+  'Supabase',
+  'Stripe',
+  'GitHub',
+  'Next.js',
+  'Anthropic',
+  'Cloudflare',
 ] as const;
 
 const comingSoonItems = [
@@ -132,21 +132,128 @@ const comingSoonItems = [
     description: 'Safe structured logging',
     logo: 'logs',
   },
+  {
+    title: 'Webhook safety',
+    description: 'Redact before outbound requests',
+    logo: 'webhook',
+  },
 ] as const;
 
-function ComingSoonLogo({ logo }: { logo: 'openai' | 'express' | 'logs' }) {
+function BrandLogo({ name }: { name: typeof ecosystemLogos[number] }) {
+  if (name === 'OpenAI') {
+    return (
+      <div className="flex items-center gap-3">
+        <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-200" fill="none" aria-hidden="true">
+          <path
+            d="M12 3.25a3.4 3.4 0 0 1 3.07 1.93l.22.46.52-.03a3.4 3.4 0 0 1 3.4 5.11l-.27.45.27.45a3.4 3.4 0 0 1-3.4 5.12l-.52-.03-.22.46a3.4 3.4 0 0 1-6.14 0l-.22-.46-.52.03a3.4 3.4 0 0 1-3.4-5.12l.27-.45-.27-.45a3.4 3.4 0 0 1 3.4-5.11l.52.03.22-.46A3.4 3.4 0 0 1 12 3.25Z"
+            stroke="currentColor"
+            strokeWidth="1.4"
+          />
+          <path d="M9.3 7.7 14.8 11v6.1M14.7 7.7 9.2 11m0 0v6.1m5.6-9.4 2.7 4.7-2.7 4.7H9.2l-2.7-4.7 2.7-4.7Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+        </svg>
+        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
+      </div>
+    );
+  }
+
+  if (name === 'GitHub') {
+    return (
+      <div className="flex items-center gap-3">
+        <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-200" fill="currentColor" aria-hidden="true">
+          <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.42-4.04-1.42-.55-1.37-1.34-1.73-1.34-1.73-1.09-.73.08-.72.08-.72 1.2.08 1.84 1.21 1.84 1.21 1.08 1.81 2.82 1.29 3.5.99.11-.76.42-1.29.76-1.59-2.66-.3-5.47-1.31-5.47-5.81 0-1.28.47-2.33 1.23-3.15-.12-.3-.53-1.52.12-3.17 0 0 1.01-.32 3.3 1.2A11.6 11.6 0 0 1 12 6.6c1.02 0 2.05.14 3.01.41 2.28-1.52 3.29-1.2 3.29-1.2.65 1.65.24 2.87.12 3.17.77.82 1.23 1.87 1.23 3.15 0 4.51-2.81 5.5-5.49 5.8.43.37.82 1.1.82 2.23v3.31c0 .32.21.7.83.58A12 12 0 0 0 12 .5Z" />
+        </svg>
+        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
+      </div>
+    );
+  }
+
+  if (name === 'Vercel') {
+    return (
+      <div className="flex items-center gap-3">
+        <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-200" fill="currentColor" aria-hidden="true">
+          <path d="M12 4 20 18H4l8-14Z" />
+        </svg>
+        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
+      </div>
+    );
+  }
+
+  if (name === 'Next.js') {
+    return (
+      <div className="flex items-center gap-3">
+        <div className="flex h-5 w-5 items-center justify-center rounded-full border border-gray-700 text-[9px] font-semibold text-gray-200">
+          N
+        </div>
+        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
+      </div>
+    );
+  }
+
+  if (name === 'Supabase') {
+    return (
+      <div className="flex items-center gap-3">
+        <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-200" fill="currentColor" aria-hidden="true">
+          <path d="M14.8 3.5c.39-.48 1.16-.2 1.16.42v9.14h2.13c.73 0 1.13.84.67 1.4l-8.54 9.97c-.4.46-1.15.18-1.15-.43v-9.03H6.93c-.73 0-1.12-.85-.66-1.41L14.8 3.5Z" />
+        </svg>
+        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
+      </div>
+    );
+  }
+
+  if (name === 'Stripe') {
+    return (
+      <div className="flex items-center gap-3">
+        <div className="text-sm font-semibold tracking-[0.02em] text-gray-200">stripe</div>
+      </div>
+    );
+  }
+
+  if (name === 'Anthropic') {
+    return (
+      <div className="flex items-center gap-3">
+        <div className="text-sm font-semibold tracking-[0.02em] text-gray-200">AI</div>
+        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-3">
+      <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-200" fill="none" aria-hidden="true">
+        <path d="M5 12a7 7 0 0 1 14 0M12 5a7 7 0 0 1 0 14M6.5 8.5c2.2 1.5 8.8 1.5 11 0M6.5 15.5c2.2-1.5 8.8-1.5 11 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+      <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
+    </div>
+  );
+}
+
+function ComingSoonLogo({ logo }: { logo: 'openai' | 'express' | 'logs' | 'webhook' }) {
   if (logo === 'openai') {
     return (
-      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-200">
-        AI
+      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-gray-200">
+        <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" aria-hidden="true">
+          <path
+            d="M12 3.25a3.4 3.4 0 0 1 3.07 1.93l.22.46.52-.03a3.4 3.4 0 0 1 3.4 5.11l-.27.45.27.45a3.4 3.4 0 0 1-3.4 5.12l-.52-.03-.22.46a3.4 3.4 0 0 1-6.14 0l-.22-.46-.52.03a3.4 3.4 0 0 1-3.4-5.12l.27-.45-.27-.45a3.4 3.4 0 0 1 3.4-5.11l.52.03.22-.46A3.4 3.4 0 0 1 12 3.25Z"
+            stroke="currentColor"
+            strokeWidth="1.4"
+          />
+        </svg>
       </div>
     );
   }
 
   if (logo === 'express') {
     return (
-      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-200">
+      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-[8px] font-semibold uppercase tracking-[0.1em] text-gray-200">
         ex
+      </div>
+    );
+  }
+
+  if (logo === 'webhook') {
+    return (
+      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-gray-300">
+        <Globe size={16} />
       </div>
     );
   }
@@ -231,15 +338,12 @@ export default function Home() {
           <div className="mt-20 overflow-hidden border-t border-gray-900 pt-8">
             <div className="trust-strip flex w-max items-center gap-4 whitespace-nowrap">
               {Array.from({ length: 2 }).flatMap((_, index) =>
-                fakeLogos.map((logo) => (
+                ecosystemLogos.map((logo) => (
                   <div
                     key={`${logo}-${index}`}
                     className="flex items-center gap-3 rounded-full border border-gray-900 bg-gray-950/75 px-5 py-3 text-sm text-gray-400"
                   >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-800 bg-black text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-300">
-                      {logo.slice(0, 2)}
-                    </span>
-                    <span className="font-medium tracking-[0.04em]">{logo}</span>
+                    <BrandLogo name={logo} />
                   </div>
                 )),
               )}
@@ -365,7 +469,7 @@ console.log(redactedText);`}
               </p>
             </div>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               {comingSoonItems.map((item) => (
                 <div
                   key={item.title}
