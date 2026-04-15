@@ -24,6 +24,31 @@ OpenRedaction is a production-ready library that helps you keep sensitive data o
 npm install openredaction
 ```
 
+## Where this fits
+
+OpenRedaction is typically used before data leaves your application.
+
+- Before sending data to AI APIs (OpenAI, etc.)
+- Before logging user input
+- Before sending data via APIs or webhooks
+- Before storing or exporting data
+
+See [`/examples`](./examples) for minimal usage patterns.
+
+## Common usage patterns
+
+### Redact before OpenAI calls
+
+See [`/examples/openai`](./examples/openai).
+
+### Redact before handling requests (Express)
+
+See [`/examples/express`](./examples/express).
+
+### Redact before logging or outbound requests
+
+Conceptual usage for now; no dedicated example yet.
+
 ## Basic Usage (Regex-Only)
 
 The library works entirely with regex patterns by default. All detection happens locally in your application.

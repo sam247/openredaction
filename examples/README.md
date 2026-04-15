@@ -1,8 +1,24 @@
 # OpenRedaction Examples
 
-Practical examples demonstrating how to integrate OpenRedaction into your applications.
+Practical examples showing how to use OpenRedaction in real applications.
+
+These are usage patterns, not official SDKs or packages.
+These examples show where OpenRedaction fits: before data leaves your application.
+
+Use these patterns:
+- before OpenAI calls
+- before logging
+- before sending data externally
 
 ## 📁 Examples
+
+### Wrapper examples
+
+#### OpenAI (`openai/`)
+Redact message text before sending prompts to OpenAI.
+
+#### Express (`express/`)
+Redact request bodies before handlers log or forward them.
 
 ### 1. Basic Node.js (`nodejs-basic/`)
 **Pure Node.js implementation** showing core detection features.
