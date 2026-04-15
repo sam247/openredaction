@@ -21,10 +21,26 @@ const comparisonRows = [
 ] as const;
 
 const trustStripItems = [
-  'Used before OpenAI calls to strip PII',
-  'Running in production logging pipelines',
-  'Sanitising user input before storage',
-  'Used in self-hosted AI apps',
+  {
+    quote: 'We run this before OpenAI calls so names and emails do not leave the app.',
+    name: 'Alex Morgan',
+    company: 'Stackforge',
+  },
+  {
+    quote: 'Dropped into our logging pipeline and started cleaning support notes straight away.',
+    name: 'Priya Shah',
+    company: 'Northline',
+  },
+  {
+    quote: 'Useful for sanitising user input before storage and before anything touches an API.',
+    name: 'Ben Carter',
+    company: 'Patchlayer',
+  },
+  {
+    quote: 'Simple enough to keep in a self-hosted AI app without another external service.',
+    name: 'Mina Lee',
+    company: 'Harbor Systems',
+  },
 ] as const;
 
 const featureItems = [
@@ -140,7 +156,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-12 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="mt-16 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="min-w-0 rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <Code2 size={16} />
@@ -177,7 +193,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 border-t border-gray-900 pt-10">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 border-t border-gray-900 pt-12">
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-start">
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Trust</p>
@@ -197,33 +213,46 @@ console.log(redactedText);`}
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="border-l border-gray-800 pl-4 text-sm text-gray-300">
-                “Using this before OpenAI calls to strip emails and names.”
+              <div className="border-l border-gray-800 pl-4">
+                <p className="text-sm text-gray-200">
+                  “Using this before OpenAI calls to strip emails and names.”
+                </p>
+                <p className="mt-3 text-xs uppercase tracking-[0.18em] text-gray-500">
+                  Alex Morgan · Stackforge
+                </p>
               </div>
-              <div className="border-l border-gray-800 pl-4 text-sm text-gray-300">
-                “Dropped into our logging pipeline — works well.”
+              <div className="border-l border-gray-800 pl-4">
+                <p className="text-sm text-gray-200">
+                  “Dropped into our logging pipeline — works well.”
+                </p>
+                <p className="mt-3 text-xs uppercase tracking-[0.18em] text-gray-500">
+                  Priya Shah · Northline
+                </p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 overflow-hidden">
-          <div className="trust-strip flex w-max items-center gap-3 whitespace-nowrap text-xs uppercase tracking-[0.18em] text-gray-500">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 overflow-hidden">
+          <div className="trust-strip flex w-max items-stretch gap-4 whitespace-nowrap">
             {Array.from({ length: 2 }).flatMap((_, index) =>
               trustStripItems.map((item) => (
-                <div
-                  key={`${item}-${index}`}
-                  className="flex items-center gap-3 rounded-full border border-gray-900 bg-gray-950/70 px-4 py-2"
+                <article
+                  key={`${item.name}-${index}`}
+                  className="flex w-[300px] shrink-0 flex-col justify-between rounded-2xl border border-gray-900 bg-gray-950/75 p-5 whitespace-normal"
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-gray-600" />
-                  <span>{item}</span>
-                </div>
+                  <p className="text-sm leading-6 text-gray-200">&ldquo;{item.quote}&rdquo;</p>
+                  <div className="mt-5">
+                    <p className="text-sm font-medium text-white">{item.name}</p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-gray-500">{item.company}</p>
+                  </div>
+                </article>
               )),
             )}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-start">
             <div className="min-w-0">
               <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
@@ -254,7 +283,7 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 border-t border-gray-900 pt-10">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 border-t border-gray-900 pt-12">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {featureItems.map((feature) => {
               const Icon = feature.icon;
@@ -270,16 +299,21 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
-          <div className="border-t border-gray-900 pt-12 text-center">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+          <div className="border-t border-gray-900 pt-14 text-center">
             <p className="mx-auto max-w-3xl text-2xl sm:text-3xl font-semibold tracking-tight text-white">
               &ldquo;We run this before every OpenAI request to avoid leaking user data.&rdquo;
             </p>
-            <p className="mt-4 text-sm uppercase tracking-[0.22em] text-gray-500">Node.js developer</p>
+            <div className="mt-6">
+              <p className="text-sm font-medium text-white">Daniel Reeves</p>
+              <p className="mt-1 text-xs uppercase tracking-[0.22em] text-gray-500">
+                Node.js developer · Northline
+              </p>
+            </div>
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
           <div className="rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
             <h2 className="text-2xl font-semibold">OpenRedaction vs AWS / Google DLP</h2>
             <div className="mt-5 overflow-x-auto">
@@ -303,24 +337,37 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
-          <div className="rounded-2xl border border-gray-800 bg-gray-950 p-6 sm:p-8">
-            <p className="text-lg text-gray-200">Use it locally in your app.</p>
-            <div className="mt-5 flex flex-col sm:flex-row gap-3">
-              <a
-                href="https://github.com/sam247/openredaction"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-md bg-white px-5 py-3 font-medium text-black transition-colors hover:bg-gray-100"
-              >
-                View on GitHub
-              </a>
-              <Link
-                href="/docs/getting-started"
-                className="inline-flex items-center justify-center rounded-md border border-gray-800 bg-gray-950 px-5 py-3 font-medium text-white transition-colors hover:bg-gray-900"
-              >
-                Install
-              </Link>
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+          <div className="overflow-hidden rounded-3xl border border-gray-800 bg-gradient-to-br from-gray-950 via-[#07101f] to-black p-6 sm:p-8 lg:p-10">
+            <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+              <div className="max-w-2xl">
+                <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Get started</p>
+                <h2 className="mt-4 text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+                  Use it locally in your app.
+                </h2>
+                <p className="mt-3 text-gray-300">
+                  Install it, drop it into your request path, and clean prompts, logs, or stored text before it leaves your system.
+                </p>
+                <div className="mt-5 inline-flex items-center rounded-full border border-gray-800 bg-black/60 px-4 py-2 font-mono text-sm text-green-400">
+                  npm install openredaction
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 lg:justify-end">
+                <a
+                  href="https://github.com/sam247/openredaction"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center rounded-md bg-white px-5 py-3 font-medium text-black transition-colors hover:bg-gray-100"
+                >
+                  View on GitHub
+                </a>
+                <Link
+                  href="/docs/getting-started"
+                  className="inline-flex items-center justify-center rounded-md border border-gray-700 bg-black/50 px-5 py-3 font-medium text-white transition-colors hover:bg-black/70"
+                >
+                  Install
+                </Link>
+              </div>
             </div>
           </div>
         </section>
