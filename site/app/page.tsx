@@ -265,12 +265,11 @@ export default function Home() {
                     aria-label={logo.name}
                     className="flex items-center justify-center rounded-full border border-gray-900 bg-gray-950/75 px-6 py-3.5"
                   >
-                    <div className="flex items-center gap-2.5">
+                    {logo.wordmarkSrc ? (
+                      <img src={logo.wordmarkSrc} alt={`${logo.name} logo`} className="h-[22px] w-auto max-w-[118px] object-contain opacity-90" />
+                    ) : (
                       <img src={logo.iconSrc} alt={`${logo.name} icon`} className="h-8.5 w-8.5 object-contain" />
-                      {logo.wordmarkSrc ? (
-                        <img src={logo.wordmarkSrc} alt={`${logo.name} logo`} className="h-[22px] w-auto max-w-[104px] object-contain opacity-90" />
-                      ) : null}
-                    </div>
+                    )}
                   </div>
                 )),
               )}
@@ -341,11 +340,6 @@ console.log(redactedText);`}
                   key={`${item.name}-${index}`}
                   className="flex w-[300px] shrink-0 flex-col justify-between rounded-2xl border border-gray-900 bg-gray-950/75 p-5 whitespace-normal"
                 >
-                  <img
-                    src={trustCardLogos[itemIndex]}
-                    alt="Company logo icon"
-                    className="mb-4 h-6 w-6 object-contain opacity-90"
-                  />
                   <p className="text-sm leading-6 text-gray-200">&ldquo;{item.quote}&rdquo;</p>
                   <div className="mt-5 flex items-center gap-3">
                     <img
@@ -355,7 +349,14 @@ console.log(redactedText);`}
                     />
                     <div>
                       <p className="text-sm font-medium text-white">{item.name}</p>
-                      <p className="mt-1 text-xs uppercase tracking-[0.18em] text-gray-500">{item.company}</p>
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <img
+                          src={trustCardLogos[itemIndex]}
+                          alt={`${item.company} logo icon`}
+                          className="h-3.5 w-3.5 object-contain opacity-90"
+                        />
+                        <p className="text-xs uppercase tracking-[0.18em] text-gray-500">{item.company}</p>
+                      </div>
                     </div>
                   </div>
                 </article>
