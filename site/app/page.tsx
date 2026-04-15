@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { generatePageMetadata } from '@/lib/metadata';
-import { ArrowRight, Check, Shield, Zap, Code2, Lock } from 'lucide-react';
+import { ArrowRight, Check, Shield, Zap, Code2, Lock, Sparkles, ScanSearch, TerminalSquare, FileStack } from 'lucide-react';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'OpenRedaction | Open-source PII redaction for Node.js',
@@ -18,6 +18,56 @@ const comparisonRows = [
   ['Deterministic (regex)', 'ML-based'],
   ['Open source', 'Closed'],
   ['Self-hosted', 'Vendor managed'],
+] as const;
+
+const trustStripItems = [
+  'Used before OpenAI calls to strip PII',
+  'Running in production logging pipelines',
+  'Sanitising user input before storage',
+  'Used in self-hosted AI apps',
+] as const;
+
+const featureItems = [
+  {
+    title: 'Emails, phones, cards',
+    description: 'Built-in redaction for common sensitive fields.',
+    icon: Shield,
+  },
+  {
+    title: '500+ patterns',
+    description: 'Large default pattern set out of the box.',
+    icon: ScanSearch,
+  },
+  {
+    title: 'Custom patterns',
+    description: 'Add project-specific rules when needed.',
+    icon: Sparkles,
+  },
+  {
+    title: 'Runs locally',
+    description: 'No API calls. No external processing.',
+    icon: Lock,
+  },
+  {
+    title: 'Deterministic',
+    description: 'Same input, same output every time.',
+    icon: Check,
+  },
+  {
+    title: 'Fast inline use',
+    description: 'Light enough for request-time redaction.',
+    icon: Zap,
+  },
+  {
+    title: 'Safe for logs and prompts',
+    description: 'Clean text before it spreads downstream.',
+    icon: FileStack,
+  },
+  {
+    title: 'Lightweight',
+    description: 'No external dependencies to pull in.',
+    icon: TerminalSquare,
+  },
 ] as const;
 
 export default function Home() {
@@ -157,6 +207,22 @@ console.log(redactedText);`}
           </div>
         </section>
 
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 overflow-hidden">
+          <div className="trust-strip flex w-max items-center gap-3 whitespace-nowrap text-xs uppercase tracking-[0.18em] text-gray-500">
+            {Array.from({ length: 2 }).flatMap((_, index) =>
+              trustStripItems.map((item) => (
+                <div
+                  key={`${item}-${index}`}
+                  className="flex items-center gap-3 rounded-full border border-gray-900 bg-gray-950/70 px-4 py-2"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-gray-600" />
+                  <span>{item}</span>
+                </div>
+              )),
+            )}
+          </div>
+        </section>
+
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-start">
             <div className="min-w-0">
@@ -189,27 +255,27 @@ console.log(redactedText);`}
         </section>
 
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 border-t border-gray-900 pt-10">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <div className="p-1">
-              <Shield className="text-white" size={20} />
-              <div className="mt-3 font-medium">Runs locally</div>
-              <p className="mt-2 text-sm text-gray-400">No data leaves your system.</p>
-            </div>
-            <div className="p-1">
-              <Check className="text-white" size={20} />
-              <div className="mt-3 font-medium">Deterministic</div>
-              <p className="mt-2 text-sm text-gray-400">Regex patterns you can inspect.</p>
-            </div>
-            <div className="p-1">
-              <Zap className="text-white" size={20} />
-              <div className="mt-3 font-medium">Fast</div>
-              <p className="mt-2 text-sm text-gray-400">Designed for inline use.</p>
-            </div>
-            <div className="p-1">
-              <Code2 className="text-white" size={20} />
-              <div className="mt-3 font-medium">Open source</div>
-              <p className="mt-2 text-sm text-gray-400">Self-hosted and auditable.</p>
-            </div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {featureItems.map((feature) => {
+              const Icon = feature.icon;
+
+              return (
+                <div key={feature.title} className="rounded-xl border border-gray-900 bg-gray-950/60 p-4">
+                  <Icon className="text-white" size={18} />
+                  <div className="mt-3 font-medium">{feature.title}</div>
+                  <p className="mt-1 text-sm text-gray-400">{feature.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
+          <div className="border-t border-gray-900 pt-12 text-center">
+            <p className="mx-auto max-w-3xl text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+              &ldquo;We run this before every OpenAI request to avoid leaking user data.&rdquo;
+            </p>
+            <p className="mt-4 text-sm uppercase tracking-[0.22em] text-gray-500">Node.js developer</p>
           </div>
         </section>
 

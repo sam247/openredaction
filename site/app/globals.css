@@ -33,3 +33,18 @@ body {
   animation: shake 0.5s ease-in-out infinite;
 }
 
+@keyframes trust-strip-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.trust-strip {
+  animation: trust-strip-scroll 28s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trust-strip {
+    animation: none;
+  }
+}
