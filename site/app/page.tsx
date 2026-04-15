@@ -117,7 +117,13 @@ const featureItems = [
   },
 ] as const;
 
-const ecosystemCarouselItems = [
+type EcosystemCarouselItem = {
+  name: string;
+  iconSrc: string;
+  wordmarkSrc?: string;
+};
+
+const ecosystemCarouselItems: EcosystemCarouselItem[] = [
   { name: 'AlphaWave', iconSrc: '/logo_repo/logos_icons/AlphaWave.svg' },
   { name: 'Segment', iconSrc: '/logo_repo/logos_icons/Segment.svg', wordmarkSrc: '/logo_repo/logos/Segment.svg' },
   { name: 'Constellation', iconSrc: '/logo_repo/logos_icons/Constellation.svg' },
