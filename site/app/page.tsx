@@ -154,21 +154,21 @@ const comingSoonItems = [
     platform: 'OpenAI',
     title: 'OpenAI wrapper',
     description:
-      'Redact sensitive data from your prompts and inputs before sending requests to OpenAI.
+      'Redact sensitive data from prompts before sending requests to OpenAI. Prevent emails, names, and other PII from leaving your application while keeping the same API usage pattern.',
     logo: 'openai',
   },
   {
     platform: 'Express.js',
     title: 'Express middleware',
     description:
-      'Sanitise incoming request data automatically before it reaches your application logic. 
+      'Sanitise incoming request data automatically before it reaches your application logic. Helps prevent sensitive user information from being logged, stored, or forwarded unintentionally in backend services.',
     logo: 'express',
   },
   {
     platform: 'Logging',
     title: 'Logging integrations',
     description:
-      'Redact sensitive fields before writing logs to tools like Pino or Winston and avoid storing emails, phone numbers and other PII'.
+      'Redact sensitive fields before writing logs to tools like Pino or Winston. Avoid storing emails, phone numbers, and personal data while keeping logs useful for debugging and monitoring.',
     logo: 'logs',
   },
   {
