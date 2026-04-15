@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { generatePageMetadata } from '@/lib/metadata';
-import { ArrowRight, Check, Shield, Zap, Code2, Lock, Sparkles, ScanSearch, TerminalSquare, FileStack, Globe } from 'lucide-react';
+import { ArrowRight, Check, Shield, Zap, Code2, Lock, Sparkles, ScanSearch, TerminalSquare, FileStack, Braces, Bug, Webhook } from 'lucide-react';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'OpenRedaction | Open-source PII redaction for Node.js',
@@ -16,48 +16,60 @@ const comparisonCards = [
   {
     name: 'OpenRedaction',
     type: 'Open source',
-    notes: ['Node.js', 'Runs locally', 'Deterministic regex', 'Self-hosted'],
+    runtime: 'Node.js',
+    processing: 'Local or self-hosted',
+    detection: 'Deterministic regex',
+    bestFor: 'Teams wanting predictable redaction in JS stacks',
   },
   {
     name: 'AWS Comprehend',
     type: 'Managed',
-    notes: ['Cloud API', 'External processing', 'ML detection', 'AWS setup'],
+    runtime: 'Managed AWS service',
+    processing: 'External cloud processing',
+    detection: 'ML-based entity detection',
+    bestFor: 'AWS-native pipelines',
   },
   {
     name: 'Microsoft Presidio',
     type: 'Open source',
-    notes: ['Python', 'NLP + regex', 'More setup', 'Self-hosted'],
+    runtime: 'Python',
+    processing: 'Self-hosted',
+    detection: 'NLP + regex',
+    bestFor: 'Python teams with custom NLP needs',
   },
   {
     name: 'Google DLP',
     type: 'Managed',
-    notes: ['Cloud service', 'External processing', 'ML detection', 'Google stack'],
+    runtime: 'Managed GCP service',
+    processing: 'External cloud processing',
+    detection: 'ML + infoTypes',
+    bestFor: 'GCP-centric compliance workflows',
   },
 ] as const;
 
 const trustStripItems = [
   {
-    quote: 'We run this before OpenAI calls so names and emails do not leave the app.',
-    name: 'Alex Morgan',
-    company: 'Stackforge',
+    quote: 'We added it in front of our prototype assistant so support emails get masked before prompts go out.',
+    name: 'Jordan P.',
+    company: 'Small product team',
     avatar: 'https://i.pravatar.cc/96?img=12',
   },
   {
-    quote: 'Dropped into our logging pipeline and started cleaning support notes straight away.',
-    name: 'Priya Shah',
-    company: 'Northline',
+    quote: 'Not perfect for every edge case, but it gives us a practical baseline for sanitizing logs in Node.',
+    name: 'Maya R.',
+    company: 'Indie SaaS',
     avatar: 'https://i.pravatar.cc/96?img=32',
   },
   {
-    quote: 'Useful for sanitising user input before storage and before anything touches an API.',
-    name: 'Ben Carter',
-    company: 'Patchlayer',
+    quote: 'We use it in staging and early production paths to reduce accidental PII leakage while we tune rules.',
+    name: 'Chris L.',
+    company: 'Internal tooling',
     avatar: 'https://i.pravatar.cc/96?img=15',
   },
   {
-    quote: 'Simple enough to keep in a self-hosted AI app without another external service.',
-    name: 'Mina Lee',
-    company: 'Harbor Systems',
+    quote: 'The open-source approach made it easy to audit what is being redacted before we ship wider.',
+    name: 'Nina K.',
+    company: 'Security-minded startup',
     avatar: 'https://i.pravatar.cc/96?img=47',
   },
 ] as const;
@@ -105,16 +117,7 @@ const featureItems = [
   },
 ] as const;
 
-const ecosystemLogos = [
-  'OpenAI',
-  'Vercel',
-  'Supabase',
-  'Stripe',
-  'GitHub',
-  'Next.js',
-  'Anthropic',
-  'Cloudflare',
-] as const;
+const ecosystemLogos = ['Linear', 'PostHog', 'Clerk', 'Neon', 'Sentry', 'Railway', 'Render', 'Fly.io'] as const;
 
 const comingSoonItems = [
   {
@@ -140,103 +143,86 @@ const comingSoonItems = [
 ] as const;
 
 function BrandLogo({ name }: { name: typeof ecosystemLogos[number] }) {
-  if (name === 'OpenAI') {
+  if (name === 'Linear') {
     return (
-      <div className="flex items-center gap-3">
-        <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-200" fill="none" aria-hidden="true">
-          <path
-            d="M12 3.25a3.4 3.4 0 0 1 3.07 1.93l.22.46.52-.03a3.4 3.4 0 0 1 3.4 5.11l-.27.45.27.45a3.4 3.4 0 0 1-3.4 5.12l-.52-.03-.22.46a3.4 3.4 0 0 1-6.14 0l-.22-.46-.52.03a3.4 3.4 0 0 1-3.4-5.12l.27-.45-.27-.45a3.4 3.4 0 0 1 3.4-5.11l.52.03.22-.46A3.4 3.4 0 0 1 12 3.25Z"
-            stroke="currentColor"
-            strokeWidth="1.4"
-          />
-          <path d="M9.3 7.7 14.8 11v6.1M14.7 7.7 9.2 11m0 0v6.1m5.6-9.4 2.7 4.7-2.7 4.7H9.2l-2.7-4.7 2.7-4.7Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-        </svg>
-        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
-      </div>
+      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
+        <path d="M6 5.5h12M6 12h8M6 18.5h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
     );
   }
 
-  if (name === 'GitHub') {
+  if (name === 'PostHog') {
     return (
-      <div className="flex items-center gap-3">
-        <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-200" fill="currentColor" aria-hidden="true">
-          <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.42-4.04-1.42-.55-1.37-1.34-1.73-1.34-1.73-1.09-.73.08-.72.08-.72 1.2.08 1.84 1.21 1.84 1.21 1.08 1.81 2.82 1.29 3.5.99.11-.76.42-1.29.76-1.59-2.66-.3-5.47-1.31-5.47-5.81 0-1.28.47-2.33 1.23-3.15-.12-.3-.53-1.52.12-3.17 0 0 1.01-.32 3.3 1.2A11.6 11.6 0 0 1 12 6.6c1.02 0 2.05.14 3.01.41 2.28-1.52 3.29-1.2 3.29-1.2.65 1.65.24 2.87.12 3.17.77.82 1.23 1.87 1.23 3.15 0 4.51-2.81 5.5-5.49 5.8.43.37.82 1.1.82 2.23v3.31c0 .32.21.7.83.58A12 12 0 0 0 12 .5Z" />
-        </svg>
-        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
-      </div>
+      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
+        <path d="M6 5h6l6 7v7H6V5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        <circle cx="12" cy="12" r="2.2" fill="currentColor" />
+      </svg>
     );
   }
 
-  if (name === 'Vercel') {
+  if (name === 'Clerk') {
     return (
-      <div className="flex items-center gap-3">
-        <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-200" fill="currentColor" aria-hidden="true">
-          <path d="M12 4 20 18H4l8-14Z" />
-        </svg>
-        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
-      </div>
+      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M9 12.5 11 14.5 15.5 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
     );
   }
 
-  if (name === 'Next.js') {
+  if (name === 'Neon') {
     return (
-      <div className="flex items-center gap-3">
-        <div className="flex h-5 w-5 items-center justify-center rounded-full border border-gray-700 text-[9px] font-semibold text-gray-200">
-          N
-        </div>
-        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
-      </div>
+      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
+        <rect x="5" y="5" width="14" height="14" rx="3" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M8.5 15.5v-7l7 7v-7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
     );
   }
 
-  if (name === 'Supabase') {
+  if (name === 'Sentry') {
     return (
-      <div className="flex items-center gap-3">
-        <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-200" fill="currentColor" aria-hidden="true">
-          <path d="M14.8 3.5c.39-.48 1.16-.2 1.16.42v9.14h2.13c.73 0 1.13.84.67 1.4l-8.54 9.97c-.4.46-1.15.18-1.15-.43v-9.03H6.93c-.73 0-1.12-.85-.66-1.41L14.8 3.5Z" />
-        </svg>
-        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
-      </div>
+      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
+        <path d="M5.5 9.5a6.5 6.5 0 1 1 11 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M7 14c1.4-2.8 5.8-2.8 7.2 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
     );
   }
 
-  if (name === 'Stripe') {
+  if (name === 'Railway') {
     return (
-      <div className="flex items-center gap-3">
-        <div className="text-sm font-semibold tracking-[0.02em] text-gray-200">stripe</div>
-      </div>
+      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
+        <path d="M6 18V6h5.5a4 4 0 0 1 0 8H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M13 13.5 18 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
     );
   }
 
-  if (name === 'Anthropic') {
+  if (name === 'Render') {
     return (
-      <div className="flex items-center gap-3">
-        <div className="text-sm font-semibold tracking-[0.02em] text-gray-200">AI</div>
-        <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
-      </div>
+      <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
+        <path d="M6 18V6h5.2a4.1 4.1 0 0 1 0 8.2H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M11.7 14.2 18 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
     );
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-200" fill="none" aria-hidden="true">
-        <path d="M5 12a7 7 0 0 1 14 0M12 5a7 7 0 0 1 0 14M6.5 8.5c2.2 1.5 8.8 1.5 11 0M6.5 15.5c2.2-1.5 8.8-1.5 11 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
-      <span className="font-medium tracking-[0.04em] text-gray-300">{name}</span>
-    </div>
+    <svg viewBox="0 0 24 24" className="h-4 w-4 text-gray-200" fill="none" aria-hidden="true">
+      <path d="M12 4v16M4 12h16M6.5 6.5l11 11M17.5 6.5l-11 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
   );
 }
 
 function ComingSoonLogo({ logo }: { logo: 'openai' | 'express' | 'logs' | 'webhook' }) {
   if (logo === 'openai') {
     return (
-      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-gray-200">
-        <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" aria-hidden="true">
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-800 bg-black text-gray-100">
+        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
           <path
             d="M12 3.25a3.4 3.4 0 0 1 3.07 1.93l.22.46.52-.03a3.4 3.4 0 0 1 3.4 5.11l-.27.45.27.45a3.4 3.4 0 0 1-3.4 5.12l-.52-.03-.22.46a3.4 3.4 0 0 1-6.14 0l-.22-.46-.52.03a3.4 3.4 0 0 1-3.4-5.12l.27-.45-.27-.45a3.4 3.4 0 0 1 3.4-5.11l.52.03.22-.46A3.4 3.4 0 0 1 12 3.25Z"
             stroke="currentColor"
             strokeWidth="1.4"
           />
+          <path d="M9.3 7.7 14.8 11v6.1M14.7 7.7 9.2 11m0 0v6.1m5.6-9.4 2.7 4.7-2.7 4.7H9.2l-2.7-4.7 2.7-4.7Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
         </svg>
       </div>
     );
@@ -244,23 +230,31 @@ function ComingSoonLogo({ logo }: { logo: 'openai' | 'express' | 'logs' | 'webho
 
   if (logo === 'express') {
     return (
-      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-[8px] font-semibold uppercase tracking-[0.1em] text-gray-200">
-        ex
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-800 bg-black text-[7px] font-semibold uppercase tracking-[0.2em] text-gray-200">
+        <span className="-ml-[0.6px]">exp</span>
       </div>
     );
   }
 
   if (logo === 'webhook') {
     return (
-      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-gray-300">
-        <Globe size={16} />
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-800 bg-black text-gray-300">
+        <Webhook size={16} />
+      </div>
+    );
+  }
+
+  if (logo === 'logs') {
+    return (
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-800 bg-black text-gray-300">
+        <Bug size={16} />
       </div>
     );
   }
 
   return (
-    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-800 bg-gray-950 text-gray-300">
-      <FileStack size={16} />
+    <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-800 bg-black text-gray-300">
+      <Braces size={16} />
     </div>
   );
 }
@@ -341,7 +335,8 @@ export default function Home() {
                 ecosystemLogos.map((logo) => (
                   <div
                     key={`${logo}-${index}`}
-                    className="flex items-center gap-3 rounded-full border border-gray-900 bg-gray-950/75 px-5 py-3 text-sm text-gray-400"
+                    aria-label={logo}
+                    className="flex items-center justify-center rounded-full border border-gray-900 bg-gray-950/75 px-4 py-2.5"
                   >
                     <BrandLogo name={logo} />
                   </div>
@@ -349,6 +344,22 @@ export default function Home() {
               )}
             </div>
           </div>
+
+          <section className="mt-16 border-t border-gray-900 pt-12">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {featureItems.map((feature) => {
+                const Icon = feature.icon;
+
+                return (
+                  <div key={feature.title} className="rounded-xl border border-gray-900 bg-gray-950/60 p-4">
+                    <Icon className="text-white" size={18} />
+                    <div className="mt-3 font-medium">{feature.title}</div>
+                    <p className="mt-1 text-sm text-gray-400">{feature.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
 
           <div className="mt-20 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="min-w-0 rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
@@ -367,15 +378,18 @@ console.log(redactedText);
               </pre>
             </div>
 
-            <div className="min-w-0 border-t border-gray-800 pt-5 sm:pt-6 lg:pt-10">
-              <h2 className="text-lg font-medium">Quick usage</h2>
+            <div className="min-w-0 rounded-2xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <TerminalSquare size={16} />
+                Quick usage
+              </div>
               <p className="mt-2 text-sm text-gray-400">
                 Install it, import it, and redact before you send anything to an API.
               </p>
-              <div className="mt-5 font-mono text-sm text-green-400">
+              <div className="mt-5 inline-flex rounded-md border border-gray-800 bg-black px-3 py-2 font-mono text-sm text-green-400">
                 npm install openredaction
               </div>
-              <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black/70 p-4 text-sm leading-6 text-gray-200">
+              <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 text-sm leading-6 text-gray-200">
 {`import { redact } from "openredaction";
 
 const text = "ticket: user said call me on 555-0199 after lunch";
@@ -444,22 +458,6 @@ console.log(redactedText);`}
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32 border-t border-gray-900 pt-16">
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {featureItems.map((feature) => {
-              const Icon = feature.icon;
-
-              return (
-                <div key={feature.title} className="rounded-xl border border-gray-900 bg-gray-950/60 p-4">
-                  <Icon className="text-white" size={18} />
-                  <div className="mt-3 font-medium">{feature.title}</div>
-                  <p className="mt-1 text-sm text-gray-400">{feature.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28">
           <div className="border-t border-gray-900 pt-10">
             <div className="max-w-2xl">
@@ -473,7 +471,7 @@ console.log(redactedText);`}
               {comingSoonItems.map((item) => (
                 <div
                   key={item.title}
-                  className="flex items-start gap-3 rounded-xl border border-gray-900/80 bg-transparent px-1 py-2"
+                  className="flex items-start gap-3 rounded-xl border border-gray-900 bg-gray-950/40 p-3"
                 >
                   <ComingSoonLogo logo={item.logo} />
                   <div>
@@ -489,17 +487,17 @@ console.log(redactedText);`}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32">
           <div className="border-t border-gray-900 pt-14 text-center">
             <p className="mx-auto max-w-3xl text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-              &ldquo;We run this before every OpenAI request to avoid leaking user data.&rdquo;
+              &ldquo;OpenRedaction gave us a practical, inspectable first layer for masking obvious PII before prompts and logs.&rdquo;
             </p>
             <div className="mt-6 flex flex-col items-center">
               <img
                 src="https://i.pravatar.cc/112?img=60"
-                alt="Daniel Reeves portrait"
+                alt="Samir Q portrait"
                 className="h-16 w-16 rounded-full border border-gray-800 object-cover"
               />
-              <p className="mt-4 text-sm font-medium text-white">Daniel Reeves</p>
+              <p className="mt-4 text-sm font-medium text-white">Samir Q.</p>
               <p className="mt-1 text-xs uppercase tracking-[0.22em] text-gray-500">
-                Node.js developer · Northline
+                Maintainer, internal AI tooling
               </p>
             </div>
           </div>
@@ -517,29 +515,31 @@ console.log(redactedText);`}
               </p>
             </div>
 
-            <div className="mt-8 grid gap-4 lg:grid-cols-4">
-              {comparisonCards.map((card, index) => (
-                <div
-                  key={card.name}
-                  className={`rounded-2xl border p-5 ${
-                    index === 0 ? 'border-gray-700 bg-black' : 'border-gray-900 bg-black/40'
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-base font-medium text-white">{card.name}</h3>
-                    <span className="rounded-full border border-gray-800 px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-gray-500">
-                      {card.type}
-                    </span>
-                  </div>
-                  <div className="mt-5 space-y-3">
-                    {card.notes.map((note) => (
-                      <div key={note} className="border-t border-gray-900 pt-3 text-sm text-gray-300">
-                        {note}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <div className="mt-8 overflow-x-auto rounded-2xl border border-gray-800 bg-black/40">
+              <table className="min-w-[820px] w-full text-left">
+                <thead className="bg-gray-950/80">
+                  <tr>
+                    <th className="px-4 py-3 text-xs uppercase tracking-[0.18em] text-gray-500">Tool</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-[0.18em] text-gray-500">Type</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-[0.18em] text-gray-500">Runtime</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-[0.18em] text-gray-500">Processing</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-[0.18em] text-gray-500">Detection</th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-[0.18em] text-gray-500">Best fit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonCards.map((card, index) => (
+                    <tr key={card.name} className={index === 0 ? 'bg-gray-950/50' : 'bg-transparent'}>
+                      <td className="px-4 py-4 border-t border-gray-900 text-sm font-medium text-white">{card.name}</td>
+                      <td className="px-4 py-4 border-t border-gray-900 text-sm text-gray-300">{card.type}</td>
+                      <td className="px-4 py-4 border-t border-gray-900 text-sm text-gray-300">{card.runtime}</td>
+                      <td className="px-4 py-4 border-t border-gray-900 text-sm text-gray-300">{card.processing}</td>
+                      <td className="px-4 py-4 border-t border-gray-900 text-sm text-gray-300">{card.detection}</td>
+                      <td className="px-4 py-4 border-t border-gray-900 text-sm text-gray-300">{card.bestFor}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
