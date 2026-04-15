@@ -119,60 +119,172 @@ const blogPosts: { [key: string]: any } = {
     title: 'PII Detection for AI: How to Safely Use User Data with LLMs',
     date: '2025-12-05',
     category: 'Guide',
-    excerpt: 'Where PII leaks in LLM pipelines, how to architect pattern-first guardrails, and when to add separate ML detection — without sending data you cannot explain.',
+    authorName: '[Your Name]',
+    authorBio: 'Placeholder profile text for author credentials and background.',
+    excerpt:
+      'How to detect and redact PII across LLM pipelines with pattern-first controls, optional NER, and infrastructure-level privacy safeguards.',
     content: `
-      <p>LLMs excel at messy text — and they will happily absorb names, emails, IDs, and pasted documents unless you control what crosses the boundary. If user data reaches a model or a log, you need <strong>visibility</strong> and a <strong>repeatable redaction layer</strong>, not hope.</p>
+      <p>Large Language Models (LLMs) are extraordinary at handling messy, unstructured text. They effortlessly parse incomplete sentences, analyze context, and synthesize fluent replies—but that same flexibility makes them eager to absorb anything passed their way: names, email addresses, national IDs, financial details, or confidential documents.</p>
+      <p>Without strict boundaries, your AI system can unintentionally become a privacy sink—logging sensitive content across model pipelines, traces, or fine-tuning datasets. The solution is not blind trust, it is visibility and repeatable redaction layers built directly into every boundary of your data flow.</p>
+      <p>This guide explores where Personally Identifiable Information (PII) hides within AI systems, how to conceptualize risk, and how modern detection frameworks such as OpenRedaction and our upcoming OpenAI and Express.js packages fit into secure workflows for prompts, retrieval systems, and observability logs.</p>
 
-      <p>This guide maps where PII appears around AI systems, how to think about risk, and how a <strong>pattern-first</strong>, self-hosted detector (like <a href="/">OpenRedaction</a>) fits at gateways, RAG ingestion, and logging. For implementation detail, start with the <a href="/pii-detection">PII detection guide</a> and <a href="/docs/getting-started">docs</a>.</p>
-
-      <p>For a shorter overview, read the <a href="/pii-redaction">PII redaction guide</a>.</p>
-      <p>To compare tools side by side, read <a href="/open-source-ai-redaction-tools">open source AI redaction tools</a>.</p>
-      <p>If you need the implementation steps, read <a href="/redact-pii-before-openai">How to Redact PII Before Sending Data to OpenAI (Node.js)</a>.</p>
-
-      <h2>Where PII hides</h2>
+      <h2>1. The AI Privacy Problem: Unstructured Risk Everywhere</h2>
+      <p>The AI development stack is inherently porous. Every message, document, or vector embedding can pass through multiple layers of software, from gateways and middlewares to third-party APIs. Each layer presents unique opportunities for accidental data exposure.</p>
+      <h3>Common Injection Points</h3>
       <ul>
-        <li><strong>Inbound:</strong> prompts, uploads (PDF/DOCX/CSV), CRM exports pasted into chat, email threads, transcripts.</li>
-        <li><strong>Processing:</strong> request/response logs, traces, replay tools, feature stores.</li>
-        <li><strong>Storage:</strong> vector DBs, fine-tuning sets, warehouses that retain “raw prompts for debugging.”</li>
-        <li><strong>Outbound:</strong> model replies that echo user input or retrieved chunks.</li>
+        <li><strong>Inbound streams:</strong> User prompts, uploads, and pasted exports (CSV, DOCX, or CRM snapshots).</li>
+        <li><strong>Processing layers:</strong> System logs, traces, APM instrumentation, and replay tools used for debugging.</li>
+        <li><strong>Storage:</strong> Vector databases, custom embeddings, RAG indexes, and training sets retaining raw payloads.</li>
+        <li><strong>Outbound channels:</strong> Model-generated responses that echo user prompts, retrieved snippets, or internal context.</li>
       </ul>
-      <p>One message can fan out across many systems — treat the <strong>first hop</strong> (gateway / worker) as the main control point.</p>
+      <p>One interaction can fan out through half a dozen network boundaries, cloud storage, caching layers, message queues, and analytics systems. Treat the first hop (typically the API gateway or Express.js middleware) as your critical control plane. That is where redaction must begin.</p>
 
-      <h2>What you are actually protecting against</h2>
+      <h2>2. What You Are Actually Protecting Against</h2>
+      <p>LLM privacy challenges are rarely about malicious intent, they stem from operational sprawl, where sensitive inputs get replicated or logged unintentionally.</p>
       <ul>
-        <li><strong>Accidental logging</strong> of prompts and completions in shared observability stacks.</li>
-        <li><strong>Vendor and residency risk</strong> when text leaves your region or subprocessors.</li>
-        <li><strong>RAG / training leakage</strong> when unredacted chunks reappear in unrelated answers.</li>
-        <li><strong>Compliance load</strong> — DSARs and deletion get harder every time PII is copied “just in case.”</li>
+        <li><strong>Accidental logging:</strong> Prompts, completions, and file content copied into observability platforms (Datadog, LogStream, Elastic) that lack structured privacy controls.</li>
+        <li><strong>Vendor and residency risk:</strong> Text leaving your legal region or entering subprocessors operated by the model vendor.</li>
+        <li><strong>Retrieval leakage (RAG, fine-tuning):</strong> Unredacted chunks reappearing in unrelated completions due to embeddings storing human-identifiable metadata.</li>
+        <li><strong>Compliance complexity:</strong> Each duplicate makes GDPR deletion requests and DSARs exponentially harder.</li>
       </ul>
+      <p>These risks scale faster than visibility. To manage them, engineers must design PII-aware pipelines, where every text transformation, ingestion step, and storage event is privacy-scoped.</p>
 
-      <h2>Pattern-first vs ML — and how they combine</h2>
-      <p><strong>Regex / rules</strong> catch structured identifiers (emails, phones, cards, many national IDs). They are fast, deterministic, and auditable — ideal as the default gate before anything hits an LLM API.</p>
-      <p><strong>NER / ML models</strong> help with names, organizations, and messy prose, but add cost, latency, and often <strong>another data processor</strong>. Many teams run them only on segments that policy allows, or only inside a VPC.</p>
-      <p>A solid production pattern: <strong>(1)</strong> run high-precision pattern redaction locally; <strong>(2)</strong> optionally run a separate NER pass where legal/security approves the data flow; <strong>(3)</strong> merge spans and redact once. OpenRedaction focuses on step 1 — the part every team can deploy everywhere without external calls.</p>
-
-      <h2>Where to wire detection</h2>
+      <h2>3. Pattern-First vs Machine Learning Detection</h2>
+      <p>There are two dominant paradigms for detecting sensitive text: pattern-first (regex-based) and ML/NLP-based. The best production systems combine both strategically.</p>
+      <h3>Pattern-First (Regex / Rule-Based)</h3>
+      <p>Regex-driven detectors catch structured identifiers, emails, phone numbers, credit card numbers, postal codes, and national IDs, with deterministic precision.</p>
+      <p><strong>Advantages:</strong></p>
       <ul>
-        <li><strong>LLM gateway / middleware</strong> — redact request bodies before they leave your network.</li>
-        <li><strong>RAG ingest</strong> — extract text → redact → chunk/embed so the index never stores raw identifiers.</li>
-        <li><strong>Log and trace sinks</strong> — scrub payloads before they reach third-party APM.</li>
-        <li><strong>Response path</strong> — scan model output before it is stored or shown (echo suppression).</li>
+        <li>Fast, local, and auditable.</li>
+        <li>Requires no external data processor.</li>
+        <li>Easy to embed into existing gateways or Express.js middleware.</li>
       </ul>
-
-      <h2>Redaction style</h2>
-      <p>For external models, prefer <strong>full placeholders</strong> or tokens over partial leaks. Partial masking is for tightly controlled internal tools. Pick one strategy per pipeline and document it — auditors care that it is consistent, not clever.</p>
-
-      <h2>Prove it works</h2>
+      <p>This approach forms step one in any privacy stack, your PII firewall before content ever reaches an LLM API.</p>
+      <p>Our upcoming Express.js Redaction Middleware will implement this layer out-of-the-box:</p>
+      <pre><code>app.use(require('@openredaction/express-pii')());</code></pre>
+      <p>Integrated directly with OpenAI SDK routes, it ensures every prompt and completion is pre-scrubbed using deterministic regex before external transmission.</p>
+      <h3>ML / Named Entity Recognition (NER)</h3>
+      <p>NER-based models expand detection to unstructured text, names, organizations, and contextual references. They use statistical patterns and embeddings rather than explicit formulas.</p>
+      <p><strong>Advantages:</strong></p>
       <ul>
-        <li>Regression tests with synthetic PII through your real gateway.</li>
-        <li>Periodic searches in logs and vector stores for canary values.</li>
-        <li>Latency budget for the redaction step so teams do not bypass it under load.</li>
+        <li>Powerful for conversational or narrative text.</li>
+        <li>Detects entities missed by rigid regex (e.g., "John from Barclays" or "Emma's discharge summary").</li>
       </ul>
+      <p><strong>Trade-offs:</strong></p>
+      <ul>
+        <li>Slower and costlier.</li>
+        <li>Adds potential data residency issues, since some frameworks outsource inference.</li>
+        <li>Requires additional privacy safeguards if running externally.</li>
+      </ul>
+      <p><strong>Optimal architecture:</strong></p>
+      <ul>
+        <li>Run high-precision pattern redaction locally.</li>
+        <li>Optionally apply NER within a private VPC.</li>
+        <li>Merge spans and enforce single-pass redaction.</li>
+      </ul>
+      <p>OpenRedaction, and our OpenAI privacy SDK, focuses on step 1, the part you can deploy everywhere, safely, without external API calls.</p>
 
-      <h2>OpenRedaction in this stack</h2>
-      <p>OpenRedaction is an open-source, regex-first library you run on your own hardware: large pattern set, validators, presets, deterministic output. Use it at the edges above; pair with other tooling if your policy requires ML coverage for free-text names.</p>
+      <h2>4. Wiring Detection into Your Infrastructure</h2>
+      <p>Modern AI apps often integrate dozens of components, with data moving bidirectionally across LLM APIs, vector indices, and analytics dashboards. You need to wire PII detection across all data surfaces that cross a trust boundary.</p>
+      <h3>Core Locations for Redaction</h3>
+      <p><strong>LLM Gateway / Middleware:</strong><br />Redact request bodies before they leave your secure network.</p>
+      <p>Our upcoming Express.js PII Detection Package will expose middleware hooks such as:</p>
+      <pre><code>app.use(require('@openredaction/express-pii')());</code></pre>
+      <p>Integrated directly with OpenAI SDK routes, it ensures every prompt and completion is pre-scrubbed using deterministic regex before external transmission.</p>
+      <p><strong>RAG Pipeline Ingestion:</strong><br />When processing documents for Retrieval-Augmented Generation, redact text early before embeddings and chunking. That way, your vector database never stores raw identifiers.</p>
+      <p><strong>Log and Trace Streams:</strong><br />Scrub payloads before they hit APM systems or cloud observability tools. Use stream filters that detect and mask sensitive tokens in the log formatter.</p>
+      <p><strong>Response Path (Echo Suppression):</strong><br />Scan generated replies before storage or display. Models can inadvertently echo user inputs; suppression filters prevent accidental resurfacing of PII.</p>
+      <p>This architecture is simple but powerful: every layer performs a privacy check just before data exits its internal domain.</p>
 
-      <p>Questions or rollout help: <a href="/contact">contact</a> · <a href="/pricing">enterprise</a>.</p>
+      <h2>5. Redaction Style and Consistency</h2>
+      <p>Redaction strategy defines how PII is represented post-sanitization. Consistency beats cleverness, auditors prefer a stable, predictable approach.</p>
+      <h3>Placeholder vs Partial Masking</h3>
+      <ul>
+        <li>Full placeholders (e.g., {{EMAIL_REDACTED}}) are best for external model interactions.</li>
+        <li>Partial masking (e.g., jo***@domain.com) is suitable only for internal dashboards or controlled analytics.</li>
+      </ul>
+      <p>Document your chosen style, apply it globally across pipelines, and version-control redaction schemas as part of data governance metadata.</p>
+      <p>Our OpenAI redaction package will support both strategies with schema validation, allowing developers to pick between tokenization, reversible pseudonyms, or irreversible placeholders.</p>
+
+      <h2>6. Proving It Works: Verification and Audit</h2>
+      <p>Privacy assurance is not theoretical, it requires continuous, automated proof. Build regression pipelines that simulate realistic scenarios across your AI stack.</p>
+      <ul>
+        <li>Synthetic PII regression tests: Generate fake data, emails, IDs, card numbers, and feed it through your gateway to ensure redaction consistency.</li>
+        <li>Search audits: Periodically scan vector databases and log stores using regex patterns or hash-checks for synthetic markers.</li>
+        <li>Latency measurement: Maintain a defined threshold (e.g., less than 50ms per prompt redaction). If performance drops, teams may bypass redaction under pressure, a major security risk.</li>
+      </ul>
+      <h3>Example Audit Flow</h3>
+      <ul>
+        <li>Inject canary values (e.g., test-3456-email@piitest.co.uk) into prompts.</li>
+        <li>Verify they never appear in logs, embedding vectors, or LLM responses.</li>
+        <li>Generate compliance reports referencing test timestamps and sanitized outputs.</li>
+      </ul>
+      <p>This cycle creates active assurance, privacy that operates as part of CI/CD rather than afterthought compliance.</p>
+
+      <h2>7. Integrating with the OpenAI SDK</h2>
+      <p>Our upcoming OpenAI Redaction SDK for Node.js provides native interoperation with the official OpenAI client, letting developers hook redaction logic directly into model calls.</p>
+      <pre><code>import { redactPII } from '@openredaction/openai';
+import OpenAI from 'openai';
+
+const client = new OpenAI({ apiKey: process.env.OPENAI_KEY });
+
+async function safeCompletion(prompt) {
+  const sanitized = await redactPII(prompt);
+  return client.chat.completions.create({
+    model: 'gpt-5-turbo',
+    messages: [{ role: 'user', content: sanitized }],
+  });
+}</code></pre>
+      <p>This ensures sensitive data is removed before transmission, preserving compliance across GDPR, CCPA, and DPA 2018 (UK). The SDK adds:</p>
+      <ul>
+        <li>Adjustable regex libraries (PCI, HIPAA, UK/US standards).</li>
+        <li>Redaction logging to your local audit files.</li>
+        <li>Built-in Express middlewares for auto-scrubbing inbound JSON bodies.</li>
+      </ul>
+      <p>Together, the Express.js middleware and OpenAI SDK hooks create a fully enclosed privacy perimeter, covering data entry, model invocation, and log retention uniformly.</p>
+
+      <h2>8. Deployment Patterns for Self-Hosted Privacy</h2>
+      <p>For enterprise compliance, you may choose to host redaction infrastructure locally rather than through a cloud processor.</p>
+      <h3>Recommended Setup</h3>
+      <ul>
+        <li>Self-hosted detector service: Run OpenRedaction or our upcoming Express package within a secure Kubernetes namespace.</li>
+        <li>Isolated ingress queue: All inbound requests are queued and sanitized before API forwarding.</li>
+        <li>Environment separation: Maintain distinct namespaces for preprocessing (redaction) and postprocessing (response capture).</li>
+        <li>Config audit log: Persist redaction configurations as YAML in version control for reproducibility.</li>
+      </ul>
+      <p>This architecture parallels zero-trust design, assuming each node is potentially untrusted and enforcing privacy at every hop.</p>
+
+      <h2>9. Compliance and Governance Alignment</h2>
+      <p>Effective PII detection is not just an engineering safeguard, it satisfies legal and ethical obligations under modern privacy frameworks.</p>
+      <p>Your stack should explicitly reference:</p>
+      <ul>
+        <li>GDPR Articles 5, 25 (Data minimization and Privacy by Design).</li>
+        <li>UK Data Protection Act (2018) Schedule 1.</li>
+        <li>SOC 2 Type II Security and Processing Integrity Controls.</li>
+        <li>ISO 27701 Extension for Privacy Information Management.</li>
+      </ul>
+      <p>By incorporating automated redaction, your organization meets the appropriate technical and organizational measures clause, proving that PII exposure is not accidental, but actively prevented.</p>
+
+      <h2>10. The Path Forward</h2>
+      <p>PII detection in LLM pipelines is no longer optional, it is structural. As AI workloads move into production, regulators, auditors, and enterprise clients expect verifiable privacy constraints.</p>
+      <p>Through our upcoming OpenAI integration and Express.js packages, teams will be able to deploy end-to-end safeguards with:</p>
+      <ul>
+        <li>Local, deterministic redaction.</li>
+        <li>Seamless embedding into any API route or AI service.</li>
+        <li>Full visibility and proof through audit-ready logs.</li>
+      </ul>
+      <p>Combined with OpenRedaction&apos;s regex-first precision, these tools form a privacy-first foundation for AI developers handling real-world data.</p>
+
+      <h2>Closing Thought</h2>
+      <p>In the era of generative computation, the true measure of responsible AI is not what models can learn, but what data they never see.</p>
+      <p>Detection and redaction are invisible victories: each scrubbed identifier represents one less compliance nightmare, one more proof of operational maturity. Redaction is not bureaucracy, it is architecture.</p>
+
+      <div style="margin-top: 2.5rem; padding: 1.25rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem;">
+        <h3 style="margin-top: 0; margin-bottom: 0.5rem; font-size: 1.1rem; font-weight: 600; color: #fff;">Author</h3>
+        <p style="margin: 0; color: #cbd5e1;"><strong>[Your Name]</strong> — Placeholder profile text for author credentials and background.</p>
+      </div>
+
+      <p style="margin-top: 2rem;">Questions or rollout help: <a href="/contact">contact</a> · <a href="/pricing">enterprise</a>.</p>
 
       <div style="margin-top: 3rem; padding: 1.5rem; background-color: #111827; border: 1px solid #374151; border-radius: 0.5rem;">
         <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600; color: #fff;">Related</h3>
@@ -189,49 +301,125 @@ const blogPosts: { [key: string]: any } = {
     title: 'How to Handle PII Safely in Support Tickets, Emails and Chat Transcripts',
     date: '2025-12-11',
     category: 'Guide',
+    authorName: 'Sam Pettiford',
+    authorBio: 'Placeholder bio: privacy engineer and builder focused on practical data protection systems for modern support operations.',
     excerpt: 'Minimize what support channels store, redact early, and keep agents aligned — practical controls for tickets, email, and chat.',
     content: `
-      <p>Support is where customers paste passwords, card numbers, and medical context into the thread. Assume <strong>every channel</strong> (ticket, email, chat) will receive PII — then design for least collection, early redaction, and short retention.</p>
+      <p>Customer support is a paradoxical frontline in data security: it is where users come seeking help and often hand over their most private information in the process. Between urgent troubleshooting and unscripted human dialogue, sensitive identifiers appear freely in emails, ticket comments, and live chat. Passwords, card numbers, tax IDs, and even medical context routinely find their way into support threads, creating high exposure risk across systems never designed for long-term storage of personal data.</p>
+      <p>To handle Personally Identifiable Information (PII) safely, assume every inbound support channel will receive sensitive data. Then design for least collection, early redaction, and short retention, a data minimization triad that should shape every interaction, policy, and pipeline across your helpdesk stack.</p>
 
-      <h2>What shows up most often</h2>
+      <h2>1. What Shows Up Most Often</h2>
+      <p>Support datasets typically contain a predictable pattern of privacy hazards, each with distinct technical implications:</p>
       <ul>
-        <li>Contact and account identifiers: name, email, phone, address, account numbers.</li>
-        <li>Government and financial: tax IDs, partial or full card numbers, bank details.</li>
-        <li>Credentials: passwords, OTPs, API keys pasted “to help debug.”</li>
-        <li>Health and sensitive context when your product touches regulated domains.</li>
-        <li>Quasi-identifiers: order IDs, device IDs, timestamps + geography that re-identify when combined.</li>
+        <li><strong>Contact and account identifiers:</strong> Full name, email address, phone numbers, physical addresses, and account references. These form the baseline of contextual identity and are commonly indexed across CRM connectors.</li>
+        <li><strong>Government and financial IDs:</strong> National insurance numbers, tax IDs, partial or full credit card numbers, and bank details. These trigger PCI-DSS and GDPR sensitivity thresholds if stored unencrypted.</li>
+        <li><strong>Credentials:</strong> Passwords, one-time passcodes (OTPs), private API keys, and session tokens often surface as users "paste to debug." These represent critical authentication artifacts and warrant immediate redaction.</li>
+        <li><strong>Health or regulated context:</strong> In sectors intersecting medical or financial systems, chat transcripts can contain regulated patient data, ICD-10 codes, or insurance reference numbers, invoking HIPAA or FCA confidentiality standards.</li>
+        <li><strong>Quasi-identifiers:</strong> Order numbers, device IDs, timestamps, and geographic data. While innocuous individually, combinations can lead to re-identification attacks, where anonymized records are reversed into identifiable profiles using common data points.</li>
+      </ul>
+      <p>Together, these elements turn every customer message into a data security liability. Even a single support ticket can meet definitions of personal data under GDPR Article 4(1). That is why technical and operational controls must apply from message ingestion, not only at rest.</p>
+
+      <h2>2. Policy: Collect the Minimum</h2>
+      <p>Effective PII handling begins with policy, not software. Define precisely which data agents may request, what customers may volunteer, and what must be blocked or deleted automatically.</p>
+      <ul>
+        <li><strong>Scope Definition:</strong> Catalogue every field handled in your support platform (Zendesk, Intercom, or custom CRM). Map each field to its business purpose and lawful basis for processing under Article 6 of GDPR.</li>
+        <li><strong>Structured Inputs:</strong> Replace free-text fields with controlled input widgets wherever possible. For example, use dropdowns for account type instead of letting users write identifiers into text areas.</li>
+        <li><strong>Consent Barriers:</strong> Configure form logic to restrict uploads or text entry of card numbers or passwords. Validation regexes help pre-screen common numeric patterns (e.g., Luhn-check for card digits).</li>
+        <li><strong>Documentation:</strong> Record why each data element is collected, its maximum retention period, and the security classification. ISO/IEC 27001 frameworks require such justification for audit compliance.</li>
+      </ul>
+      <p>The principle here is data by design, not reaction. Avoid storing what you do not need to resolve a ticket, and assume customer messages will always contain extra data you never asked for.</p>
+
+      <h2>3. Technical Controls: Engineering for Redaction, Masking, and Retention</h2>
+      <p>Policy serves as intent; engineering delivers enforcement. Modern support infrastructure can leverage machine learning, pattern libraries, encryption, and structured retention to ensure PII is instantly contained.</p>
+
+      <h3>Ingest-Time Redaction</h3>
+      <p>The first opportunity for defense is at message ingestion. Configure automated scrubbing pipelines that detect patterns (regex-based or ML-managed) before indexing content into your ticket store or message database.</p>
+      <ul>
+        <li><strong>Pattern libraries:</strong> Create detection modules for card formats, IBANs, government IDs, and email regexes. These run as pre-processors inside ETL jobs.</li>
+        <li><strong>AI-assisted redaction:</strong> Use NLP models trained on conversational PII contexts. These outperform simple regex in identifying embedded credentials or health data within free-text support requests.</li>
+        <li><strong>Attachment screening:</strong> PDFs and screenshots must pass through OCR + entity detection before storage. If PII appears, redact pixel regions or discard entirely.</li>
+      </ul>
+      <p>The guiding concept is PII should never reach replication or search indexing unfiltered. Detect and mutate content immediately, before it becomes part of a retrievable corpus.</p>
+
+      <h3>Display Masking</h3>
+      <p>Even when PII is legitimately captured, it should not be freely visible. Implement layered visibility using UI masking and role-based access control (RBAC):</p>
+      <ul>
+        <li>Default views show truncated identifiers: only last 4 digits of card or account numbers should remain.</li>
+        <li>Break-glass access: require elevated roles (e.g., security lead or compliance officer) to view raw data through audited access events.</li>
+        <li>Tokenization systems: Replace identifiers with reversible tokens stored in a dedicated, encrypted vault with AES-256 encryption keys managed via HSM (Hardware Security Module).</li>
+      </ul>
+      <p>This ensures operational efficiency for agents while maintaining strict visibility segregation between front-line support and administrative staff.</p>
+
+      <h3>Retention and Lifecycle Controls</h3>
+      <p>Retention policies should follow the TTL-first approach, where time-to-live determines storage expiry automatically.</p>
+      <ul>
+        <li>Short transcript TTL: Unredacted conversation stores should auto-delete within 30-90 days. Persistent analytics or QA archives should only retain sanitized versions.</li>
+        <li>Immutable audit versions: Keep minimal metadata, ticket ID, timestamp, category, for compliance reporting without retaining user text.</li>
+        <li>Encrypted storage: All sensitive indices must use field-level encryption. Secrets management should rotate keys periodically (every 90 days recommended) using automated vault policies.</li>
+        <li>Deletion pipelines: Automated expunge routines should run on schedule, ensuring no long-term drift between policy and practice.</li>
       </ul>
 
-      <h2>Policy: collect the minimum</h2>
+      <h3>Export Hygiene</h3>
+      <p>Data exports represent a common leakage path. CSV and PDF exports must include scrub functions before leaving the helpdesk environment:</p>
       <ul>
-        <li>Define what agents may <strong>ask for</strong> vs what customers may <strong>volunteer</strong> — block or delete what you do not need.</li>
-        <li>Use structured fields where possible so free-text notes carry less sensitive narrative.</li>
-        <li>Document <strong>why</strong> each data element is retained and for how long.</li>
+        <li>Run pre-export data sanitization via Lambda or worker queue.</li>
+        <li>Exclude raw identifiers unless explicitly authorized.</li>
+        <li>Tag exports with compliance tracking metadata (e.g., GDPR lawful basis code, request timestamp).</li>
       </ul>
 
-      <h2>Technical controls</h2>
+      <h2>4. Agent Workflow: Training for Threat Mitigation</h2>
+      <p>Human error is often more dangerous than any API leak. Even the most technically secure support system fails if agents mishandle content. Agent workflows must therefore embed best practices directly into user experience.</p>
       <ul>
-        <li><strong>Ingest-time redaction</strong> — run automated detection on inbound messages and attachments before indexing or replication (pattern libraries work well for structured PII).</li>
-        <li><strong>Display masking</strong> — default UI shows truncated tokens; reveal full detail only with role-based break-glass.</li>
-        <li><strong>Retention</strong> — shorter TTL on full transcript stores; archive redacted summaries for metrics.</li>
-        <li><strong>Exports</strong> — scrub before CSV/PDF leaves the helpdesk.</li>
+        <li><strong>Training:</strong> Incorporate real-world examples showing how customer copy-paste behavior can violate PCI or HIPAA rules. Teach "never ask for full card numbers, passwords, or identifiers."</li>
+        <li><strong>Secure upload mechanisms:</strong> When verification is genuinely required, agents should direct users to secure upload portals using HTTPS + client-side encryption for files.</li>
+        <li><strong>Redaction and annotation:</strong> When sensitive data appears, the agent should immediately redact or delete the surplus and record why. Example: "Redacted full card number accidentally pasted by user."</li>
+        <li><strong>Escalation protocols:</strong> Fraud or abuse tickets should route to restricted queues with distinct permission tiers, isolating exposure from standard L1 environments.</li>
       </ul>
+      <p>Reinforce training through interface design, contextual warnings, auto-redact shortcuts, and validation logic all help operationalize good privacy hygiene.</p>
 
-      <h2>Agent workflow</h2>
+      <h2>5. Playbooks for Edge Cases</h2>
+      <p>Technical policy alone cannot capture the nuance of live interaction. Support teams thrive on micro playbooks, concise one-page guides for common PII events. Examples:</p>
       <ul>
-        <li>Train: never ask for full card numbers or passwords; use secure upload links or verified flows.</li>
-        <li>When PII appears anyway, redact or delete the surplus and note <em>why</em> in the ticket.</li>
-        <li>Escalation queues for fraud or abuse — separate permissions from general L1.</li>
+        <li><strong>Customer pasted card info:</strong> Immediately redact all but final four digits. Confirm metadata removal, log event under "PCI inadvertent exposure," and tag for review.</li>
+        <li><strong>User shared child's name or medical note:</strong> Flag for privacy review, restrict visibility, and notify compliance officer if data meets regulated health criteria.</li>
+        <li><strong>Attachment appears medical or financial:</strong> Quarantine file in isolated bucket with restricted access. Run automated entity recognition before restoring access.</li>
       </ul>
+      <p>Each playbook should specify who can view raw content, how to document remediation, and when legal or data protection officers must be contacted. These bite-sized responses outperform lengthy policy PDFs, crucial when agents must act quickly under real-time pressure.</p>
 
-      <h2>Playbooks for edge cases</h2>
-      <p>One-page flows beat policy PDFs: “customer pasted card,” “user posted child’s name,” “attachment might be medical.” Pair each with redaction steps, who can view raw content, and when legal must be involved.</p>
+      <h2>6. Auditing What You Actually Store</h2>
+      <p>Without regular validation, even the most refined strategy decays under operational drift. Implement continuous audit cycles across support data to identify leakage or non-compliance.</p>
+      <ul>
+        <li>Monthly sampling: Select a random batch of tickets across all channels. Run regex searches for common patterns, credit card BINs, email structures, tax ID formats.</li>
+        <li>Tier validation: If PII exists within wrong storage tiers (e.g., analytics warehouse vs live helpdesk DB), fix ingestion pipelines, not only the agent memo.</li>
+        <li>Metadata analysis: Inspect logs for unusual access patterns to masked fields. Audit RBAC integrity and break-glass events.</li>
+        <li>Automated compliance reporting: Integrate results with governance platforms like OneTrust or Azure Purview to maintain visibility and produce proof for external audits.</li>
+      </ul>
+      <p>This establishes a feedback loop proving that privacy measures exist not just in theory but in measurable operational outcomes.</p>
 
-      <h2>Audit what you actually stored</h2>
-      <p>Sample tickets monthly. Search for patterns (card BINs, email regex, national ID formats). If hits appear in the wrong tier of storage, fix the pipeline — not the agent memo.</p>
+      <h2>7. Designing for Privacy-Resilient Infrastructure</h2>
+      <p>Security culture should evolve alongside infrastructure. Consider architectural upgrades that embed privacy at the framework level:</p>
+      <ul>
+        <li>Privacy proxies: Route inbound emails through middleware that strips identifiers. Systems like AWS Clean Rooms or custom Kubernetes microservices can implement regex + ML redaction at message ingestion.</li>
+        <li>Message queue isolation: Use separate queues for raw vs redacted messages (e.g., SQS/Azure Service Bus partitions) with distinct IAM roles.</li>
+        <li>Logging minimalism: Application logs should obfuscate identifiers before write. Use pseudonymization for debugging rather than exposing ticket data.</li>
+        <li>Cross-service encryption standards: Enforce AES-256 for transit and rest, enable TLS 1.3 transport, and maintain key custody under dedicated vaults.</li>
+      </ul>
+      <p>This level of architectural embedding ensures data safety even under complex service meshes and distributed workloads across hybrid clouds.</p>
 
-      <h2>Conclusion</h2>
-      <p>Support PII risk is operational: defaults, tooling, and training matter more than a single “secure” product checkbox. Redact early, retain less, and prove it with sampling.</p>
+      <h2>8. The Operational Philosophy of Support Privacy</h2>
+      <p>Customer support PII risk is not solved by a single secure feature. It is an operational philosophy combining defaults, tooling, and training. Secure data pathways mean little if retention logic misfires or if agents casually copy transcripts into personal inboxes.</p>
+      <ul>
+        <li><strong>Redact early.</strong> Every unredacted minute increases exposure across caches, search indices, and notification systems.</li>
+        <li><strong>Retain less.</strong> Short-term visibility with long-term safety. Metrics and summaries suffice for quality assurance without full content retention.</li>
+        <li><strong>Prove compliance.</strong> Use audit sampling, log integrity checks, and documented deletion reports to demonstrate ongoing adherence.</li>
+      </ul>
+      <p>The goal is clear: make privacy enforcement routine, not exceptional. By treating PII handling as part of core architecture design, just like scalability or uptime, you create a support environment resilient by default.</p>
+      <p>In every ticket, email, or chat, PII risk is operational, not incidental. Build your systems to detect, redact, and forget. The most secure support platform is not the one with the hardest encryption, it is the one that retains the least data possible and can prove it continuously.</p>
+
+      <div style="margin-top: 2.5rem; padding: 1.25rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem;">
+        <h3 style="margin-top: 0; margin-bottom: 0.5rem; font-size: 1.1rem; font-weight: 600; color: #fff;">Author</h3>
+        <p style="margin: 0; color: #cbd5e1;"><strong>Sam Pettiford</strong> — Placeholder profile text for author bio and credentials.</p>
+      </div>
 
       <div style="margin-top: 3rem; padding: 1.5rem; background-color: #111827; border: 1px solid #374151; border-radius: 0.5rem;">
         <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600; color: #fff;">Related</h3>
@@ -304,13 +492,26 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
             
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight max-w-7xl mx-auto">{post.title}</h1>
             
-            <div className="flex items-center text-gray-400 text-sm mb-8">
-              <Calendar size={16} className="mr-2" />
-              {new Date(post.date).toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
+            <div className="flex items-center text-gray-400 text-sm mb-8 gap-2">
+              <Calendar size={16} className="mr-1" />
+              {post.authorName ? (
+                <span>
+                  By {post.authorName},{' '}
+                  {new Date(post.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>
+              ) : (
+                <span>
+                  {new Date(post.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>
+              )}
             </div>
 
             <div 

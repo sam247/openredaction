@@ -143,23 +143,31 @@ const trustCardLogos = [
 
 const comingSoonItems = [
   {
+    platform: 'OpenAI',
     title: 'OpenAI wrapper',
-    description: 'Redact before API calls',
+    description:
+      'Redact sensitive data from prompts before sending requests to OpenAI. Prevent emails, names, and other PII from leaving your application while keeping the same API usage pattern.',
     logo: 'openai',
   },
   {
+    platform: 'Express.js',
     title: 'Express middleware',
-    description: 'Sanitise requests and logs',
+    description:
+      'Sanitise incoming request data automatically before it reaches your application logic. Helps prevent sensitive user information from being logged, stored, or forwarded unintentionally in backend services.',
     logo: 'express',
   },
   {
+    platform: 'Logging',
     title: 'Logging integrations',
-    description: 'Safe structured logging',
+    description:
+      'Redact sensitive fields before writing logs to tools like Pino or Winston. Avoid storing emails, phone numbers, and personal data while keeping logs useful for debugging and monitoring.',
     logo: 'logs',
   },
   {
+    platform: 'Webhook',
     title: 'Webhook safety',
-    description: 'Redact before outbound requests',
+    description:
+      'Redact data before sending outbound requests to third-party APIs and webhooks. Prevent sensitive information from leaving your system when integrating with external services or automation workflows.',
     logo: 'webhook',
   },
 ] as const;
@@ -266,9 +274,17 @@ export default function Home() {
                     className="flex items-center justify-center rounded-full border border-gray-900 bg-gray-950/75 px-6 py-3.5"
                   >
                     {logo.wordmarkSrc ? (
-                      <img src={logo.wordmarkSrc} alt={`${logo.name} logo`} className="h-[22px] w-auto max-w-[118px] object-contain opacity-90" />
+                      <img
+                        src={logo.wordmarkSrc}
+                        alt={`${logo.name} logo`}
+                        className="h-[22px] w-auto max-w-[118px] object-contain opacity-70 grayscale-[20%] brightness-90"
+                      />
                     ) : (
-                      <img src={logo.iconSrc} alt={`${logo.name} icon`} className="h-8.5 w-8.5 object-contain" />
+                      <img
+                        src={logo.iconSrc}
+                        alt={`${logo.name} icon`}
+                        className="h-7 w-7 object-contain opacity-70 grayscale-[20%] brightness-90"
+                      />
                     )}
                   </div>
                 )),
@@ -413,6 +429,7 @@ console.log(redactedText);`}
                 >
                   <ComingSoonLogo logo={item.logo} />
                   <div>
+                    <p className="text-xs uppercase tracking-[0.16em] text-gray-500">{item.platform}</p>
                     <p className="text-sm font-medium text-white">{item.title}</p>
                     <p className="mt-1 text-sm text-gray-500">{item.description}</p>
                   </div>
