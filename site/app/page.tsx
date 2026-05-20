@@ -175,7 +175,7 @@ const comingSoonItems = [
     platform: 'Webhook',
     title: 'Webhook safety',
     description:
-      'Redact data before sending outbound requests to third-party like Slack or Zapier.',
+      'Redact data before sending outbound requests to third-party services like Slack or Zapier.',
     logo: 'webhook',
   },
 ] as const;
