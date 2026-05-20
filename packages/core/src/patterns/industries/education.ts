@@ -10,7 +10,7 @@ import { PIIPattern } from '../../types';
  */
 export const STUDENT_ID: PIIPattern = {
   type: 'STUDENT_ID',
-  regex: /\b(?:STUDENT|PUPIL|SCHOLAR)[-\s]?(?:ID|NUM(?:BER)?|NO)?[-\s]?[:#]?\s*([A-Z]{0,2}\d{6,10})\b/gi,
+  regex: /\b(?:STUDENT|PUPIL|SCHOLAR)[\-\s]?(?:ID|NUM(?:BER)?|NO)?[\-\s]?[:#]?\s*([A-Z]{0,2}\d{6,10})\b/gi,
   placeholder: '[STUDENT_ID_{n}]',
   priority: 90,
   severity: 'high',
@@ -22,7 +22,7 @@ export const STUDENT_ID: PIIPattern = {
  */
 export const UNIVERSITY_ID: PIIPattern = {
   type: 'UNIVERSITY_ID',
-  regex: /\b(?:UNIVERSITY|COLLEGE|UNI)[-\s]?(?:ID|NUM(?:BER)?|NO)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:UNIVERSITY|COLLEGE|UNI)[\-\s]?(?:ID|NUM(?:BER)?|NO)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[UNI_ID_{n}]',
   priority: 90,
   severity: 'high',
@@ -56,7 +56,7 @@ export const COURSE_CODE: PIIPattern = {
  */
 export const GRADE_REFERENCE: PIIPattern = {
   type: 'GRADE_REFERENCE',
-  regex: /\b(?:GPA|GRADE[-\s]?POINT[-\s]?AVERAGE)[-\s]?[:#]?\s*((?:[0-4]\.\d{1,2})|(?:\d\.\d{2}))\b/gi,
+  regex: /\b(?:GPA|GRADE[\-\s]?POINT[\-\s]?AVERAGE)[\-\s]?[:#]?\s*((?:[0-4]\.\d{1,2})|(?:\d\.\d{2}))\b/gi,
   placeholder: '[GPA_{n}]',
   priority: 80,
   severity: 'high',
@@ -68,7 +68,7 @@ export const GRADE_REFERENCE: PIIPattern = {
  */
 export const TRANSCRIPT_ID: PIIPattern = {
   type: 'TRANSCRIPT_ID',
-  regex: /\b(?:TRANSCRIPT)[-\s]?(?:ID|NUM(?:BER)?|NO|REF)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:TRANSCRIPT)[\-\s]?(?:ID|NUM(?:BER)?|NO|REF)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[TRANSCRIPT_{n}]',
   priority: 85,
   severity: 'high',
@@ -80,7 +80,7 @@ export const TRANSCRIPT_ID: PIIPattern = {
  */
 export const LIBRARY_CARD: PIIPattern = {
   type: 'LIBRARY_CARD',
-  regex: /\b(?:LIBRARY)[-\s]?(?:CARD|ID|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:LIBRARY)[\-\s]?(?:CARD|ID|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[LIBRARY_{n}]',
   priority: 70,
   severity: 'medium',
@@ -92,7 +92,7 @@ export const LIBRARY_CARD: PIIPattern = {
  */
 export const FACULTY_ID: PIIPattern = {
   type: 'FACULTY_ID',
-  regex: /\b(?:FACULTY|TEACHER|INSTRUCTOR|PROFESSOR|STAFF)[-\s]?(?:ID|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z]{1,2}\d{6,10})\b/gi,
+  regex: /\b(?:FACULTY|TEACHER|INSTRUCTOR|PROFESSOR|STAFF)[\-\s]?(?:ID|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z]{1,2}\d{6,10})\b/gi,
   placeholder: '[FACULTY_{n}]',
   priority: 85,
   severity: 'high',
@@ -107,7 +107,7 @@ export const FACULTY_ID: PIIPattern = {
  */
 export const ENROLLMENT_NUMBER: PIIPattern = {
   type: 'ENROLLMENT_NUMBER',
-  regex: /\b(?:ENROLLMENT|REGISTRATION)[-\s]?(?:NO|NUM(?:BER)?|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:ENROLLMENT|REGISTRATION)[\-\s]?(?:NO|NUM(?:BER)?|ID)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[ENROLLMENT_{n}]',
   priority: 80,
   severity: 'high',
@@ -119,7 +119,7 @@ export const ENROLLMENT_NUMBER: PIIPattern = {
  */
 export const FINANCIAL_AID_ID: PIIPattern = {
   type: 'FINANCIAL_AID_ID',
-  regex: /\b(?:FINANCIAL[-\s]?AID|FAFSA|AID[-\s]?APPLICATION)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:FINANCIAL[\-\s]?AID|FAFSA|AID[\-\s]?APPLICATION)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[AID_{n}]',
   priority: 90,
   severity: 'high',
@@ -131,7 +131,7 @@ export const FINANCIAL_AID_ID: PIIPattern = {
  */
 export const DEGREE_NUMBER: PIIPattern = {
   type: 'DEGREE_NUMBER',
-  regex: /\b(?:DEGREE|DIPLOMA|CERTIFICATE)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\b(?:DEGREE|DIPLOMA|CERTIFICATE)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[DEGREE_{n}]',
   priority: 80,
   severity: 'high',
@@ -146,7 +146,7 @@ export const DEGREE_NUMBER: PIIPattern = {
  */
 export const EXAM_ID: PIIPattern = {
   type: 'EXAM_ID',
-  regex: /\b(?:EXAM|TEST|QUIZ|ASSESSMENT)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:EXAM|TEST|QUIZ|ASSESSMENT)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[EXAM_{n}]',
   priority: 75,
   severity: 'medium',
@@ -161,7 +161,7 @@ export const EXAM_ID: PIIPattern = {
  */
 export const EXAM_REGISTRATION_NUMBER: PIIPattern = {
   type: 'EXAM_REGISTRATION_NUMBER',
-  regex: /\bEXAM[-\s]?(\d{4}[-]\d{4})\b/gi,
+  regex: /\bEXAM[\-\s]?(\d{4}[-]\d{4})\b/gi,
   placeholder: '[EXAM_REG_{n}]',
   priority: 80,
   severity: 'high',
@@ -173,7 +173,7 @@ export const EXAM_REGISTRATION_NUMBER: PIIPattern = {
  */
 export const HOUSING_ASSIGNMENT: PIIPattern = {
   type: 'HOUSING_ASSIGNMENT',
-  regex: /\b(?:DORM|ROOM|HOUSING)[-\s]?(?:NO|NUM(?:BER)?|ASSIGNMENT)?[-\s]?[:#]?\s*([A-Z0-9]{4,10})\b/gi,
+  regex: /\b(?:DORM|ROOM|HOUSING)[\-\s]?(?:NO|NUM(?:BER)?|ASSIGNMENT)?[\-\s]?[:#]?\s*([A-Z0-9]{4,10})\b/gi,
   placeholder: '[HOUSING_{n}]',
   priority: 75,
   severity: 'medium',
@@ -188,7 +188,7 @@ export const HOUSING_ASSIGNMENT: PIIPattern = {
  */
 export const MEAL_PLAN_ID: PIIPattern = {
   type: 'MEAL_PLAN_ID',
-  regex: /\b(?:MEAL[-\s]?PLAN|DINING)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:MEAL[\-\s]?PLAN|DINING)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[MEAL_{n}]',
   priority: 70,
   severity: 'medium',
@@ -200,7 +200,7 @@ export const MEAL_PLAN_ID: PIIPattern = {
  */
 export const PARKING_PERMIT: PIIPattern = {
   type: 'PARKING_PERMIT',
-  regex: /\b(?:PARKING)[-\s]?(?:PERMIT|PASS|DECAL)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:PARKING)[\-\s]?(?:PERMIT|PASS|DECAL)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[PARKING_{n}]',
   priority: 70,
   severity: 'low',
@@ -212,7 +212,7 @@ export const PARKING_PERMIT: PIIPattern = {
  */
 export const SCHOLARSHIP_ID: PIIPattern = {
   type: 'SCHOLARSHIP_ID',
-  regex: /\b(?:SCHOLARSHIP|GRANT|AWARD)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:SCHOLARSHIP|GRANT|AWARD)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[SCHOLARSHIP_{n}]',
   priority: 80,
   severity: 'high',
@@ -227,7 +227,7 @@ export const SCHOLARSHIP_ID: PIIPattern = {
  */
 export const GRADUATION_YEAR: PIIPattern = {
   type: 'GRADUATION_YEAR',
-  regex: /\b(?:CLASS[-\s]?OF|GRADUATING[-\s]?CLASS|GRAD(?:UATION)?[-\s]?YEAR)[-\s]?[:#]?\s*(['']?\d{2}|[12]\d{3})\b/gi,
+  regex: /\b(?:CLASS[\-\s]?OF|GRADUATING[\-\s]?CLASS|GRAD(?:UATION)?[\-\s]?YEAR)[\-\s]?[:#]?\s*(['']?\d{2}|[12]\d{3})\b/gi,
   placeholder: '[GRAD_YEAR_{n}]',
   priority: 65,
   severity: 'low',
@@ -239,7 +239,7 @@ export const GRADUATION_YEAR: PIIPattern = {
  */
 export const APPLICATION_ID: PIIPattern = {
   type: 'APPLICATION_ID',
-  regex: /\b(?:APPLICATION|ADMISSION|APPLICANT)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\b(?:APPLICATION|ADMISSION|APPLICANT)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[APPLICATION_{n}]',
   priority: 85,
   severity: 'high',
@@ -254,7 +254,7 @@ export const APPLICATION_ID: PIIPattern = {
  */
 export const ALUMNI_ID: PIIPattern = {
   type: 'ALUMNI_ID',
-  regex: /\b(?:ALUMNI|ALUMNUS|ALUMNA)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:ALUMNI|ALUMNUS|ALUMNA)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[ALUMNI_{n}]',
   priority: 75,
   severity: 'medium',
@@ -266,7 +266,7 @@ export const ALUMNI_ID: PIIPattern = {
  */
 export const RESEARCH_GRANT: PIIPattern = {
   type: 'RESEARCH_GRANT',
-  regex: /\b(?:GRANT|RESEARCH|FUNDING)[-\s]?(?:NO|NUM(?:BER)?|ID|REF)?[-\s]?[:#]?\s*([A-Z]{2,4}[-]?\d{6,10})\b/gi,
+  regex: /\b(?:GRANT|RESEARCH|FUNDING)[\-\s]?(?:NO|NUM(?:BER)?|ID|REF)?[\-\s]?[:#]?\s*([A-Z]{2,4}[-]?\d{6,10})\b/gi,
   placeholder: '[GRANT_{n}]',
   priority: 75,
   severity: 'medium',
@@ -281,7 +281,7 @@ export const RESEARCH_GRANT: PIIPattern = {
  */
 export const DEPARTMENT_CODE: PIIPattern = {
   type: 'DEPARTMENT_CODE',
-  regex: /\b(?:DEPT|DEPARTMENT)[-\s]?(?:CODE)?[-\s]?[:#]?\s*([A-Z]{3,6})\b/g,
+  regex: /\b(?:DEPT|DEPARTMENT)[\-\s]?(?:CODE)?[\-\s]?[:#]?\s*([A-Z]{3,6})\b/g,
   placeholder: '[DEPT_{n}]',
   priority: 55,
   severity: 'low',

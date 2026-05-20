@@ -19,7 +19,7 @@ export const DISCORD_USER_ID: PIIPattern = {
   description: 'Discord user ID (Snowflake format)',
   validator: (value: string, context: string) => {
     // Normalize separators (though Discord IDs typically don't have them)
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
     
     // Must be 17-19 digits after normalization
     if (cleaned.length < 17 || cleaned.length > 19) return false;
@@ -44,7 +44,7 @@ export const STEAM_ID64: PIIPattern = {
   description: 'Steam 64-bit user ID',
   validator: (value: string, context: string) => {
     // Normalize separators
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
     
     if (!cleaned.startsWith('765') || cleaned.length !== 17) return false;
 
@@ -267,7 +267,7 @@ export const PSN_ID: PIIPattern = {
  */
 export const NINTENDO_FRIEND_CODE: PIIPattern = {
   type: 'NINTENDO_FRIEND_CODE',
-  regex: /\bSW[-\s]?(\d{4}[-\s]?\d{4}[-\s]?\d{4})\b/gi,
+  regex: /\bSW[\-\s]?(\d{4}[\-\s]?\d{4}[\-\s]?\d{4})\b/gi,
   placeholder: '[NINTENDO_FC_{n}]',
   priority: 90,
   severity: 'medium',

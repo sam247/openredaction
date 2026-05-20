@@ -12,7 +12,7 @@ import { PIIPattern } from '../../types';
  */
 export const AIRLINE_PNR: PIIPattern = {
   type: 'AIRLINE_PNR',
-  regex: /\b(?:PNR|BOOKING|CONFIRMATION)[-\s]?(?:NO|NUM|NUMBER|CODE)?[-\s]?[:#]?\s*([A-Z0-9]{6})\b/gi,
+  regex: /\b(?:PNR|BOOKING|CONFIRMATION)[\-\s]?(?:NO|NUM|NUMBER|CODE)?[\-\s]?[:#]?\s*([A-Z0-9]{6})\b/gi,
   placeholder: '[PNR_{n}]',
   priority: 85,
   severity: 'medium',
@@ -33,13 +33,13 @@ export const AIRLINE_PNR: PIIPattern = {
  */
 export const HOTEL_RESERVATION: PIIPattern = {
   type: 'HOTEL_RESERVATION',
-  regex: /\b(?:HOTEL|RESERVATION|CONF(?:IRMATION)?|BOOKING)[-\s]?(?:NO|NUM|NUMBER|CODE)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\b(?:HOTEL|RESERVATION|CONF(?:IRMATION)?|BOOKING)[\-\s]?(?:NO|NUM|NUMBER|CODE)?[\-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[HOTEL_RES_{n}]',
   priority: 80,
   severity: 'medium',
   description: 'Hotel reservation/confirmation number',
   validator: (_value: string, context: string) => {
-    return /hotel|reservation|booking|room|accommodation|stay|check[-\s]?in|lodging/i.test(context);
+    return /hotel|reservation|booking|room|accommodation|stay|check[\-\s]?in|lodging/i.test(context);
   }
 };
 
@@ -50,7 +50,7 @@ export const HOTEL_RESERVATION: PIIPattern = {
  */
 export const FREQUENT_FLYER_NUMBER: PIIPattern = {
   type: 'FREQUENT_FLYER_NUMBER',
-  regex: /\b(?:FREQUENT[- ]?FLYER|FF|MILEAGE|LOYALTY)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:FREQUENT[- ]?FLYER|FF|MILEAGE|LOYALTY)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[FF_NUM_{n}]',
   priority: 75,
   severity: 'medium',
@@ -67,7 +67,7 @@ export const FREQUENT_FLYER_NUMBER: PIIPattern = {
  */
 export const HOTEL_LOYALTY_NUMBER: PIIPattern = {
   type: 'HOTEL_LOYALTY_NUMBER',
-  regex: /\b(?:MEMBER|LOYALTY|REWARDS)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:MEMBER|LOYALTY|REWARDS)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[HOTEL_LOYALTY_{n}]',
   priority: 75,
   severity: 'medium',
@@ -84,7 +84,7 @@ export const HOTEL_LOYALTY_NUMBER: PIIPattern = {
  */
 export const CRUISE_BOOKING_NUMBER: PIIPattern = {
   type: 'CRUISE_BOOKING_NUMBER',
-  regex: /\b(?:CRUISE|BOOKING|RESERVATION)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:CRUISE|BOOKING|RESERVATION)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[CRUISE_{n}]',
   priority: 75,
   severity: 'medium',
@@ -101,7 +101,7 @@ export const CRUISE_BOOKING_NUMBER: PIIPattern = {
  */
 export const TRAVEL_AGENCY_BOOKING: PIIPattern = {
   type: 'TRAVEL_AGENCY_BOOKING',
-  regex: /\b(?:TRAVEL|AGENCY|BOOKING|TRIP)[-\s]?(?:REF|REFERENCE|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:TRAVEL|AGENCY|BOOKING|TRIP)[\-\s]?(?:REF|REFERENCE|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[TRAVEL_REF_{n}]',
   priority: 70,
   severity: 'medium',
@@ -118,7 +118,7 @@ export const TRAVEL_AGENCY_BOOKING: PIIPattern = {
  */
 export const RENTAL_CAR_CONFIRMATION: PIIPattern = {
   type: 'RENTAL_CAR_CONFIRMATION',
-  regex: /\b(?:RENTAL|CAR|VEHICLE)[-\s]?(?:CONF(?:IRMATION)?|RESERVATION|BOOKING)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:RENTAL|CAR|VEHICLE)[\-\s]?(?:CONF(?:IRMATION)?|RESERVATION|BOOKING)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[CAR_RENTAL_{n}]',
   priority: 75,
   severity: 'medium',
@@ -135,7 +135,7 @@ export const RENTAL_CAR_CONFIRMATION: PIIPattern = {
  */
 export const THEME_PARK_TICKET: PIIPattern = {
   type: 'THEME_PARK_TICKET',
-  regex: /\b(?:TICKET|PASS|ADMISSION)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
+  regex: /\b(?:TICKET|PASS|ADMISSION)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
   placeholder: '[TICKET_{n}]',
   priority: 70,
   severity: 'low',
@@ -155,7 +155,7 @@ export const THEME_PARK_TICKET: PIIPattern = {
  */
 export const TSA_PRECHECK_NUMBER: PIIPattern = {
   type: 'TSA_PRECHECK_NUMBER',
-  regex: /\b(?:TSA|PRECHECK|KTN|KNOWN[- ]?TRAVELER)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{9,10})\b/gi,
+  regex: /\b(?:TSA|PRECHECK|KTN|KNOWN[- ]?TRAVELER)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{9,10})\b/gi,
   placeholder: '[TSA_{n}]',
   priority: 85,
   severity: 'medium',
@@ -175,7 +175,7 @@ export const TSA_PRECHECK_NUMBER: PIIPattern = {
  */
 export const GLOBAL_ENTRY_NUMBER: PIIPattern = {
   type: 'GLOBAL_ENTRY_NUMBER',
-  regex: /\b(?:GLOBAL[- ]?ENTRY|PASS[- ]?ID)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{9})\b/gi,
+  regex: /\b(?:GLOBAL[- ]?ENTRY|PASS[- ]?ID)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{9})\b/gi,
   placeholder: '[GLOBAL_ENTRY_{n}]',
   priority: 85,
   severity: 'medium',

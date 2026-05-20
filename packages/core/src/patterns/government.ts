@@ -13,11 +13,11 @@ import {
 export const governmentPatterns: PIIPattern[] = [
   {
     type: 'SSN',
-    regex: /\b(?:SSN|social\s+security)\b[:\s\u00A0#-]*([0-9]{3}[\s\u00A0.-]?[0-9]{2}[\s\u00A0.-]?[0-9]{4})\b/gi,
+    regex: /\b(?:SSN|social\s+security)\b[:\s\u00A0#-]*([0-9]{3}[\s\u00A0.\-]?[0-9]{2}[\s\u00A0.\-]?[0-9]{4})\b/gi,
     priority: 100,
     validator: (match: string, context: string) => {
       // Normalize separators
-      const cleaned = match.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = match.replace(/[\s\u00A0.\-]/g, '');
 
       // Must be exactly 9 digits after normalization
       if (!/^\d{9}$/.test(cleaned)) {
@@ -51,11 +51,11 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'PASSPORT_UK',
-    regex: /\b(?:passport|pass)[:\s\u00A0#-]*((?:\d{3}[\s\u00A0.-]?){2}\d{3})\b/gi,
+    regex: /\b(?:passport|pass)[:\s\u00A0#-]*((?:\d{3}[\s\u00A0.\-]?){2}\d{3})\b/gi,
     priority: 95,
     validator: (match: string, context: string) => {
       // Normalize separators
-      const cleaned = match.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = match.replace(/[\s\u00A0.\-]/g, '');
 
       // Must be exactly 9 digits after normalization
       if (!/^\d{9}$/.test(cleaned)) {
@@ -87,14 +87,14 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'PASSPORT_US',
-    regex: /\b(?:passport|pass)[:\s\u00A0#-]*(([A-Z0-9][\s\u00A0.-]?){5,8}[A-Z0-9])\b/gi,
+    regex: /\b(?:passport|pass)[:\s\u00A0#-]*(([A-Z0-9][\s\u00A0.\-]?){5,8}[A-Z0-9])\b/gi,
     priority: 95,
     placeholder: '[PASSPORT_{n}]',
     description: 'US Passport number',
     severity: 'high',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+      const cleaned = value.replace(/[\s\u00A0.\-]/g, '').toUpperCase();
 
       // US passports are 6-9 characters (typically 9)
       if (cleaned.length < 6 || cleaned.length > 9) {
@@ -123,11 +123,11 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'NATIONAL_INSURANCE_UK',
-    regex: /\b(?:NI\b|NINO|national\s+insurance)[:\s\u00A0#-]*([A-CEGHJ-PR-TW-Z]{2}(?:[\s\u00A0.-]?\d{2}){3}[\s\u00A0.-]?[A-D])\b/gi,
+    regex: /\b(?:NI\b|NINO|national\s+insurance)[:\s\u00A0#-]*([A-CEGHJ-PR-TW-Z]{2}(?:[\s\u00A0.\-]?\d{2}){3}[\s\u00A0.\-]?[A-D])\b/gi,
     priority: 100,
     validator: (match: string, context: string) => {
       // Normalize separators
-      const cleaned = match.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+      const cleaned = match.replace(/[\s\u00A0.\-]/g, '').toUpperCase();
 
       // Must be exactly 9 characters after normalization
       if (!/^[A-CEGHJ-PR-TW-Z]{2}\d{6}[A-D]$/.test(cleaned)) {
@@ -159,11 +159,11 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'NHS_NUMBER',
-    regex: /\b(?:NHS|nhs number)[:\s\u00A0#-]*((?:\d{3}[\s\u00A0.-]?){2}\d{4})\b/gi,
+    regex: /\b(?:NHS|nhs number)[:\s\u00A0#-]*((?:\d{3}[\s\u00A0.\-]?){2}\d{4})\b/gi,
     priority: 95,
     validator: (match: string, context: string) => {
       // Normalize separators
-      const cleaned = match.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = match.replace(/[\s\u00A0.\-]/g, '');
 
       // Must be exactly 10 digits after normalization
       if (!/^\d{10}$/.test(cleaned)) {
@@ -195,14 +195,14 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'DRIVING_LICENSE_UK',
-    regex: /\b(?:DL|DRIVING|DRIVER(?:'S)?|LICEN[SC]E)?[\s\u00A0#:-]*(?:NO|NUM(?:BER)?|ID)?[\s\u00A0#:-]*([A-Z]{5}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?\d{2}[\s\u00A0.-]?[A-Z]{2}[\s\u00A0.-]?\d[\s\u00A0.-]?[A-Z]{2})\b/gi,
+    regex: /\b(?:DL|DRIVING|DRIVER(?:'S)?|LICEN[SC]E)?[\s\u00A0#:-]*(?:NO|NUM(?:BER)?|ID)?[\s\u00A0#:-]*([A-Z]{5}[\s\u00A0.\-]?\d{2}[\s\u00A0.\-]?\d{2}[\s\u00A0.\-]?\d{2}[\s\u00A0.\-]?[A-Z]{2}[\s\u00A0.\-]?\d[\s\u00A0.\-]?[A-Z]{2})\b/gi,
     priority: 90,
     placeholder: '[DRIVING_LICENSE_{n}]',
     description: 'UK Driving License',
     severity: 'high',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const normalized = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+      const normalized = value.replace(/[\s\u00A0.\-]/g, '').toUpperCase();
 
       // Must be exactly 16 characters after normalization
       if (!/^[A-Z]{5}\d{6}[A-Z]{2}\d[A-Z]{2}$/.test(normalized)) {
@@ -237,14 +237,14 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'DRIVING_LICENSE_US',
-    regex: /\b(?:DL|driver(?:'s)?\slicense)[:\s\u00A0#-]*([A-Z0-9](?:[A-Z0-9][\s\u00A0.-]?){3,18}[A-Z0-9])\b/gi,
+    regex: /\b(?:DL|driver(?:'s)?\slicense)[:\s\u00A0#-]*([A-Z0-9](?:[A-Z0-9][\s\u00A0.\-]?){3,18}[A-Z0-9])\b/gi,
     priority: 90,
     placeholder: '[DRIVING_LICENSE_{n}]',
     description: 'US Driving License',
     severity: 'high',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+      const cleaned = value.replace(/[\s\u00A0.\-]/g, '').toUpperCase();
 
       // US driver's licenses vary by state, typically 6-17 characters
       if (cleaned.length < 6 || cleaned.length > 17) {
@@ -273,14 +273,14 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'TAX_ID',
-    regex: /\b(?:TIN|tax id|EIN)[:\s\u00A0#-]*(\d{2}(?:[\s\u00A0.-]?\d){7})\b/gi,
+    regex: /\b(?:TIN|tax id|EIN)[:\s\u00A0#-]*(\d{2}(?:[\s\u00A0.\-]?\d){7})\b/gi,
     priority: 95,
     placeholder: '[TAX_ID_{n}]',
     description: 'Tax identification number',
     severity: 'high',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
 
       // Must be exactly 9 digits after normalization
       if (!/^\d{9}$/.test(cleaned)) {
@@ -335,7 +335,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'TRAVEL_DOCUMENT_NUMBER',
-    regex: /\b(?:TRAVEL\s+DOC(?:UMENT)?|TD)[:\s#-]*([A-Z0-9](?:[A-Z0-9][\s\u00A0.-]?){4,13}[A-Z0-9])\b/gi,
+    regex: /\b(?:TRAVEL\s+DOC(?:UMENT)?|TD)[:\s#-]*([A-Z0-9](?:[A-Z0-9][\s\u00A0.\-]?){4,13}[A-Z0-9])\b/gi,
     priority: 92,
     placeholder: '[TRAVEL_DOC_{n}]',
     description: 'Travel document numbers',
@@ -346,7 +346,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'VISA_NUMBER',
-    regex: /\b(?:VISA)[:\s#-]*([A-Z0-9](?:[A-Z0-9][\s\u00A0.-]?){6,10}[A-Z0-9])\b/gi,
+    regex: /\b(?:VISA)[:\s#-]*([A-Z0-9](?:[A-Z0-9][\s\u00A0.\-]?){6,10}[A-Z0-9])\b/gi,
     priority: 92,
     placeholder: '[VISA_{n}]',
     description: 'Visa numbers',
@@ -357,7 +357,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'IMMIGRATION_NUMBER',
-    regex: /\b(?:IMMIGRATION|ALIEN|A-NUMBER|A#)[:\s#-]*([A-Z]?(?:\d[\s\u00A0.-]?){7,9})\b/gi,
+    regex: /\b(?:IMMIGRATION|ALIEN|A-NUMBER|A#)[:\s#-]*([A-Z]?(?:\d[\s\u00A0.\-]?){7,9})\b/gi,
     priority: 92,
     placeholder: '[IMMIGRATION_{n}]',
     description: 'Immigration and alien registration numbers',
@@ -365,7 +365,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'BORDER_CROSSING_CARD',
-    regex: /\b(?:BCC|BORDER\s+CROSSING)[:\s#-]*([A-Z0-9](?:[A-Z0-9\s\u00A0.-]?){8,13}[A-Z0-9])\b/gi,
+    regex: /\b(?:BCC|BORDER\s+CROSSING)[:\s#-]*([A-Z0-9](?:[A-Z0-9\s\u00A0.\-]?){8,13}[A-Z0-9])\b/gi,
     priority: 90,
     placeholder: '[BCC_{n}]',
     description: 'Border crossing card numbers',
@@ -376,7 +376,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'UTR_UK',
-    regex: /\b(?:UTR|unique taxpayer reference)[:\s#-]*((?:\d[\s\u00A0.-]?){10})\b/gi,
+    regex: /\b(?:UTR|unique taxpayer reference)[:\s#-]*((?:\d[\s\u00A0.\-]?){10})\b/gi,
     priority: 95,
     validator: (match) => {
       // UK UTR: 10 digits, typically issued in sequence
@@ -389,11 +389,11 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'VAT_NUMBER',
-    regex: /\b(?:VAT|vat number)[:\s#-]*([A-Z]{2}(?:[\s\u00A0.-]?[A-Z0-9]){7,12})\b/gi,
+    regex: /\b(?:VAT|vat number)[:\s#-]*([A-Z]{2}(?:[\s\u00A0.\-]?[A-Z0-9]){7,12})\b/gi,
     priority: 90,
     validator: (match) => {
       // VAT format varies by country (GB: 9 digits, DE: 9 digits, FR: 11 chars, etc.)
-      const cleaned = match.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = match.replace(/[\s\u00A0.\-]/g, '');
 
       // Check for valid country codes
       const countryCode = cleaned.substring(0, 2).toUpperCase();
@@ -439,7 +439,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'ITIN',
-    regex: /\b(?:ITIN|individual taxpayer)[:\s#]*(9\d{2}[-\s]?[7-8]\d[-\s]?\d{4})\b/gi,
+    regex: /\b(?:ITIN|individual taxpayer)[:\s#]*(9\d{2}[\-\s]?[7-8]\d[\-\s]?\d{4})\b/gi,
     priority: 100,
     validator: (match) => {
       // ITIN: 9XX-7X-XXXX or 9XX-8X-XXXX format
@@ -465,7 +465,7 @@ export const governmentPatterns: PIIPattern[] = [
   },
   {
     type: 'SIN_CA',
-    regex: /\b(?:SIN|social insurance)[:\s#]*(\d{3}[-\s]?\d{3}[-\s]?\d{3})\b/gi,
+    regex: /\b(?:SIN|social insurance)[:\s#]*(\d{3}[\-\s]?\d{3}[\-\s]?\d{3})\b/gi,
     priority: 100,
     validator: (match) => {
       // Canadian SIN: 9 digits using Luhn algorithm

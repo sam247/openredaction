@@ -12,7 +12,7 @@ import { PIIPattern } from '../../types';
  */
 export const UBER_TRIP_ID: PIIPattern = {
   type: 'UBER_TRIP_ID',
-  regex: /\bUBER[-\s]?(?:TRIP|RIDE)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{8,24})\b/gi,
+  regex: /\bUBER[\-\s]?(?:TRIP|RIDE)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{8,24})\b/gi,
   placeholder: '[UBER_TRIP_{n}]',
   priority: 85,
   severity: 'medium',
@@ -29,7 +29,7 @@ export const UBER_TRIP_ID: PIIPattern = {
  */
 export const LYFT_RIDE_ID: PIIPattern = {
   type: 'LYFT_RIDE_ID',
-  regex: /\bLYFT[-\s]?(?:RIDE|TRIP)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{8,24})\b/gi,
+  regex: /\bLYFT[\-\s]?(?:RIDE|TRIP)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{8,24})\b/gi,
   placeholder: '[LYFT_RIDE_{n}]',
   priority: 85,
   severity: 'medium',
@@ -46,7 +46,7 @@ export const LYFT_RIDE_ID: PIIPattern = {
  */
 export const DOORDASH_ORDER_ID: PIIPattern = {
   type: 'DOORDASH_ORDER_ID',
-  regex: /\b(?:DOORDASH|DD)[-\s]?(?:ORDER|DELIVERY)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
+  regex: /\b(?:DOORDASH|DD)[\-\s]?(?:ORDER|DELIVERY)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
   placeholder: '[DD_ORDER_{n}]',
   priority: 80,
   severity: 'medium',
@@ -63,7 +63,7 @@ export const DOORDASH_ORDER_ID: PIIPattern = {
  */
 export const UBEREATS_ORDER_ID: PIIPattern = {
   type: 'UBEREATS_ORDER_ID',
-  regex: /\bUBER[-\s]?EATS[-\s]?(?:ORDER|DELIVERY)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
+  regex: /\bUBER[\-\s]?EATS[\-\s]?(?:ORDER|DELIVERY)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
   placeholder: '[UE_ORDER_{n}]',
   priority: 80,
   severity: 'medium',
@@ -80,7 +80,7 @@ export const UBEREATS_ORDER_ID: PIIPattern = {
  */
 export const GRUBHUB_ORDER_ID: PIIPattern = {
   type: 'GRUBHUB_ORDER_ID',
-  regex: /\bGRUBHUB[-\s]?(?:ORDER)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
+  regex: /\bGRUBHUB[\-\s]?(?:ORDER)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
   placeholder: '[GH_ORDER_{n}]',
   priority: 80,
   severity: 'medium',
@@ -97,7 +97,7 @@ export const GRUBHUB_ORDER_ID: PIIPattern = {
  */
 export const AIRBNB_RESERVATION_ID: PIIPattern = {
   type: 'AIRBNB_RESERVATION_ID',
-  regex: /\bAIRBNB[-\s]?(?:RESERVATION|BOOKING|CONF(?:IRMATION)?)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{9,16})\b/gi,
+  regex: /\bAIRBNB[\-\s]?(?:RESERVATION|BOOKING|CONF(?:IRMATION)?)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{9,16})\b/gi,
   placeholder: '[AIRBNB_RES_{n}]',
   priority: 85,
   severity: 'medium',
@@ -114,7 +114,7 @@ export const AIRBNB_RESERVATION_ID: PIIPattern = {
  */
 export const INSTACART_ORDER_ID: PIIPattern = {
   type: 'INSTACART_ORDER_ID',
-  regex: /\bINSTACART[-\s]?(?:ORDER|DELIVERY)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
+  regex: /\bINSTACART[\-\s]?(?:ORDER|DELIVERY)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
   placeholder: '[IC_ORDER_{n}]',
   priority: 80,
   severity: 'medium',
@@ -131,7 +131,7 @@ export const INSTACART_ORDER_ID: PIIPattern = {
  */
 export const TASKRABBIT_TASK_ID: PIIPattern = {
   type: 'TASKRABBIT_TASK_ID',
-  regex: /\b(?:TASKRABBIT|TR)[-\s]?(?:TASK|JOB)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
+  regex: /\b(?:TASKRABBIT|TR)[\-\s]?(?:TASK|JOB)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
   placeholder: '[TR_TASK_{n}]',
   priority: 75,
   severity: 'medium',
@@ -148,7 +148,7 @@ export const TASKRABBIT_TASK_ID: PIIPattern = {
  */
 export const UPWORK_JOB_ID: PIIPattern = {
   type: 'UPWORK_JOB_ID',
-  regex: /\bUPWORK[-\s]?(?:JOB|CONTRACT|PROJECT)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
+  regex: /\bUPWORK[\-\s]?(?:JOB|CONTRACT|PROJECT)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
   placeholder: '[UW_JOB_{n}]',
   priority: 80,
   severity: 'medium',
@@ -165,7 +165,7 @@ export const UPWORK_JOB_ID: PIIPattern = {
  */
 export const FIVERR_ORDER_ID: PIIPattern = {
   type: 'FIVERR_ORDER_ID',
-  regex: /\bFIVERR[-\s]?(?:ORDER|GIG)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
+  regex: /\bFIVERR[\-\s]?(?:ORDER|GIG)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
   placeholder: '[FV_ORDER_{n}]',
   priority: 75,
   severity: 'medium',
@@ -182,7 +182,7 @@ export const FIVERR_ORDER_ID: PIIPattern = {
  */
 export const POSTMATES_DELIVERY_ID: PIIPattern = {
   type: 'POSTMATES_DELIVERY_ID',
-  regex: /\bPOSTMATES[-\s]?(?:DELIVERY|ORDER)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
+  regex: /\bPOSTMATES[\-\s]?(?:DELIVERY|ORDER)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
   placeholder: '[PM_DEL_{n}]',
   priority: 75,
   severity: 'medium',
@@ -199,7 +199,7 @@ export const POSTMATES_DELIVERY_ID: PIIPattern = {
  */
 export const GIG_PLATFORM_USER_ID: PIIPattern = {
   type: 'GIG_PLATFORM_USER_ID',
-  regex: /\b(?:DRIVER|DASHER|SHOPPER|TASKER|COURIER|RIDER)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
+  regex: /\b(?:DRIVER|DASHER|SHOPPER|TASKER|COURIER|RIDER)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
   placeholder: '[GIG_USER_{n}]',
   priority: 70,
   severity: 'medium',
@@ -216,7 +216,7 @@ export const GIG_PLATFORM_USER_ID: PIIPattern = {
  */
 export const GIG_PLATFORM_ORDER_ID: PIIPattern = {
   type: 'GIG_PLATFORM_ORDER_ID',
-  regex: /\b(?:ORDER|TRIP|DELIVERY|BOOKING)[-\s]?[:#]\s*([A-Z0-9]{8,20})\b/gi,
+  regex: /\b(?:ORDER|TRIP|DELIVERY|BOOKING)[\-\s]?[:#]\s*([A-Z0-9]{8,20})\b/gi,
   placeholder: '[GIG_ORDER_{n}]',
   priority: 65,
   severity: 'medium',

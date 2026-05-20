@@ -10,7 +10,7 @@ import { PIIPattern } from '../../types';
  */
 export const SUPPLIER_ID: PIIPattern = {
   type: 'SUPPLIER_ID',
-  regex: /\bSUPP(?:LIER)?[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z]{2}\d{5,8})\b/gi,
+  regex: /\bSUPP(?:LIER)?[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z]{2}\d{5,8})\b/gi,
   placeholder: '[SUPPLIER_{n}]',
   priority: 80,
   severity: 'medium',
@@ -22,7 +22,7 @@ export const SUPPLIER_ID: PIIPattern = {
  */
 export const PART_NUMBER: PIIPattern = {
   type: 'PART_NUMBER',
-  regex: /\bP(?:ART)?N[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([0-9A-Z]{6,12})\b/gi,
+  regex: /\bP(?:ART)?N[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([0-9A-Z]{6,12})\b/gi,
   placeholder: '[PART_{n}]',
   priority: 70,
   severity: 'low',
@@ -38,7 +38,7 @@ export const PART_NUMBER: PIIPattern = {
  */
 export const PURCHASE_ORDER_NUMBER: PIIPattern = {
   type: 'PURCHASE_ORDER_NUMBER',
-  regex: /\bP(?:URCHASE[-\s]?)?O(?:RDER)?[-\s]+(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\bP(?:URCHASE[\-\s]?)?O(?:RDER)?[\-\s]+(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[PO_{n}]',
   priority: 85,
   severity: 'medium',
@@ -50,7 +50,7 @@ export const PURCHASE_ORDER_NUMBER: PIIPattern = {
  */
 export const WORK_ORDER_NUMBER: PIIPattern = {
   type: 'WORK_ORDER_NUMBER',
-  regex: /\bW(?:ORK[-\s]?)?O(?:RDER)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\bW(?:ORK[\-\s]?)?O(?:RDER)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[WO_{n}]',
   priority: 80,
   severity: 'medium',
@@ -65,7 +65,7 @@ export const WORK_ORDER_NUMBER: PIIPattern = {
  */
 export const BATCH_LOT_NUMBER: PIIPattern = {
   type: 'BATCH_LOT_NUMBER',
-  regex: /\b(?:BATCH|LOT)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\b(?:BATCH|LOT)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[BATCH_{n}]',
   priority: 75,
   severity: 'medium',
@@ -80,7 +80,7 @@ export const BATCH_LOT_NUMBER: PIIPattern = {
  */
 export const MANUFACTURING_SERIAL: PIIPattern = {
   type: 'MANUFACTURING_SERIAL',
-  regex: /\b(?:SERIAL|SN)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
+  regex: /\b(?:SERIAL|SN)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
   placeholder: '[SERIAL_{n}]',
   priority: 80,
   severity: 'medium',
@@ -95,7 +95,7 @@ export const MANUFACTURING_SERIAL: PIIPattern = {
  */
 export const VENDOR_CODE: PIIPattern = {
   type: 'VENDOR_CODE',
-  regex: /\bVEND(?:OR)?[-\s]?(?:CODE)?[-\s]?[:#]?\s*([A-Z0-9]{4,10})\b/gi,
+  regex: /\bVEND(?:OR)?[\-\s]?(?:CODE)?[\-\s]?[:#]?\s*([A-Z0-9]{4,10})\b/gi,
   placeholder: '[VENDOR_{n}]',
   priority: 75,
   severity: 'medium',
@@ -110,7 +110,7 @@ export const VENDOR_CODE: PIIPattern = {
  */
 export const BOM_NUMBER: PIIPattern = {
   type: 'BOM_NUMBER',
-  regex: /\bBOM[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\bBOM[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[BOM_{n}]',
   priority: 75,
   severity: 'medium',
@@ -125,7 +125,7 @@ export const BOM_NUMBER: PIIPattern = {
  */
 export const QC_CERTIFICATE_NUMBER: PIIPattern = {
   type: 'QC_CERTIFICATE_NUMBER',
-  regex: /\b(?:QC|QUALITY)[-\s]?(?:CERT(?:IFICATE)?)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:QC|QUALITY)[\-\s]?(?:CERT(?:IFICATE)?)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[QC_{n}]',
   priority: 80,
   severity: 'medium',
@@ -140,7 +140,7 @@ export const QC_CERTIFICATE_NUMBER: PIIPattern = {
  */
 export const CONTAINER_NUMBER: PIIPattern = {
   type: 'CONTAINER_NUMBER',
-  regex: /\b(?:CONTAINER|CNTR)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z]{4}\d{7})\b/gi,
+  regex: /\b(?:CONTAINER|CNTR)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z]{4}\d{7})\b/gi,
   placeholder: '[CONTAINER_{n}]',
   priority: 80,
   severity: 'medium',
@@ -156,7 +156,7 @@ export const CONTAINER_NUMBER: PIIPattern = {
  */
 export const PALLET_ID: PIIPattern = {
   type: 'PALLET_ID',
-  regex: /\bPALLET[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\bPALLET[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[PALLET_{n}]',
   priority: 70,
   severity: 'low',
@@ -171,7 +171,7 @@ export const PALLET_ID: PIIPattern = {
  */
 export const ROUTING_NUMBER_MFG: PIIPattern = {
   type: 'ROUTING_NUMBER_MFG',
-  regex: /\bROUTING[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\bROUTING[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[ROUTING_{n}]',
   priority: 75,
   severity: 'medium',
@@ -186,7 +186,7 @@ export const ROUTING_NUMBER_MFG: PIIPattern = {
  */
 export const RFQ_NUMBER: PIIPattern = {
   type: 'RFQ_NUMBER',
-  regex: /\bRFQ[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\bRFQ[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[RFQ_{n}]',
   priority: 75,
   severity: 'medium',
@@ -202,7 +202,7 @@ export const RFQ_NUMBER: PIIPattern = {
  */
 export const PROJECT_CODE: PIIPattern = {
   type: 'PROJECT_CODE',
-  regex: /\b(?:PROJECT|PROJ)[-\s]+(?:CODE)?[-\s]?[:#]?\s*([A-Z0-9]{4,10})\b/gi,
+  regex: /\b(?:PROJECT|PROJ)[\-\s]+(?:CODE)?[\-\s]?[:#]?\s*([A-Z0-9]{4,10})\b/gi,
   placeholder: '[PROJECT_{n}]',
   priority: 70,
   severity: 'low',

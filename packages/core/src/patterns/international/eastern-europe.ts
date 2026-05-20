@@ -36,7 +36,7 @@ export const RUSSIAN_SNILS: PIIPattern = {
   severity: 'high',
   description: 'Russian SNILS (Pension Fund Number)',
   validator: (value: string, context: string) => {
-    const digits = value.replace(/[-\s]/g, '');
+    const digits = value.replace(/[\-\s]/g, '');
     if (digits.length !== 11) return false;
 
     return /russia|russian|snils|снилс|pension|пенсионный/i.test(context);
@@ -67,7 +67,7 @@ export const UKRAINIAN_PASSPORT: PIIPattern = {
  */
 export const UKRAINIAN_INN: PIIPattern = {
   type: 'UKRAINIAN_INN',
-  regex: /\bINN[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{10})\b/gi,
+  regex: /\bINN[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{10})\b/gi,
   placeholder: '[UA_INN_{n}]',
   priority: 90,
   severity: 'high',
@@ -118,7 +118,7 @@ export const CZECH_NATIONAL_ID: PIIPattern = {
  */
 export const ROMANIAN_CNP: PIIPattern = {
   type: 'ROMANIAN_CNP',
-  regex: /\bCNP[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{13})\b/gi,
+  regex: /\bCNP[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{13})\b/gi,
   placeholder: '[RO_CNP_{n}]',
   priority: 95,
   severity: 'high',

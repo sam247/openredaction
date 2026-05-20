@@ -10,7 +10,7 @@ import { PIIPattern } from '../../types';
  */
 export const CLAIM_ID: PIIPattern = {
   type: 'CLAIM_ID',
-  regex: /\bCLAIM[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{8,12})\b/gi,
+  regex: /\bCLAIM[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*(\d{8,12})\b/gi,
   placeholder: '[CLAIM_{n}]',
   priority: 90,
   severity: 'high',
@@ -25,7 +25,7 @@ export const CLAIM_ID: PIIPattern = {
  */
 export const POLICY_NUMBER: PIIPattern = {
   type: 'POLICY_NUMBER',
-  regex: /\bPOLICY[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z]{2,4}\d{6,10})\b/gi,
+  regex: /\bPOLICY[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z]{2,4}\d{6,10})\b/gi,
   placeholder: '[POLICY_{n}]',
   priority: 90,
   severity: 'high',
@@ -37,7 +37,7 @@ export const POLICY_NUMBER: PIIPattern = {
  */
 export const POLICY_HOLDER_ID: PIIPattern = {
   type: 'POLICY_HOLDER_ID',
-  regex: /\b(?:POLICY[-\s]?HOLDER|INSURED|POLICYHOLDER)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9-]{8,14})\b/gi,
+  regex: /\b(?:POLICY[\-\s]?HOLDER|INSURED|POLICYHOLDER)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9-]{8,14})\b/gi,
   placeholder: '[HOLDER_{n}]',
   priority: 85,
   severity: 'high',
@@ -49,7 +49,7 @@ export const POLICY_HOLDER_ID: PIIPattern = {
  */
 export const QUOTE_REFERENCE: PIIPattern = {
   type: 'QUOTE_REFERENCE',
-  regex: /\b(?:QUOTE|QTE)[-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:QUOTE|QTE)[\-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[QUOTE_{n}]',
   priority: 75,
   severity: 'medium',
@@ -64,7 +64,7 @@ export const QUOTE_REFERENCE: PIIPattern = {
  */
 export const INSURANCE_CERTIFICATE: PIIPattern = {
   type: 'INSURANCE_CERTIFICATE',
-  regex: /\b(?:CERTIFICATE|CERT)[-\s]?(?:OF[-\s]?INSURANCE)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:CERTIFICATE|CERT)[\-\s]?(?:OF[\-\s]?INSURANCE)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[CERT_{n}]',
   priority: 80,
   severity: 'high',
@@ -79,7 +79,7 @@ export const INSURANCE_CERTIFICATE: PIIPattern = {
  */
 export const ADJUSTER_ID: PIIPattern = {
   type: 'ADJUSTER_ID',
-  regex: /\b(?:ADJUSTER|ADJ)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:ADJUSTER|ADJ)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[ADJUSTER_{n}]',
   priority: 75,
   severity: 'medium',
@@ -94,7 +94,7 @@ export const ADJUSTER_ID: PIIPattern = {
  */
 export const UNDERWRITER_ID: PIIPattern = {
   type: 'UNDERWRITER_ID',
-  regex: /\b(?:UNDERWRITER|UW)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:UNDERWRITER|UW)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[UW_{n}]',
   priority: 75,
   severity: 'medium',
@@ -109,7 +109,7 @@ export const UNDERWRITER_ID: PIIPattern = {
  */
 export const INCIDENT_REPORT_NUMBER: PIIPattern = {
   type: 'INCIDENT_REPORT_NUMBER',
-  regex: /\b(?:INCIDENT|ACCIDENT)[-\s]?(?:REPORT)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:INCIDENT|ACCIDENT)[\-\s]?(?:REPORT)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[INCIDENT_{n}]',
   priority: 85,
   severity: 'high',
@@ -124,7 +124,7 @@ export const INCIDENT_REPORT_NUMBER: PIIPattern = {
  */
 export const PREMIUM_PAYMENT_REF: PIIPattern = {
   type: 'PREMIUM_PAYMENT_REF',
-  regex: /\b(?:PREMIUM)[-\s]?(?:PAYMENT)?[-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:PREMIUM)[\-\s]?(?:PAYMENT)?[\-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[PREMIUM_{n}]',
   priority: 80,
   severity: 'medium',
@@ -136,7 +136,7 @@ export const PREMIUM_PAYMENT_REF: PIIPattern = {
  */
 export const REINSURANCE_TREATY: PIIPattern = {
   type: 'REINSURANCE_TREATY',
-  regex: /\b(?:REINSURANCE|TREATY)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:REINSURANCE|TREATY)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[TREATY_{n}]',
   priority: 75,
   severity: 'medium',

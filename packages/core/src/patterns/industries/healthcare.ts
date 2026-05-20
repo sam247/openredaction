@@ -10,7 +10,7 @@ import { PIIPattern } from '../../types';
  */
 export const MEDICAL_RECORD_NUMBER: PIIPattern = {
   type: 'MEDICAL_RECORD_NUMBER',
-  regex: /\b(?:MR[N]?[-\s]?|MEDICAL[-\s]?REC(?:ORD)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*)([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:MR[N]?[\-\s]?|MEDICAL[\-\s]?REC(?:ORD)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*)([A-Z0-9]{6,12})\b/gi,
   placeholder: '[MRN_{n}]',
   priority: 85,
   severity: 'high',
@@ -22,7 +22,7 @@ export const MEDICAL_RECORD_NUMBER: PIIPattern = {
  */
 export const PATIENT_ID: PIIPattern = {
   type: 'PATIENT_ID',
-  regex: /\b(?:PATIENT[-\s]?(?:ID|NUM(?:BER)?|REF(?:ERENCE)?)[-\s]?[:#]?\s*)([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:PATIENT[\-\s]?(?:ID|NUM(?:BER)?|REF(?:ERENCE)?)[\-\s]?[:#]?\s*)([A-Z0-9]{6,12})\b/gi,
   placeholder: '[PATIENT_ID_{n}]',
   priority: 85,
   severity: 'high',
@@ -34,7 +34,7 @@ export const PATIENT_ID: PIIPattern = {
  */
 export const APPOINTMENT_REF: PIIPattern = {
   type: 'APPOINTMENT_REF',
-  regex: /\b(?:APT|APPT|APPOINTMENT)[-\s]?(?:REF|ID|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,10})\b/gi,
+  regex: /\b(?:APT|APPT|APPOINTMENT)[\-\s]?(?:REF|ID|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,10})\b/gi,
   placeholder: '[APT_{n}]',
   priority: 75,
   severity: 'medium',
@@ -67,7 +67,7 @@ export const ICD10_CODE: PIIPattern = {
  */
 export const CPT_CODE: PIIPattern = {
   type: 'CPT_CODE',
-  regex: /\b(?:CPT[-\s]?(?:CODE)?[-\s]?[:#]?\s*)?([0-9]{5})\b/g,
+  regex: /\b(?:CPT[\-\s]?(?:CODE)?[\-\s]?[:#]?\s*)?([0-9]{5})\b/g,
   placeholder: '[CPT_{n}]',
   priority: 70,
   severity: 'medium',
@@ -87,7 +87,7 @@ export const CPT_CODE: PIIPattern = {
  */
 export const PRESCRIPTION_NUMBER: PIIPattern = {
   type: 'PRESCRIPTION_NUMBER',
-  regex: /\b(?:RX|PRESC(?:RIPTION)?|SCRIPT)[-\s]?(?:NO|NUM(?:BER)?|REF|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:RX|PRESC(?:RIPTION)?|SCRIPT)[\-\s]?(?:NO|NUM(?:BER)?|REF|ID)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[RX_{n}]',
   priority: 80,
   severity: 'high',
@@ -99,7 +99,7 @@ export const PRESCRIPTION_NUMBER: PIIPattern = {
  */
 export const HEALTH_INSURANCE_CLAIM: PIIPattern = {
   type: 'HEALTH_INSURANCE_CLAIM',
-  regex: /\b(?:CLAIM|CLM)[-\s]?(?:NO|NUM(?:BER)?|REF|ID)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
+  regex: /\b(?:CLAIM|CLM)[\-\s]?(?:NO|NUM(?:BER)?|REF|ID)?[\-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
   placeholder: '[CLAIM_{n}]',
   priority: 80,
   severity: 'high',
@@ -115,7 +115,7 @@ export const HEALTH_INSURANCE_CLAIM: PIIPattern = {
  */
 export const HEALTH_PLAN_NUMBER: PIIPattern = {
   type: 'HEALTH_PLAN_NUMBER',
-  regex: /\b(?:HEALTH[-\s]?PLAN|BENEFICIARY|MEMBER)[-\s]?(?:NO|NUM(?:BER)?|ID)?[-\s]?[:#]?\s*([A-Z0-9]{8,15})\b/gi,
+  regex: /\b(?:HEALTH[\-\s]?PLAN|BENEFICIARY|MEMBER)[\-\s]?(?:NO|NUM(?:BER)?|ID)?[\-\s]?[:#]?\s*([A-Z0-9]{8,15})\b/gi,
   placeholder: '[HEALTH_PLAN_{n}]',
   priority: 85,
   severity: 'high',
@@ -127,7 +127,7 @@ export const HEALTH_PLAN_NUMBER: PIIPattern = {
  */
 export const MEDICAL_DEVICE_SERIAL: PIIPattern = {
   type: 'MEDICAL_DEVICE_SERIAL',
-  regex: /\b(?:DEVICE|IMPLANT|PACEMAKER|DEFIBRILLATOR)[-\s]?(?:SERIAL|SN|S\/N)[-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
+  regex: /\b(?:DEVICE|IMPLANT|PACEMAKER|DEFIBRILLATOR)[\-\s]?(?:SERIAL|SN|S\/N)[\-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
   placeholder: '[DEVICE_{n}]',
   priority: 75,
   severity: 'high',
@@ -139,7 +139,7 @@ export const MEDICAL_DEVICE_SERIAL: PIIPattern = {
  */
 export const LAB_TEST_ID: PIIPattern = {
   type: 'LAB_TEST_ID',
-  regex: /\b(?:LAB|TEST|SAMPLE)[-\s]?(?:ID|NUM(?:BER)?|REF)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:LAB|TEST|SAMPLE)[\-\s]?(?:ID|NUM(?:BER)?|REF)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[LAB_{n}]',
   priority: 75,
   severity: 'medium',
@@ -154,7 +154,7 @@ export const LAB_TEST_ID: PIIPattern = {
  */
 export const TRIAL_PARTICIPANT_ID: PIIPattern = {
   type: 'TRIAL_PARTICIPANT_ID',
-  regex: /\b(?:PARTICIPANT|SUBJECT|TRIAL)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z]{1,2}[-]?\d{4,6})\b/gi,
+  regex: /\b(?:PARTICIPANT|SUBJECT|TRIAL)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z]{1,2}[-]?\d{4,6})\b/gi,
   placeholder: '[TRIAL_PART_{n}]',
   priority: 85,
   severity: 'high',
@@ -166,7 +166,7 @@ export const TRIAL_PARTICIPANT_ID: PIIPattern = {
  */
 export const PROTOCOL_NUMBER: PIIPattern = {
   type: 'PROTOCOL_NUMBER',
-  regex: /\b(?:PROTOCOL|STUDY)[-\s]?(?:NO|NUM(?:BER)?|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:PROTOCOL|STUDY)[\-\s]?(?:NO|NUM(?:BER)?|ID)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[PROTOCOL_{n}]',
   priority: 75,
   severity: 'medium',
@@ -196,7 +196,7 @@ export const GENETIC_MARKER: PIIPattern = {
  */
 export const BIOBANK_SAMPLE_ID: PIIPattern = {
   type: 'BIOBANK_SAMPLE_ID',
-  regex: /\b(?:BIOBANK|SAMPLE|SPECIMEN)[-\s]?(?:ID|NO)?[-\s]?[:#]?\s*([A-Z0-9]{8,15})\b/gi,
+  regex: /\b(?:BIOBANK|SAMPLE|SPECIMEN)[\-\s]?(?:ID|NO)?[\-\s]?[:#]?\s*([A-Z0-9]{8,15})\b/gi,
   placeholder: '[BIOBANK_{n}]',
   priority: 85,
   severity: 'high',
@@ -212,7 +212,7 @@ export const BIOBANK_SAMPLE_ID: PIIPattern = {
 export const PROVIDER_LICENSE: PIIPattern = {
   type: 'PROVIDER_LICENSE',
   regex:
-    /\b(?:MEDICAL|PHYSICIAN|DOCTOR|NURSE|PROVIDER)[-\s\u00A0]*(?:LICENSE|LICENCE|LIC)[-\s\u00A0]*(?:NO|NUM(?:BER)?)?[-\s\u00A0.:#]*((?:[A-Z0-9]{2,6}[\s\u00A0./-]?){1,3}[A-Z0-9]{2,6})\b/gi,
+    /\b(?:MEDICAL|PHYSICIAN|DOCTOR|NURSE|PROVIDER)[\-\s\u00A0]*(?:LICENSE|LICENCE|LIC)[\-\s\u00A0]*(?:NO|NUM(?:BER)?)?[\-\s\u00A0.:#]*((?:[A-Z0-9]{2,6}[\s\u00A0./-]?){1,3}[A-Z0-9]{2,6})\b/gi,
   placeholder: '[PROVIDER_LIC_{n}]',
   priority: 80,
   severity: 'high',
@@ -231,7 +231,7 @@ export const PROVIDER_LICENSE: PIIPattern = {
  */
 export const NPI_NUMBER: PIIPattern = {
   type: 'NPI_NUMBER',
-  regex: /\b(?:NPI[-\s\u00A0]*(?:NO|NUM(?:BER)?)?[-\s\u00A0.:#]*)?((?:\d[\s\u00A0.-]?){10})\b/g,
+  regex: /\b(?:NPI[\-\s\u00A0]*(?:NO|NUM(?:BER)?)?[\-\s\u00A0.:#]*)?((?:\d[\s\u00A0.\-]?){10})\b/g,
   placeholder: '[NPI_{n}]',
   priority: 85,
   severity: 'high',
@@ -266,7 +266,7 @@ export const NPI_NUMBER: PIIPattern = {
  */
 export const DEA_NUMBER: PIIPattern = {
   type: 'DEA_NUMBER',
-  regex: /\b(?:DEA[-\s\u00A0]*(?:NO|NUM(?:BER)?)?[-\s\u00A0.:#]*)?([A-Z]{2}(?:[\s\u00A0.-]?\d){7})\b/gi,
+  regex: /\b(?:DEA[\-\s\u00A0]*(?:NO|NUM(?:BER)?)?[\-\s\u00A0.:#]*)?([A-Z]{2}(?:[\s\u00A0.\-]?\d){7})\b/gi,
   placeholder: '[DEA_{n}]',
   priority: 90,
   severity: 'high',
@@ -296,7 +296,7 @@ export const DEA_NUMBER: PIIPattern = {
  */
 export const HOSPITAL_ACCOUNT: PIIPattern = {
   type: 'HOSPITAL_ACCOUNT',
-  regex: /\b(?:HOSPITAL|H|HAR)[-\s]?(?:ACCOUNT|ACCT|A\/C)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\b(?:HOSPITAL|H|HAR)[\-\s]?(?:ACCOUNT|ACCT|A\/C)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[H_ACCT_{n}]',
   priority: 80,
   severity: 'high',
@@ -323,7 +323,7 @@ export const EMERGENCY_CONTACT_MARKER: PIIPattern = {
 export const BIOMETRIC_ID: PIIPattern = {
   type: 'BIOMETRIC_ID',
   regex:
-    /\b(?:FINGERPRINT|RETINAL?[-\s\u00A0]?SCAN|IRIS[-\s\u00A0]?SCAN|VOICE[-\s\u00A0]?PRINT|FACIAL[-\s\u00A0]?RECOGNITION|BIOMETRIC)[-\s\u00A0]?(?:ID|DATA|TEMPLATE|HASH)?[-\s\u00A0.:#]*([A-Z0-9][A-Z0-9._-]{7,39})\b/gi,
+    /\b(?:FINGERPRINT|RETINAL?[\-\s\u00A0]?SCAN|IRIS[\-\s\u00A0]?SCAN|VOICE[\-\s\u00A0]?PRINT|FACIAL[\-\s\u00A0]?RECOGNITION|BIOMETRIC)[\-\s\u00A0]?(?:ID|DATA|TEMPLATE|HASH)?[\-\s\u00A0.:#]*([A-Z0-9][A-Z0-9._-]{7,39})\b/gi,
   placeholder: '[BIOMETRIC_{n}]',
   priority: 95,
   severity: 'high',
@@ -381,7 +381,7 @@ export const DRUG_DOSAGE: PIIPattern = {
 export const MEDICAL_IMAGE_REF: PIIPattern = {
   type: 'MEDICAL_IMAGE_REF',
   regex:
-    /\b(?:X[-\s\u00A0]?RAY|MRI|CT[-\s\u00A0]?SCAN|PET[-\s\u00A0]?SCAN|ULTRASOUND|MAMMOGRAM)[-\s\u00A0]?(?:IMAGE|FILE|ID)?[-\s\u00A0.:#]*([A-Z0-9][A-Z0-9_.-]{5,23})\b/gi,
+    /\b(?:X[\-\s\u00A0]?RAY|MRI|CT[\-\s\u00A0]?SCAN|PET[\-\s\u00A0]?SCAN|ULTRASOUND|MAMMOGRAM)[\-\s\u00A0]?(?:IMAGE|FILE|ID)?[\-\s\u00A0.:#]*([A-Z0-9][A-Z0-9_.\-]{5,23})\b/gi,
   placeholder: '[IMAGE_{n}]',
   priority: 80,
   severity: 'high',
@@ -417,7 +417,7 @@ export const ALLERGY_INFO: PIIPattern = {
  */
 export const VACCINATION_ID: PIIPattern = {
   type: 'VACCINATION_ID',
-  regex: /\b(?:VACCINE|VACCINATION|IMMUNIZATION)[-\s]?(?:ID|RECORD|NO)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:VACCINE|VACCINATION|IMMUNIZATION)[\-\s]?(?:ID|RECORD|NO)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[VAX_{n}]',
   priority: 80,
   severity: 'high',
@@ -433,7 +433,7 @@ export const VACCINATION_ID: PIIPattern = {
  */
 export const CHI_NUMBER: PIIPattern = {
   type: 'CHI_NUMBER',
-  regex: /\b(?:CHI|community health index)[-\s]?(?:number|no)?[-\s]?[:#]?\s*(\d{6}[-\s]?\d{4})\b/gi,
+  regex: /\b(?:CHI|community health index)[\-\s]?(?:number|no)?[\-\s]?[:#]?\s*(\d{6}[\-\s]?\d{4})\b/gi,
   placeholder: '[CHI_{n}]',
   priority: 95,
   severity: 'high',
@@ -473,7 +473,7 @@ export const CHI_NUMBER: PIIPattern = {
  */
 export const EHIC_NUMBER: PIIPattern = {
   type: 'EHIC_NUMBER',
-  regex: /\b(?:EHIC|european health insurance|health card)[-\s]?(?:number|no)?[-\s]?[:#]?\s*([A-Z]{2}\s?\d{12,16})\b/gi,
+  regex: /\b(?:EHIC|european health insurance|health card)[\-\s]?(?:number|no)?[\-\s]?[:#]?\s*([A-Z]{2}\s?\d{12,16})\b/gi,
   placeholder: '[EHIC_{n}]',
   priority: 90,
   severity: 'high',

@@ -14,7 +14,7 @@ import { PIIPattern } from '../../types';
  */
 export const EMERGENCY_CALL_REF: PIIPattern = {
   type: 'EMERGENCY_CALL_REF',
-  regex: /\b(?:EMERGENCY|INCIDENT|CALL|CAD|DISPATCH|EVENT)[-\s]?(?:REF|NO|NUM|NUMBER|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:EMERGENCY|INCIDENT|CALL|CAD|DISPATCH|EVENT)[\-\s]?(?:REF|NO|NUM|NUMBER|ID)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[EMERGENCY_REF_{n}]',
   priority: 95,
   severity: 'high',
@@ -30,7 +30,7 @@ export const EMERGENCY_CALL_REF: PIIPattern = {
  */
 export const POLICE_REPORT_NUMBER: PIIPattern = {
   type: 'POLICE_REPORT_NUMBER',
-  regex: /\b(?:POLICE|PR|RPT|REPORT|CASE)[-\s\u00A0]*(?:NO|NUM|NUMBER|ID)?[-\s\u00A0.:#]*((?:[A-Z]{2,4}[\s\u00A0./-]?\d{2,4}[\s\u00A0./-]?\d{4,10})|\d{4}[\s\u00A0./-]?\d{5,10})\b/gi,
+  regex: /\b(?:POLICE|PR|RPT|REPORT|CASE)[\-\s\u00A0]*(?:NO|NUM|NUMBER|ID)?[\-\s\u00A0.:#]*((?:[A-Z]{2,4}[\s\u00A0./-]?\d{2,4}[\s\u00A0./-]?\d{4,10})|\d{4}[\s\u00A0./-]?\d{5,10})\b/gi,
   placeholder: '[POLICE_RPT_{n}]',
   priority: 95,
   severity: 'high',
@@ -46,7 +46,7 @@ export const POLICE_REPORT_NUMBER: PIIPattern = {
  */
 export const FIRE_INCIDENT_NUMBER: PIIPattern = {
   type: 'FIRE_INCIDENT_NUMBER',
-  regex: /\b(?:FIRE|FI|FD)[-\s\u00A0]*(?:INCIDENT|INC|NO|NUM|NUMBER|ID)?[-\s\u00A0.:#]*((?:[A-Z]{2,4}[\s\u00A0./-]?\d{2,4}[\s\u00A0./-]?\d{4,10})|\d{4}[\s\u00A0./-]?\d{4,8})\b/gi,
+  regex: /\b(?:FIRE|FI|FD)[\-\s\u00A0]*(?:INCIDENT|INC|NO|NUM|NUMBER|ID)?[\-\s\u00A0.:#]*((?:[A-Z]{2,4}[\s\u00A0./-]?\d{2,4}[\s\u00A0./-]?\d{4,10})|\d{4}[\s\u00A0./-]?\d{4,8})\b/gi,
   placeholder: '[FIRE_INC_{n}]',
   priority: 95,
   severity: 'high',
@@ -62,7 +62,7 @@ export const FIRE_INCIDENT_NUMBER: PIIPattern = {
  */
 export const AMBULANCE_CALL_ID: PIIPattern = {
   type: 'AMBULANCE_CALL_ID',
-  regex: /\b(?:AMBULANCE|AMB|EMS|PARAMEDIC)[-\s]?(?:CALL|ID|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:AMBULANCE|AMB|EMS|PARAMEDIC)[\-\s]?(?:CALL|ID|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[AMB_CALL_{n}]',
   priority: 90,
   severity: 'high',
@@ -78,7 +78,7 @@ export const AMBULANCE_CALL_ID: PIIPattern = {
  */
 export const PARAMEDIC_CERTIFICATION: PIIPattern = {
   type: 'PARAMEDIC_CERTIFICATION',
-  regex: /\b(?:NREMT|EMT|PARAMEDIC)[-\s]?(?:P|B|A|I)?[-\s]?(?:CERT|LICENSE|LIC)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:NREMT|EMT|PARAMEDIC)[\-\s]?(?:P|B|A|I)?[\-\s]?(?:CERT|LICENSE|LIC)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[PARAMEDIC_CERT_{n}]',
   priority: 85,
   severity: 'medium',
@@ -95,7 +95,7 @@ export const PARAMEDIC_CERTIFICATION: PIIPattern = {
  */
 export const EMERGENCY_SHELTER_ID: PIIPattern = {
   type: 'EMERGENCY_SHELTER_ID',
-  regex: /\b(?:SHELTER|EVACUATION|REFUGE)[-\s]?(?:REG|ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{5,12})\b/gi,
+  regex: /\b(?:SHELTER|EVACUATION|REFUGE)[\-\s]?(?:REG|ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{5,12})\b/gi,
   placeholder: '[SHELTER_ID_{n}]',
   priority: 90,
   severity: 'high',
@@ -112,7 +112,7 @@ export const EMERGENCY_SHELTER_ID: PIIPattern = {
  */
 export const DISASTER_VICTIM_ID: PIIPattern = {
   type: 'DISASTER_VICTIM_ID',
-  regex: /\b(?:DVI|VICTIM)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*(\d{4}[-\s]?\d{4,8})\b/gi,
+  regex: /\b(?:DVI|VICTIM)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*(\d{4}[\-\s]?\d{4,8})\b/gi,
   placeholder: '[DVI_{n}]',
   priority: 95,
   severity: 'high',
@@ -128,7 +128,7 @@ export const DISASTER_VICTIM_ID: PIIPattern = {
  */
 export const SEARCH_RESCUE_MISSION_ID: PIIPattern = {
   type: 'SEARCH_RESCUE_MISSION_ID',
-  regex: /\b(?:SAR|SEARCH|RESCUE|MISSION)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:SAR|SEARCH|RESCUE|MISSION)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[SAR_MISSION_{n}]',
   priority: 90,
   severity: 'high',
@@ -144,7 +144,7 @@ export const SEARCH_RESCUE_MISSION_ID: PIIPattern = {
  */
 export const EMERGENCY_MEDICAL_INCIDENT: PIIPattern = {
   type: 'EMERGENCY_MEDICAL_INCIDENT',
-  regex: /\b(?:MEDICAL|MED|MI)[-\s]?(?:INCIDENT|INC|EMERGENCY|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:MEDICAL|MED|MI)[\-\s]?(?:INCIDENT|INC|EMERGENCY|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[MED_INC_{n}]',
   priority: 90,
   severity: 'high',
@@ -160,7 +160,7 @@ export const EMERGENCY_MEDICAL_INCIDENT: PIIPattern = {
  */
 export const FIREFIGHTER_BADGE: PIIPattern = {
   type: 'FIREFIGHTER_BADGE',
-  regex: /\b(?:BADGE|FF|FIREFIGHTER)[-\s]?(?:NO|NUM|NUMBER|ID)?[-\s]?[:#]?\s*(\d{3,6})\b/gi,
+  regex: /\b(?:BADGE|FF|FIREFIGHTER)[\-\s]?(?:NO|NUM|NUMBER|ID)?[\-\s]?[:#]?\s*(\d{3,6})\b/gi,
   placeholder: '[FF_BADGE_{n}]',
   priority: 80,
   severity: 'medium',
@@ -176,7 +176,7 @@ export const FIREFIGHTER_BADGE: PIIPattern = {
  */
 export const POLICE_BADGE: PIIPattern = {
   type: 'POLICE_BADGE',
-  regex: /\b(?:BADGE|SHIELD|OFFICER)[-\s]?(?:NO|NUM|NUMBER|ID)?[-\s]?[:#]?\s*(\d{3,6})\b/gi,
+  regex: /\b(?:BADGE|SHIELD|OFFICER)[\-\s]?(?:NO|NUM|NUMBER|ID)?[\-\s]?[:#]?\s*(\d{3,6})\b/gi,
   placeholder: '[POLICE_BADGE_{n}]',
   priority: 80,
   severity: 'medium',
@@ -192,7 +192,7 @@ export const POLICE_BADGE: PIIPattern = {
  */
 export const MISSING_PERSON_CASE: PIIPattern = {
   type: 'MISSING_PERSON_CASE',
-  regex: /\b(?:MISSING|MP|AMBER)[-\s]?(?:PERSON|CASE|ALERT)?[-\s]?(?:NO|NUMBER|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:MISSING|MP|AMBER)[\-\s]?(?:PERSON|CASE|ALERT)?[\-\s]?(?:NO|NUMBER|ID)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[MISSING_CASE_{n}]',
   priority: 95,
   severity: 'high',
@@ -208,7 +208,7 @@ export const MISSING_PERSON_CASE: PIIPattern = {
  */
 export const DISPATCHER_ID: PIIPattern = {
   type: 'DISPATCHER_ID',
-  regex: /\b(?:DISPATCHER|DISP)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{3,8})\b/gi,
+  regex: /\b(?:DISPATCHER|DISP)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{3,8})\b/gi,
   placeholder: '[DISPATCHER_{n}]',
   priority: 80,
   severity: 'medium',
@@ -224,7 +224,7 @@ export const DISPATCHER_ID: PIIPattern = {
  */
 export const HAZMAT_INCIDENT: PIIPattern = {
   type: 'HAZMAT_INCIDENT',
-  regex: /\b(?:HAZMAT|HM)[-\s]?(?:INCIDENT|INC|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:HAZMAT|HM)[\-\s]?(?:INCIDENT|INC|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[HAZMAT_{n}]',
   priority: 90,
   severity: 'high',

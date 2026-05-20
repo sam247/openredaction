@@ -122,7 +122,7 @@ export const REQUISITION_NUMBER: PIIPattern = {
  */
 export const PCARD_REFERENCE: PIIPattern = {
   type: 'PCARD_REFERENCE',
-  regex: /\b(?:P[-\s]?Card|Procurement\s+Card).*?(?:ending|last\s+4|XXXX)[-\s]?(\d{4})\b/gi,
+  regex: /\b(?:P[\-\s]?Card|Procurement\s+Card).*?(?:ending|last\s+4|XXXX)[\-\s]?(\d{4})\b/gi,
   placeholder: '[PCARD_{n}]',
   priority: 90,
   severity: 'high',

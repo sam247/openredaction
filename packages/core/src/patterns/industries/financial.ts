@@ -19,7 +19,7 @@ export const SWIFT_BIC: PIIPattern = {
   description: 'SWIFT/BIC codes for international transfers',
   validator: (value: string, context: string) => {
     // Normalize separators (though SWIFT codes typically don't have them)
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '').toUpperCase();
     
     // Must be in financial context
     const financialContext = /swift|bic|bank|transfer|wire|international|payment/i.test(context);
@@ -39,7 +39,7 @@ export const SWIFT_BIC: PIIPattern = {
  */
 export const TRANSACTION_ID: PIIPattern = {
   type: 'TRANSACTION_ID',
-  regex: /\b(?:TXN|TX|TRANS(?:ACTION)?)[-\s]?(?:ID|NO|NUM(?:BER)?|REF)?[-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
+  regex: /\b(?:TXN|TX|TRANS(?:ACTION)?)[\-\s]?(?:ID|NO|NUM(?:BER)?|REF)?[\-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
   placeholder: '[TXN_{n}]',
   priority: 80,
   severity: 'medium',
@@ -51,7 +51,7 @@ export const TRANSACTION_ID: PIIPattern = {
  */
 export const INVESTMENT_ACCOUNT: PIIPattern = {
   type: 'INVESTMENT_ACCOUNT',
-  regex: /\b(?:ISA|SIPP|INV(?:ESTMENT)?|PENSION|401K|IRA)[-\s\u00A0]*(?:ACCOUNT|ACCT|A\/C)?[-\s\u00A0]*(?:NO|NUM(?:BER)?)?[-\s\u00A0.:#]*([A-Z0-9](?:[A-Z0-9][\s\u00A0./-]?){5,18}[A-Z0-9])\b/gi,
+  regex: /\b(?:ISA|SIPP|INV(?:ESTMENT)?|PENSION|401K|IRA)[\-\s\u00A0]*(?:ACCOUNT|ACCT|A\/C)?[\-\s\u00A0]*(?:NO|NUM(?:BER)?)?[\-\s\u00A0.:#]*([A-Z0-9](?:[A-Z0-9][\s\u00A0./-]?){5,18}[A-Z0-9])\b/gi,
   placeholder: '[INV_ACCT_{n}]',
   priority: 85,
   severity: 'high',
@@ -70,7 +70,7 @@ export const INVESTMENT_ACCOUNT: PIIPattern = {
  */
 export const WIRE_TRANSFER_REF: PIIPattern = {
   type: 'WIRE_TRANSFER_REF',
-  regex: /\b(?:WIRE|TRANSFER|REMITTANCE)[-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?|ID)?[-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
+  regex: /\b(?:WIRE|TRANSFER|REMITTANCE)[\-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?|ID)?[\-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
   placeholder: '[WIRE_{n}]',
   priority: 85,
   severity: 'high',
@@ -82,7 +82,7 @@ export const WIRE_TRANSFER_REF: PIIPattern = {
  */
 export const DD_MANDATE: PIIPattern = {
   type: 'DD_MANDATE',
-  regex: /\b(?:DD|DIRECT[-\s]?DEBIT)[-\s]?(?:MANDATE|REF(?:ERENCE)?|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,18})\b/gi,
+  regex: /\b(?:DD|DIRECT[\-\s]?DEBIT)[\-\s]?(?:MANDATE|REF(?:ERENCE)?|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,18})\b/gi,
   placeholder: '[DD_MANDATE_{n}]',
   priority: 80,
   severity: 'high',
@@ -94,7 +94,7 @@ export const DD_MANDATE: PIIPattern = {
  */
 export const CHEQUE_NUMBER: PIIPattern = {
   type: 'CHEQUE_NUMBER',
-  regex: /\b(?:CHE(?:QUE|CK))[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{6,10})\b/gi,
+  regex: /\b(?:CHE(?:QUE|CK))[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*(\d{6,10})\b/gi,
   placeholder: '[CHEQUE_{n}]',
   priority: 75,
   severity: 'medium',
@@ -109,7 +109,7 @@ export const CHEQUE_NUMBER: PIIPattern = {
  */
 export const TRADING_ACCOUNT: PIIPattern = {
   type: 'TRADING_ACCOUNT',
-  regex: /\b(?:TRADING|BROKERAGE|STOCK)[-\s]?(?:ACCOUNT|ACCT|A\/C)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\b(?:TRADING|BROKERAGE|STOCK)[\-\s]?(?:ACCOUNT|ACCT|A\/C)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[TRADE_ACCT_{n}]',
   priority: 85,
   severity: 'high',
@@ -121,7 +121,7 @@ export const TRADING_ACCOUNT: PIIPattern = {
  */
 export const LOAN_ACCOUNT: PIIPattern = {
   type: 'LOAN_ACCOUNT',
-  regex: /\b(?:LOAN|MORTGAGE|CREDIT)[-\s]?(?:ACCOUNT|ACCT|A\/C)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
+  regex: /\b(?:LOAN|MORTGAGE|CREDIT)[\-\s]?(?:ACCOUNT|ACCT|A\/C)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
   placeholder: '[LOAN_{n}]',
   priority: 85,
   severity: 'high',
@@ -239,7 +239,7 @@ export const CARDANO_ADDRESS: PIIPattern = {
  */
 export const CRYPTO_TX_HASH: PIIPattern = {
   type: 'CRYPTO_TX_HASH',
-  regex: /\b(?:TX|TXID|TRANSACTION[-\s]?HASH)[:\s]+([a-fA-F0-9]{64})\b/gi,
+  regex: /\b(?:TX|TXID|TRANSACTION[\-\s]?HASH)[:\s]+([a-fA-F0-9]{64})\b/gi,
   placeholder: '[CRYPTO_TX_{n}]',
   priority: 85,
   severity: 'high',
@@ -336,7 +336,7 @@ export const STOCK_TRADE: PIIPattern = {
  */
 export const WIRE_TRANSFER_DETAILS: PIIPattern = {
   type: 'WIRE_TRANSFER_DETAILS',
-  regex: /\b(?:WIRE\s+TO|TRANSFER\s+TO|BENEFICIARY)[:\s]+([A-Z0-9\s,.-]{20,100})/gi,
+  regex: /\b(?:WIRE\s+TO|TRANSFER\s+TO|BENEFICIARY)[:\s]+([A-Z0-9\s,.\-]{20,100})/gi,
   placeholder: '[WIRE_DETAILS_{n}]',
   priority: 90,
   severity: 'high',
@@ -387,7 +387,7 @@ export const SUBSCRIPTION_ID: PIIPattern = {
  */
 export const STATEMENT_REF: PIIPattern = {
   type: 'STATEMENT_REF',
-  regex: /\b(?:STATEMENT|STMT)[-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:STATEMENT|STMT)[\-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?|ID)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[STMT_{n}]',
   priority: 75,
   severity: 'medium',
@@ -399,7 +399,7 @@ export const STATEMENT_REF: PIIPattern = {
  */
 export const STANDING_ORDER_REF: PIIPattern = {
   type: 'STANDING_ORDER_REF',
-  regex: /\b(?:STANDING[-\s]?ORDER|SO)[-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?|ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:STANDING[\-\s]?ORDER|SO)[\-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?|ID)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[SO_{n}]',
   priority: 75,
   severity: 'medium',
@@ -411,7 +411,7 @@ export const STANDING_ORDER_REF: PIIPattern = {
  */
 export const PAYMENT_REFERENCE: PIIPattern = {
   type: 'PAYMENT_REFERENCE',
-  regex: /\b(?:PAYMENT|PAY)[-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?|ID)?[-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
+  regex: /\b(?:PAYMENT|PAY)[\-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?|ID)?[\-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
   placeholder: '[PAY_REF_{n}]',
   priority: 75,
   severity: 'medium',
@@ -423,7 +423,7 @@ export const PAYMENT_REFERENCE: PIIPattern = {
  */
 export const CARD_AUTH_CODE: PIIPattern = {
   type: 'CARD_AUTH_CODE',
-  regex: /\b(?:AUTH(?:ORIZATION)?|APPROVAL)[-\s]?(?:CODE|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:AUTH(?:ORIZATION)?|APPROVAL)[\-\s]?(?:CODE|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[AUTH_{n}]',
   priority: 80,
   severity: 'high',
@@ -438,7 +438,7 @@ export const CARD_AUTH_CODE: PIIPattern = {
  */
 export const MERCHANT_ID: PIIPattern = {
   type: 'MERCHANT_ID',
-  regex: /\b(?:MERCHANT|MID)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
+  regex: /\b(?:MERCHANT|MID)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
   placeholder: '[MERCHANT_{n}]',
   priority: 75,
   severity: 'medium',
@@ -453,7 +453,7 @@ export const MERCHANT_ID: PIIPattern = {
  */
 export const TERMINAL_ID: PIIPattern = {
   type: 'TERMINAL_ID',
-  regex: /\b(?:TERMINAL|TID|POS)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
+  regex: /\b(?:TERMINAL|TID|POS)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
   placeholder: '[TERMINAL_{n}]',
   priority: 75,
   severity: 'medium',
@@ -469,14 +469,14 @@ export const TERMINAL_ID: PIIPattern = {
  */
 export const UK_BANK_ACCOUNT_IBAN: PIIPattern = {
   type: 'UK_BANK_ACCOUNT_IBAN',
-  regex: /\b(GB\d{2}[\s\u00A0.-]?[A-Z]{4}[\s\u00A0.-]?\d{14})\b/gi,
+  regex: /\b(GB\d{2}[\s\u00A0.\-]?[A-Z]{4}[\s\u00A0.\-]?\d{14})\b/gi,
   placeholder: '[UK_IBAN_{n}]',
   priority: 95,
   severity: 'high',
   description: 'UK bank account numbers in IBAN format',
   validator: (value: string, context: string) => {
     // Normalize separators
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '').toUpperCase();
     
     // Must start with GB and be exactly 22 characters
     if (!cleaned.startsWith('GB') || cleaned.length !== 22) {
@@ -517,7 +517,7 @@ export const UK_SORT_CODE_ACCOUNT: PIIPattern = {
   description: 'UK sort code and account number combination',
   validator: (value: string, context: string) => {
     // Normalize separators
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
     
     // Must be exactly 14 digits (6 for sort code + 8 for account)
     if (!/^\d{14}$/.test(cleaned)) {

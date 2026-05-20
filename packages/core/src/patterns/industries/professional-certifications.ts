@@ -12,7 +12,7 @@ import { PIIPattern } from '../../types';
  */
 export const PMP_CERTIFICATION: PIIPattern = {
   type: 'PMP_CERTIFICATION',
-  regex: /\bPMP[-\s]?(?:ID|NO|NUM|NUMBER|CERT(?:IFICATION)?)?[-\s]?[:#]?\s*(\d{7,9})\b/gi,
+  regex: /\bPMP[\-\s]?(?:ID|NO|NUM|NUMBER|CERT(?:IFICATION)?)?[\-\s]?[:#]?\s*(\d{7,9})\b/gi,
   placeholder: '[PMP_{n}]',
   priority: 80,
   severity: 'medium',
@@ -32,7 +32,7 @@ export const PMP_CERTIFICATION: PIIPattern = {
  */
 export const CPA_LICENSE: PIIPattern = {
   type: 'CPA_LICENSE',
-  regex: /\bCPA[-\s]?(?:LICENSE|LIC|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{5,10})\b/gi,
+  regex: /\bCPA[\-\s]?(?:LICENSE|LIC|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{5,10})\b/gi,
   placeholder: '[CPA_{n}]',
   priority: 85,
   severity: 'medium',
@@ -49,7 +49,7 @@ export const CPA_LICENSE: PIIPattern = {
  */
 export const PE_LICENSE: PIIPattern = {
   type: 'PE_LICENSE',
-  regex: /\bPE[-\s]?(?:LICENSE|LIC|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{5,10})\b/gi,
+  regex: /\bPE[\-\s]?(?:LICENSE|LIC|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{5,10})\b/gi,
   placeholder: '[PE_{n}]',
   priority: 80,
   severity: 'medium',
@@ -66,7 +66,7 @@ export const PE_LICENSE: PIIPattern = {
  */
 export const NURSING_LICENSE: PIIPattern = {
   type: 'NURSING_LICENSE',
-  regex: /\b(?:RN|LPN|NP|NURSING)[-\s]?(?:LICENSE|LIC|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:RN|LPN|NP|NURSING)[\-\s]?(?:LICENSE|LIC|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[RN_{n}]',
   priority: 85,
   severity: 'high',
@@ -83,7 +83,7 @@ export const NURSING_LICENSE: PIIPattern = {
  */
 export const TEACHING_LICENSE: PIIPattern = {
   type: 'TEACHING_LICENSE',
-  regex: /\b(?:TEACHING|TEACHER|EDUCATOR)[-\s]?(?:LICENSE|LIC|CERT(?:IFICATE)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:TEACHING|TEACHER|EDUCATOR)[\-\s]?(?:LICENSE|LIC|CERT(?:IFICATE)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[TEACHER_{n}]',
   priority: 80,
   severity: 'medium',
@@ -100,7 +100,7 @@ export const TEACHING_LICENSE: PIIPattern = {
  */
 export const AWS_CERTIFICATION: PIIPattern = {
   type: 'AWS_CERTIFICATION',
-  regex: /\bAWS[-\s]?(?:CERT(?:IFICATION)?|ID|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
+  regex: /\bAWS[\-\s]?(?:CERT(?:IFICATION)?|ID|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
   placeholder: '[AWS_CERT_{n}]',
   priority: 75,
   severity: 'low',
@@ -117,7 +117,7 @@ export const AWS_CERTIFICATION: PIIPattern = {
  */
 export const MICROSOFT_CERTIFICATION: PIIPattern = {
   type: 'MICROSOFT_CERTIFICATION',
-  regex: /\b(?:MICROSOFT|MCID|MS)[-\s]?(?:CERT(?:IFICATION)?|ID|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
+  regex: /\b(?:MICROSOFT|MCID|MS)[\-\s]?(?:CERT(?:IFICATION)?|ID|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
   placeholder: '[MS_CERT_{n}]',
   priority: 75,
   severity: 'low',
@@ -134,7 +134,7 @@ export const MICROSOFT_CERTIFICATION: PIIPattern = {
  */
 export const CISCO_CERTIFICATION: PIIPattern = {
   type: 'CISCO_CERTIFICATION',
-  regex: /\b(?:CISCO|CSCO)[-\s]?(?:CERT(?:IFICATION)?|ID|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
+  regex: /\b(?:CISCO|CSCO)[\-\s]?(?:CERT(?:IFICATION)?|ID|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
   placeholder: '[CISCO_CERT_{n}]',
   priority: 75,
   severity: 'low',
@@ -151,7 +151,7 @@ export const CISCO_CERTIFICATION: PIIPattern = {
  */
 export const COMPTIA_CERTIFICATION: PIIPattern = {
   type: 'COMPTIA_CERTIFICATION',
-  regex: /\bCOMPTIA[-\s]?(?:CERT(?:IFICATION)?|ID|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
+  regex: /\bCOMPTIA[\-\s]?(?:CERT(?:IFICATION)?|ID|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
   placeholder: '[COMPTIA_{n}]',
   priority: 75,
   severity: 'low',
@@ -168,7 +168,7 @@ export const COMPTIA_CERTIFICATION: PIIPattern = {
  */
 export const FINRA_LICENSE: PIIPattern = {
   type: 'FINRA_LICENSE',
-  regex: /\b(?:CRD|SERIES|FINRA)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{6,8})\b/gi,
+  regex: /\b(?:CRD|SERIES|FINRA)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{6,8})\b/gi,
   placeholder: '[FINRA_{n}]',
   priority: 85,
   severity: 'high',

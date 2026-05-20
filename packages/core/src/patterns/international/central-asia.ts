@@ -11,7 +11,7 @@ import type { PIIPattern } from '../../types';
  */
 export const KAZAKHSTAN_IIN: PIIPattern = {
   type: 'KAZAKHSTAN_IIN',
-  regex: /\bIIN[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{12})\b/gi,
+  regex: /\bIIN[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{12})\b/gi,
   placeholder: '[KZ_IIN_{n}]',
   priority: 90,
   severity: 'high',
@@ -55,7 +55,7 @@ export const UZBEKISTAN_PASSPORT: PIIPattern = {
  */
 export const UZBEKISTAN_STIR: PIIPattern = {
   type: 'UZBEKISTAN_STIR',
-  regex: /\bSTIR[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{9})\b/gi,
+  regex: /\bSTIR[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{9})\b/gi,
   placeholder: '[UZ_STIR_{n}]',
   priority: 90,
   severity: 'high',
@@ -73,7 +73,7 @@ export const UZBEKISTAN_STIR: PIIPattern = {
  */
 export const KYRGYZSTAN_PIN: PIIPattern = {
   type: 'KYRGYZSTAN_PIN',
-  regex: /\bPIN[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{14})\b/gi,
+  regex: /\bPIN[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{14})\b/gi,
   placeholder: '[KG_PIN_{n}]',
   priority: 90,
   severity: 'high',
@@ -91,7 +91,7 @@ export const KYRGYZSTAN_PIN: PIIPattern = {
  */
 export const TAJIKISTAN_NATIONAL_ID: PIIPattern = {
   type: 'TAJIKISTAN_NATIONAL_ID',
-  regex: /\b(?:TAJIK|TJ)[-\s]?(?:ID|NATIONAL\s?ID)[-\s]?[:#]?\s*(\d{9,10})\b/gi,
+  regex: /\b(?:TAJIK|TJ)[\-\s]?(?:ID|NATIONAL\s?ID)[\-\s]?[:#]?\s*(\d{9,10})\b/gi,
   placeholder: '[TJ_ID_{n}]',
   priority: 85,
   severity: 'high',

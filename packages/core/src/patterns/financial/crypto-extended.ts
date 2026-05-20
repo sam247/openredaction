@@ -19,7 +19,7 @@ export const SOLANA_ADDRESS: PIIPattern = {
   description: 'Solana (SOL) cryptocurrency address',
   validator: (value: string, context: string) => {
     // Normalize (remove any whitespace that might have been introduced)
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
     
     // Length validation
     if (cleaned.length < 32 || cleaned.length > 44) return false;
@@ -65,7 +65,7 @@ export const POLKADOT_ADDRESS: PIIPattern = {
   description: 'Polkadot (DOT) cryptocurrency address',
   validator: (value: string, context: string) => {
     // Normalize (remove any whitespace)
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
     
     // Length validation
     if (cleaned.length < 47 || cleaned.length > 48) return false;
@@ -101,7 +101,7 @@ export const POLKADOT_ADDRESS: PIIPattern = {
  */
 export const AVALANCHE_ADDRESS: PIIPattern = {
   type: 'AVALANCHE_ADDRESS',
-  regex: /\b([XPC][-\s\u00A0]?(?:avax)?[a-z0-9]{38,43})\b/gi,
+  regex: /\b([XPC][\-\s\u00A0]?(?:avax)?[a-z0-9]{38,43})\b/gi,
   placeholder: '[AVAX_ADDR_{n}]',
   priority: 85,
   severity: 'high',
@@ -146,7 +146,7 @@ export const COSMOS_ADDRESS: PIIPattern = {
   description: 'Cosmos (ATOM) cryptocurrency address',
   validator: (value: string, context: string) => {
     // Normalize (remove any whitespace)
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '').toLowerCase();
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '').toLowerCase();
     
     // Must start with cosmos1
     if (!cleaned.startsWith('cosmos1')) return false;
@@ -189,7 +189,7 @@ export const ALGORAND_ADDRESS: PIIPattern = {
   description: 'Algorand (ALGO) cryptocurrency address',
   validator: (value: string, context: string) => {
     // Normalize (remove any whitespace, convert to uppercase)
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '').toUpperCase();
     
     // Must be exactly 58 characters after normalization
     if (cleaned.length !== 58) return false;
@@ -227,7 +227,7 @@ export const TEZOS_ADDRESS: PIIPattern = {
   description: 'Tezos (XTZ) cryptocurrency address',
   validator: (value: string, context: string) => {
     // Normalize (remove any whitespace)
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
     
     // Must start with tz1, tz2, or tz3
     if (!/^tz[123]/.test(cleaned)) return false;
@@ -270,7 +270,7 @@ export const POLYGON_ADDRESS: PIIPattern = {
   description: 'Polygon (MATIC) cryptocurrency address',
   validator: (value: string, context: string) => {
     // Normalize (remove any whitespace)
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
     
     // Must start with 0x and be 42 chars total after normalization
     if (!cleaned.startsWith('0x') || cleaned.length !== 42) return false;
@@ -315,7 +315,7 @@ export const BINANCE_CHAIN_ADDRESS: PIIPattern = {
   description: 'Binance Smart Chain (BNB) address',
   validator: (value: string, context: string) => {
     // Normalize (remove any whitespace)
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
     
     // Must start with 0x and be 42 chars total after normalization
     if (!cleaned.startsWith('0x') || cleaned.length !== 42) return false;

@@ -10,7 +10,7 @@ import { PIIPattern } from '../../types';
  */
 export const TELECOMS_ACCOUNT_NUMBER: PIIPattern = {
   type: 'TELECOMS_ACCOUNT_NUMBER',
-  regex: /\bACC(?:OUNT)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{8,12})\b/gi,
+  regex: /\bACC(?:OUNT)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*(\d{8,12})\b/gi,
   placeholder: '[ACCOUNT_{n}]',
   priority: 90,
   severity: 'high',
@@ -25,7 +25,7 @@ export const TELECOMS_ACCOUNT_NUMBER: PIIPattern = {
  */
 export const METER_SERIAL_NUMBER: PIIPattern = {
   type: 'METER_SERIAL_NUMBER',
-  regex: /\bMTR[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{8,12})\b/gi,
+  regex: /\bMTR[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*(\d{8,12})\b/gi,
   placeholder: '[METER_{n}]',
   priority: 85,
   severity: 'high',
@@ -37,7 +37,7 @@ export const METER_SERIAL_NUMBER: PIIPattern = {
  */
 export const IMSI_NUMBER: PIIPattern = {
   type: 'IMSI_NUMBER',
-  regex: /\bIMSI[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{15})\b/gi,
+  regex: /\bIMSI[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*(\d{15})\b/gi,
   placeholder: '[IMSI_{n}]',
   priority: 90,
   severity: 'high',
@@ -49,7 +49,7 @@ export const IMSI_NUMBER: PIIPattern = {
  */
 export const IMEI_NUMBER: PIIPattern = {
   type: 'IMEI_NUMBER',
-  regex: /\bIMEI[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{15})\b/gi,
+  regex: /\bIMEI[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*(\d{15})\b/gi,
   placeholder: '[IMEI_{n}]',
   priority: 90,
   severity: 'high',
@@ -61,7 +61,7 @@ export const IMEI_NUMBER: PIIPattern = {
  */
 export const SIM_CARD_NUMBER: PIIPattern = {
   type: 'SIM_CARD_NUMBER',
-  regex: /\bSIM[-\s]?(?:CARD)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{19,20})\b/gi,
+  regex: /\bSIM[\-\s]?(?:CARD)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*(\d{19,20})\b/gi,
   placeholder: '[SIM_{n}]',
   priority: 85,
   severity: 'high',
@@ -76,7 +76,7 @@ export const SIM_CARD_NUMBER: PIIPattern = {
  */
 export const SERVICE_REQUEST_NUMBER: PIIPattern = {
   type: 'SERVICE_REQUEST_NUMBER',
-  regex: /\b(?:SERVICE|SR)[-\s]?(?:REQUEST)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:SERVICE|SR)[\-\s]?(?:REQUEST)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[SERVICE_{n}]',
   priority: 80,
   severity: 'medium',
@@ -91,7 +91,7 @@ export const SERVICE_REQUEST_NUMBER: PIIPattern = {
  */
 export const UTILITY_BILL_ACCOUNT: PIIPattern = {
   type: 'UTILITY_BILL_ACCOUNT',
-  regex: /\b(?:BILL|BILLING)[-\s]?(?:ACCOUNT)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{8,14})\b/gi,
+  regex: /\b(?:BILL|BILLING)[\-\s]?(?:ACCOUNT)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*(\d{8,14})\b/gi,
   placeholder: '[BILL_{n}]',
   priority: 85,
   severity: 'high',
@@ -106,7 +106,7 @@ export const UTILITY_BILL_ACCOUNT: PIIPattern = {
  */
 export const INSTALLATION_REF: PIIPattern = {
   type: 'INSTALLATION_REF',
-  regex: /\b(?:INSTALLATION|INSTALL)[-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:INSTALLATION|INSTALL)[\-\s]?(?:REF(?:ERENCE)?|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[INSTALL_{n}]',
   priority: 75,
   severity: 'medium',
@@ -121,7 +121,7 @@ export const INSTALLATION_REF: PIIPattern = {
  */
 export const PHONE_LINE_NUMBER: PIIPattern = {
   type: 'PHONE_LINE_NUMBER',
-  regex: /\b(?:LINE|NUMBER)[-\s]?(?:NO)?[-\s]?[:#]?\s*(\d{3}[-\s]?\d{3}[-\s]?\d{4})\b/g,
+  regex: /\b(?:LINE|NUMBER)[\-\s]?(?:NO)?[\-\s]?[:#]?\s*(\d{3}[\-\s]?\d{3}[\-\s]?\d{4})\b/g,
   placeholder: '[PHONE_{n}]',
   priority: 90,
   severity: 'high',
@@ -136,7 +136,7 @@ export const PHONE_LINE_NUMBER: PIIPattern = {
  */
 export const BROADBAND_SERVICE_ID: PIIPattern = {
   type: 'BROADBAND_SERVICE_ID',
-  regex: /\b(?:BROADBAND|INTERNET|ISP)[-\s]?(?:SERVICE)?[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
+  regex: /\b(?:BROADBAND|INTERNET|ISP)[\-\s]?(?:SERVICE)?[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
   placeholder: '[BROADBAND_{n}]',
   priority: 80,
   severity: 'high',
@@ -151,7 +151,7 @@ export const BROADBAND_SERVICE_ID: PIIPattern = {
  */
 export const EQUIPMENT_SERIAL: PIIPattern = {
   type: 'EQUIPMENT_SERIAL',
-  regex: /\b(?:EQUIPMENT|DEVICE|ROUTER|MODEM)[-\s]?(?:SERIAL)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{10,16})\b/gi,
+  regex: /\b(?:EQUIPMENT|DEVICE|ROUTER|MODEM)[\-\s]?(?:SERIAL)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{10,16})\b/gi,
   placeholder: '[EQUIPMENT_{n}]',
   priority: 75,
   severity: 'medium',
@@ -166,7 +166,7 @@ export const EQUIPMENT_SERIAL: PIIPattern = {
  */
 export const SMART_METER_ID: PIIPattern = {
   type: 'SMART_METER_ID',
-  regex: /\b(?:SMART[-\s]?METER)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{10,16})\b/gi,
+  regex: /\b(?:SMART[\-\s]?METER)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{10,16})\b/gi,
   placeholder: '[SMART_METER_{n}]',
   priority: 85,
   severity: 'high',
