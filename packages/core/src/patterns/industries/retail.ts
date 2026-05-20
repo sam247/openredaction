@@ -10,7 +10,7 @@ import { PIIPattern } from '../../types';
  */
 export const ORDER_NUMBER: PIIPattern = {
   type: 'ORDER_NUMBER',
-  regex: /\b(?:ORD(?:ER)?[-\s](?:NO|NUM(?:BER)?)?[-\s:#]?\s*|ORDER\s+(?:NO|NUM(?:BER)?)?[:\s]+)([A-Z0-9-]{8,14})\b/gi,
+  regex: /\b(?:ORD(?:ER)?[\-\s](?:NO|NUM(?:BER)?)?[\-\s:#]?\s*|ORDER\s+(?:NO|NUM(?:BER)?)?[:\s]+)([A-Z0-9-]{8,14})\b/gi,
   placeholder: '[ORDER_{n}]',
   priority: 90, // Higher priority than phones (85) to match "ORD-1234567890" correctly
   severity: 'medium',
@@ -26,7 +26,7 @@ export const ORDER_NUMBER: PIIPattern = {
  */
 export const LOYALTY_CARD_NUMBER: PIIPattern = {
   type: 'LOYALTY_CARD_NUMBER',
-  regex: /\bLOYALTY[-\s]?(?:CARD)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{10,16})\b/gi,
+  regex: /\bLOYALTY[\-\s]?(?:CARD)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*(\d{10,16})\b/gi,
   placeholder: '[LOYALTY_{n}]',
   priority: 80,
   severity: 'medium',
@@ -41,7 +41,7 @@ export const LOYALTY_CARD_NUMBER: PIIPattern = {
  */
 export const CUSTOMER_ID: PIIPattern = {
   type: 'CUSTOMER_ID',
-  regex: /\b(?:CUSTOMER|CUST)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\b(?:CUSTOMER|CUST)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[CUSTOMER_{n}]',
   priority: 85,
   severity: 'high',
@@ -68,7 +68,7 @@ export const DEVICE_ID_TAG: PIIPattern = {
  */
 export const GIFT_CARD_NUMBER: PIIPattern = {
   type: 'GIFT_CARD_NUMBER',
-  regex: /\b(?:GIFT[-\s]?CARD|GC)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{12,19})\b/gi,
+  regex: /\b(?:GIFT[\-\s]?CARD|GC)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*(\d{12,19})\b/gi,
   placeholder: '[GIFTCARD_{n}]',
   priority: 85,
   severity: 'high',
@@ -83,7 +83,7 @@ export const GIFT_CARD_NUMBER: PIIPattern = {
  */
 export const RMA_NUMBER: PIIPattern = {
   type: 'RMA_NUMBER',
-  regex: /\b(?:RMA|RETURN)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:RMA|RETURN)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[RMA_{n}]',
   priority: 80,
   severity: 'medium',
@@ -98,7 +98,7 @@ export const RMA_NUMBER: PIIPattern = {
  */
 export const SHIPPING_TRACKING: PIIPattern = {
   type: 'SHIPPING_TRACKING',
-  regex: /\b(?:TRACKING|TRACK)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{10,30})\b/gi,
+  regex: /\b(?:TRACKING|TRACK)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{10,30})\b/gi,
   placeholder: '[TRACKING_{n}]',
   priority: 75,
   severity: 'medium',
@@ -113,7 +113,7 @@ export const SHIPPING_TRACKING: PIIPattern = {
  */
 export const INVOICE_NUMBER: PIIPattern = {
   type: 'INVOICE_NUMBER',
-  regex: /\b(?:INVOICE|INV)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
+  regex: /\b(?:INVOICE|INV)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,14})\b/gi,
   placeholder: '[INVOICE_{n}]',
   priority: 80,
   severity: 'medium',
@@ -128,7 +128,7 @@ export const INVOICE_NUMBER: PIIPattern = {
  */
 export const CART_SESSION_ID: PIIPattern = {
   type: 'CART_SESSION_ID',
-  regex: /\b(?:CART|SESSION)[-\s]?(?:ID)?[-\s]?[:#]?\s*([a-f0-9]{32,64})\b/gi,
+  regex: /\b(?:CART|SESSION)[\-\s]?(?:ID)?[\-\s]?[:#]?\s*([a-f0-9]{32,64})\b/gi,
   placeholder: '[CART_{n}]',
   priority: 70,
   severity: 'low',
@@ -143,7 +143,7 @@ export const CART_SESSION_ID: PIIPattern = {
  */
 export const PROMO_CODE: PIIPattern = {
   type: 'PROMO_CODE',
-  regex: /\b(?:PROMO|COUPON|DISCOUNT)[-\s]?(?:CODE)?[-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
+  regex: /\b(?:PROMO|COUPON|DISCOUNT)[\-\s]?(?:CODE)?[\-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
   placeholder: '[PROMO_{n}]',
   priority: 65,
   severity: 'low',
@@ -158,7 +158,7 @@ export const PROMO_CODE: PIIPattern = {
  */
 export const WISHLIST_ID: PIIPattern = {
   type: 'WISHLIST_ID',
-  regex: /\b(?:WISHLIST|WISH[-\s]?LIST)[-\s]?(?:ID)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
+  regex: /\b(?:WISHLIST|WISH[\-\s]?LIST)[\-\s]?(?:ID)?[\-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
   placeholder: '[WISHLIST_{n}]',
   priority: 70,
   severity: 'low',
@@ -173,7 +173,7 @@ export const WISHLIST_ID: PIIPattern = {
  */
 export const PRODUCT_SKU: PIIPattern = {
   type: 'PRODUCT_SKU',
-  regex: /\bSKU[-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
+  regex: /\bSKU[\-\s]?[:#]?\s*([A-Z0-9]{6,16})\b/gi,
   placeholder: '[SKU_{n}]',
   priority: 60,
   severity: 'low',

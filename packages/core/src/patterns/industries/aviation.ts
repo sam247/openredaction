@@ -11,7 +11,7 @@ import type { PIIPattern } from '../../types';
  */
 export const IATA_AIRPORT_CODE: PIIPattern = {
   type: 'IATA_AIRPORT_CODE',
-  regex: /\b(?:AIRPORT|FROM|TO|VIA|IATA)[-\s]?(?:CODE)?[-\s]?[:#]?\s*([A-Z]{3})\b/gi,
+  regex: /\b(?:AIRPORT|FROM|TO|VIA|IATA)[\-\s]?(?:CODE)?[\-\s]?[:#]?\s*([A-Z]{3})\b/gi,
   placeholder: '[AIRPORT_{n}]',
   priority: 75,
   severity: 'low',
@@ -27,7 +27,7 @@ export const IATA_AIRPORT_CODE: PIIPattern = {
  */
 export const FLIGHT_NUMBER: PIIPattern = {
   type: 'FLIGHT_NUMBER',
-  regex: /\b(?:FLIGHT|FLT)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2,3}\s?\d{1,4})\b/gi,
+  regex: /\b(?:FLIGHT|FLT)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z]{2,3}\s?\d{1,4})\b/gi,
   placeholder: '[FLIGHT_{n}]',
   priority: 80,
   severity: 'low',
@@ -70,7 +70,7 @@ export const AIRCRAFT_TAIL_NUMBER: PIIPattern = {
  */
 export const AIRCRAFT_REGISTRATION: PIIPattern = {
   type: 'AIRCRAFT_REGISTRATION',
-  regex: /\b(?:REGISTRATION|REG|TAIL)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{1,2}-[A-Z0-9]{3,5})\b/gi,
+  regex: /\b(?:REGISTRATION|REG|TAIL)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z]{1,2}-[A-Z0-9]{3,5})\b/gi,
   placeholder: '[AIRCRAFT_REG_{n}]',
   priority: 85,
   severity: 'medium',
@@ -86,7 +86,7 @@ export const AIRCRAFT_REGISTRATION: PIIPattern = {
  */
 export const FAA_AIRMAN_CERTIFICATE: PIIPattern = {
   type: 'FAA_AIRMAN_CERTIFICATE',
-  regex: /\b(?:FAA|AIRMAN|PILOT)[-\s]?(?:CERT(?:IFICATE)?|LICENSE)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{7,8})\b/gi,
+  regex: /\b(?:FAA|AIRMAN|PILOT)[\-\s]?(?:CERT(?:IFICATE)?|LICENSE)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{7,8})\b/gi,
   placeholder: '[FAA_CERT_{n}]',
   priority: 85,
   severity: 'medium',
@@ -105,7 +105,7 @@ export const FAA_AIRMAN_CERTIFICATE: PIIPattern = {
  */
 export const ICAO_AIRCRAFT_TYPE: PIIPattern = {
   type: 'ICAO_AIRCRAFT_TYPE',
-  regex: /\b(?:AIRCRAFT|TYPE|ICAO)[-\s]?(?:CODE|DESIGNATOR)?[-\s]?[:#]?\s*([A-Z][0-9][A-Z0-9]{1,2})\b/gi,
+  regex: /\b(?:AIRCRAFT|TYPE|ICAO)[\-\s]?(?:CODE|DESIGNATOR)?[\-\s]?[:#]?\s*([A-Z][0-9][A-Z0-9]{1,2})\b/gi,
   placeholder: '[AIRCRAFT_TYPE_{n}]',
   priority: 70,
   severity: 'low',
@@ -121,7 +121,7 @@ export const ICAO_AIRCRAFT_TYPE: PIIPattern = {
  */
 export const AIRCRAFT_MODE_S: PIIPattern = {
   type: 'AIRCRAFT_MODE_S',
-  regex: /\b(?:MODE\s?S|ICAO\s?ADDRESS)[-\s]?[:#]?\s*([A-F0-9]{6})\b/gi,
+  regex: /\b(?:MODE\s?S|ICAO\s?ADDRESS)[\-\s]?[:#]?\s*([A-F0-9]{6})\b/gi,
   placeholder: '[MODE_S_{n}]',
   priority: 85,
   severity: 'medium',
@@ -140,7 +140,7 @@ export const AIRCRAFT_MODE_S: PIIPattern = {
  */
 export const AIRLINE_BOOKING_REFERENCE: PIIPattern = {
   type: 'AIRLINE_BOOKING_REFERENCE',
-  regex: /\b(?:BOOKING|RESERVATION|LOCATOR|REFERENCE)[-\s]?(?:CODE|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6})\b/gi,
+  regex: /\b(?:BOOKING|RESERVATION|LOCATOR|REFERENCE)[\-\s]?(?:CODE|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6})\b/gi,
   placeholder: '[BOOKING_REF_{n}]',
   priority: 85,
   severity: 'medium',
@@ -156,7 +156,7 @@ export const AIRLINE_BOOKING_REFERENCE: PIIPattern = {
  */
 export const IATA_AIRLINE_CODE: PIIPattern = {
   type: 'IATA_AIRLINE_CODE',
-  regex: /\b(?:AIRLINE|CARRIER)[-\s]?(?:CODE|IATA)?[-\s]?[:#]?\s*([A-Z]{2})\b/gi,
+  regex: /\b(?:AIRLINE|CARRIER)[\-\s]?(?:CODE|IATA)?[\-\s]?[:#]?\s*([A-Z]{2})\b/gi,
   placeholder: '[AIRLINE_{n}]',
   priority: 70,
   severity: 'low',

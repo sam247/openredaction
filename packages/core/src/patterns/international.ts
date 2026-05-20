@@ -27,7 +27,7 @@ export const GERMAN_TAX_ID: PIIPattern = {
   description: 'German Tax Identification Number (Steueridentifikationsnummer)',
   validator: (value: string, context: string) => {
     // Normalize separators
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
     
     // Must be exactly 11 digits after normalization
     if (!/^\d{11}$/.test(cleaned)) return false;
@@ -86,13 +86,13 @@ export const FRENCH_SOCIAL_SECURITY: PIIPattern = {
  */
 export const SPANISH_DNI: PIIPattern = {
   type: 'SPANISH_DNI',
-  regex: /\b([0-9]{8}[-\s]?[A-Z]|[XYZ][-\s]?[0-9]{7}[-\s]?[A-Z])\b/gi,
+  regex: /\b([0-9]{8}[\-\s]?[A-Z]|[XYZ][\-\s]?[0-9]{7}[\-\s]?[A-Z])\b/gi,
   placeholder: '[ES_DNI_{n}]',
   priority: 90,
   severity: 'high',
   description: 'Spanish National ID (DNI) or Foreigner ID (NIE)',
   validator: (value: string, _context: string) => {
-    const cleaned = value.replace(/[-\s]/g, '').toUpperCase();
+    const cleaned = value.replace(/[\-\s]/g, '').toUpperCase();
     const letters = 'TRWAGMYFPDXBNJZSQVHLCKE';
 
     let numbers: string;
@@ -180,7 +180,7 @@ export const DUTCH_BSN: PIIPattern = {
   description: 'Dutch Citizen Service Number (BSN)',
   validator: (value: string, context: string) => {
     // Normalize separators
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
     
     // Must be exactly 9 digits after normalization
     if (!/^\d{9}$/.test(cleaned)) return false;
@@ -214,7 +214,7 @@ export const POLISH_PESEL: PIIPattern = {
   description: 'Polish National Identification Number (PESEL)',
   validator: (value: string, context: string) => {
     // Normalize separators
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
     
     // Must be exactly 11 digits after normalization
     if (!/^\d{11}$/.test(cleaned)) return false;
@@ -407,13 +407,13 @@ export const JAPANESE_MY_NUMBER: PIIPattern = {
  */
 export const SOUTH_KOREAN_RRN: PIIPattern = {
   type: 'SOUTH_KOREAN_RRN',
-  regex: /\b(\d{6}[-\s]?[1-4]\d{6})\b/g,
+  regex: /\b(\d{6}[\-\s]?[1-4]\d{6})\b/g,
   placeholder: '[KR_RRN_{n}]',
   priority: 95,
   severity: 'high',
   description: 'South Korean Resident Registration Number',
   validator: (value: string, context: string) => {
-    const cleaned = value.replace(/[-\s]/g, '');
+    const cleaned = value.replace(/[\-\s]/g, '');
 
     // Must be in Korean context
     const relevantContext = /rrn|korean|korea|주민등록번호/i.test(context);
@@ -445,13 +445,13 @@ export const SOUTH_KOREAN_RRN: PIIPattern = {
  */
 export const CANADIAN_SIN: PIIPattern = {
   type: 'CANADIAN_SIN',
-  regex: /\b(\d{3}[-\s]?\d{3}[-\s]?\d{3})\b/g,
+  regex: /\b(\d{3}[\-\s]?\d{3}[\-\s]?\d{3})\b/g,
   placeholder: '[CA_SIN_{n}]',
   priority: 95,
   severity: 'high',
   description: 'Canadian Social Insurance Number',
   validator: (value: string, context: string) => {
-    const cleaned = value.replace(/[-\s]/g, '');
+    const cleaned = value.replace(/[\-\s]/g, '');
 
     // Must be in Canadian context
     const relevantContext = /sin|social.insurance|canadian|canada/i.test(context);

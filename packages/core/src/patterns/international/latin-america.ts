@@ -88,7 +88,7 @@ export const CHILE_RUT: PIIPattern = {
  */
 export const COLOMBIA_CEDULA: PIIPattern = {
   type: 'COLOMBIA_CEDULA',
-  regex: /\b(?:CC|CÉDULA|CEDULA)[-\s]?(?:NO|NUM)?[-\s]?[:#]?\s*(\d{6,10})\b/gi,
+  regex: /\b(?:CC|CÉDULA|CEDULA)[\-\s]?(?:NO|NUM)?[\-\s]?[:#]?\s*(\d{6,10})\b/gi,
   placeholder: '[CO_CC_{n}]',
   priority: 90,
   severity: 'high',
@@ -107,7 +107,7 @@ export const COLOMBIA_CEDULA: PIIPattern = {
  */
 export const COLOMBIA_NIT: PIIPattern = {
   type: 'COLOMBIA_NIT',
-  regex: /\bNIT[-\s]?(?:NO|NUM)?[-\s]?[:#]?\s*(\d{9}-\d{1})\b/gi,
+  regex: /\bNIT[\-\s]?(?:NO|NUM)?[\-\s]?[:#]?\s*(\d{9}-\d{1})\b/gi,
   placeholder: '[CO_NIT_{n}]',
   priority: 85,
   severity: 'high',
@@ -144,7 +144,7 @@ export const PERU_DNI: PIIPattern = {
  */
 export const PERU_RUC: PIIPattern = {
   type: 'PERU_RUC',
-  regex: /\bRUC[-\s]?(?:NO|NUM)?[-\s]?[:#]?\s*(\d{11})\b/gi,
+  regex: /\bRUC[\-\s]?(?:NO|NUM)?[\-\s]?[:#]?\s*(\d{11})\b/gi,
   placeholder: '[PE_RUC_{n}]',
   priority: 90,
   severity: 'high',

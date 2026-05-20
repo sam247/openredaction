@@ -13,11 +13,11 @@ import {
 export const financialPatterns: PIIPattern[] = [
   {
     type: 'CREDIT_CARD',
-    regex: /(?<!\d)(?:(?:\d{4}[\s\u00A0.-]?){3}\d{4}|\d{4}[\s\u00A0.-]?\d{6}[\s\u00A0.-]?\d{5})(?!\d)/g,
+    regex: /(?<!\d)(?:(?:\d{4}[\s\u00A0.\-]?){3}\d{4}|\d{4}[\s\u00A0.\-]?\d{6}[\s\u00A0.\-]?\d{5})(?!\d)/g,
     priority: 100,
     validator: (match: string, context: string) => {
       // Normalize separators before Luhn validation
-      const cleaned = match.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = match.replace(/[\s\u00A0.\-]/g, '');
       
       // Must be 13-19 digits after normalization
       if (!/^\d{13,19}$/.test(cleaned)) {
@@ -45,11 +45,11 @@ export const financialPatterns: PIIPattern[] = [
   },
   {
     type: 'IBAN',
-    regex: /\b([A-Z]{2}\d{2}(?:[ \u00A0.-]?[A-Z0-9]){11,30})\b/gi,
+    regex: /\b([A-Z]{2}\d{2}(?:[ \u00A0.\-]?[A-Z0-9]){11,30})\b/gi,
     priority: 95,
     validator: (match: string, context: string) => {
       // Normalize separators before IBAN validation
-      const cleaned = match.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+      const cleaned = match.replace(/[\s\u00A0.\-]/g, '').toUpperCase();
       
       // Must start with 2 letters (country code) and 2 digits (check digits)
       if (!/^[A-Z]{2}\d{2}/.test(cleaned)) {
@@ -82,7 +82,7 @@ export const financialPatterns: PIIPattern[] = [
     severity: 'high',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
       
       // UK account numbers: 8 digits (4-4 format) or 10 digits (2-2-4 format)
       if (!/^\d{8}$/.test(cleaned) && !/^\d{10}$/.test(cleaned)) {
@@ -106,11 +106,11 @@ export const financialPatterns: PIIPattern[] = [
   },
   {
     type: 'SORT_CODE_UK',
-    regex: /\b(?:sort[\s\u00A0-]*code|SC)[:\s\u00A0.-]*((?:\d{2}[\s\u00A0.-]?){2}\d{2})\b/gi,
+    regex: /\b(?:sort[\s\u00A0-]*code|SC)[:\s\u00A0.\-]*((?:\d{2}[\s\u00A0.\-]?){2}\d{2})\b/gi,
     priority: 90,
     validator: (match: string, context: string) => {
       // Normalize separators before validation
-      const cleaned = match.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = match.replace(/[\s\u00A0.\-]/g, '');
       
       // Must be exactly 6 digits
       if (!/^\d{6}$/.test(cleaned)) {
@@ -136,11 +136,11 @@ export const financialPatterns: PIIPattern[] = [
   },
   {
     type: 'ROUTING_NUMBER_US',
-    regex: /\b(?:routing|RTN|ABA)[-\s\u00A0]*(?:number|no|num)?[-\s\u00A0.:#]*((?:\d[\s\u00A0.-]?){9})\b/gi,
+    regex: /\b(?:routing|RTN|ABA)[\-\s\u00A0]*(?:number|no|num)?[\-\s\u00A0.:#]*((?:\d[\s\u00A0.\-]?){9})\b/gi,
     priority: 90,
     validator: (match: string, context: string) => {
       // Normalize separators before validation
-      const cleaned = match.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = match.replace(/[\s\u00A0.\-]/g, '');
       
       // Must be exactly 9 digits
       if (!/^\d{9}$/.test(cleaned)) {
@@ -173,7 +173,7 @@ export const financialPatterns: PIIPattern[] = [
     severity: 'high',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
       
       // Must be 3 or 4 digits
       if (!/^\d{3,4}$/.test(cleaned)) {
@@ -194,14 +194,14 @@ export const financialPatterns: PIIPattern[] = [
   },
   {
     type: 'IFSC',
-    regex: /\b([A-Z]{4})[-\s\u00A0.]?0[-\s\u00A0.]?([A-Z0-9]{6})\b/gi,
+    regex: /\b([A-Z]{4})[\-\s\u00A0.]?0[\-\s\u00A0.]?([A-Z0-9]{6})\b/gi,
     priority: 90,
     placeholder: '[IFSC_{n}]',
     description: 'Indian Financial System Code',
     severity: 'high',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+      const cleaned = value.replace(/[\s\u00A0.\-]/g, '').toUpperCase();
       
       // Must match IFSC format: 4 letters + 0 + 6 alphanumeric
       if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(cleaned)) {
@@ -250,7 +250,7 @@ export const financialPatterns: PIIPattern[] = [
     priority: 90,
     validator: (match: string, context: string) => {
       // Normalize separators
-      const cleaned = match.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = match.replace(/[\s\u00A0.\-]/g, '');
       
       // Must be exactly 6 digits
       if (!/^\d{6}$/.test(cleaned)) {

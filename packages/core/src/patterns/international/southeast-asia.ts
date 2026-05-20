@@ -84,13 +84,13 @@ export const THAILAND_NATIONAL_ID: PIIPattern = {
  */
 export const MALAYSIA_MYKAD: PIIPattern = {
   type: 'MALAYSIA_MYKAD',
-  regex: /\b(\d{6}[-\s]?\d{2}[-\s]?\d{4})\b/g,
+  regex: /\b(\d{6}[\-\s]?\d{2}[\-\s]?\d{4})\b/g,
   placeholder: '[MY_IC_{n}]',
   priority: 90,
   severity: 'high',
   description: 'Malaysia MyKad/IC number (12 digits)',
   validator: (value: string, context: string) => {
-    const cleaned = value.replace(/[-\s]/g, '');
+    const cleaned = value.replace(/[\-\s]/g, '');
     if (cleaned.length !== 12) return false;
 
     // Context validation required
@@ -116,13 +116,13 @@ export const MALAYSIA_MYKAD: PIIPattern = {
  */
 export const PHILIPPINES_UMID: PIIPattern = {
   type: 'PHILIPPINES_UMID',
-  regex: /\b(\d{4}[-\s]?\d{7}[-\s]?\d)\b/g,
+  regex: /\b(\d{4}[\-\s]?\d{7}[\-\s]?\d)\b/g,
   placeholder: '[PH_UMID_{n}]',
   priority: 85,
   severity: 'high',
   description: 'Philippines UMID number (12 digits)',
   validator: (value: string, context: string) => {
-    const cleaned = value.replace(/[-\s]/g, '');
+    const cleaned = value.replace(/[\-\s]/g, '');
     if (cleaned.length !== 12) return false;
 
     // Context validation required

@@ -66,7 +66,7 @@ export const NIGERIA_NIN: PIIPattern = {
  */
 export const NIGERIA_BVN: PIIPattern = {
   type: 'NIGERIA_BVN',
-  regex: /\bBVN[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{11})\b/gi,
+  regex: /\bBVN[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{11})\b/gi,
   placeholder: '[NG_BVN_{n}]',
   priority: 90,
   severity: 'high',
@@ -185,7 +185,7 @@ export const GHANA_CARD: PIIPattern = {
  */
 export const MOROCCO_NATIONAL_ID: PIIPattern = {
   type: 'MOROCCO_NATIONAL_ID',
-  regex: /\b(?:CNIE|ID)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{1,2}\d{6,8}|\d{8})\b/gi,
+  regex: /\b(?:CNIE|ID)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z]{1,2}\d{6,8}|\d{8})\b/gi,
   placeholder: '[MA_ID_{n}]',
   priority: 85,
   severity: 'high',

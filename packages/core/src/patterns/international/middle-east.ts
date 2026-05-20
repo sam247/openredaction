@@ -12,7 +12,7 @@ import { PIIPattern } from '../../types';
  */
 export const UAE_EMIRATES_ID: PIIPattern = {
   type: 'UAE_EMIRATES_ID',
-  regex: /\b(784[-\s]?\d{4}[-\s]?\d{7}[-\s]?\d)\b/g,
+  regex: /\b(784[\-\s]?\d{4}[\-\s]?\d{7}[\-\s]?\d)\b/g,
   placeholder: '[UAE_ID_{n}]',
   priority: 95,
   severity: 'high',

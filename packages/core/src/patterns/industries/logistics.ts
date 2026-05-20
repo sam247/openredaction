@@ -11,7 +11,7 @@ import type { PIIPattern } from '../../types';
  */
 export const FEDEX_TRACKING: PIIPattern = {
   type: 'FEDEX_TRACKING',
-  regex: /\b(?:FEDEX|FDX)[-\s]?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{12}|\d{15}|\d{20})\b/gi,
+  regex: /\b(?:FEDEX|FDX)[\-\s]?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{12}|\d{15}|\d{20})\b/gi,
   placeholder: '[FEDEX_TRACK_{n}]',
   priority: 85,
   severity: 'low',
@@ -30,7 +30,7 @@ export const FEDEX_TRACKING: PIIPattern = {
  */
 export const UPS_TRACKING: PIIPattern = {
   type: 'UPS_TRACKING',
-  regex: /\b(?:UPS[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(1Z[A-Z0-9]{16})\b/gi,
+  regex: /\b(?:UPS[\-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(1Z[A-Z0-9]{16})\b/gi,
   placeholder: '[UPS_TRACK_{n}]',
   priority: 90,
   severity: 'low',
@@ -49,7 +49,7 @@ export const UPS_TRACKING: PIIPattern = {
  */
 export const USPS_TRACKING: PIIPattern = {
   type: 'USPS_TRACKING',
-  regex: /\b(?:USPS|US\s?MAIL)[-\s]?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{20,22}|[A-Z]{2}\d{9}US)\b/gi,
+  regex: /\b(?:USPS|US\s?MAIL)[\-\s]?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{20,22}|[A-Z]{2}\d{9}US)\b/gi,
   placeholder: '[USPS_TRACK_{n}]',
   priority: 85,
   severity: 'low',
@@ -75,7 +75,7 @@ export const USPS_TRACKING: PIIPattern = {
  */
 export const DHL_TRACKING: PIIPattern = {
   type: 'DHL_TRACKING',
-  regex: /\b(?:DHL[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{10,11})\b/gi,
+  regex: /\b(?:DHL[\-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{10,11})\b/gi,
   placeholder: '[DHL_TRACK_{n}]',
   priority: 85,
   severity: 'low',
@@ -110,7 +110,7 @@ export const AMAZON_TRACKING: PIIPattern = {
  */
 export const TNT_TRACKING: PIIPattern = {
   type: 'TNT_TRACKING',
-  regex: /\b(?:TNT[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{9}|[A-Z0-9]{13})\b/gi,
+  regex: /\b(?:TNT[\-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{9}|[A-Z0-9]{13})\b/gi,
   placeholder: '[TNT_TRACK_{n}]',
   priority: 85,
   severity: 'low',
@@ -129,7 +129,7 @@ export const TNT_TRACKING: PIIPattern = {
  */
 export const CHINA_POST_TRACKING: PIIPattern = {
   type: 'CHINA_POST_TRACKING',
-  regex: /\b(?:CHINA\s?POST[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([RC][A-Z]\d{9}CN)\b/gi,
+  regex: /\b(?:CHINA\s?POST[\-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([RC][A-Z]\d{9}CN)\b/gi,
   placeholder: '[CHINA_POST_{n}]',
   priority: 85,
   severity: 'low',
@@ -149,7 +149,7 @@ export const CHINA_POST_TRACKING: PIIPattern = {
  */
 export const JAPAN_POST_TRACKING: PIIPattern = {
   type: 'JAPAN_POST_TRACKING',
-  regex: /\b(?:JAPAN\s?POST[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2}\d{9}JP)\b/gi,
+  regex: /\b(?:JAPAN\s?POST[\-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z]{2}\d{9}JP)\b/gi,
   placeholder: '[JAPAN_POST_{n}]',
   priority: 85,
   severity: 'low',
@@ -168,7 +168,7 @@ export const JAPAN_POST_TRACKING: PIIPattern = {
  */
 export const ROYAL_MAIL_TRACKING: PIIPattern = {
   type: 'ROYAL_MAIL_TRACKING',
-  regex: /\b(?:ROYAL\s?MAIL[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2}\d{9}GB)\b/gi,
+  regex: /\b(?:ROYAL\s?MAIL[\-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z]{2}\d{9}GB)\b/gi,
   placeholder: '[ROYAL_MAIL_{n}]',
   priority: 85,
   severity: 'low',
@@ -187,7 +187,7 @@ export const ROYAL_MAIL_TRACKING: PIIPattern = {
  */
 export const CANADA_POST_TRACKING: PIIPattern = {
   type: 'CANADA_POST_TRACKING',
-  regex: /\b(?:CANADA\s?POST[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{16})\b/gi,
+  regex: /\b(?:CANADA\s?POST[\-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{16})\b/gi,
   placeholder: '[CANADA_POST_{n}]',
   priority: 85,
   severity: 'low',
@@ -205,7 +205,7 @@ export const CANADA_POST_TRACKING: PIIPattern = {
  */
 export const AUSTRALIA_POST_TRACKING: PIIPattern = {
   type: 'AUSTRALIA_POST_TRACKING',
-  regex: /\b(?:AUSTRALIA\s?POST[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2}\d{9}AU)\b/gi,
+  regex: /\b(?:AUSTRALIA\s?POST[\-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z]{2}\d{9}AU)\b/gi,
   placeholder: '[AUSTRALIA_POST_{n}]',
   priority: 85,
   severity: 'low',
@@ -224,7 +224,7 @@ export const AUSTRALIA_POST_TRACKING: PIIPattern = {
  */
 export const PUROLATOR_TRACKING: PIIPattern = {
   type: 'PUROLATOR_TRACKING',
-  regex: /\b(?:PUROLATOR[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER|PIN)?[-\s]?[:#]?\s*(\d{12}|P\d{10})\b/gi,
+  regex: /\b(?:PUROLATOR[\-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER|PIN)?[\-\s]?[:#]?\s*(\d{12}|P\d{10})\b/gi,
   placeholder: '[PUROLATOR_{n}]',
   priority: 85,
   severity: 'low',
@@ -245,7 +245,7 @@ export const PUROLATOR_TRACKING: PIIPattern = {
  */
 export const ONTRAC_TRACKING: PIIPattern = {
   type: 'ONTRAC_TRACKING',
-  regex: /\b(?:ONTRAC|ON\s?TRAC|LASERSHIP)[-\s]?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(C\d{14})\b/gi,
+  regex: /\b(?:ONTRAC|ON\s?TRAC|LASERSHIP)[\-\s]?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(C\d{14})\b/gi,
   placeholder: '[ONTRAC_{n}]',
   priority: 85,
   severity: 'low',
@@ -264,7 +264,7 @@ export const ONTRAC_TRACKING: PIIPattern = {
  */
 export const GLS_TRACKING: PIIPattern = {
   type: 'GLS_TRACKING',
-  regex: /\b(?:GLS[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{11,13})\b/gi,
+  regex: /\b(?:GLS[\-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{11,13})\b/gi,
   placeholder: '[GLS_{n}]',
   priority: 80,
   severity: 'low',
@@ -283,7 +283,7 @@ export const GLS_TRACKING: PIIPattern = {
  */
 export const ARAMEX_TRACKING: PIIPattern = {
   type: 'ARAMEX_TRACKING',
-  regex: /\b(?:ARAMEX[-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{11,12})\b/gi,
+  regex: /\b(?:ARAMEX[\-\s]?)?(?:TRACK(?:ING)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{11,12})\b/gi,
   placeholder: '[ARAMEX_{n}]',
   priority: 85,
   severity: 'low',
@@ -302,7 +302,7 @@ export const ARAMEX_TRACKING: PIIPattern = {
  */
 export const GENERIC_TRACKING_NUMBER: PIIPattern = {
   type: 'GENERIC_TRACKING_NUMBER',
-  regex: /\b(?:TRACK(?:ING)?|SHIPMENT|PACKAGE)[-\s]?(?:ID|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{10,25})\b/gi,
+  regex: /\b(?:TRACK(?:ING)?|SHIPMENT|PACKAGE)[\-\s]?(?:ID|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{10,25})\b/gi,
   placeholder: '[TRACKING_{n}]',
   priority: 70,
   severity: 'low',
@@ -325,7 +325,7 @@ export const GENERIC_TRACKING_NUMBER: PIIPattern = {
  */
 export const BILL_OF_LADING: PIIPattern = {
   type: 'BILL_OF_LADING',
-  regex: /\b(?:BOL|B\/L|BILL\s?OF\s?LADING)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
+  regex: /\b(?:BOL|B\/L|BILL\s?OF\s?LADING)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,20})\b/gi,
   placeholder: '[BOL_{n}]',
   priority: 85,
   severity: 'medium',
@@ -360,7 +360,7 @@ export const SHIPPING_CONTAINER_NUMBER: PIIPattern = {
  */
 export const AIR_WAYBILL_NUMBER: PIIPattern = {
   type: 'AIR_WAYBILL_NUMBER',
-  regex: /\b(?:AWB|AIR\s?WAYBILL)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{3}[-\s]?\d{8})\b/gi,
+  regex: /\b(?:AWB|AIR\s?WAYBILL)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{3}[\-\s]?\d{8})\b/gi,
   placeholder: '[AWB_{n}]',
   priority: 85,
   severity: 'medium',
@@ -379,7 +379,7 @@ export const AIR_WAYBILL_NUMBER: PIIPattern = {
  */
 export const PRO_NUMBER: PIIPattern = {
   type: 'PRO_NUMBER',
-  regex: /\bPRO[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{9,10})\b/gi,
+  regex: /\bPRO[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{9,10})\b/gi,
   placeholder: '[PRO_{n}]',
   priority: 85,
   severity: 'low',
@@ -398,7 +398,7 @@ export const PRO_NUMBER: PIIPattern = {
  */
 export const MASTER_AIRWAY_BILL: PIIPattern = {
   type: 'MASTER_AIRWAY_BILL',
-  regex: /\bMAWB[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{3}[-\s]?\d{8})\b/gi,
+  regex: /\bMAWB[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{3}[\-\s]?\d{8})\b/gi,
   placeholder: '[MAWB_{n}]',
   priority: 85,
   severity: 'medium',

@@ -68,7 +68,7 @@ export const US_EIN: PIIPattern = {
   description: 'US Employer Identification Numbers (nonprofit tax IDs)',
   validator: (value: string, context: string) => {
     const digits = value.replace(/\D/g, '');
-    return digits.length === 9 && /nonprofit|charity|501\(c\)|tax[-\s]exempt|foundation/i.test(context);
+    return digits.length === 9 && /nonprofit|charity|501\(c\)|tax[\-\s]exempt|foundation/i.test(context);
   }
 };
 

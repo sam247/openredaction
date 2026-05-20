@@ -11,7 +11,7 @@ import type { PIIPattern } from '../../types';
  */
 export const EPA_ID_NUMBER: PIIPattern = {
   type: 'EPA_ID_NUMBER',
-  regex: /\bEPA[-\s]?(?:ID|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2}[A-Z0-9]{9})\b/gi,
+  regex: /\bEPA[\-\s]?(?:ID|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z]{2}[A-Z0-9]{9})\b/gi,
   placeholder: '[EPA_ID_{n}]',
   priority: 85,
   severity: 'medium',
@@ -34,7 +34,7 @@ export const EPA_ID_NUMBER: PIIPattern = {
  */
 export const NPDES_PERMIT: PIIPattern = {
   type: 'NPDES_PERMIT',
-  regex: /\bNPDES[-\s]?(?:PERMIT|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2}[A-Z0-9]{7,9})\b/gi,
+  regex: /\bNPDES[\-\s]?(?:PERMIT|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z]{2}[A-Z0-9]{7,9})\b/gi,
   placeholder: '[NPDES_{n}]',
   priority: 85,
   severity: 'medium',
@@ -50,7 +50,7 @@ export const NPDES_PERMIT: PIIPattern = {
  */
 export const HAZARDOUS_WASTE_MANIFEST: PIIPattern = {
   type: 'HAZARDOUS_WASTE_MANIFEST',
-  regex: /\b(?:MANIFEST|WASTE)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{9})\b/gi,
+  regex: /\b(?:MANIFEST|WASTE)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{9})\b/gi,
   placeholder: '[MANIFEST_{n}]',
   priority: 80,
   severity: 'medium',
@@ -68,7 +68,7 @@ export const HAZARDOUS_WASTE_MANIFEST: PIIPattern = {
  */
 export const AIR_QUALITY_PERMIT: PIIPattern = {
   type: 'AIR_QUALITY_PERMIT',
-  regex: /\b(?:AIR|EMISSION)[-\s]?PERMIT[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:AIR|EMISSION)[\-\s]?PERMIT[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[AIR_PERMIT_{n}]',
   priority: 80,
   severity: 'low',
@@ -84,7 +84,7 @@ export const AIR_QUALITY_PERMIT: PIIPattern = {
  */
 export const WATER_QUALITY_CERTIFICATE: PIIPattern = {
   type: 'WATER_QUALITY_CERTIFICATE',
-  regex: /\bWATER[-\s]?(?:QUALITY|CERT(?:IFICATE)?)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\bWATER[\-\s]?(?:QUALITY|CERT(?:IFICATE)?)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[WATER_CERT_{n}]',
   priority: 80,
   severity: 'low',
@@ -100,7 +100,7 @@ export const WATER_QUALITY_CERTIFICATE: PIIPattern = {
  */
 export const STORM_WATER_PERMIT: PIIPattern = {
   type: 'STORM_WATER_PERMIT',
-  regex: /\bSTORM\s?WATER[-\s]?PERMIT[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2}[A-Z0-9]{6,10})\b/gi,
+  regex: /\bSTORM\s?WATER[\-\s]?PERMIT[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z]{2}[A-Z0-9]{6,10})\b/gi,
   placeholder: '[STORM_PERMIT_{n}]',
   priority: 80,
   severity: 'low',
@@ -116,7 +116,7 @@ export const STORM_WATER_PERMIT: PIIPattern = {
  */
 export const UST_ID: PIIPattern = {
   type: 'UST_ID',
-  regex: /\bUST[-\s]?(?:ID|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\bUST[\-\s]?(?:ID|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[UST_{n}]',
   priority: 80,
   severity: 'medium',
@@ -132,7 +132,7 @@ export const UST_ID: PIIPattern = {
  */
 export const FACILITY_ID: PIIPattern = {
   type: 'FACILITY_ID',
-  regex: /\bFACILITY[-\s]?ID[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\bFACILITY[\-\s]?ID[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[FACILITY_{n}]',
   priority: 75,
   severity: 'low',
@@ -148,7 +148,7 @@ export const FACILITY_ID: PIIPattern = {
  */
 export const TRI_FACILITY_ID: PIIPattern = {
   type: 'TRI_FACILITY_ID',
-  regex: /\bTRI[-\s]?(?:FACILITY|ID)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{11})\b/gi,
+  regex: /\bTRI[\-\s]?(?:FACILITY|ID)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{11})\b/gi,
   placeholder: '[TRI_FAC_{n}]',
   priority: 85,
   severity: 'low',
@@ -166,7 +166,7 @@ export const TRI_FACILITY_ID: PIIPattern = {
  */
 export const SPILL_REPORT_NUMBER: PIIPattern = {
   type: 'SPILL_REPORT_NUMBER',
-  regex: /\bSPILL[-\s]?(?:REPORT|NO|NUM|NUMBER)[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\bSPILL[\-\s]?(?:REPORT|NO|NUM|NUMBER)[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[SPILL_{n}]',
   priority: 80,
   severity: 'medium',
@@ -182,7 +182,7 @@ export const SPILL_REPORT_NUMBER: PIIPattern = {
  */
 export const REMEDIATION_SITE_ID: PIIPattern = {
   type: 'REMEDIATION_SITE_ID',
-  regex: /\b(?:REMEDIATION|CLEANUP)[-\s]?SITE[-\s]?(?:ID|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:REMEDIATION|CLEANUP)[\-\s]?SITE[\-\s]?(?:ID|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[REMEDIATION_{n}]',
   priority: 80,
   severity: 'low',
@@ -198,7 +198,7 @@ export const REMEDIATION_SITE_ID: PIIPattern = {
  */
 export const ENVIRONMENTAL_CERTIFICATE: PIIPattern = {
   type: 'ENVIRONMENTAL_CERTIFICATE',
-  regex: /\bENVIRONMENTAL[-\s]?(?:CERT(?:IFICATE)?|COMPLIANCE)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\bENVIRONMENTAL[\-\s]?(?:CERT(?:IFICATE)?|COMPLIANCE)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[ENV_CERT_{n}]',
   priority: 75,
   severity: 'low',

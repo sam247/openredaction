@@ -11,14 +11,14 @@ import type { PIIPattern } from '../../types';
  */
 export const VIN_NUMBER: PIIPattern = {
   type: 'VIN_NUMBER',
-  regex: /\bVIN[-\s\u00A0]?(?:NO|NUM|NUMBER)?[-\s\u00A0]?[:#]?\s*([A-HJ-NPR-Z0-9]{17})\b/gi,
+  regex: /\bVIN[\-\s\u00A0]?(?:NO|NUM|NUMBER)?[\-\s\u00A0]?[:#]?\s*([A-HJ-NPR-Z0-9]{17})\b/gi,
   placeholder: '[VIN_{n}]',
   priority: 85,
   severity: 'medium',
   description: 'Vehicle Identification Number (VIN)',
   validator: (value: string, context: string) => {
     // Normalize separators (VINs typically don't have separators, but handle if present)
-    const cleaned = value.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+    const cleaned = value.replace(/[\s\u00A0.\-]/g, '').toUpperCase();
     
     // Must be exactly 17 characters after normalization
     if (cleaned.length !== 17) return false;
@@ -37,7 +37,7 @@ export const VIN_NUMBER: PIIPattern = {
  */
 export const US_LICENSE_PLATE: PIIPattern = {
   type: 'US_LICENSE_PLATE',
-  regex: /\b(?:PLATE|LICENSE|TAG)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{3,8})\b/gi,
+  regex: /\b(?:PLATE|LICENSE|TAG)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{3,8})\b/gi,
   placeholder: '[PLATE_{n}]',
   priority: 75,
   severity: 'medium',
@@ -880,7 +880,7 @@ export const UK_LICENSE_PLATE: PIIPattern = {
  */
 export const GERMAN_LICENSE_PLATE: PIIPattern = {
   type: 'GERMAN_LICENSE_PLATE',
-  regex: /\b([A-ZÄÖÜ]{1,3}[-\s][A-ZÄÖÜ]{1,2}\s?\d{1,4})\b/gi,
+  regex: /\b([A-ZÄÖÜ]{1,3}[\-\s][A-ZÄÖÜ]{1,2}\s?\d{1,4})\b/gi,
   placeholder: '[DE_PLATE_{n}]',
   priority: 85,
   severity: 'medium',
@@ -912,7 +912,7 @@ export const FRENCH_LICENSE_PLATE: PIIPattern = {
  */
 export const CANADIAN_LICENSE_PLATE: PIIPattern = {
   type: 'CANADIAN_LICENSE_PLATE',
-  regex: /\b([A-Z]{3,4}[-\s]?\d{3,4})\b/g,
+  regex: /\b([A-Z]{3,4}[\-\s]?\d{3,4})\b/g,
   placeholder: '[CA_PLATE_{n}]',
   priority: 80,
   severity: 'medium',
@@ -928,7 +928,7 @@ export const CANADIAN_LICENSE_PLATE: PIIPattern = {
  */
 export const AUSTRALIAN_LICENSE_PLATE: PIIPattern = {
   type: 'AUSTRALIAN_LICENSE_PLATE',
-  regex: /\b([A-Z]{2,3}[-\s]?\d{2,4})\b/g,
+  regex: /\b([A-Z]{2,3}[\-\s]?\d{2,4})\b/g,
   placeholder: '[AU_PLATE_{n}]',
   priority: 80,
   severity: 'medium',
@@ -960,7 +960,7 @@ export const JAPANESE_LICENSE_PLATE: PIIPattern = {
  */
 export const INTERNATIONAL_LICENSE_PLATE: PIIPattern = {
   type: 'INTERNATIONAL_LICENSE_PLATE',
-  regex: /\b(?:PLATE|REGISTRATION|TAG)[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{4,10})\b/gi,
+  regex: /\b(?:PLATE|REGISTRATION|TAG)[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{4,10})\b/gi,
   placeholder: '[PLATE_{n}]',
   priority: 70,
   severity: 'medium',

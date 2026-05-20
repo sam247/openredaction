@@ -7,14 +7,14 @@ import { PIIPattern } from '../types';
 export const contactPatterns: PIIPattern[] = [
   {
     type: 'PHONE_UK_MOBILE',
-    regex: /\b(?:\+?44[\s\u00A0.-]?7\d{3}|0?7\d{3})[\s\u00A0.-]?\d{3}[\s\u00A0.-]?\d{3}\b/g,
+    regex: /\b(?:\+?44[\s\u00A0.\-]?7\d{3}|0?7\d{3})[\s\u00A0.\-]?\d{3}[\s\u00A0.\-]?\d{3}\b/g,
     priority: 90,
     placeholder: '[PHONE_UK_MOBILE_{n}]',
     description: 'UK mobile phone',
     severity: 'medium',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const cleaned = value.replace(/[\s\u00A0().-]/g, '');
+      const cleaned = value.replace(/[\s\u00A0().\-]/g, '');
       
       // UK mobile: must start with 7 (or +447 or 07)
       const mobilePattern = /^(?:\+?44)?7\d{9}$/;
@@ -42,14 +42,14 @@ export const contactPatterns: PIIPattern[] = [
   },
   {
     type: 'PHONE_UK',
-    regex: /\b(?:\+?44[\s\u00A0.-]?(?:0)?\s*)?(?:\(?0?[1-9]\d{1,3}\)?[\s\u00A0.-]?\d{3,4}[\s\u00A0.-]?\d{3,4})(?:\s?(?:ext\.?|x)\s?\d{1,5})?\b/g,
+    regex: /\b(?:\+?44[\s\u00A0.\-]?(?:0)?\s*)?(?:\(?0?[1-9]\d{1,3}\)?[\s\u00A0.\-]?\d{3,4}[\s\u00A0.\-]?\d{3,4})(?:\s?(?:ext\.?|x)\s?\d{1,5})?\b/g,
     priority: 85,
     placeholder: '[PHONE_UK_{n}]',
     description: 'UK phone number',
     severity: 'medium',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const cleaned = value.replace(/[\s\u00A0().-]/g, '').replace(/ext|x/i, '');
+      const cleaned = value.replace(/[\s\u00A0().\-]/g, '').replace(/ext|x/i, '');
       
       // UK landline: must start with 0 or +44, then area code (1-4 digits starting with 1-9), then 6-7 digits
       const ukPattern = /^(?:\+?44)?0?[1-9]\d{1,3}\d{6,7}$/;
@@ -77,14 +77,14 @@ export const contactPatterns: PIIPattern[] = [
   },
   {
     type: 'PHONE_US',
-    regex: /\b(?:\+1[\s\u00A0.-]?)?(?:\(\d{3}\)|\d{3})[\s\u00A0.-]?\d{3}[\s\u00A0.-]?\d{4}(?:\s?(?:ext\.?|x)\s?\d{1,6})?\b/g,
+    regex: /\b(?:\+1[\s\u00A0.\-]?)?(?:\(\d{3}\)|\d{3})[\s\u00A0.\-]?\d{3}[\s\u00A0.\-]?\d{4}(?:\s?(?:ext\.?|x)\s?\d{1,6})?\b/g,
     priority: 85,
     placeholder: '[PHONE_US_{n}]',
     description: 'US phone number',
     severity: 'medium',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const cleaned = value.replace(/[\s\u00A0().-]/g, '').replace(/ext|x/i, '');
+      const cleaned = value.replace(/[\s\u00A0().\-]/g, '').replace(/ext|x/i, '');
       
       // US phone: must be 10 digits (with optional +1 prefix)
       const usPattern = /^(?:\+?1)?\d{10}$/;
@@ -132,7 +132,7 @@ export const contactPatterns: PIIPattern[] = [
     severity: 'medium',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const cleaned = value.replace(/[\s\u00A0().-]/g, '').replace(/ext|x/i, '');
+      const cleaned = value.replace(/[\s\u00A0().\-]/g, '').replace(/ext|x/i, '');
       
       // International: must start with + and have 7-15 digits total
       if (!cleaned.startsWith('+')) return false;
@@ -177,14 +177,14 @@ export const contactPatterns: PIIPattern[] = [
   },
   {
     type: 'POSTCODE_UK',
-    regex: /\b([A-Z]{1,2}\d{1,2}[A-Z]?[\s\u00A0.-]?\d[A-Z]{2})\b/g,
+    regex: /\b([A-Z]{1,2}\d{1,2}[A-Z]?[\s\u00A0.\-]?\d[A-Z]{2})\b/g,
     priority: 75,
     placeholder: '[POSTCODE_{n}]',
     description: 'UK postcode',
     severity: 'low',
     validator: (value: string, _context: string) => {
       // Normalize separators for validation
-      const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
       
       // UK postcode format: 1-2 letters, 1-2 digits, optional letter, space/dash, digit, 2 letters
       // After normalization: 5-7 characters total
@@ -202,14 +202,14 @@ export const contactPatterns: PIIPattern[] = [
   },
   {
     type: 'ZIP_CODE_US',
-    regex: /\b(\d{5}(?:[\s\u00A0.-]\d{4})?)\b/g,
+    regex: /\b(\d{5}(?:[\s\u00A0.\-]\d{4})?)\b/g,
     priority: 70,
     placeholder: '[ZIP_{n}]',
     description: 'US ZIP code',
     severity: 'low',
     validator: (value: string, context: string) => {
       // Normalize separators
-      const cleaned = value.replace(/[\s\u00A0.-]/g, '');
+      const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
       
       // Must be 5 digits (ZIP) or 9 digits (ZIP+4)
       if (!/^\d{5}$/.test(cleaned) && !/^\d{9}$/.test(cleaned)) {

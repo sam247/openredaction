@@ -10,7 +10,7 @@ import { PIIPattern } from '../../types';
  */
 export const INTERVIEWEE_ID: PIIPattern = {
   type: 'INTERVIEWEE_ID',
-  regex: /\bINTV[-\s]?([A-Z]{1}\d{5})\b/gi,
+  regex: /\bINTV[\-\s]?([A-Z]{1}\d{5})\b/gi,
   placeholder: '[INTERVIEWEE_{n}]',
   priority: 85,
   severity: 'high',
@@ -22,7 +22,7 @@ export const INTERVIEWEE_ID: PIIPattern = {
  */
 export const SOURCE_ID: PIIPattern = {
   type: 'SOURCE_ID',
-  regex: /\bSOURCE[-\s]?(?:ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\bSOURCE[\-\s]?(?:ID)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[SOURCE_{n}]',
   priority: 90,
   severity: 'high',
@@ -37,7 +37,7 @@ export const SOURCE_ID: PIIPattern = {
  */
 export const ARTICLE_ID: PIIPattern = {
   type: 'ARTICLE_ID',
-  regex: /\b(?:ARTICLE|STORY)[-\s]?(?:ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:ARTICLE|STORY)[\-\s]?(?:ID)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[ARTICLE_{n}]',
   priority: 70,
   severity: 'low',
@@ -52,7 +52,7 @@ export const ARTICLE_ID: PIIPattern = {
  */
 export const MANUSCRIPT_ID: PIIPattern = {
   type: 'MANUSCRIPT_ID',
-  regex: /\b(?:MANUSCRIPT|MS)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:MANUSCRIPT|MS)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[MANUSCRIPT_{n}]',
   priority: 75,
   severity: 'medium',
@@ -67,7 +67,7 @@ export const MANUSCRIPT_ID: PIIPattern = {
  */
 export const PRESS_PASS_ID: PIIPattern = {
   type: 'PRESS_PASS_ID',
-  regex: /\b(?:PRESS[-\s]?PASS|MEDIA[-\s]?CREDENTIAL)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:PRESS[\-\s]?PASS|MEDIA[\-\s]?CREDENTIAL)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[PRESS_{n}]',
   priority: 80,
   severity: 'medium',
@@ -82,7 +82,7 @@ export const PRESS_PASS_ID: PIIPattern = {
  */
 export const CONTRIBUTOR_ID: PIIPattern = {
   type: 'CONTRIBUTOR_ID',
-  regex: /\b(?:CONTRIBUTOR|FREELANCER|WRITER)[-\s]?(?:ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:CONTRIBUTOR|FREELANCER|WRITER)[\-\s]?(?:ID)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[CONTRIBUTOR_{n}]',
   priority: 75,
   severity: 'medium',
@@ -97,7 +97,7 @@ export const CONTRIBUTOR_ID: PIIPattern = {
  */
 export const PUBLISHING_CONTRACT: PIIPattern = {
   type: 'PUBLISHING_CONTRACT',
-  regex: /\b(?:PUBLISHING|PUB)[-\s]?(?:CONTRACT)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:PUBLISHING|PUB)[\-\s]?(?:CONTRACT)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[PUB_CONTRACT_{n}]',
   priority: 80,
   severity: 'high',
@@ -112,7 +112,7 @@ export const PUBLISHING_CONTRACT: PIIPattern = {
  */
 export const EDITORIAL_TICKET: PIIPattern = {
   type: 'EDITORIAL_TICKET',
-  regex: /\b(?:EDITORIAL|EDIT)[-\s]?(?:TICKET|TASK)?[-\s]?(?:ID|NO)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:EDITORIAL|EDIT)[\-\s]?(?:TICKET|TASK)?[\-\s]?(?:ID|NO)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[EDIT_{n}]',
   priority: 70,
   severity: 'low',
@@ -127,7 +127,7 @@ export const EDITORIAL_TICKET: PIIPattern = {
  */
 export const SUBSCRIBER_ID: PIIPattern = {
   type: 'SUBSCRIBER_ID',
-  regex: /\bSUBSCRIBER[-\s]?(?:ID)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
+  regex: /\bSUBSCRIBER[\-\s]?(?:ID)?[\-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
   placeholder: '[SUBSCRIBER_{n}]',
   priority: 85,
   severity: 'high',
@@ -142,7 +142,7 @@ export const SUBSCRIBER_ID: PIIPattern = {
  */
 export const ISBN: PIIPattern = {
   type: 'ISBN',
-  regex: /\bISBN[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*(\d{3}[-\s]?\d{1,5}[-\s]?\d{1,7}[-\s]?\d{1,7}[-\s]?\d{1})\b/gi,
+  regex: /\bISBN[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*(\d{3}[\-\s]?\d{1,5}[\-\s]?\d{1,7}[\-\s]?\d{1,7}[\-\s]?\d{1})\b/gi,
   placeholder: '[ISBN_{n}]',
   priority: 65,
   severity: 'low',
@@ -154,7 +154,7 @@ export const ISBN: PIIPattern = {
  */
 export const COPYRIGHT_REG: PIIPattern = {
   type: 'COPYRIGHT_REG',
-  regex: /\b(?:COPYRIGHT|©)[-\s]?(?:REG(?:ISTRATION)?)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z]{2,3}\d{6,10})\b/gi,
+  regex: /\b(?:COPYRIGHT|©)[\-\s]?(?:REG(?:ISTRATION)?)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z]{2,3}\d{6,10})\b/gi,
   placeholder: '[COPYRIGHT_{n}]',
   priority: 75,
   severity: 'medium',
@@ -169,7 +169,7 @@ export const COPYRIGHT_REG: PIIPattern = {
  */
 export const PRODUCTION_ID: PIIPattern = {
   type: 'PRODUCTION_ID',
-  regex: /\b(?:PRODUCTION|PROD)[-\s]?(?:ID)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:PRODUCTION|PROD)[\-\s]?(?:ID)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[PRODUCTION_{n}]',
   priority: 70,
   severity: 'low',

@@ -29,7 +29,7 @@ export const NEW_ZEALAND_DRIVER_LICENSE: PIIPattern = {
  */
 export const NEW_ZEALAND_IRD: PIIPattern = {
   type: 'NEW_ZEALAND_IRD',
-  regex: /\bIRD[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{8,9})\b/gi,
+  regex: /\bIRD[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{8,9})\b/gi,
   placeholder: '[NZ_IRD_{n}]',
   priority: 90,
   severity: 'high',
@@ -66,7 +66,7 @@ export const NEW_ZEALAND_PASSPORT: PIIPattern = {
  */
 export const FIJI_NATIONAL_ID: PIIPattern = {
   type: 'FIJI_NATIONAL_ID',
-  regex: /\b(?:FIJI|FJ)[-\s]?(?:ID|NATIONAL\s?ID)[-\s]?[:#]?\s*([A-Z0-9]{8,10})\b/gi,
+  regex: /\b(?:FIJI|FJ)[\-\s]?(?:ID|NATIONAL\s?ID)[\-\s]?[:#]?\s*([A-Z0-9]{8,10})\b/gi,
   placeholder: '[FJ_ID_{n}]',
   priority: 85,
   severity: 'high',
@@ -82,7 +82,7 @@ export const FIJI_NATIONAL_ID: PIIPattern = {
  */
 export const PNG_NATIONAL_ID: PIIPattern = {
   type: 'PNG_NATIONAL_ID',
-  regex: /\b(?:PNG|PAPUA)[-\s]?(?:ID|NATIONAL\s?ID)[-\s]?[:#]?\s*([A-Z0-9]{8,12})\b/gi,
+  regex: /\b(?:PNG|PAPUA)[\-\s]?(?:ID|NATIONAL\s?ID)[\-\s]?[:#]?\s*([A-Z0-9]{8,12})\b/gi,
   placeholder: '[PNG_ID_{n}]',
   priority: 85,
   severity: 'high',
@@ -98,7 +98,7 @@ export const PNG_NATIONAL_ID: PIIPattern = {
  */
 export const SAMOA_NATIONAL_ID: PIIPattern = {
   type: 'SAMOA_NATIONAL_ID',
-  regex: /\b(?:SAMOA|WS)[-\s]?(?:ID|NATIONAL\s?ID)[-\s]?[:#]?\s*(\d{8,10})\b/gi,
+  regex: /\b(?:SAMOA|WS)[\-\s]?(?:ID|NATIONAL\s?ID)[\-\s]?[:#]?\s*(\d{8,10})\b/gi,
   placeholder: '[WS_ID_{n}]',
   priority: 85,
   severity: 'high',
@@ -114,7 +114,7 @@ export const SAMOA_NATIONAL_ID: PIIPattern = {
  */
 export const TONGA_NATIONAL_ID: PIIPattern = {
   type: 'TONGA_NATIONAL_ID',
-  regex: /\b(?:TONGA|TO)[-\s]?(?:ID|NATIONAL\s?ID)[-\s]?[:#]?\s*([A-Z0-9]{8,10})\b/gi,
+  regex: /\b(?:TONGA|TO)[\-\s]?(?:ID|NATIONAL\s?ID)[\-\s]?[:#]?\s*([A-Z0-9]{8,10})\b/gi,
   placeholder: '[TO_ID_{n}]',
   priority: 85,
   severity: 'high',

@@ -11,7 +11,7 @@ import { PIIPattern } from '../../types';
  */
 export const VIN: PIIPattern = {
   type: 'VIN',
-  regex: /\bVIN[-\s]?[:#]?\s*([A-HJ-NPR-Z0-9]{17})\b/gi,
+  regex: /\bVIN[\-\s]?[:#]?\s*([A-HJ-NPR-Z0-9]{17})\b/gi,
   placeholder: '[VIN_{n}]',
   priority: 90,
   severity: 'high',
@@ -27,7 +27,7 @@ export const VIN: PIIPattern = {
  */
 export const LICENSE_PLATE: PIIPattern = {
   type: 'LICENSE_PLATE',
-  regex: /\b(?:LICENSE|PLATE|REG(?:ISTRATION)?)[-\s]?(?:NO|NUM(?:BER)?|PLATE)?[-\s]?[:#]?\s*([A-Z0-9]{2,8})\b/gi,
+  regex: /\b(?:LICENSE|PLATE|REG(?:ISTRATION)?)[\-\s]?(?:NO|NUM(?:BER)?|PLATE)?[\-\s]?[:#]?\s*([A-Z0-9]{2,8})\b/gi,
   placeholder: '[PLATE_{n}]',
   priority: 85,
   severity: 'high',
@@ -42,7 +42,7 @@ export const LICENSE_PLATE: PIIPattern = {
  */
 export const FLEET_VEHICLE_ID: PIIPattern = {
   type: 'FLEET_VEHICLE_ID',
-  regex: /\b(?:FLEET|VEHICLE)[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:FLEET|VEHICLE)[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[FLEET_{n}]',
   priority: 80,
   severity: 'medium',
@@ -57,7 +57,7 @@ export const FLEET_VEHICLE_ID: PIIPattern = {
  */
 export const TELEMATICS_DEVICE_ID: PIIPattern = {
   type: 'TELEMATICS_DEVICE_ID',
-  regex: /\b(?:TELEMATICS|GPS[-\s]?DEVICE)[-\s]?(?:ID)?[-\s]?[:#]?\s*([A-Z0-9]{10,16})\b/gi,
+  regex: /\b(?:TELEMATICS|GPS[\-\s]?DEVICE)[\-\s]?(?:ID)?[\-\s]?[:#]?\s*([A-Z0-9]{10,16})\b/gi,
   placeholder: '[TELEMATICS_{n}]',
   priority: 80,
   severity: 'medium',
@@ -72,7 +72,7 @@ export const TELEMATICS_DEVICE_ID: PIIPattern = {
  */
 export const BOOKING_NUMBER: PIIPattern = {
   type: 'BOOKING_NUMBER',
-  regex: /\b(?:BOOKING|RESERVATION|RES)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:BOOKING|RESERVATION|RES)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[BOOKING_{n}]',
   priority: 80,
   severity: 'medium',
@@ -87,7 +87,7 @@ export const BOOKING_NUMBER: PIIPattern = {
  */
 export const DRIVER_ID: PIIPattern = {
   type: 'DRIVER_ID',
-  regex: /\bDRIVER[-\s]?(?:ID|NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\bDRIVER[\-\s]?(?:ID|NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[DRIVER_{n}]',
   priority: 85,
   severity: 'high',
@@ -102,7 +102,7 @@ export const DRIVER_ID: PIIPattern = {
  */
 export const SHIPMENT_TRACKING: PIIPattern = {
   type: 'SHIPMENT_TRACKING',
-  regex: /\b(?:SHIPMENT|TRACKING)[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{10,30})\b/gi,
+  regex: /\b(?:SHIPMENT|TRACKING)[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{10,30})\b/gi,
   placeholder: '[SHIPMENT_{n}]',
   priority: 75,
   severity: 'medium',
@@ -117,7 +117,7 @@ export const SHIPMENT_TRACKING: PIIPattern = {
  */
 export const TOLL_TAG_ID: PIIPattern = {
   type: 'TOLL_TAG_ID',
-  regex: /\b(?:TOLL[-\s]?TAG|E[-]?ZPASS|TRANSPONDER)[-\s]?(?:ID)?[-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
+  regex: /\b(?:TOLL[\-\s]?TAG|E[-]?ZPASS|TRANSPONDER)[\-\s]?(?:ID)?[\-\s]?[:#]?\s*([A-Z0-9]{8,16})\b/gi,
   placeholder: '[TOLL_{n}]',
   priority: 80,
   severity: 'medium',
@@ -132,7 +132,7 @@ export const TOLL_TAG_ID: PIIPattern = {
  */
 export const INSPECTION_CERTIFICATE: PIIPattern = {
   type: 'INSPECTION_CERTIFICATE',
-  regex: /\b(?:INSPECTION|INSP)[-\s]?(?:CERT(?:IFICATE)?)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
+  regex: /\b(?:INSPECTION|INSP)[\-\s]?(?:CERT(?:IFICATE)?)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z0-9]{8,14})\b/gi,
   placeholder: '[INSPECTION_{n}]',
   priority: 75,
   severity: 'medium',
@@ -147,7 +147,7 @@ export const INSPECTION_CERTIFICATE: PIIPattern = {
  */
 export const ODOMETER_READING_REF: PIIPattern = {
   type: 'ODOMETER_READING_REF',
-  regex: /\b(?:ODOMETER|MILEAGE)[-\s]?[:#]?\s*(\d{1,7})\s*(?:KM|MILES|MI)\b/gi,
+  regex: /\b(?:ODOMETER|MILEAGE)[\-\s]?[:#]?\s*(\d{1,7})\s*(?:KM|MILES|MI)\b/gi,
   placeholder: '[ODO_{n}]',
   priority: 70,
   severity: 'low',
@@ -162,7 +162,7 @@ export const ODOMETER_READING_REF: PIIPattern = {
  */
 export const VEHICLE_INSURANCE_POLICY: PIIPattern = {
   type: 'VEHICLE_INSURANCE_POLICY',
-  regex: /\b(?:AUTO|VEHICLE|CAR)[-\s]?(?:INSURANCE)?[-\s]?(?:POLICY)?[-\s]?(?:NO|NUM(?:BER)?)?[-\s]?[:#]?\s*([A-Z]{2,4}\d{6,10})\b/gi,
+  regex: /\b(?:AUTO|VEHICLE|CAR)[\-\s]?(?:INSURANCE)?[\-\s]?(?:POLICY)?[\-\s]?(?:NO|NUM(?:BER)?)?[\-\s]?[:#]?\s*([A-Z]{2,4}\d{6,10})\b/gi,
   placeholder: '[AUTO_POLICY_{n}]',
   priority: 85,
   severity: 'high',
@@ -177,7 +177,7 @@ export const VEHICLE_INSURANCE_POLICY: PIIPattern = {
  */
 export const TRIP_ID: PIIPattern = {
   type: 'TRIP_ID',
-  regex: /\b(?:TRIP|RIDE)[-\s]?(?:ID)?[-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
+  regex: /\b(?:TRIP|RIDE)[\-\s]?(?:ID)?[\-\s]?[:#]?\s*([A-Z0-9]{8,20})\b/gi,
   placeholder: '[TRIP_{n}]',
   priority: 80,
   severity: 'medium',

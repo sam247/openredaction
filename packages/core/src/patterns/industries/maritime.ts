@@ -11,7 +11,7 @@ import type { PIIPattern } from '../../types';
  */
 export const IMO_NUMBER: PIIPattern = {
   type: 'IMO_NUMBER',
-  regex: /\bIMO[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{7})\b/gi,
+  regex: /\bIMO[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{7})\b/gi,
   placeholder: '[IMO_{n}]',
   priority: 90,
   severity: 'medium',
@@ -39,7 +39,7 @@ export const IMO_NUMBER: PIIPattern = {
  */
 export const MMSI_NUMBER: PIIPattern = {
   type: 'MMSI_NUMBER',
-  regex: /\bMMSI[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{9})\b/gi,
+  regex: /\bMMSI[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{9})\b/gi,
   placeholder: '[MMSI_{n}]',
   priority: 90,
   severity: 'medium',
@@ -62,7 +62,7 @@ export const MMSI_NUMBER: PIIPattern = {
  */
 export const MARITIME_CALLSIGN: PIIPattern = {
   type: 'MARITIME_CALLSIGN',
-  regex: /\b(?:CALLSIGN|CALL\s?SIGN)[-\s]?[:#]?\s*([A-Z0-9]{3,7})\b/gi,
+  regex: /\b(?:CALLSIGN|CALL\s?SIGN)[\-\s]?[:#]?\s*([A-Z0-9]{3,7})\b/gi,
   placeholder: '[CALLSIGN_{n}]',
   priority: 85,
   severity: 'low',
@@ -78,7 +78,7 @@ export const MARITIME_CALLSIGN: PIIPattern = {
  */
 export const OFFICIAL_SHIP_NUMBER: PIIPattern = {
   type: 'OFFICIAL_SHIP_NUMBER',
-  regex: /\b(?:OFFICIAL|SHIP)[-\s]?(?:NO|NUM|NUMBER)[-\s]?[:#]?\s*([A-Z0-9]{5,12})\b/gi,
+  regex: /\b(?:OFFICIAL|SHIP)[\-\s]?(?:NO|NUM|NUMBER)[\-\s]?[:#]?\s*([A-Z0-9]{5,12})\b/gi,
   placeholder: '[SHIP_NUM_{n}]',
   priority: 80,
   severity: 'medium',
@@ -94,7 +94,7 @@ export const OFFICIAL_SHIP_NUMBER: PIIPattern = {
  */
 export const PSC_INSPECTION_ID: PIIPattern = {
   type: 'PSC_INSPECTION_ID',
-  regex: /\b(?:PSC|INSPECTION)[-\s]?(?:ID|NO|NUM|NUMBER)[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  regex: /\b(?:PSC|INSPECTION)[\-\s]?(?:ID|NO|NUM|NUMBER)[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
   placeholder: '[PSC_{n}]',
   priority: 80,
   severity: 'low',
@@ -110,7 +110,7 @@ export const PSC_INSPECTION_ID: PIIPattern = {
  */
 export const SEAFARER_ID: PIIPattern = {
   type: 'SEAFARER_ID',
-  regex: /\b(?:SEAFARER|MARINER|SID)[-\s]?(?:ID|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2,3}[A-Z0-9]{9})\b/gi,
+  regex: /\b(?:SEAFARER|MARINER|SID)[\-\s]?(?:ID|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z]{2,3}[A-Z0-9]{9})\b/gi,
   placeholder: '[SEAFARER_{n}]',
   priority: 85,
   severity: 'high',
@@ -128,7 +128,7 @@ export const SEAFARER_ID: PIIPattern = {
  */
 export const LLOYDS_REGISTER_NUMBER: PIIPattern = {
   type: 'LLOYDS_REGISTER_NUMBER',
-  regex: /\b(?:LLOYD'?S?|LR)[-\s]?(?:REG(?:ISTER)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{7})\b/gi,
+  regex: /\b(?:LLOYD'?S?|LR)[\-\s]?(?:REG(?:ISTER)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{7})\b/gi,
   placeholder: '[LR_NUM_{n}]',
   priority: 85,
   severity: 'low',

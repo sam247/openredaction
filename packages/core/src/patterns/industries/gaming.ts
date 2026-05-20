@@ -37,7 +37,7 @@ export const RIOT_ID: PIIPattern = {
  */
 export const TWITCH_USERNAME: PIIPattern = {
   type: 'TWITCH_USERNAME',
-  regex: /\bTWITCH[-\s]?(?:USER|NAME|ID)?[-\s]?[:#]?\s*([a-zA-Z0-9_]{4,25})\b/gi,
+  regex: /\bTWITCH[\-\s]?(?:USER|NAME|ID)?[\-\s]?[:#]?\s*([a-zA-Z0-9_]{4,25})\b/gi,
   placeholder: '[TWITCH_{n}]',
   priority: 75,
   severity: 'medium',
@@ -58,7 +58,7 @@ export const TWITCH_USERNAME: PIIPattern = {
  */
 export const ESPORTS_PLAYER_ID: PIIPattern = {
   type: 'ESPORTS_PLAYER_ID',
-  regex: /\b(?:PLAYER|COMPETITOR|PARTICIPANT)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:PLAYER|COMPETITOR|PARTICIPANT)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[PLAYER_ID_{n}]',
   priority: 75,
   severity: 'medium',
@@ -75,7 +75,7 @@ export const ESPORTS_PLAYER_ID: PIIPattern = {
  */
 export const TOURNAMENT_REGISTRATION_ID: PIIPattern = {
   type: 'TOURNAMENT_REGISTRATION_ID',
-  regex: /\b(?:TOURNAMENT|BRACKET|REGISTRATION|REG)[-\s]?(?:ID|NO|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
+  regex: /\b(?:TOURNAMENT|BRACKET|REGISTRATION|REG)[\-\s]?(?:ID|NO|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{6,12})\b/gi,
   placeholder: '[TOURNEY_{n}]',
   priority: 75,
   severity: 'medium',
@@ -92,7 +92,7 @@ export const TOURNAMENT_REGISTRATION_ID: PIIPattern = {
  */
 export const ROBLOX_USER_ID: PIIPattern = {
   type: 'ROBLOX_USER_ID',
-  regex: /\bROBLOX[-\s]?(?:USER|ID)?[-\s]?[:#]?\s*(\d{1,12})\b/gi,
+  regex: /\bROBLOX[\-\s]?(?:USER|ID)?[\-\s]?[:#]?\s*(\d{1,12})\b/gi,
   placeholder: '[ROBLOX_{n}]',
   priority: 80,
   severity: 'medium',
@@ -137,7 +137,7 @@ export const MINECRAFT_UUID: PIIPattern = {
  */
 export const FORTNITE_ACCOUNT_ID: PIIPattern = {
   type: 'FORTNITE_ACCOUNT_ID',
-  regex: /\b(?:FORTNITE|FN)[-\s]?(?:ACCOUNT|USER|ID)?[-\s]?[:#]?\s*([a-f0-9]{32})\b/gi,
+  regex: /\b(?:FORTNITE|FN)[\-\s]?(?:ACCOUNT|USER|ID)?[\-\s]?[:#]?\s*([a-f0-9]{32})\b/gi,
   placeholder: '[FN_ID_{n}]',
   priority: 75,
   severity: 'medium',
@@ -184,7 +184,7 @@ export const COD_PLAYER_ID: PIIPattern = {
  */
 export const APEX_PLAYER_ID: PIIPattern = {
   type: 'APEX_PLAYER_ID',
-  regex: /\b(?:APEX|EA)[-\s]?(?:ID|PLAYER)?[-\s]?[:#]?\s*([A-Z0-9]{10,16})\b/gi,
+  regex: /\b(?:APEX|EA)[\-\s]?(?:ID|PLAYER)?[\-\s]?[:#]?\s*([A-Z0-9]{10,16})\b/gi,
   placeholder: '[APEX_ID_{n}]',
   priority: 70,
   severity: 'medium',
@@ -201,7 +201,7 @@ export const APEX_PLAYER_ID: PIIPattern = {
  */
 export const DOTA_FRIEND_ID: PIIPattern = {
   type: 'DOTA_FRIEND_ID',
-  regex: /\bDOTA[-\s]?(?:ID|FRIEND)?[-\s]?[:#]?\s*(\d{9,10})\b/gi,
+  regex: /\bDOTA[\-\s]?(?:ID|FRIEND)?[\-\s]?[:#]?\s*(\d{9,10})\b/gi,
   placeholder: '[DOTA_ID_{n}]',
   priority: 70,
   severity: 'medium',
@@ -222,7 +222,7 @@ export const DOTA_FRIEND_ID: PIIPattern = {
  */
 export const CSGO_FRIEND_CODE: PIIPattern = {
   type: 'CSGO_FRIEND_CODE',
-  regex: /\b(?:CS:?GO|COUNTER[- ]?STRIKE)[-\s]?(?:FRIEND[- ]?CODE|CODE)?[-\s]?[:#]?\s*([A-Z0-9]{5}-[A-Z0-9]{5})\b/gi,
+  regex: /\b(?:CS:?GO|COUNTER[- ]?STRIKE)[\-\s]?(?:FRIEND[- ]?CODE|CODE)?[\-\s]?[:#]?\s*([A-Z0-9]{5}-[A-Z0-9]{5})\b/gi,
   placeholder: '[CSGO_CODE_{n}]',
   priority: 75,
   severity: 'medium',
