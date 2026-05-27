@@ -1,6 +1,5 @@
 'use client';
 
-import { track } from '@vercel/analytics';
 import { gtagEvent } from '@/lib/gtag';
 
 // Event categories for organization
@@ -11,7 +10,7 @@ export type EventCategory =
   | 'form'
   | 'external';
 
-// Helper to sanitize event data according to Vercel limits
+// Helper to sanitize event data for GA4
 // - No nested objects
 // - Max 255 characters per string value
 // - Only strings, numbers, or booleans
@@ -51,7 +50,7 @@ function sanitizeEventData(data?: Record<string, any>): Record<string, string | 
   return sanitized;
 }
 
-// Standardized event tracking function (sends to both Vercel Analytics and GA4)
+// Standardized event tracking function (GA4)
 export function trackEvent(
   name: string,
   category: EventCategory,
@@ -62,14 +61,7 @@ export function trackEvent(
   
   // Sanitize data
   const sanitizedData = sanitizeEventData(data);
-  
-  // Vercel Analytics
-  track(eventName, {
-    category,
-    ...sanitizedData,
-  });
 
-  // GA4: event name + params (category and all sanitized fields)
   gtagEvent(eventName, {
     event_category: category,
     ...sanitizedData,

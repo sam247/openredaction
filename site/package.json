@@ -11,7 +11,6 @@
     "docs:export": "cd docs && npm ci && npm run build && rm -rf ../public/docs && mkdir -p ../public && cp -R out ../public/docs"
   },
   "dependencies": {
-    "@vercel/analytics": "^1.6.1",
     "botid": "^1.5.10",
     "clsx": "^2.1.0",
     "lucide-react": "^0.344.0",

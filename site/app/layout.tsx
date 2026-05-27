@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { defaultMetadata } from "@/lib/metadata";
 import { StructuredData } from "@/components/StructuredData";
-import { Analytics } from "@vercel/analytics/next";
 import PageViewTracker from "@/components/PageViewTracker";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { BotIdClient } from "botid/client";
@@ -34,7 +33,6 @@ export default function RootLayout({
         <StructuredData />
         <PageViewTracker />
         {children}
-        <Analytics />
         <WordPressWaitlistRoot />
       </body>
     </html>
