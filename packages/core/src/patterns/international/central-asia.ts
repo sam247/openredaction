@@ -20,9 +20,9 @@ export const KAZAKHSTAN_IIN: PIIPattern = {
     if (value.length !== 12) return false;
 
     // Basic date validation (first 6 digits: YYMMDD)
-    const year = parseInt(value.substring(0, 2));
-    const month = parseInt(value.substring(2, 4));
-    const day = parseInt(value.substring(4, 6));
+    // const year = parseInt(value.substring(0, 2), 10);
+    const month = parseInt(value.substring(2, 4), 10);
+    const day = parseInt(value.substring(4, 6), 10);
 
     if (month < 1 || month > 12) return false;
     if (day < 1 || day > 31) return false;

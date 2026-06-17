@@ -240,7 +240,7 @@ async function main() {
       }
     }
   } else if (command === 'scan') {
-    const scan = shield.scan(text);
+    const scan = await shield.scan(text);
 
     if (jsonOutput) {
       console.log(JSON.stringify(scan, null, 2));
@@ -248,13 +248,19 @@ async function main() {
       console.log('\n=== PII Scan Results ===\n');
       console.log(`Total PII found: ${scan.total}\n`);
       console.log(`High severity:   ${scan.high.length}`);
-      scan.high.forEach(d => console.log(`  - ${d.type}: ${d.value}`));
+      scan.high.forEach(d => {
+        console.log(`  - ${d.type}: ${d.value}`)
+      });
 
       console.log(`\nMedium severity: ${scan.medium.length}`);
-      scan.medium.forEach(d => console.log(`  - ${d.type}: ${d.value}`));
+      scan.medium.forEach(d => {
+        console.log(`  - ${d.type}: ${d.value}`)
+      });
 
       console.log(`\nLow severity:    ${scan.low.length}`);
-      scan.low.forEach(d => console.log(`  - ${d.type}: ${d.value}`));
+      scan.low.forEach(d => {
+        console.log(`  - ${d.type}: ${d.value}`)
+      });
     }
   }
 }
