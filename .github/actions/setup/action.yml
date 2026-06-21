@@ -1,0 +1,33 @@
+name: Setup
+description: Checkout, setup Node.js, and install dependencies
+inputs:
+  node-version:
+    description: Node.js version
+    required: false
+    default: '24'
+  fetch-depth:
+    description: Git fetch depth for checkout
+    required: false
+    default: '1'
+  registry-url:
+    description: npm registry URL (optional, for publish workflows)
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: ${{ inputs.fetch-depth }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+        registry-url: ${{ inputs.registry-url }}
+
+    - name: Install dependencies
+      run: npm ci
+      shell: bash

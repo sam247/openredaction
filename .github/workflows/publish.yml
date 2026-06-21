@@ -12,27 +12,18 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
         with:
           fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install dependencies
-        run: npm ci
+      - uses: ./.github/actions/test
+        with:
+          filter: openredaction
 
-      - name: Run tests
-        run: npm test
-        working-directory: ./packages/core
-
-      - name: Build package
-        run: npm run build
-        working-directory: ./packages/core
+      - uses: ./.github/actions/build
+        with:
+          filter: openredaction
 
       - name: Extract version from tag
         id: get_version
@@ -66,9 +57,8 @@ jobs:
 
       # Keeps GitHub “Releases” in sync with npm (tags alone do not create a Release)
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

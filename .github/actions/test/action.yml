@@ -1,0 +1,12 @@
+name: Test
+description: Run turbo test for a workspace
+inputs:
+  filter:
+    description: Turbo package filter (e.g. openredaction)
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Test
+      run: npx turbo run test --filter=${{ inputs.filter }}
+      shell: bash

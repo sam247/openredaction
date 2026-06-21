@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      core: ${{ steps.filter.outputs.core }}
+      site: ${{ steps.filter.outputs.site }}
+      shared: ${{ steps.filter.outputs.shared }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            core:
+              - 'packages/core/**'
+            site:
+              - 'site/**'
+            shared:
+              - 'package.json'
+              - 'package-lock.json'
+              - 'turbo.json'
+              - '.github/**'
+              - 'scripts/**'
+
+  core:
+    needs: changes
+    if: needs.changes.outputs.core == 'true' || needs.changes.outputs.shared == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/lint
+        with:
+          filter: openredaction
+      - uses: ./.github/actions/test
+        with:
+          filter: openredaction
+      - uses: ./.github/actions/build
+        with:
+          filter: openredaction
+
+  site:
+    needs: changes
+    if: needs.changes.outputs.site == 'true' || needs.changes.outputs.shared == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/lint
+        with:
+          filter: openredaction-site
+      - uses: ./.github/actions/build
+        with:
+          filter: openredaction-site
+
+  ci-success:
+    needs: [changes, core, site]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require affected checks to pass
+        run: |
+          run_core() {
+            [[ "${{ needs.changes.outputs.core }}" == "true" || "${{ needs.changes.outputs.shared }}" == "true" ]]
+          }
+
+          run_site() {
+            [[ "${{ needs.changes.outputs.site }}" == "true" || "${{ needs.changes.outputs.shared }}" == "true" ]]
+          }
+
+          if run_core && [[ "${{ needs.core.result }}" != "success" ]]; then
+            echo "Core checks failed or were cancelled"
+            exit 1
+          fi
+
+          if run_site && [[ "${{ needs.site.result }}" != "success" ]]; then
+            echo "Site checks failed or were cancelled"
+            exit 1
+          fi
+
+          echo "All required checks passed"
