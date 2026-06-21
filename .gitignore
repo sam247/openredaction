@@ -9,7 +9,6 @@ coverage/
 
 # Build outputs
 dist/
-build/
 .next/
 out/
 
