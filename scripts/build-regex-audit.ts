@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const glob = require('glob');
+#!/usr/bin/env tsx
+import fs from 'fs';
+import { glob } from 'glob';
 
 const patternFiles = glob.sync('packages/core/src/patterns/**/*.ts');
 
-function analyzeRegex(regexText) {
-  const notes = [];
+function analyzeRegex(regexText: string) {
+  const notes: string[] = [];
   if (/[A-Z]/.test(regexText) && !/[a-z]/.test(regexText)) {
     notes.push('Case-sensitive patterns may miss lowercase, mixed-case, or accented text.');
   }
@@ -18,8 +18,8 @@ function analyzeRegex(regexText) {
   return notes.join(' ');
 }
 
-function falsePositiveRisks(regexText) {
-  const risks = [];
+function falsePositiveRisks(regexText: string) {
+  const risks: string[] = [];
   if (/\{\d{3,}/.test(regexText) || /\d\{/.test(regexText) || /\\d\{/.test(regexText)) {
     risks.push('May capture generic numeric strings or inventory-like numbers.');
   }
@@ -32,19 +32,19 @@ function falsePositiveRisks(regexText) {
   return risks.join(' ');
 }
 
-function effortEstimate(regexText) {
+function effortEstimate(regexText: string) {
   const length = regexText.length;
   if (length > 120) return 'high';
   if (length > 60) return 'medium';
   return 'low';
 }
 
-const patterns = [];
+const patterns: any[] = [];
 
 patternFiles.forEach((filePath) => {
   const text = fs.readFileSync(filePath, 'utf8');
   const lines = text.split(/\r?\n/);
-  let current = null;
+  let current: any = null;
   lines.forEach((line) => {
     const typeMatch = line.match(/type:\s*'([^']+)'/);
     if (typeMatch) {
@@ -83,7 +83,7 @@ patternFiles.forEach((filePath) => {
   }
 });
 
-const riskRank = (severity) => {
+const riskRank = (severity: string) => {
   if (!severity) return 'medium';
   if (severity.toLowerCase() === 'high') return 'High';
   if (severity.toLowerCase() === 'medium') return 'Medium';
@@ -121,8 +121,8 @@ const high = auditRows.filter((r) => r.risk === 'High');
 const medium = auditRows.filter((r) => r.risk === 'Medium');
 const low = auditRows.filter((r) => r.risk === 'Low');
 
-function improvement(row) {
-  const improvements = [];
+function improvement(row: { regex: string; description?: string; severity?: string }) {
+  const improvements: string[] = [];
   if (/[A-Z]/.test(row.regex) && !/[a-z]/.test(row.regex)) {
     improvements.push('Add case-insensitive Unicode letters and allow diacritics/hyphens.');
   }
@@ -138,7 +138,7 @@ function improvement(row) {
   return improvements.join(' ');
 }
 
-function planSection(title, items) {
+function planSection(title: string, items: any[]) {
   const lines = [`## ${title} (${items.length})`];
   lines.push('| Pattern | Regex | Proposed hardening | Effort | Tests to add |');
   lines.push('| --- | --- | --- | --- | --- |');
