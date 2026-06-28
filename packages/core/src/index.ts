@@ -1,9 +1,6 @@
 /**
  * OpenRedaction - Production-ready PII detection and redaction library
  *
- * Node `http` listeners (`APIServer`, `PrometheusServer`) live under
- * `openredaction/server`, not this entry.
- *
  * @packageDocumentation
  */
 
@@ -33,21 +30,10 @@ export type {
 // Audit logging
 export {
   InMemoryAuditLogger,
-  ConsoleAuditLogger,
-  PersistentAuditLogger,
-  createPersistentAuditLogger
-} from './audit';
-export type {
-  AuditBackend,
-  AuditDatabaseConfig,
-  RetentionPolicy,
-  PersistentAuditLoggerOptions,
-  HashedAuditLogEntry,
-  IAuditDatabaseAdapter,
-  AuditQueryFilter
+  ConsoleAuditLogger
 } from './audit';
 
-// Metrics collection (in-memory only on this entry; HTTP metrics server → `openredaction/server`)
+// Metrics collection
 export { InMemoryMetricsCollector } from './metrics';
 
 // RBAC (Role-Based Access Control)
@@ -301,7 +287,7 @@ export type {
   OpenRedactionRequest
 } from './integrations/express';
 
-// React integration is available via subpath: import from 'openredaction/react'
+// React integration is available via subpath: import from '@openredaction/core/react'
 
 // Error handling
 export {
@@ -318,37 +304,7 @@ export type {
   ErrorSuggestion
 } from './errors/OpenRedactionError';
 
-// Multi-tenancy (Phase 3)
-export {
-  TenantManager,
-  createTenantManager,
-  TenantQuotaExceededError,
-  TenantNotFoundError,
-  TenantSuspendedError,
-  DEFAULT_TIER_QUOTAS
-} from './tenancy';
-export type {
-  TenantConfig,
-  TenantQuotas,
-  TenantUsage
-} from './tenancy';
-
-// Webhooks and alerts (Phase 3)
-export {
-  WebhookManager,
-  createWebhookManager,
-  verifyWebhookSignature
-} from './webhooks';
-export type {
-  WebhookEventType,
-  WebhookEvent,
-  WebhookConfig,
-  WebhookDeliveryStatus,
-  WebhookDelivery,
-  WebhookStats
-} from './webhooks';
-
-// REST API server → import from `openredaction/server` (keeps `node:http` off the default bundle)
+// Multi-tenancy, webhooks, RBAC, and REST API server → moved to @openredaction/api
 
 // Configuration Import/Export (Phase 3)
 export {

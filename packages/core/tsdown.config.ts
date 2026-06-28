@@ -17,28 +17,6 @@ export default defineConfig([
       return { js: format === 'cjs' ? '.js' : '.mjs' };
     },
   },
-  // CLI build
-  {
-    entry: { 'index.cli': 'src/cli/index.ts' },
-    format: ['cjs'],
-    outDir: 'dist',
-    dts: false,
-    banner: '#!/usr/bin/env node',
-    outputOptions: {
-      codeSplitting: false,
-    },
-  },
-  // Pattern testing CLI build
-  {
-    entry: ['src/cli/test-pattern.ts'],
-    format: ['cjs'],
-    outDir: 'dist/cli',
-    dts: false,
-    banner: '#!/usr/bin/env node',
-    outputOptions: {
-      codeSplitting: false,
-    },
-  },
   // Worker thread (WorkerPool loads dist/workers/worker.js)
   {
     entry: ['src/workers/worker.ts'],
@@ -49,7 +27,7 @@ export default defineConfig([
       codeSplitting: false,
     },
   },
-  // React subpath: openredaction/react (bundles core + hooks, react external)
+  // React subpath: @openredaction/core/react (bundles core + hooks, react external)
   {
     entry: ['src/integrations/react.ts'],
     format: ['esm', 'cjs'],
@@ -58,23 +36,6 @@ export default defineConfig([
     outDir: 'dist',
     clean: false,
     external: ['react'],
-    fixedExtension: false,
-    outputOptions: {
-      codeSplitting: false,
-    },
-    outExtensions({ format }) {
-      return { js: format === 'cjs' ? '.js' : '.mjs' };
-    },
-  },
-  // Node HTTP: APIServer + PrometheusServer (node:http) — not in main entry
-  {
-    entry: ['src/server.ts'],
-    format: ['esm', 'cjs'],
-    dts: true,
-    sourcemap: true,
-    outDir: 'dist',
-    clean: false,
-    external: ['express'],
     fixedExtension: false,
     outputOptions: {
       codeSplitting: false,

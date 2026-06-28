@@ -1,19 +1,9 @@
 /**
- * Audit logging module
+ * Audit logging module (in-memory implementations)
+ *
+ * For persistent backends (SQLite, PostgreSQL, MongoDB, S3, file),
+ * use @openredaction/api instead.
  */
 
 export { InMemoryAuditLogger, ConsoleAuditLogger } from './AuditLogger';
-export {
-  PersistentAuditLogger,
-  createPersistentAuditLogger
-} from './PersistentAuditLogger';
 export type { IAuditLogger, AuditLogEntry, AuditStats } from '../types';
-export type {
-  AuditBackend,
-  AuditDatabaseConfig,
-  RetentionPolicy,
-  PersistentAuditLoggerOptions,
-  HashedAuditLogEntry,
-  IAuditDatabaseAdapter,
-  AuditQueryFilter
-} from './PersistentAuditLogger';

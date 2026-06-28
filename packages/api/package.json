@@ -1,5 +1,5 @@
 {
-  "name": "@openredaction/core",
+  "name": "@openredaction/api",
   "version": "1.1.2",
   "publishConfig": {
     "access": "public"
@@ -17,16 +17,6 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
-    },
-    "./react": {
-      "import": {
-        "types": "./dist/react.d.mts",
-        "default": "./dist/react.mjs"
-      },
-      "require": {
-        "types": "./dist/react.d.ts",
-        "default": "./dist/react.js"
-      }
     }
   },
   "files": [
@@ -38,8 +28,6 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "bench": "vitest bench --run",
-    "bench:watch": "vitest bench",
     "lint": "biome check . --diagnostic-level=error",
     "typecheck": "tsc --noEmit --incremental",
     "clean": "rm -rf dist"
@@ -48,42 +36,18 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/sam247/openredaction.git",
-    "directory": "packages/core"
+    "directory": "packages/api"
   },
   "bugs": {
     "url": "https://github.com/sam247/openredaction/issues"
   },
   "homepage": "https://openredaction.com",
-  "peerDependencies": {
-    "mammoth": "^1.6.0",
-    "pdf-parse": "^1.1.1",
-    "react": "^18.0.0 || ^19.0.0",
-    "tesseract.js": "^5.0.0"
-  },
-  "peerDependenciesMeta": {
-    "pdf-parse": {
-      "optional": true
-    },
-    "mammoth": {
-      "optional": true
-    },
-    "tesseract.js": {
-      "optional": true
-    },
-    "react": {
-      "optional": true
-    }
+  "dependencies": {
+    "@openredaction/core": "*"
   },
   "devDependencies": {
-    "@testing-library/react": "^16.0.1",
-    "@types/express": "^5.0.5",
     "@types/node": "^24.0.0",
-    "@types/react": "^19.2.6",
     "@vitest/coverage-v8": "^4.1.9",
-    "express": "^4.22.1",
-    "happy-dom": "^20.10.6",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
     "tsdown": "^0.22.3",
     "typescript": "^5.3.3",
     "vitest": "^4.1.9"

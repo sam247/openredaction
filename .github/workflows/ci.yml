@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       core: ${{ steps.filter.outputs.core }}
+      api: ${{ steps.filter.outputs.api }}
+      cli: ${{ steps.filter.outputs.cli }}
       site: ${{ steps.filter.outputs.site }}
       shared: ${{ steps.filter.outputs.shared }}
     steps:
@@ -25,6 +27,10 @@ jobs:
           filters: |
             core:
               - 'packages/core/**'
+            api:
+              - 'packages/api/**'
+            cli:
+              - 'packages/cli/**'
             site:
               - 'site/**'
             shared:
@@ -43,13 +49,44 @@ jobs:
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/lint
         with:
-          filter: openredaction
+          filter: '@openredaction/core'
       - uses: ./.github/actions/test
         with:
-          filter: openredaction
+          filter: '@openredaction/core'
       - uses: ./.github/actions/build
         with:
-          filter: openredaction
+          filter: '@openredaction/core'
+
+  api:
+    needs: changes
+    if: needs.changes.outputs.api == 'true' || needs.changes.outputs.core == 'true' || needs.changes.outputs.shared == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/lint
+        with:
+          filter: '@openredaction/api'
+      - uses: ./.github/actions/test
+        with:
+          filter: '@openredaction/api'
+      - uses: ./.github/actions/build
+        with:
+          filter: '@openredaction/api'
+
+  cli:
+    needs: changes
+    if: needs.changes.outputs.cli == 'true' || needs.changes.outputs.core == 'true' || needs.changes.outputs.shared == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/lint
+        with:
+          filter: '@openredaction/cli'
+      - uses: ./.github/actions/build
+        with:
+          filter: '@openredaction/cli'
 
   site:
     needs: changes
@@ -66,7 +103,7 @@ jobs:
           filter: openredaction-site
 
   ci-success:
-    needs: [changes, core, site]
+    needs: [changes, core, api, cli, site]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -76,12 +113,30 @@ jobs:
             [[ "${{ needs.changes.outputs.core }}" == "true" || "${{ needs.changes.outputs.shared }}" == "true" ]]
           }
 
+          run_api() {
+            [[ "${{ needs.changes.outputs.api }}" == "true" || "${{ needs.changes.outputs.core }}" == "true" || "${{ needs.changes.outputs.shared }}" == "true" ]]
+          }
+
+          run_cli() {
+            [[ "${{ needs.changes.outputs.cli }}" == "true" || "${{ needs.changes.outputs.core }}" == "true" || "${{ needs.changes.outputs.shared }}" == "true" ]]
+          }
+
           run_site() {
             [[ "${{ needs.changes.outputs.site }}" == "true" || "${{ needs.changes.outputs.shared }}" == "true" ]]
           }
 
           if run_core && [[ "${{ needs.core.result }}" != "success" ]]; then
             echo "Core checks failed or were cancelled"
+            exit 1
+          fi
+
+          if run_api && [[ "${{ needs.api.result }}" != "success" ]]; then
+            echo "API checks failed or were cancelled"
+            exit 1
+          fi
+
+          if run_cli && [[ "${{ needs.cli.result }}" != "success" ]]; then
+            echo "CLI checks failed or were cancelled"
             exit 1
           fi
 
