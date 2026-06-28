@@ -3,8 +3,8 @@
  * Efficient processing of arrays of texts
  */
 
-import { DetectionResult } from '../types';
-import { OpenRedaction } from '../detector';
+import type { DetectionResult } from "../types";
+import type { OpenRedaction } from "../detector";
 
 /**
  * Batch processing options
@@ -52,7 +52,7 @@ export class BatchProcessor {
    */
   async processSequential(
     documents: string[],
-    options: BatchOptions = {}
+    options: BatchOptions = {},
   ): Promise<BatchResult> {
     const startTime = performance.now();
     const results: DetectionResult[] = [];
@@ -73,10 +73,14 @@ export class BatchProcessor {
       results,
       stats: {
         totalDocuments: documents.length,
-        totalDetections: results.reduce((sum, r) => sum + r.detections.length, 0),
+        totalDetections: results.reduce(
+          (sum, r) => sum + r.detections.length,
+          0,
+        ),
         totalTime,
-        avgTimePerDocument: documents.length > 0 ? totalTime / documents.length : 0
-      }
+        avgTimePerDocument:
+          documents.length > 0 ? totalTime / documents.length : 0,
+      },
     };
   }
 
@@ -85,7 +89,7 @@ export class BatchProcessor {
    */
   async processParallel(
     documents: string[],
-    options: BatchOptions = {}
+    options: BatchOptions = {},
   ): Promise<BatchResult> {
     const startTime = performance.now();
     const maxConcurrency = options.maxConcurrency || 4;
@@ -117,10 +121,14 @@ export class BatchProcessor {
       results,
       stats: {
         totalDocuments: documents.length,
-        totalDetections: results.reduce((sum, r) => sum + r.detections.length, 0),
+        totalDetections: results.reduce(
+          (sum, r) => sum + r.detections.length,
+          0,
+        ),
         totalTime,
-        avgTimePerDocument: documents.length > 0 ? totalTime / documents.length : 0
-      }
+        avgTimePerDocument:
+          documents.length > 0 ? totalTime / documents.length : 0,
+      },
     };
   }
 
@@ -129,7 +137,7 @@ export class BatchProcessor {
    */
   async process(
     documents: string[],
-    options: BatchOptions = {}
+    options: BatchOptions = {},
   ): Promise<BatchResult> {
     if (options.parallel) {
       return this.processParallel(documents, options);
@@ -144,7 +152,7 @@ export class BatchProcessor {
    */
   async *processStream(
     documents: string[],
-    batchSize: number = 10
+    batchSize: number = 10,
   ): AsyncGenerator<DetectionResult, void, undefined> {
     for (let i = 0; i < documents.length; i += batchSize) {
       const batch = documents.slice(i, i + batchSize);
@@ -173,10 +181,12 @@ export class BatchProcessor {
     for (const result of results) {
       for (const detection of result.detections) {
         // Count by type
-        detectionsByType[detection.type] = (detectionsByType[detection.type] || 0) + 1;
+        detectionsByType[detection.type] =
+          (detectionsByType[detection.type] || 0) + 1;
 
         // Count by severity
-        detectionsBySeverity[detection.severity] = (detectionsBySeverity[detection.severity] || 0) + 1;
+        detectionsBySeverity[detection.severity] =
+          (detectionsBySeverity[detection.severity] || 0) + 1;
 
         // Track confidence
         if (detection.confidence !== undefined) {
@@ -190,7 +200,8 @@ export class BatchProcessor {
       totalDetections: results.reduce((sum, r) => sum + r.detections.length, 0),
       detectionsByType,
       detectionsBySeverity,
-      avgConfidence: totalWithConfidence > 0 ? totalConfidence / totalWithConfidence : 0
+      avgConfidence:
+        totalWithConfidence > 0 ? totalConfidence / totalWithConfidence : 0,
     };
   }
 }

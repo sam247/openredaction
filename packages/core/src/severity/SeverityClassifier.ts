@@ -3,12 +3,12 @@
  * Assigns severity levels to PII patterns and calculates risk scores
  */
 
-import type { PIIPattern, PIIDetection } from '../types';
+import type { PIIPattern, PIIDetection } from "../types";
 
 /**
  * Severity level for PII types
  */
-export type SeverityLevel = 'critical' | 'high' | 'medium' | 'low';
+export type SeverityLevel = "critical" | "high" | "medium" | "low";
 
 /**
  * Severity classification with reasoning
@@ -29,7 +29,7 @@ export interface RiskScore {
   /** Overall risk score (0-1) */
   score: number;
   /** Risk level */
-  level: 'very-high' | 'high' | 'medium' | 'low' | 'minimal';
+  level: "very-high" | "high" | "medium" | "low" | "minimal";
   /** Contributing factors */
   factors: {
     piiCount: number;
@@ -45,117 +45,117 @@ export interface RiskScore {
  */
 export const DEFAULT_SEVERITY_MAP: Record<string, SeverityLevel> = {
   // CRITICAL - Highly sensitive, major identity theft risk
-  'SSN': 'critical',
-  'SOCIAL_SECURITY': 'critical',
-  'CREDIT_CARD': 'critical',
-  'CVV': 'critical',
-  'BANK_ACCOUNT': 'critical',
-  'ROUTING_NUMBER': 'critical',
-  'PASSPORT': 'critical',
-  'DRIVERS_LICENSE': 'critical',
-  'DRIVING_LICENCE': 'critical',
-  'NHS_NUMBER': 'critical',
-  'NI_NUMBER': 'critical',
-  'NATIONAL_INSURANCE': 'critical',
-  'TAX_ID': 'critical',
-  'EIN': 'critical',
-  'ITIN': 'critical',
-  'SIN': 'critical', // Canadian
-  'TFN': 'critical', // Australian
-  'AADHAAR': 'critical', // Indian
-  'MEDICAL_RECORD': 'critical',
-  'MRN': 'critical',
-  'PATIENT_ID': 'critical',
-  'DEA_NUMBER': 'critical',
-  'NPI': 'critical',
-  'API_KEY': 'critical',
-  'SECRET_KEY': 'critical',
-  'AWS_SECRET_KEY': 'critical',
-  'PRIVATE_KEY': 'critical',
-  'SSH_KEY': 'critical',
-  'JWT': 'critical',
-  'OAUTH_SECRET': 'critical',
-  'PASSWORD': 'critical',
-  'BEARER_TOKEN': 'critical',
-  'BITCOIN_PRIVATE': 'critical',
+  SSN: "critical",
+  SOCIAL_SECURITY: "critical",
+  CREDIT_CARD: "critical",
+  CVV: "critical",
+  BANK_ACCOUNT: "critical",
+  ROUTING_NUMBER: "critical",
+  PASSPORT: "critical",
+  DRIVERS_LICENSE: "critical",
+  DRIVING_LICENCE: "critical",
+  NHS_NUMBER: "critical",
+  NI_NUMBER: "critical",
+  NATIONAL_INSURANCE: "critical",
+  TAX_ID: "critical",
+  EIN: "critical",
+  ITIN: "critical",
+  SIN: "critical", // Canadian
+  TFN: "critical", // Australian
+  AADHAAR: "critical", // Indian
+  MEDICAL_RECORD: "critical",
+  MRN: "critical",
+  PATIENT_ID: "critical",
+  DEA_NUMBER: "critical",
+  NPI: "critical",
+  API_KEY: "critical",
+  SECRET_KEY: "critical",
+  AWS_SECRET_KEY: "critical",
+  PRIVATE_KEY: "critical",
+  SSH_KEY: "critical",
+  JWT: "critical",
+  OAUTH_SECRET: "critical",
+  PASSWORD: "critical",
+  BEARER_TOKEN: "critical",
+  BITCOIN_PRIVATE: "critical",
 
   // HIGH - Personal identifiers, significant privacy risk
-  'EMAIL': 'high',
-  'PHONE': 'high',
-  'PHONE_UK': 'high',
-  'PHONE_US': 'high',
-  'PHONE_MOBILE': 'high',
-  'NAME': 'high',
-  'FULL_NAME': 'high',
-  'DATE_OF_BIRTH': 'high',
-  'DOB': 'high',
-  'ADDRESS': 'high',
-  'STREET_ADDRESS': 'high',
-  'IBAN': 'high',
-  'SWIFT': 'high',
-  'BIC': 'high',
-  'IFSC': 'high', // Indian bank code
-  'CLABE': 'high', // Mexican bank code
-  'IP_ADDRESS': 'high',
-  'MAC_ADDRESS': 'high',
-  'VEHICLE_VIN': 'high',
-  'LICENSE_PLATE': 'high',
-  'GITHUB_TOKEN': 'high',
-  'AWS_ACCESS_KEY': 'high',
-  'STRIPE_KEY': 'high',
-  'GOOGLE_API_KEY': 'high',
-  'OPENAI_API_KEY': 'high',
-  'PRESCRIPTION': 'high',
-  'BIOMETRIC': 'high',
+  EMAIL: "high",
+  PHONE: "high",
+  PHONE_UK: "high",
+  PHONE_US: "high",
+  PHONE_MOBILE: "high",
+  NAME: "high",
+  FULL_NAME: "high",
+  DATE_OF_BIRTH: "high",
+  DOB: "high",
+  ADDRESS: "high",
+  STREET_ADDRESS: "high",
+  IBAN: "high",
+  SWIFT: "high",
+  BIC: "high",
+  IFSC: "high", // Indian bank code
+  CLABE: "high", // Mexican bank code
+  IP_ADDRESS: "high",
+  MAC_ADDRESS: "high",
+  VEHICLE_VIN: "high",
+  LICENSE_PLATE: "high",
+  GITHUB_TOKEN: "high",
+  AWS_ACCESS_KEY: "high",
+  STRIPE_KEY: "high",
+  GOOGLE_API_KEY: "high",
+  OPENAI_API_KEY: "high",
+  PRESCRIPTION: "high",
+  BIOMETRIC: "high",
 
   // MEDIUM - Business/organizational identifiers, moderate risk
-  'EMPLOYEE_ID': 'medium',
-  'USERNAME': 'medium',
-  'COMPANY_NUMBER': 'medium',
-  'VAT_NUMBER': 'medium',
-  'UTR': 'medium', // UK tax reference
-  'ORDER_NUMBER': 'medium',
-  'INVOICE_NUMBER': 'medium',
-  'ACCOUNT_NUMBER': 'medium', // Generic account
-  'CUSTOMER_ID': 'medium',
-  'TRANSACTION_ID': 'medium',
-  'CASE_NUMBER': 'medium',
-  'DOCKET_NUMBER': 'medium',
-  'BAR_NUMBER': 'medium',
-  'TRACKING_NUMBER': 'medium',
-  'SESSION_ID': 'medium',
-  'DEVICE_ID': 'medium',
-  'CERTIFICATE_NUMBER': 'medium',
-  'POLICY_NUMBER': 'medium', // Insurance
-  'MEMBERSHIP_ID': 'medium',
-  'LOYALTY_CARD': 'medium',
-  'GIFT_CARD': 'medium',
-  'BITCOIN_ADDRESS': 'medium', // Public address
-  'ETHEREUM_ADDRESS': 'medium',
-  'CRYPTOCURRENCY': 'medium',
+  EMPLOYEE_ID: "medium",
+  USERNAME: "medium",
+  COMPANY_NUMBER: "medium",
+  VAT_NUMBER: "medium",
+  UTR: "medium", // UK tax reference
+  ORDER_NUMBER: "medium",
+  INVOICE_NUMBER: "medium",
+  ACCOUNT_NUMBER: "medium", // Generic account
+  CUSTOMER_ID: "medium",
+  TRANSACTION_ID: "medium",
+  CASE_NUMBER: "medium",
+  DOCKET_NUMBER: "medium",
+  BAR_NUMBER: "medium",
+  TRACKING_NUMBER: "medium",
+  SESSION_ID: "medium",
+  DEVICE_ID: "medium",
+  CERTIFICATE_NUMBER: "medium",
+  POLICY_NUMBER: "medium", // Insurance
+  MEMBERSHIP_ID: "medium",
+  LOYALTY_CARD: "medium",
+  GIFT_CARD: "medium",
+  BITCOIN_ADDRESS: "medium", // Public address
+  ETHEREUM_ADDRESS: "medium",
+  CRYPTOCURRENCY: "medium",
 
   // LOW - Public or less sensitive information
-  'POSTCODE': 'low',
-  'ZIP_CODE': 'low',
-  'POSTAL_CODE': 'low',
-  'URL': 'low',
-  'DOMAIN': 'low',
-  'ORGANIZATION': 'low',
-  'COMPANY': 'low',
-  'PRODUCT_SKU': 'low',
-  'COUPON_CODE': 'low',
-  'PROMO_CODE': 'low',
-  'PLACEHOLDER': 'low'
+  POSTCODE: "low",
+  ZIP_CODE: "low",
+  POSTAL_CODE: "low",
+  URL: "low",
+  DOMAIN: "low",
+  ORGANIZATION: "low",
+  COMPANY: "low",
+  PRODUCT_SKU: "low",
+  COUPON_CODE: "low",
+  PROMO_CODE: "low",
+  PLACEHOLDER: "low",
 };
 
 /**
  * Severity scores (for numeric calculations)
  */
 export const SEVERITY_SCORES: Record<SeverityLevel, number> = {
-  'critical': 10,
-  'high': 7,
-  'medium': 4,
-  'low': 2
+  critical: 10,
+  high: 7,
+  medium: 4,
+  low: 2,
 };
 
 /**
@@ -167,7 +167,7 @@ export class SeverityClassifier {
   constructor(customMap?: Record<string, SeverityLevel>) {
     this.severityMap = {
       ...DEFAULT_SEVERITY_MAP,
-      ...(customMap || {})
+      ...(customMap || {}),
     };
   }
 
@@ -180,7 +180,7 @@ export class SeverityClassifier {
       return {
         level: this.severityMap[patternType],
         score: SEVERITY_SCORES[this.severityMap[patternType]],
-        reason: `Mapped severity for ${patternType}`
+        reason: `Mapped severity for ${patternType}`,
       };
     }
 
@@ -190,16 +190,16 @@ export class SeverityClassifier {
         return {
           level: severity,
           score: SEVERITY_SCORES[severity],
-          reason: `Partial match: ${patternType} ≈ ${key}`
+          reason: `Partial match: ${patternType} ≈ ${key}`,
         };
       }
     }
 
     // Default to medium if unknown
     return {
-      level: 'medium',
-      score: SEVERITY_SCORES['medium'],
-      reason: `Unknown pattern type, defaulting to medium`
+      level: "medium",
+      score: SEVERITY_SCORES["medium"],
+      reason: `Unknown pattern type, defaulting to medium`,
     };
   }
 
@@ -215,7 +215,7 @@ export class SeverityClassifier {
 
     return {
       ...pattern,
-      severity: classification.level
+      severity: classification.level,
     };
   }
 
@@ -223,7 +223,7 @@ export class SeverityClassifier {
    * Ensure all patterns have severity
    */
   ensureAllSeverity(patterns: PIIPattern[]): PIIPattern[] {
-    return patterns.map(p => this.ensurePatternSeverity(p));
+    return patterns.map((p) => this.ensurePatternSeverity(p));
   }
 
   /**
@@ -233,14 +233,14 @@ export class SeverityClassifier {
     if (detections.length === 0) {
       return {
         score: 0,
-        level: 'minimal',
+        level: "minimal",
         factors: {
           piiCount: 0,
           avgSeverity: 0,
           avgConfidence: 0,
           criticalCount: 0,
-          highCount: 0
-        }
+          highCount: 0,
+        },
       };
     }
 
@@ -256,10 +256,10 @@ export class SeverityClassifier {
 
     for (const detection of detections) {
       // Count severity
-      if (detection.severity === 'critical') criticalCount++;
-      else if (detection.severity === 'high') highCount++;
-      else if (detection.severity === 'medium') mediumCount++;
-      else if (detection.severity === 'low') lowCount++;
+      if (detection.severity === "critical") criticalCount++;
+      else if (detection.severity === "high") highCount++;
+      else if (detection.severity === "medium") mediumCount++;
+      else if (detection.severity === "low") lowCount++;
 
       // Sum confidence
       totalConfidence += detection.confidence || 0.8;
@@ -288,12 +288,12 @@ export class SeverityClassifier {
     const clampedScore = Math.max(0, Math.min(1, riskScore));
 
     // Determine risk level
-    let level: RiskScore['level'];
-    if (clampedScore >= 0.8) level = 'very-high';
-    else if (clampedScore >= 0.6) level = 'high';
-    else if (clampedScore >= 0.4) level = 'medium';
-    else if (clampedScore >= 0.2) level = 'low';
-    else level = 'minimal';
+    let level: RiskScore["level"];
+    if (clampedScore >= 0.8) level = "very-high";
+    else if (clampedScore >= 0.6) level = "high";
+    else if (clampedScore >= 0.4) level = "medium";
+    else if (clampedScore >= 0.2) level = "low";
+    else level = "minimal";
 
     return {
       score: clampedScore,
@@ -303,8 +303,8 @@ export class SeverityClassifier {
         avgSeverity,
         avgConfidence,
         criticalCount,
-        highCount
-      }
+        highCount,
+      },
     };
   }
 
@@ -341,11 +341,11 @@ export class SeverityClassifier {
    */
   filterBySeverity(
     detections: PIIDetection[],
-    minSeverity: SeverityLevel
+    minSeverity: SeverityLevel,
   ): PIIDetection[] {
     const minScore = SEVERITY_SCORES[minSeverity];
 
-    return detections.filter(detection => {
+    return detections.filter((detection) => {
       const score = SEVERITY_SCORES[detection.severity];
       return score >= minScore;
     });
@@ -354,12 +354,14 @@ export class SeverityClassifier {
   /**
    * Group detections by severity
    */
-  groupBySeverity(detections: PIIDetection[]): Record<SeverityLevel, PIIDetection[]> {
+  groupBySeverity(
+    detections: PIIDetection[],
+  ): Record<SeverityLevel, PIIDetection[]> {
     const grouped: Record<SeverityLevel, PIIDetection[]> = {
       critical: [],
       high: [],
       medium: [],
-      low: []
+      low: [],
     };
 
     for (const detection of detections) {
@@ -373,7 +375,9 @@ export class SeverityClassifier {
 /**
  * Create a severity classifier instance
  */
-export function createSeverityClassifier(customMap?: Record<string, SeverityLevel>): SeverityClassifier {
+export function createSeverityClassifier(
+  customMap?: Record<string, SeverityLevel>,
+): SeverityClassifier {
   return new SeverityClassifier(customMap);
 }
 

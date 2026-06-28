@@ -1,27 +1,27 @@
-import { defineConfig } from 'tsdown';
+import { defineConfig } from "tsdown";
 
 export default defineConfig([
   // Library build: ESM (.mjs) + CJS (.js), dual types via postbuild
   {
-    entry: ['src/index.ts'],
-    format: ['esm', 'cjs'],
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
     dts: true,
     sourcemap: true,
-    outDir: 'dist',
-    external: ['react', 'express'],
+    outDir: "dist",
+    external: ["react", "express"],
     fixedExtension: false,
     outputOptions: {
       codeSplitting: false,
     },
     outExtensions({ format }) {
-      return { js: format === 'cjs' ? '.js' : '.mjs' };
+      return { js: format === "cjs" ? ".js" : ".mjs" };
     },
   },
   // Worker thread (WorkerPool loads dist/workers/worker.js)
   {
-    entry: ['src/workers/worker.ts'],
-    format: ['cjs'],
-    outDir: 'dist/workers',
+    entry: ["src/workers/worker.ts"],
+    format: ["cjs"],
+    outDir: "dist/workers",
     dts: false,
     outputOptions: {
       codeSplitting: false,
@@ -29,19 +29,19 @@ export default defineConfig([
   },
   // React subpath: @openredaction/core/react (bundles core + hooks, react external)
   {
-    entry: ['src/integrations/react.ts'],
-    format: ['esm', 'cjs'],
+    entry: ["src/integrations/react.ts"],
+    format: ["esm", "cjs"],
     dts: true,
     sourcemap: true,
-    outDir: 'dist',
+    outDir: "dist",
     clean: false,
-    external: ['react'],
+    external: ["react"],
     fixedExtension: false,
     outputOptions: {
       codeSplitting: false,
     },
     outExtensions({ format }) {
-      return { js: format === 'cjs' ? '.js' : '.mjs' };
+      return { js: format === "cjs" ? ".js" : ".mjs" };
     },
   },
 ]);

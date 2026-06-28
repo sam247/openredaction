@@ -3,7 +3,7 @@
  * Processes patterns in priority-based passes for better accuracy
  */
 
-import { PIIPattern, PIIDetection } from '../types';
+import type { PIIPattern, PIIDetection } from "../types";
 
 /**
  * Detection pass configuration
@@ -29,30 +29,41 @@ export interface DetectionPass {
  */
 export const defaultPasses: DetectionPass[] = [
   {
-    name: 'critical-credentials',
+    name: "critical-credentials",
     minPriority: 95,
     maxPriority: 100,
-    includeTypes: ['API_KEY', 'TOKEN', 'SECRET', 'PASSWORD', 'PRIVATE_KEY', 'AWS', 'GITHUB', 'STRIPE', 'OPENAI'],
-    description: 'Critical credentials and API keys (priority 95-100)'
+    includeTypes: [
+      "API_KEY",
+      "TOKEN",
+      "SECRET",
+      "PASSWORD",
+      "PRIVATE_KEY",
+      "AWS",
+      "GITHUB",
+      "STRIPE",
+      "OPENAI",
+    ],
+    description: "Critical credentials and API keys (priority 95-100)",
   },
   {
-    name: 'high-confidence',
+    name: "high-confidence",
     minPriority: 85,
     maxPriority: 94,
-    description: 'High-confidence patterns with strong validation (priority 85-94)'
+    description:
+      "High-confidence patterns with strong validation (priority 85-94)",
   },
   {
-    name: 'standard-pii',
+    name: "standard-pii",
     minPriority: 70,
     maxPriority: 84,
-    description: 'Standard PII patterns (priority 70-84)'
+    description: "Standard PII patterns (priority 70-84)",
   },
   {
-    name: 'low-priority',
+    name: "low-priority",
     minPriority: 0,
     maxPriority: 69,
-    description: 'Low priority patterns (priority 0-69)'
-  }
+    description: "Low priority patterns (priority 0-69)",
+  },
 ];
 
 /**
@@ -60,7 +71,7 @@ export const defaultPasses: DetectionPass[] = [
  */
 export function groupPatternsByPass(
   patterns: PIIPattern[],
-  passes: DetectionPass[] = defaultPasses
+  passes: DetectionPass[] = defaultPasses,
 ): Map<string, PIIPattern[]> {
   const grouped = new Map<string, PIIPattern[]>();
 
@@ -73,22 +84,25 @@ export function groupPatternsByPass(
   for (const pattern of patterns) {
     for (const pass of passes) {
       // Check priority range
-      if (pattern.priority < pass.minPriority || pattern.priority > pass.maxPriority) {
+      if (
+        pattern.priority < pass.minPriority ||
+        pattern.priority > pass.maxPriority
+      ) {
         continue;
       }
 
       // Check include types filter
       if (pass.includeTypes && pass.includeTypes.length > 0) {
-        const matchesInclude = pass.includeTypes.some(type =>
-          pattern.type.includes(type)
+        const matchesInclude = pass.includeTypes.some((type) =>
+          pattern.type.includes(type),
         );
         if (!matchesInclude) continue;
       }
 
       // Check exclude types filter
       if (pass.excludeTypes && pass.excludeTypes.length > 0) {
-        const matchesExclude = pass.excludeTypes.some(type =>
-          pattern.type.includes(type)
+        const matchesExclude = pass.excludeTypes.some((type) =>
+          pattern.type.includes(type),
         );
         if (matchesExclude) continue;
       }
@@ -130,13 +144,13 @@ export interface MultiPassStats {
 export function overlapsWithExisting(
   start: number,
   end: number,
-  ranges: Array<[number, number]>
+  ranges: Array<[number, number]>,
 ): boolean {
   return ranges.some(
     ([existingStart, existingEnd]) =>
       (start >= existingStart && start < existingEnd) ||
       (end > existingStart && end <= existingEnd) ||
-      (start <= existingStart && end >= existingEnd)
+      (start <= existingStart && end >= existingEnd),
   );
 }
 
@@ -146,7 +160,7 @@ export function overlapsWithExisting(
  */
 export function mergePassDetections(
   passDetections: Map<string, PIIDetection[]>,
-  passes: DetectionPass[]
+  passes: DetectionPass[],
 ): PIIDetection[] {
   const merged: PIIDetection[] = [];
   const processedRanges: Array<[number, number]> = [];
@@ -196,14 +210,15 @@ export function createSimpleMultiPass(options?: {
   // Build passes from low to high priority
   const regularPasses: DetectionPass[] = [];
   for (let i = 0; i < passesNeeded; i++) {
-    const min = startPriority + (i * step);
-    const max = i === passesNeeded - 1 ? endPriority : startPriority + ((i + 1) * step) - 1;
+    const min = startPriority + i * step;
+    const max =
+      i === passesNeeded - 1 ? endPriority : startPriority + (i + 1) * step - 1;
 
     regularPasses.push({
       name: `pass-${i + 1}`,
       minPriority: min,
       maxPriority: max,
-      description: `Priority ${min}-${max}`
+      description: `Priority ${min}-${max}`,
     });
   }
 
@@ -213,11 +228,21 @@ export function createSimpleMultiPass(options?: {
   // Add credentials pass first (highest priority)
   if (prioritizeCredentials) {
     passes.unshift({
-      name: 'credentials',
+      name: "credentials",
       minPriority: 90,
       maxPriority: 100,
-      includeTypes: ['API_KEY', 'TOKEN', 'SECRET', 'PASSWORD', 'AWS', 'GITHUB', 'STRIPE', 'JWT', 'OPENAI'],
-      description: 'Credentials and API keys'
+      includeTypes: [
+        "API_KEY",
+        "TOKEN",
+        "SECRET",
+        "PASSWORD",
+        "AWS",
+        "GITHUB",
+        "STRIPE",
+        "JWT",
+        "OPENAI",
+      ],
+      description: "Credentials and API keys",
     });
   }
 

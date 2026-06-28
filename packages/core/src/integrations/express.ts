@@ -3,9 +3,9 @@
  * Local-first server-side PII detection and redaction
  */
 
-import { OpenRedaction } from '../detector';
-import type { DetectionResult, OpenRedactionOptions } from '../types';
-import type { Request, Response, NextFunction } from 'express';
+import { OpenRedaction } from "../detector";
+import type { DetectionResult, OpenRedactionOptions } from "../types";
+import type { Request, Response, NextFunction } from "express";
 
 /**
  * Middleware options
@@ -42,7 +42,9 @@ export interface OpenRedactionRequest extends Request {
 /**
  * Create Express middleware for PII detection
  */
-export function openredactionMiddleware(options: OpenRedactionMiddlewareOptions = {}) {
+export function openredactionMiddleware(
+  options: OpenRedactionMiddlewareOptions = {},
+) {
   // Extract middleware-specific options
   const {
     autoRedact = false,
@@ -60,27 +62,25 @@ export function openredactionMiddleware(options: OpenRedactionMiddlewareOptions 
 
   return async (req: Request, res: Response, next: NextFunction) => {
     // Skip if route matches skip pattern
-    if (skipRoutes.some(pattern => pattern.test(req.path))) {
+    if (skipRoutes.some((pattern) => pattern.test(req.path))) {
       return next();
     }
 
     // Only process if there's a body
-    if (!req.body || typeof req.body !== 'object') {
+    if (!req.body || typeof req.body !== "object") {
       return next();
     }
 
     try {
       // Determine which fields to check
-      const fieldsToCheck = fields.length > 0
-        ? fields
-        : Object.keys(req.body);
+      const fieldsToCheck = fields.length > 0 ? fields : Object.keys(req.body);
 
       // Collect all text to check
       const textsToCheck: Array<{ field: string; value: string }> = [];
 
       for (const field of fieldsToCheck) {
         const value = req.body[field];
-        if (typeof value === 'string' && value.length > 0) {
+        if (typeof value === "string" && value.length > 0) {
           textsToCheck.push({ field, value });
         }
       }
@@ -111,13 +111,13 @@ export function openredactionMiddleware(options: OpenRedactionMiddlewareOptions 
           detected: totalDetections > 0,
           count: totalDetections,
           result: results[Object.keys(results)[0]] || {
-            original: '',
-            redacted: '',
+            original: "",
+            redacted: "",
             detections: [],
             redactionMap: {},
-            stats: { piiCount: 0 }
+            stats: { piiCount: 0 },
           },
-          redacted: autoRedact ? redactedBody : undefined
+          redacted: autoRedact ? redactedBody : undefined,
         };
       }
 
@@ -128,22 +128,27 @@ export function openredactionMiddleware(options: OpenRedactionMiddlewareOptions 
 
       // Add response headers if enabled
       if (addHeaders && totalDetections > 0) {
-        res.setHeader('X-PII-Detected', 'true');
-        res.setHeader('X-PII-Count', totalDetections.toString());
+        res.setHeader("X-PII-Detected", "true");
+        res.setHeader("X-PII-Count", totalDetections.toString());
       }
 
       // Call custom handler
-      if (onDetection && totalDetections > 0 && Object.keys(results).length > 0) {
+      if (
+        onDetection &&
+        totalDetections > 0 &&
+        Object.keys(results).length > 0
+      ) {
         onDetection(req, results[Object.keys(results)[0]]);
       }
 
       // Fail if PII detected and failOnPII is true
       if (failOnPII && totalDetections > 0) {
         return res.status(400).json({
-          error: 'PII detected in request',
-          message: 'Personal Identifiable Information was detected and rejected',
+          error: "PII detected in request",
+          message:
+            "Personal Identifiable Information was detected and rejected",
           piiCount: totalDetections,
-          fields: Object.keys(results)
+          fields: Object.keys(results),
         });
       }
 
@@ -161,12 +166,12 @@ export function detectPII(options: OpenRedactionOptions = {}) {
   const detector = new OpenRedaction(options);
 
   return async (req: Request, res: Response): Promise<void> => {
-    const text = req.body?.text || req.query.text as string;
+    const text = req.body?.text || (req.query.text as string);
 
     if (!text) {
       res.status(400).json({
-        error: 'Missing text parameter',
-        message: 'Provide text in request body or query parameter'
+        error: "Missing text parameter",
+        message: "Provide text in request body or query parameter",
       });
       return;
     }
@@ -179,12 +184,12 @@ export function detectPII(options: OpenRedactionOptions = {}) {
         count: result.detections.length,
         detections: result.detections,
         redacted: result.redacted,
-        stats: result.stats
+        stats: result.stats,
       });
     } catch (error) {
       res.status(500).json({
-        error: 'Detection failed',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        error: "Detection failed",
+        message: error instanceof Error ? error.message : "Unknown error",
       });
     }
   };
@@ -198,11 +203,11 @@ export function generateReport(options: OpenRedactionOptions = {}) {
 
   return async (req: Request, res: Response): Promise<void> => {
     const text = req.body?.text;
-    const format = (req.body?.format || req.query.format || 'json') as string;
+    const format = (req.body?.format || req.query.format || "json") as string;
 
     if (!text) {
       res.status(400).json({
-        error: 'Missing text parameter'
+        error: "Missing text parameter",
       });
       return;
     }
@@ -210,33 +215,33 @@ export function generateReport(options: OpenRedactionOptions = {}) {
     try {
       const result = await detector.detect(text);
 
-    if (format === 'html') {
-      const html = detector.generateReport(result, {
-        format: 'html',
-        title: req.body?.title || 'PII Detection Report'
-      });
-      res.setHeader('Content-Type', 'text/html');
-      res.send(html);
-    } else if (format === 'markdown') {
-      const md = detector.generateReport(result, {
-        format: 'markdown',
-        title: req.body?.title || 'PII Detection Report'
-      });
-      res.setHeader('Content-Type', 'text/markdown');
-      res.send(md);
-    } else {
-      res.json({
-        detected: result.detections.length > 0,
-        count: result.detections.length,
-        detections: result.detections,
-        redacted: result.redacted,
-        stats: result.stats
-      });
-    }
+      if (format === "html") {
+        const html = detector.generateReport(result, {
+          format: "html",
+          title: req.body?.title || "PII Detection Report",
+        });
+        res.setHeader("Content-Type", "text/html");
+        res.send(html);
+      } else if (format === "markdown") {
+        const md = detector.generateReport(result, {
+          format: "markdown",
+          title: req.body?.title || "PII Detection Report",
+        });
+        res.setHeader("Content-Type", "text/markdown");
+        res.send(md);
+      } else {
+        res.json({
+          detected: result.detections.length > 0,
+          count: result.detections.length,
+          detections: result.detections,
+          redacted: result.redacted,
+          stats: result.stats,
+        });
+      }
     } catch (error) {
       res.status(500).json({
-        error: 'Report generation failed',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        error: "Report generation failed",
+        message: error instanceof Error ? error.message : "Unknown error",
       });
     }
   };

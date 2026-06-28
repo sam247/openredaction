@@ -2,7 +2,7 @@
  * Audit logging implementation for tracking redaction operations
  */
 
-import type { IAuditLogger, AuditLogEntry, AuditStats } from '../types';
+import type { IAuditLogger, AuditLogEntry, AuditStats } from "../types";
 
 /**
  * In-memory audit logger implementation
@@ -19,11 +19,11 @@ export class InMemoryAuditLogger implements IAuditLogger {
   /**
    * Log an audit entry
    */
-  log(entry: Omit<AuditLogEntry, 'id' | 'timestamp'>): void {
+  log(entry: Omit<AuditLogEntry, "id" | "timestamp">): void {
     const auditEntry: AuditLogEntry = {
       ...entry,
       id: this.generateId(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     this.logs.push(auditEntry);
@@ -44,8 +44,8 @@ export class InMemoryAuditLogger implements IAuditLogger {
   /**
    * Get audit logs filtered by operation type
    */
-  getLogsByOperation(operation: AuditLogEntry['operation']): AuditLogEntry[] {
-    return this.logs.filter(log => log.operation === operation);
+  getLogsByOperation(operation: AuditLogEntry["operation"]): AuditLogEntry[] {
+    return this.logs.filter((log) => log.operation === operation);
   }
 
   /**
@@ -55,7 +55,7 @@ export class InMemoryAuditLogger implements IAuditLogger {
     const startTime = startDate.getTime();
     const endTime = endDate.getTime();
 
-    return this.logs.filter(log => {
+    return this.logs.filter((log) => {
       const logTime = new Date(log.timestamp).getTime();
       return logTime >= startTime && logTime <= endTime;
     });
@@ -73,42 +73,42 @@ export class InMemoryAuditLogger implements IAuditLogger {
    */
   exportAsCsv(): string {
     if (this.logs.length === 0) {
-      return 'id,timestamp,operation,piiCount,piiTypes,textLength,processingTimeMs,redactionMode,success,error,user,sessionId\n';
+      return "id,timestamp,operation,piiCount,piiTypes,textLength,processingTimeMs,redactionMode,success,error,user,sessionId\n";
     }
 
     const headers = [
-      'id',
-      'timestamp',
-      'operation',
-      'piiCount',
-      'piiTypes',
-      'textLength',
-      'processingTimeMs',
-      'redactionMode',
-      'success',
-      'error',
-      'user',
-      'sessionId'
+      "id",
+      "timestamp",
+      "operation",
+      "piiCount",
+      "piiTypes",
+      "textLength",
+      "processingTimeMs",
+      "redactionMode",
+      "success",
+      "error",
+      "user",
+      "sessionId",
     ];
 
-    const rows = this.logs.map(log => {
+    const rows = this.logs.map((log) => {
       return [
         this.escapeCsv(log.id),
         this.escapeCsv(log.timestamp),
         this.escapeCsv(log.operation),
         log.piiCount.toString(),
-        this.escapeCsv(log.piiTypes.join(';')),
+        this.escapeCsv(log.piiTypes.join(";")),
         log.textLength.toString(),
         log.processingTimeMs.toFixed(2),
-        this.escapeCsv(log.redactionMode || ''),
+        this.escapeCsv(log.redactionMode || ""),
         log.success.toString(),
-        this.escapeCsv(log.error || ''),
-        this.escapeCsv(log.user || ''),
-        this.escapeCsv(log.sessionId || '')
-      ].join(',');
+        this.escapeCsv(log.error || ""),
+        this.escapeCsv(log.user || ""),
+        this.escapeCsv(log.sessionId || ""),
+      ].join(",");
     });
 
-    return headers.join(',') + '\n' + rows.join('\n');
+    return headers.join(",") + "\n" + rows.join("\n");
   }
 
   /**
@@ -129,21 +129,27 @@ export class InMemoryAuditLogger implements IAuditLogger {
         averageProcessingTime: 0,
         topPiiTypes: [],
         operationsByType: {},
-        successRate: 0
+        successRate: 0,
       };
     }
 
     const totalOperations = this.logs.length;
-    const totalPiiDetected = this.logs.reduce((sum, log) => sum + log.piiCount, 0);
-    const totalProcessingTime = this.logs.reduce((sum, log) => sum + log.processingTimeMs, 0);
+    const totalPiiDetected = this.logs.reduce(
+      (sum, log) => sum + log.piiCount,
+      0,
+    );
+    const totalProcessingTime = this.logs.reduce(
+      (sum, log) => sum + log.processingTimeMs,
+      0,
+    );
     const averageProcessingTime = totalProcessingTime / totalOperations;
-    const successCount = this.logs.filter(log => log.success).length;
+    const successCount = this.logs.filter((log) => log.success).length;
     const successRate = successCount / totalOperations;
 
     // Count PII types
     const piiTypeCount = new Map<string, number>();
-    this.logs.forEach(log => {
-      log.piiTypes.forEach(type => {
+    this.logs.forEach((log) => {
+      log.piiTypes.forEach((type) => {
         piiTypeCount.set(type, (piiTypeCount.get(type) || 0) + 1);
       });
     });
@@ -156,8 +162,9 @@ export class InMemoryAuditLogger implements IAuditLogger {
 
     // Count operations by type
     const operationsByType: Record<string, number> = {};
-    this.logs.forEach(log => {
-      operationsByType[log.operation] = (operationsByType[log.operation] || 0) + 1;
+    this.logs.forEach((log) => {
+      operationsByType[log.operation] =
+        (operationsByType[log.operation] || 0) + 1;
     });
 
     return {
@@ -166,7 +173,7 @@ export class InMemoryAuditLogger implements IAuditLogger {
       averageProcessingTime,
       topPiiTypes,
       operationsByType,
-      successRate
+      successRate,
     };
   }
 
@@ -181,7 +188,7 @@ export class InMemoryAuditLogger implements IAuditLogger {
    * Escape CSV values
    */
   private escapeCsv(value: string): string {
-    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    if (value.includes(",") || value.includes('"') || value.includes("\n")) {
       return `"${value.replace(/"/g, '""')}"`;
     }
     return value;
@@ -199,11 +206,11 @@ export class ConsoleAuditLogger implements IAuditLogger {
     this.delegate = new InMemoryAuditLogger(maxLogs);
   }
 
-  log(entry: Omit<AuditLogEntry, 'id' | 'timestamp'>): void {
+  log(entry: Omit<AuditLogEntry, "id" | "timestamp">): void {
     this.delegate.log(entry);
-    console.log('[AUDIT]', {
+    console.log("[AUDIT]", {
       timestamp: new Date().toISOString(),
-      ...entry
+      ...entry,
     });
   }
 
@@ -211,7 +218,7 @@ export class ConsoleAuditLogger implements IAuditLogger {
     return this.delegate.getLogs();
   }
 
-  getLogsByOperation(operation: AuditLogEntry['operation']): AuditLogEntry[] {
+  getLogsByOperation(operation: AuditLogEntry["operation"]): AuditLogEntry[] {
     return this.delegate.getLogsByOperation(operation);
   }
 

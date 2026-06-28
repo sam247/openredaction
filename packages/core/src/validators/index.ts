@@ -8,7 +8,7 @@
  */
 export function validateLuhn(cardNumber: string, _context?: string): boolean {
   // Remove any spaces or hyphens
-  const cleaned = cardNumber.replace(/[\s-]/g, '');
+  const cleaned = cardNumber.replace(/[\s-]/g, "");
 
   // Must be numeric and at least 13 digits
   if (!/^\d{13,19}$/.test(cleaned)) {
@@ -41,7 +41,7 @@ export function validateLuhn(cardNumber: string, _context?: string): boolean {
  */
 export function validateIBAN(iban: string, _context?: string): boolean {
   // Remove spaces, hyphens, dots and convert to uppercase
-  const cleaned = iban.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+  const cleaned = iban.replace(/[\s\u00A0.-]/g, "").toUpperCase();
 
   // Check format: 2 letters, 2 digits, up to 30 alphanumeric
   if (!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/.test(cleaned)) {
@@ -50,15 +50,75 @@ export function validateIBAN(iban: string, _context?: string): boolean {
 
   // Country-specific length validation
   const lengths: Record<string, number> = {
-    AD: 24, AE: 23, AL: 28, AT: 20, AZ: 28, BA: 20, BE: 16, BG: 22,
-    BH: 22, BR: 29, CH: 21, CR: 21, CY: 28, CZ: 24, DE: 22, DK: 18,
-    DO: 28, EE: 20, ES: 24, FI: 18, FO: 18, FR: 27, GB: 22, GE: 22,
-    GI: 23, GL: 18, GR: 27, GT: 28, HR: 21, HU: 28, IE: 22, IL: 23,
-    IS: 26, IT: 27, JO: 30, KW: 30, KZ: 20, LB: 28, LI: 21, LT: 20,
-    LU: 20, LV: 21, MC: 27, MD: 24, ME: 22, MK: 19, MR: 27, MT: 31,
-    MU: 30, NL: 18, NO: 15, PK: 24, PL: 28, PS: 29, PT: 25, QA: 29,
-    RO: 24, RS: 22, SA: 24, SE: 24, SI: 19, SK: 24, SM: 27, TN: 24,
-    TR: 26, UA: 29, VA: 22, VG: 24, XK: 20
+    AD: 24,
+    AE: 23,
+    AL: 28,
+    AT: 20,
+    AZ: 28,
+    BA: 20,
+    BE: 16,
+    BG: 22,
+    BH: 22,
+    BR: 29,
+    CH: 21,
+    CR: 21,
+    CY: 28,
+    CZ: 24,
+    DE: 22,
+    DK: 18,
+    DO: 28,
+    EE: 20,
+    ES: 24,
+    FI: 18,
+    FO: 18,
+    FR: 27,
+    GB: 22,
+    GE: 22,
+    GI: 23,
+    GL: 18,
+    GR: 27,
+    GT: 28,
+    HR: 21,
+    HU: 28,
+    IE: 22,
+    IL: 23,
+    IS: 26,
+    IT: 27,
+    JO: 30,
+    KW: 30,
+    KZ: 20,
+    LB: 28,
+    LI: 21,
+    LT: 20,
+    LU: 20,
+    LV: 21,
+    MC: 27,
+    MD: 24,
+    ME: 22,
+    MK: 19,
+    MR: 27,
+    MT: 31,
+    MU: 30,
+    NL: 18,
+    NO: 15,
+    PK: 24,
+    PL: 28,
+    PS: 29,
+    PT: 25,
+    QA: 29,
+    RO: 24,
+    RS: 22,
+    SA: 24,
+    SE: 24,
+    SI: 19,
+    SK: 24,
+    SM: 27,
+    TN: 24,
+    TR: 26,
+    UA: 29,
+    VA: 22,
+    VG: 24,
+    XK: 20,
   };
 
   const countryCode = cleaned.substring(0, 2);
@@ -73,7 +133,7 @@ export function validateIBAN(iban: string, _context?: string): boolean {
 
   // Replace letters with numbers (A=10, B=11, ..., Z=35)
   const numericString = rearranged.replace(/[A-Z]/g, (char) =>
-    (char.charCodeAt(0) - 55).toString()
+    (char.charCodeAt(0) - 55).toString(),
   );
 
   // Perform mod-97 operation
@@ -95,7 +155,7 @@ function mod97(string: string): number {
  * UK National Insurance Number validator
  */
 export function validateNINO(nino: string, _context?: string): boolean {
-  const cleaned = nino.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+  const cleaned = nino.replace(/[\s\u00A0.-]/g, "").toUpperCase();
 
   // Format: 2 letters, 6 digits, 1 letter (A, B, C, or D)
   if (!/^[A-CEGHJ-PR-TW-Z]{2}[0-9]{6}[A-D]$/.test(cleaned)) {
@@ -103,7 +163,7 @@ export function validateNINO(nino: string, _context?: string): boolean {
   }
 
   // Invalid prefixes
-  const invalidPrefixes = ['BG', 'GB', 'NK', 'KN', 'TN', 'NT', 'ZZ'];
+  const invalidPrefixes = ["BG", "GB", "NK", "KN", "TN", "NT", "ZZ"];
   const prefix = cleaned.substring(0, 2);
 
   return !invalidPrefixes.includes(prefix);
@@ -113,7 +173,7 @@ export function validateNINO(nino: string, _context?: string): boolean {
  * UK NHS Number validator with checksum
  */
 export function validateNHS(nhs: string, _context?: string): boolean {
-  const cleaned = nhs.replace(/[\s\u00A0.-]/g, '');
+  const cleaned = nhs.replace(/[\s\u00A0.-]/g, "");
 
   if (!/^\d{10}$/.test(cleaned)) {
     return false;
@@ -134,8 +194,11 @@ export function validateNHS(nhs: string, _context?: string): boolean {
 /**
  * UK Passport validator
  */
-export function validateUKPassport(passport: string, _context?: string): boolean {
-  const cleaned = passport.replace(/[\s\u00A0.-]/g, '').toUpperCase();
+export function validateUKPassport(
+  passport: string,
+  _context?: string,
+): boolean {
+  const cleaned = passport.replace(/[\s\u00A0.-]/g, "").toUpperCase();
 
   // Format: 9 digits or 3 digits + 6 digits
   return /^\d{9}$/.test(cleaned) || /^\d{3}\d{6}$/.test(cleaned);
@@ -145,7 +208,7 @@ export function validateUKPassport(passport: string, _context?: string): boolean
  * US Social Security Number validator (format check only)
  */
 export function validateSSN(ssn: string, _context?: string): boolean {
-  const cleaned = ssn.replace(/[\s\u00A0.-]/g, '');
+  const cleaned = ssn.replace(/[\s\u00A0.-]/g, "");
 
   if (!/^\d{9}$/.test(cleaned)) {
     return false;
@@ -157,18 +220,27 @@ export function validateSSN(ssn: string, _context?: string): boolean {
   const serial = cleaned.substring(5, 9);
 
   // Area cannot be 000, 666, or 900-999
-  if (area === '000' || area === '666' || parseInt(area, 10) >= 900) {
+  if (area === "000" || area === "666" || parseInt(area, 10) >= 900) {
     return false;
   }
 
   // Group and serial cannot be all zeros
-  if (group === '00' || serial === '0000') {
+  if (group === "00" || serial === "0000") {
     return false;
   }
 
   // Check for known invalid/test SSNs (repeated digits)
-  const invalidSSNs = ['111111111', '222222222', '333333333', '444444444',
-                        '555555555', '666666666', '777777777', '888888888', '999999999'];
+  const invalidSSNs = [
+    "111111111",
+    "222222222",
+    "333333333",
+    "444444444",
+    "555555555",
+    "666666666",
+    "777777777",
+    "888888888",
+    "999999999",
+  ];
 
   return !invalidSSNs.includes(cleaned);
 }
@@ -177,7 +249,7 @@ export function validateSSN(ssn: string, _context?: string): boolean {
  * UK Sort Code validator (format check)
  */
 export function validateSortCode(sortCode: string, _context?: string): boolean {
-  const cleaned = sortCode.replace(/[\s-]/g, '');
+  const cleaned = sortCode.replace(/[\s-]/g, "");
   return /^\d{6}$/.test(cleaned);
 }
 
@@ -185,17 +257,21 @@ export function validateSortCode(sortCode: string, _context?: string): boolean {
  * US ABA routing number validator
  * https://en.wikipedia.org/wiki/ABA_routing_transit_number
  */
-export function validateRoutingNumber(routingNumber: string, _context?: string): boolean {
-  const cleaned = routingNumber.replace(/[\s\u00A0.-]/g, '');
+export function validateRoutingNumber(
+  routingNumber: string,
+  _context?: string,
+): boolean {
+  const cleaned = routingNumber.replace(/[\s\u00A0.-]/g, "");
   if (!/^\d{9}$/.test(cleaned)) {
     return false;
   }
 
-  const digits = cleaned.split('').map(Number);
+  const digits = cleaned.split("").map(Number);
   const checksum =
     (3 * (digits[0] + digits[3] + digits[6]) +
       7 * (digits[1] + digits[4] + digits[7]) +
-      (digits[2] + digits[5] + digits[8])) % 10;
+      (digits[2] + digits[5] + digits[8])) %
+    10;
 
   return checksum === 0;
 }
@@ -223,7 +299,7 @@ function validateLuhnDigits(digits: string): boolean {
  * SWIFT/BIC format validation (ISO 9362: 8 or 11 characters)
  */
 export function validateSWIFTBIC(bic: string, _context?: string): boolean {
-  const cleaned = bic.replace(/\s/g, '').toUpperCase();
+  const cleaned = bic.replace(/\s/g, "").toUpperCase();
   return /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(cleaned);
 }
 
@@ -231,11 +307,11 @@ export function validateSWIFTBIC(bic: string, _context?: string): boolean {
  * Canadian Social Insurance Number — Luhn checksum on 9 digits
  */
 export function validateCanadianSIN(sin: string, _context?: string): boolean {
-  const cleaned = sin.replace(/[\s-]/g, '');
+  const cleaned = sin.replace(/[\s-]/g, "");
   if (!/^\d{9}$/.test(cleaned)) {
     return false;
   }
-  if (cleaned === '000000000') {
+  if (cleaned === "000000000") {
     return false;
   }
   return validateLuhnDigits(cleaned);
@@ -245,7 +321,7 @@ export function validateCanadianSIN(sin: string, _context?: string): boolean {
  * Australian Tax File Number — weighted checksum (8 or 9 digits)
  */
 export function validateAustralianTFN(tfn: string, _context?: string): boolean {
-  const cleaned = tfn.replace(/\s/g, '');
+  const cleaned = tfn.replace(/\s/g, "");
   if (!/^\d{8}$/.test(cleaned) && !/^\d{9}$/.test(cleaned)) {
     return false;
   }
@@ -265,20 +341,66 @@ export function validateAustralianTFN(tfn: string, _context?: string): boolean {
 export function validateName(name: string, context: string): boolean {
   // Filter out common false positives
   const businessTerms = [
-    'account', 'company', 'limited', 'ltd', 'inc', 'corp',
-    'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
-    'january', 'february', 'march', 'april', 'may', 'june',
-    'july', 'august', 'september', 'october', 'november', 'december',
-    'mr', 'mrs', 'ms', 'dr', 'sir', 'madam', 'lord', 'lady',
-    'personal', 'sensitive', 'information', 'data', 'details', 'content',
-    'document', 'text', 'example', 'simple', 'regular', 'plain',
-    'send', 'reply', 'reach', 'write', 'use', 'contact', 'message'
+    "account",
+    "company",
+    "limited",
+    "ltd",
+    "inc",
+    "corp",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+    "mr",
+    "mrs",
+    "ms",
+    "dr",
+    "sir",
+    "madam",
+    "lord",
+    "lady",
+    "personal",
+    "sensitive",
+    "information",
+    "data",
+    "details",
+    "content",
+    "document",
+    "text",
+    "example",
+    "simple",
+    "regular",
+    "plain",
+    "send",
+    "reply",
+    "reach",
+    "write",
+    "use",
+    "contact",
+    "message",
   ];
 
   const nameLower = name.toLowerCase();
 
   // Skip if it's a business term or common word
-  if (businessTerms.some(term => nameLower === term || nameLower.includes(term))) {
+  if (
+    businessTerms.some((term) => nameLower === term || nameLower.includes(term))
+  ) {
     return false;
   }
 
@@ -295,12 +417,12 @@ export function validateName(name: string, context: string): boolean {
   // Check if appears in business context
   const contextLower = context.toLowerCase();
   if (
-    contextLower.includes('company ') ||
-    contextLower.includes('business ') ||
-    contextLower.includes('organization') ||
-    contextLower.includes('without any') ||
-    contextLower.includes('simple text') ||
-    contextLower.includes('plain text')
+    contextLower.includes("company ") ||
+    contextLower.includes("business ") ||
+    contextLower.includes("organization") ||
+    contextLower.includes("without any") ||
+    contextLower.includes("simple text") ||
+    contextLower.includes("plain text")
   ) {
     return false;
   }
@@ -313,14 +435,15 @@ export function validateName(name: string, context: string): boolean {
  */
 export function validateEmail(email: string, _context?: string): boolean {
   // Basic RFC 5322 compliant regex
-  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  const emailRegex =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
   if (!emailRegex.test(email)) {
     return false;
   }
 
   // Additional validations
-  const [local, domain] = email.split('@');
+  const [local, domain] = email.split("@");
 
   // Local part checks
   if (local.length > 64 || domain.length > 255) {
@@ -328,7 +451,7 @@ export function validateEmail(email: string, _context?: string): boolean {
   }
 
   // Domain must have at least one dot
-  if (!domain.includes('.')) {
+  if (!domain.includes(".")) {
     return false;
   }
 

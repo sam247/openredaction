@@ -2,8 +2,8 @@
  * JSON document processor for PII detection and redaction in structured data
  */
 
-import type { DetectionResult, PIIDetection } from '../types';
-import type { OpenRedaction } from '../detector';
+import type { DetectionResult, PIIDetection } from "../types";
+import type { OpenRedaction } from "../detector";
 
 /**
  * JSON processing options
@@ -36,7 +36,13 @@ export interface JsonDetectionResult extends DetectionResult {
 /**
  * Redacted JSON value types
  */
-type RedactedValue = string | number | boolean | null | RedactedObject | RedactedValue[];
+type RedactedValue =
+  | string
+  | number
+  | boolean
+  | null
+  | RedactedObject
+  | RedactedValue[];
 interface RedactedObject {
   [key: string]: RedactedValue;
 }
@@ -51,17 +57,40 @@ export class JsonProcessor {
     alwaysRedact: [],
     skipPaths: [],
     piiIndicatorKeys: [
-      'email', 'e-mail', 'mail',
-      'phone', 'tel', 'telephone', 'mobile',
-      'ssn', 'social_security',
-      'address', 'street', 'city', 'zip', 'postal',
-      'name', 'firstname', 'lastname', 'fullname',
-      'password', 'pwd', 'secret', 'token', 'key',
-      'card', 'credit_card', 'creditcard',
-      'account', 'iban', 'swift',
-      'passport', 'license', 'licence'
+      "email",
+      "e-mail",
+      "mail",
+      "phone",
+      "tel",
+      "telephone",
+      "mobile",
+      "ssn",
+      "social_security",
+      "address",
+      "street",
+      "city",
+      "zip",
+      "postal",
+      "name",
+      "firstname",
+      "lastname",
+      "fullname",
+      "password",
+      "pwd",
+      "secret",
+      "token",
+      "key",
+      "card",
+      "credit_card",
+      "creditcard",
+      "account",
+      "iban",
+      "swift",
+      "passport",
+      "license",
+      "licence",
     ],
-    preserveStructure: true
+    preserveStructure: true,
   };
 
   /**
@@ -69,7 +98,7 @@ export class JsonProcessor {
    */
   parse(input: Buffer | string): any {
     try {
-      const text = typeof input === 'string' ? input : input.toString('utf-8');
+      const text = typeof input === "string" ? input : input.toString("utf-8");
       return JSON.parse(text);
     } catch (error: any) {
       throw new Error(`[JsonProcessor] Invalid JSON: ${error.message}`);
@@ -82,7 +111,7 @@ export class JsonProcessor {
   async detect(
     data: any,
     detector: OpenRedaction,
-    options?: JsonProcessorOptions
+    options?: JsonProcessorOptions,
   ): Promise<JsonDetectionResult> {
     const opts = { ...this.defaultOptions, ...options };
     const pathsDetected: string[] = [];
@@ -93,91 +122,98 @@ export class JsonProcessor {
     // Note: traverse callback needs to be async, but traverse itself is sync
     // We'll collect promises and await them
     const promises: Promise<void>[] = [];
-    this.traverse(data, '', opts, (path, value, key) => {
-      promises.push((async () => {
-      // Check if path should be skipped
-      if (this.shouldSkip(path, opts.skipPaths)) {
-        return;
-      }
+    this.traverse(data, "", opts, (path, value, key) => {
+      promises.push(
+        (async () => {
+          // Check if path should be skipped
+          if (this.shouldSkip(path, opts.skipPaths)) {
+            return;
+          }
 
-      // Check if path should always be redacted
-      if (this.shouldAlwaysRedact(path, opts.alwaysRedact)) {
-        // Mark as high-confidence PII without scanning
-        const detection: PIIDetection = {
-          type: 'SENSITIVE_FIELD',
-          value: String(value),
-          placeholder: `[SENSITIVE_FIELD]`,
-          position: [0, String(value).length],
-          severity: 'high',
-          confidence: 1.0
-        };
-        matchesByPath[path] = [detection];
-        pathsDetected.push(path);
-        allDetections.push(detection);
-        return;
-      }
+          // Check if path should always be redacted
+          if (this.shouldAlwaysRedact(path, opts.alwaysRedact)) {
+            // Mark as high-confidence PII without scanning
+            const detection: PIIDetection = {
+              type: "SENSITIVE_FIELD",
+              value: String(value),
+              placeholder: `[SENSITIVE_FIELD]`,
+              position: [0, String(value).length],
+              severity: "high",
+              confidence: 1.0,
+            };
+            matchesByPath[path] = [detection];
+            pathsDetected.push(path);
+            allDetections.push(detection);
+            return;
+          }
 
-      // Scan keys if enabled
-      if (opts.scanKeys && key) {
-        const keyResult = await detector.detect(key);
-        if (keyResult.detections.length > 0) {
-          const keyPath = `${path}.__key__`;
-          matchesByPath[keyPath] = keyResult.detections;
-          pathsDetected.push(keyPath);
-          allDetections.push(...keyResult.detections);
-        }
-      }
+          // Scan keys if enabled
+          if (opts.scanKeys && key) {
+            const keyResult = await detector.detect(key);
+            if (keyResult.detections.length > 0) {
+              const keyPath = `${path}.__key__`;
+              matchesByPath[keyPath] = keyResult.detections;
+              pathsDetected.push(keyPath);
+              allDetections.push(...keyResult.detections);
+            }
+          }
 
-      // Scan value
-      const valueStr = String(value);
-      const result = await detector.detect(valueStr);
+          // Scan value
+          const valueStr = String(value);
+          const result = await detector.detect(valueStr);
 
-      if (result.detections.length > 0) {
-        // Boost confidence if key indicates PII
-        const boostedDetections = this.boostConfidenceFromKey(
-          result.detections,
-          key,
-          opts.piiIndicatorKeys
-        );
+          if (result.detections.length > 0) {
+            // Boost confidence if key indicates PII
+            const boostedDetections = this.boostConfidenceFromKey(
+              result.detections,
+              key,
+              opts.piiIndicatorKeys,
+            );
 
-        matchesByPath[path] = boostedDetections;
-        pathsDetected.push(path);
-        allDetections.push(...boostedDetections);
-      }
-      })());
+            matchesByPath[path] = boostedDetections;
+            pathsDetected.push(path);
+            allDetections.push(...boostedDetections);
+          }
+        })(),
+      );
     });
-    
+
     // Wait for all async operations to complete
     await Promise.all(promises);
 
     // Build redacted text
     const original = JSON.stringify(data);
-    const redacted = this.redact(data, {
-      original,
-      redacted: original,
-      detections: allDetections,
-      redactionMap: {},
-      stats: { piiCount: allDetections.length },
-      pathsDetected,
-      matchesByPath
-    } as JsonDetectionResult, opts);
+    const redacted = this.redact(
+      data,
+      {
+        original,
+        redacted: original,
+        detections: allDetections,
+        redactionMap: {},
+        stats: { piiCount: allDetections.length },
+        pathsDetected,
+        matchesByPath,
+      } as JsonDetectionResult,
+      opts,
+    );
 
     // Build redaction map
     const redactionMap: Record<string, string> = {};
-    allDetections.forEach(det => {
+    allDetections.forEach((det) => {
       redactionMap[det.placeholder] = det.value;
     });
 
     return {
       original,
-      redacted: typeof redacted === 'string' ? redacted : JSON.stringify(redacted),
+      redacted:
+        typeof redacted === "string" ? redacted : JSON.stringify(redacted),
       detections: allDetections,
       redactionMap,
       stats: {
-        piiCount: allDetections.length
+        piiCount: allDetections.length,
       },
       pathsDetected,
-      matchesByPath
+      matchesByPath,
     };
   }
 
@@ -187,14 +223,16 @@ export class JsonProcessor {
   redact(
     data: any,
     detectionResult: JsonDetectionResult,
-    options?: JsonProcessorOptions
+    options?: JsonProcessorOptions,
   ): any {
     const opts = { ...this.defaultOptions, ...options };
 
     if (!opts.preserveStructure) {
       // Simple text redaction (convert to JSON string, redact, parse back)
       // This is simpler but loses some structure information
-      return this.parse(this.redactText(JSON.stringify(data, null, 2), detectionResult));
+      return this.parse(
+        this.redactText(JSON.stringify(data, null, 2), detectionResult),
+      );
     }
 
     // Structure-preserving redaction
@@ -210,31 +248,31 @@ export class JsonProcessor {
     const redactValue = (value: any, currentPath: string): RedactedValue => {
       // Check if current path should be redacted
       if (pathSet.has(currentPath)) {
-        if (typeof value === 'string') {
-          return '[REDACTED]';
-        } else if (typeof value === 'number') {
+        if (typeof value === "string") {
+          return "[REDACTED]";
+        } else if (typeof value === "number") {
           return 0;
-        } else if (typeof value === 'boolean') {
+        } else if (typeof value === "boolean") {
           return false;
         } else if (value === null) {
           return null;
         } else if (Array.isArray(value)) {
           return [];
-        } else if (typeof value === 'object') {
+        } else if (typeof value === "object") {
           return {};
         }
-        return '[REDACTED]';
+        return "[REDACTED]";
       }
 
       // Recursively process arrays
       if (Array.isArray(value)) {
         return value.map((item, index) =>
-          redactValue(item, `${currentPath}[${index}]`)
+          redactValue(item, `${currentPath}[${index}]`),
         );
       }
 
       // Recursively process objects
-      if (value !== null && typeof value === 'object') {
+      if (value !== null && typeof value === "object") {
         const result: RedactedObject = {};
         for (const [key, val] of Object.entries(value)) {
           const newPath = currentPath ? `${currentPath}.${key}` : key;
@@ -247,7 +285,7 @@ export class JsonProcessor {
       return value as RedactedValue;
     };
 
-    return redactValue(data, '');
+    return redactValue(data, "");
   }
 
   /**
@@ -255,11 +293,14 @@ export class JsonProcessor {
    */
   private redactText(text: string, detectionResult: DetectionResult): string {
     let redacted = text;
-    const sortedDetections = [...detectionResult.detections].sort((a, b) => b.position[0] - a.position[0]);
+    const sortedDetections = [...detectionResult.detections].sort(
+      (a, b) => b.position[0] - a.position[0],
+    );
 
     for (const detection of sortedDetections) {
       const [start, end] = detection.position;
-      redacted = redacted.slice(0, start) + detection.placeholder + redacted.slice(end);
+      redacted =
+        redacted.slice(0, start) + detection.placeholder + redacted.slice(end);
     }
 
     return redacted;
@@ -273,10 +314,12 @@ export class JsonProcessor {
     path: string,
     options: Required<JsonProcessorOptions>,
     callback: (path: string, value: any, key?: string) => void,
-    depth = 0
+    depth = 0,
   ): void {
     if (depth > options.maxDepth) {
-      throw new Error(`[JsonProcessor] Maximum depth (${options.maxDepth}) exceeded`);
+      throw new Error(
+        `[JsonProcessor] Maximum depth (${options.maxDepth}) exceeded`,
+      );
     }
 
     if (obj === null || obj === undefined) {
@@ -296,7 +339,7 @@ export class JsonProcessor {
     }
 
     // Handle objects
-    if (typeof obj === 'object') {
+    if (typeof obj === "object") {
       for (const [key, value] of Object.entries(obj)) {
         const valuePath = path ? `${path}.${key}` : key;
 
@@ -320,9 +363,9 @@ export class JsonProcessor {
    */
   private isPrimitive(value: any): boolean {
     return (
-      typeof value === 'string' ||
-      typeof value === 'number' ||
-      typeof value === 'boolean'
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
     );
   }
 
@@ -330,12 +373,14 @@ export class JsonProcessor {
    * Check if path should be skipped
    */
   private shouldSkip(path: string, skipPaths: string[]): boolean {
-    return skipPaths.some(skipPath => {
+    return skipPaths.some((skipPath) => {
       // Exact match
       if (path === skipPath) return true;
 
       // Wildcard match (e.g., 'users.*.id' matches 'users.123.id')
-      const skipRegex = new RegExp('^' + skipPath.replace(/\*/g, '[^.]+') + '$');
+      const skipRegex = new RegExp(
+        "^" + skipPath.replace(/\*/g, "[^.]+") + "$",
+      );
       return skipRegex.test(path);
     });
   }
@@ -344,12 +389,14 @@ export class JsonProcessor {
    * Check if path should always be redacted
    */
   private shouldAlwaysRedact(path: string, alwaysRedact: string[]): boolean {
-    return alwaysRedact.some(redactPath => {
+    return alwaysRedact.some((redactPath) => {
       // Exact match
       if (path === redactPath) return true;
 
       // Wildcard match
-      const redactRegex = new RegExp('^' + redactPath.replace(/\*/g, '[^.]+') + '$');
+      const redactRegex = new RegExp(
+        "^" + redactPath.replace(/\*/g, "[^.]+") + "$",
+      );
       return redactRegex.test(path);
     });
   }
@@ -360,21 +407,21 @@ export class JsonProcessor {
   private boostConfidenceFromKey(
     detections: PIIDetection[],
     key: string | undefined,
-    piiIndicatorKeys: string[]
+    piiIndicatorKeys: string[],
   ): PIIDetection[] {
     if (!key) return detections;
 
     const keyLower = key.toLowerCase();
-    const isPiiKey = piiIndicatorKeys.some(indicator =>
-      keyLower.includes(indicator.toLowerCase())
+    const isPiiKey = piiIndicatorKeys.some((indicator) =>
+      keyLower.includes(indicator.toLowerCase()),
     );
 
     if (!isPiiKey) return detections;
 
     // Boost confidence by 20% (capped at 1.0)
-    return detections.map(detection => ({
+    return detections.map((detection) => ({
       ...detection,
-      confidence: Math.min(1.0, (detection.confidence || 0.5) * 1.2)
+      confidence: Math.min(1.0, (detection.confidence || 0.5) * 1.2),
     }));
   }
 
@@ -385,16 +432,16 @@ export class JsonProcessor {
     const opts = { ...this.defaultOptions, ...options };
     const textParts: string[] = [];
 
-    this.traverse(data, '', opts, (_path, value, key) => {
+    this.traverse(data, "", opts, (_path, value, key) => {
       if (opts.scanKeys && key) {
         textParts.push(key);
       }
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         textParts.push(value);
       }
     });
 
-    return textParts.join(' ');
+    return textParts.join(" ");
   }
 
   /**
@@ -413,14 +460,16 @@ export class JsonProcessor {
    * Get JSON Lines (JSONL) support - split by newlines and parse each line
    */
   parseJsonLines(input: Buffer | string): any[] {
-    const text = typeof input === 'string' ? input : input.toString('utf-8');
-    const lines = text.split('\n').filter(line => line.trim().length > 0);
+    const text = typeof input === "string" ? input : input.toString("utf-8");
+    const lines = text.split("\n").filter((line) => line.trim().length > 0);
 
     return lines.map((line, index) => {
       try {
         return JSON.parse(line);
       } catch (error: any) {
-        throw new Error(`[JsonProcessor] Invalid JSON at line ${index + 1}: ${error.message}`);
+        throw new Error(
+          `[JsonProcessor] Invalid JSON at line ${index + 1}: ${error.message}`,
+        );
       }
     });
   }
@@ -431,10 +480,12 @@ export class JsonProcessor {
   async detectJsonLines(
     input: Buffer | string,
     detector: OpenRedaction,
-    options?: JsonProcessorOptions
+    options?: JsonProcessorOptions,
   ): Promise<JsonDetectionResult[]> {
     const documents = this.parseJsonLines(input);
-    return Promise.all(documents.map(doc => this.detect(doc, detector, options)));
+    return Promise.all(
+      documents.map((doc) => this.detect(doc, detector, options)),
+    );
   }
 }
 

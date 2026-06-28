@@ -1,85 +1,91 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { OpenRedaction } from '../src/detector';
+import { describe, it, expect, beforeEach } from "vitest";
+import { OpenRedaction } from "../src/detector";
 
-describe('OpenRedaction', () => {
+describe("OpenRedaction", () => {
   let shield: OpenRedaction;
 
   beforeEach(() => {
     shield = new OpenRedaction({ enableFalsePositiveFilter: false });
   });
 
-  describe('Basic detection', () => {
-    it('should detect email addresses', async () => {
-      const result = await shield.detect('Contact john@example.com for info');
+  describe("Basic detection", () => {
+    it("should detect email addresses", async () => {
+      const result = await shield.detect("Contact john@example.com for info");
 
       expect(result.detections).toHaveLength(1);
-      expect(result.detections[0].type).toBe('EMAIL');
-      expect(result.detections[0].value).toBe('john@example.com');
-      expect(result.redacted).toContain('[EMAIL_');
+      expect(result.detections[0].type).toBe("EMAIL");
+      expect(result.detections[0].value).toBe("john@example.com");
+      expect(result.redacted).toContain("[EMAIL_");
     });
 
-    it('should detect multiple PII types', async () => {
-      const text = 'Email john@example.com or call 07700900123';
+    it("should detect multiple PII types", async () => {
+      const text = "Email john@example.com or call 07700900123";
       const result = await shield.detect(text);
 
       expect(result.detections.length).toBeGreaterThanOrEqual(2);
-      expect(result.detections.some(d => d.type === 'EMAIL')).toBe(true);
-      expect(result.detections.some(d => d.type.includes('PHONE'))).toBe(true);
+      expect(result.detections.some((d) => d.type === "EMAIL")).toBe(true);
+      expect(result.detections.some((d) => d.type.includes("PHONE"))).toBe(
+        true,
+      );
     });
 
-    it('should detect credit card numbers with Luhn validation', async () => {
-      const result = await shield.detect('Card: 4532015112830366');
+    it("should detect credit card numbers with Luhn validation", async () => {
+      const result = await shield.detect("Card: 4532015112830366");
 
-      const creditCard = result.detections.find(d => d.type === 'CREDIT_CARD');
+      const creditCard = result.detections.find(
+        (d) => d.type === "CREDIT_CARD",
+      );
       expect(creditCard).toBeDefined();
-      expect(creditCard?.value).toBe('4532015112830366');
+      expect(creditCard?.value).toBe("4532015112830366");
     });
 
-    it('should not detect invalid credit card numbers', async () => {
-      const result = await shield.detect('Card: 1234567890123456');
+    it("should not detect invalid credit card numbers", async () => {
+      const result = await shield.detect("Card: 1234567890123456");
 
-      const creditCard = result.detections.find(d => d.type === 'CREDIT_CARD');
+      const creditCard = result.detections.find(
+        (d) => d.type === "CREDIT_CARD",
+      );
       expect(creditCard).toBeUndefined();
     });
   });
 
-  describe('Redaction', () => {
-    it('should redact detected PII', async () => {
-      const text = 'Contact john@example.com for info';
+  describe("Redaction", () => {
+    it("should redact detected PII", async () => {
+      const text = "Contact john@example.com for info";
       const result = await shield.detect(text);
 
-      expect(result.redacted).not.toContain('john@example.com');
+      expect(result.redacted).not.toContain("john@example.com");
       expect(result.redacted).toMatch(/Contact \[EMAIL_\d+\] for info/);
     });
 
-    it('should build redaction map', async () => {
-      const text = 'Email: john@example.com';
+    it("should build redaction map", async () => {
+      const text = "Email: john@example.com";
       const result = await shield.detect(text);
 
       expect(Object.keys(result.redactionMap)).toHaveLength(1);
-      expect(Object.values(result.redactionMap)[0]).toBe('john@example.com');
+      expect(Object.values(result.redactionMap)[0]).toBe("john@example.com");
     });
 
-    it('should handle multiple instances of same PII type', async () => {
-      const text = 'Email john@example.com or jane@example.com';
+    it("should handle multiple instances of same PII type", async () => {
+      const text = "Email john@example.com or jane@example.com";
       const result = await shield.detect(text);
 
       expect(result.detections).toHaveLength(2);
-      expect(result.detections.every(d => d.type === 'EMAIL')).toBe(true);
+      expect(result.detections.every((d) => d.type === "EMAIL")).toBe(true);
     });
   });
 
-  describe('Restoration', () => {
-    it('should restore redacted text', async () => {
-      const original = 'Contact john@example.com for info';
+  describe("Restoration", () => {
+    it("should restore redacted text", async () => {
+      const original = "Contact john@example.com for info";
       const result = await shield.detect(original);
       const restored = shield.restore(result.redacted, result.redactionMap);
 
       expect(restored).toBe(original);
     });
 
-    it('should restore multiple PII instances', async () => {
-      const original = 'Email john@example.com or call 07700900123';
+    it("should restore multiple PII instances", async () => {
+      const original = "Email john@example.com or call 07700900123";
       const result = await shield.detect(original);
       const restored = shield.restore(result.redacted, result.redactionMap);
 
@@ -87,42 +93,42 @@ describe('OpenRedaction', () => {
     });
   });
 
-  describe('Deterministic placeholders', () => {
-    it('should generate same placeholder for same value', async () => {
+  describe("Deterministic placeholders", () => {
+    it("should generate same placeholder for same value", async () => {
       const shield = new OpenRedaction({
         deterministic: true,
         enableContextAnalysis: false, // Disable context analysis for this test
-        enableFalsePositiveFilter: false
+        enableFalsePositiveFilter: false,
       });
-      const text = 'john@example.com and john@example.com';
+      const text = "john@example.com and john@example.com";
       const result = await shield.detect(text);
 
       expect(result.detections).toHaveLength(2);
-      const placeholders = result.detections.map(d => d.placeholder);
+      const placeholders = result.detections.map((d) => d.placeholder);
       expect(placeholders[0]).toBe(placeholders[1]);
     });
 
-    it('should generate different placeholders for different values', async () => {
+    it("should generate different placeholders for different values", async () => {
       const shield = new OpenRedaction({
         deterministic: true,
         enableContextAnalysis: false,
-        enableFalsePositiveFilter: false
+        enableFalsePositiveFilter: false,
       });
-      const text = 'john@example.com and jane@example.com';
+      const text = "john@example.com and jane@example.com";
       const result = await shield.detect(text);
 
       expect(result.detections).toHaveLength(2);
-      const placeholders = result.detections.map(d => d.placeholder);
+      const placeholders = result.detections.map((d) => d.placeholder);
       expect(placeholders[0]).not.toBe(placeholders[1]);
     });
 
-    it('should use incremental counters in non-deterministic mode', async () => {
+    it("should use incremental counters in non-deterministic mode", async () => {
       const shield = new OpenRedaction({
         deterministic: false,
         enableContextAnalysis: false,
-        enableFalsePositiveFilter: false
+        enableFalsePositiveFilter: false,
       });
-      const text = 'john@example.com and john@example.com';
+      const text = "john@example.com and john@example.com";
       const result = await shield.detect(text);
 
       expect(result.detections).toHaveLength(2);
@@ -130,51 +136,59 @@ describe('OpenRedaction', () => {
     });
   });
 
-  describe('Options', () => {
-    it('should respect includeEmails option', async () => {
+  describe("Options", () => {
+    it("should respect includeEmails option", async () => {
       const shieldNoEmails = new OpenRedaction({ includeEmails: false });
-      const result = await shieldNoEmails.detect('Email: john@example.com');
+      const result = await shieldNoEmails.detect("Email: john@example.com");
 
-      expect(result.detections.find(d => d.type === 'EMAIL')).toBeUndefined();
+      expect(result.detections.find((d) => d.type === "EMAIL")).toBeUndefined();
     });
 
-    it('should respect pattern whitelist', async () => {
+    it("should respect pattern whitelist", async () => {
       const shieldEmailOnly = new OpenRedaction({
-        patterns: ['EMAIL'],
-        enableFalsePositiveFilter: false
+        patterns: ["EMAIL"],
+        enableFalsePositiveFilter: false,
       });
-      const result = await shieldEmailOnly.detect('Email john@example.com call 07700900123');
+      const result = await shieldEmailOnly.detect(
+        "Email john@example.com call 07700900123",
+      );
 
       expect(result.detections).toHaveLength(1);
-      expect(result.detections[0].type).toBe('EMAIL');
+      expect(result.detections[0].type).toBe("EMAIL");
     });
 
-    it('should respect whitelist option', async () => {
-      const shieldWithWhitelist = new OpenRedaction({ whitelist: ['example.com'] });
-      const result = await shieldWithWhitelist.detect('Reply to support@example.com');
+    it("should respect whitelist option", async () => {
+      const shieldWithWhitelist = new OpenRedaction({
+        whitelist: ["example.com"],
+      });
+      const result = await shieldWithWhitelist.detect(
+        "Reply to support@example.com",
+      );
 
       expect(result.detections).toHaveLength(0);
     });
 
-    it('should support custom patterns', async () => {
+    it("should support custom patterns", async () => {
       const shieldWithCustom = new OpenRedaction({
-        customPatterns: [{
-          type: 'CUSTOM_ID',
-          regex: /CUSTOM-\d{6}/g,
-          priority: 100,
-          placeholder: '[CUSTOM_{n}]',
-          severity: 'high'
-        }]
+        customPatterns: [
+          {
+            type: "CUSTOM_ID",
+            regex: /CUSTOM-\d{6}/g,
+            priority: 100,
+            placeholder: "[CUSTOM_{n}]",
+            severity: "high",
+          },
+        ],
       });
 
-      const result = await shieldWithCustom.detect('ID: CUSTOM-123456');
-      expect(result.detections.some(d => d.type === 'CUSTOM_ID')).toBe(true);
+      const result = await shieldWithCustom.detect("ID: CUSTOM-123456");
+      expect(result.detections.some((d) => d.type === "CUSTOM_ID")).toBe(true);
     });
   });
 
-  describe('Scan method', () => {
-    it('should categorize by severity', async () => {
-      const text = 'Email john@example.com SSN 123-45-6789 ZIP 12345';
+  describe("Scan method", () => {
+    it("should categorize by severity", async () => {
+      const text = "Email john@example.com SSN 123-45-6789 ZIP 12345";
       const scan = await shield.scan(text);
 
       expect(scan.high.length).toBeGreaterThan(0);
@@ -182,68 +196,70 @@ describe('OpenRedaction', () => {
     });
   });
 
-  describe('Statistics', () => {
-    it('should include processing time', async () => {
-      const result = await shield.detect('Email: john@example.com');
+  describe("Statistics", () => {
+    it("should include processing time", async () => {
+      const result = await shield.detect("Email: john@example.com");
 
       expect(result.stats).toBeDefined();
       expect(result.stats?.processingTime).toBeGreaterThan(0);
     });
 
-    it('should include PII count', async () => {
-      const result = await shield.detect('Email john@example.com call 07700900123');
+    it("should include PII count", async () => {
+      const result = await shield.detect(
+        "Email john@example.com call 07700900123",
+      );
 
       expect(result.stats?.piiCount).toBeGreaterThanOrEqual(2);
     });
   });
 
-  describe('Priority handling', () => {
-    it('should not detect overlapping patterns twice', async () => {
-      const text = 'Contact: john@example.com';
+  describe("Priority handling", () => {
+    it("should not detect overlapping patterns twice", async () => {
+      const text = "Contact: john@example.com";
       const result = await shield.detect(text);
 
       // Each PII should only be detected once
-      const positions = result.detections.map(d => d.position);
+      const positions = result.detections.map((d) => d.position);
       for (let i = 0; i < positions.length; i++) {
         for (let j = i + 1; j < positions.length; j++) {
           const [start1, end1] = positions[i];
           const [start2, end2] = positions[j];
-          const overlaps = (start1 < end2 && start2 < end1);
+          const overlaps = start1 < end2 && start2 < end1;
           expect(overlaps).toBe(false);
         }
       }
     });
   });
 
-  describe('Presets', () => {
-    it('should apply GDPR preset', () => {
-      const gdprShield = new OpenRedaction({ preset: 'gdpr' });
+  describe("Presets", () => {
+    it("should apply GDPR preset", () => {
+      const gdprShield = new OpenRedaction({ preset: "gdpr" });
       const patterns = gdprShield.getPatterns();
 
-      expect(patterns.some(p => p.type === 'EMAIL')).toBe(true);
-      expect(patterns.some(p => p.type === 'IBAN')).toBe(true);
+      expect(patterns.some((p) => p.type === "EMAIL")).toBe(true);
+      expect(patterns.some((p) => p.type === "IBAN")).toBe(true);
     });
 
-    it('should apply HIPAA preset', () => {
-      const hipaaShield = new OpenRedaction({ preset: 'hipaa' });
+    it("should apply HIPAA preset", () => {
+      const hipaaShield = new OpenRedaction({ preset: "hipaa" });
       const patterns = hipaaShield.getPatterns();
 
-      expect(patterns.some(p => p.type === 'SSN')).toBe(true);
-      expect(patterns.some(p => p.type === 'EMAIL')).toBe(true);
+      expect(patterns.some((p) => p.type === "SSN")).toBe(true);
+      expect(patterns.some((p) => p.type === "EMAIL")).toBe(true);
     });
 
-    it('should apply CCPA preset', () => {
-      const ccpaShield = new OpenRedaction({ preset: 'ccpa' });
+    it("should apply CCPA preset", () => {
+      const ccpaShield = new OpenRedaction({ preset: "ccpa" });
       const patterns = ccpaShield.getPatterns();
 
-      expect(patterns.some(p => p.type === 'EMAIL')).toBe(true);
-      expect(patterns.some(p => p.type === 'SSN')).toBe(true);
+      expect(patterns.some((p) => p.type === "EMAIL")).toBe(true);
+      expect(patterns.some((p) => p.type === "SSN")).toBe(true);
     });
 
-    it('should detect candidate names with GDPR preset (issue #29)', async () => {
+    it("should detect candidate names with GDPR preset (issue #29)", async () => {
       const gdprShield = new OpenRedaction({
-        preset: 'gdpr',
-        redactionMode: 'placeholder'
+        preset: "gdpr",
+        redactionMode: "placeholder",
       });
       const text = `
 · Candidate #1.1: Joseph Barchi and Joseph Hallaren / Blue
@@ -256,44 +272,49 @@ describe('OpenRedaction', () => {
 `;
 
       const result = await gdprShield.detect(text);
-      const nameDetections = result.detections.filter(d => d.type === 'NAME');
+      const nameDetections = result.detections.filter((d) => d.type === "NAME");
       expect(nameDetections.length).toBeGreaterThan(0);
     });
   });
 
-  describe('Edge cases', () => {
-    it('should handle empty string', async () => {
-      const result = await shield.detect('');
+  describe("Edge cases", () => {
+    it("should handle empty string", async () => {
+      const result = await shield.detect("");
 
       expect(result.detections).toHaveLength(0);
-      expect(result.redacted).toBe('');
+      expect(result.redacted).toBe("");
     });
 
-    it('should handle text with no PII', async () => {
-      const result = await shield.detect('This is a simple text without any personal details');
+    it("should handle text with no PII", async () => {
+      const result = await shield.detect(
+        "This is a simple text without any personal details",
+      );
 
       expect(result.detections).toHaveLength(0);
-      expect(result.redacted).toBe('This is a simple text without any personal details');
+      expect(result.redacted).toBe(
+        "This is a simple text without any personal details",
+      );
     });
 
-    it('should handle very long text', async () => {
-      const longText = 'Some text. '.repeat(1000) + 'Email: john@example.com';
+    it("should handle very long text", async () => {
+      const longText = "Some text. ".repeat(1000) + "Email: john@example.com";
       const result = await shield.detect(longText);
 
-      expect(result.detections.some(d => d.type === 'EMAIL')).toBe(true);
+      expect(result.detections.some((d) => d.type === "EMAIL")).toBe(true);
     });
 
-    it('should handle special characters', async () => {
-      const text = 'Email: john+tag@example.com!!!';
+    it("should handle special characters", async () => {
+      const text = "Email: john+tag@example.com!!!";
       const result = await shield.detect(text);
 
-      expect(result.detections.some(d => d.type === 'EMAIL')).toBe(true);
+      expect(result.detections.some((d) => d.type === "EMAIL")).toBe(true);
     });
   });
 
-  describe('Performance', () => {
-    it('should process text quickly', async () => {
-      const text = 'Email john@example.com or call 07700900123. SSN: 123-45-6789.';
+  describe("Performance", () => {
+    it("should process text quickly", async () => {
+      const text =
+        "Email john@example.com or call 07700900123. SSN: 123-45-6789.";
       const result = await shield.detect(text);
 
       // With security features (validation, pre-compilation, safe execution),
@@ -301,8 +322,8 @@ describe('OpenRedaction', () => {
       expect(result.stats?.processingTime).toBeLessThan(100);
     });
 
-    it('should benefit from pre-compiled patterns on repeated calls', async () => {
-      const text = 'Email john@example.com';
+    it("should benefit from pre-compiled patterns on repeated calls", async () => {
+      const text = "Email john@example.com";
 
       // First call (includes any warmup)
       const result1 = await shield.detect(text);

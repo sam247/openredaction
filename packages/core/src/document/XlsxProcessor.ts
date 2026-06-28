@@ -2,8 +2,8 @@
  * XLSX/Excel document processor for PII detection and redaction in spreadsheets
  */
 
-import type { DetectionResult, PIIDetection } from '../types';
-import type { OpenRedaction } from '../detector';
+import type { DetectionResult, PIIDetection } from "../types";
+import type { OpenRedaction } from "../detector";
 
 /**
  * XLSX processing options
@@ -107,27 +107,89 @@ export interface CellMatch {
 export class XlsxProcessor {
   private xlsx?: any;
 
-  private readonly defaultOptions: Required<Omit<XlsxProcessorOptions, 'sheets' | 'sheetIndices' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns' | 'hasHeader'>> & Partial<Pick<XlsxProcessorOptions, 'sheets' | 'sheetIndices' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns' | 'hasHeader'>> = {
+  private readonly defaultOptions: Required<
+    Omit<
+      XlsxProcessorOptions,
+      | "sheets"
+      | "sheetIndices"
+      | "maxRows"
+      | "alwaysRedactColumns"
+      | "alwaysRedactColumnNames"
+      | "skipColumns"
+      | "hasHeader"
+    >
+  > &
+    Partial<
+      Pick<
+        XlsxProcessorOptions,
+        | "sheets"
+        | "sheetIndices"
+        | "maxRows"
+        | "alwaysRedactColumns"
+        | "alwaysRedactColumnNames"
+        | "skipColumns"
+        | "hasHeader"
+      >
+    > = {
     piiIndicatorNames: [
-      'email', 'e-mail', 'mail', 'email_address',
-      'phone', 'tel', 'telephone', 'mobile', 'phone_number',
-      'ssn', 'social_security', 'social_security_number',
-      'address', 'street', 'street_address', 'city', 'zip', 'zipcode', 'postal', 'postcode',
-      'name', 'firstname', 'first_name', 'lastname', 'last_name', 'fullname', 'full_name',
-      'password', 'pwd', 'secret', 'token', 'api_key',
-      'card', 'credit_card', 'creditcard', 'card_number',
-      'account', 'account_number', 'iban', 'swift',
-      'passport', 'passport_number', 'license', 'licence', 'driver_license',
-      'dob', 'date_of_birth', 'birth_date', 'birthdate'
+      "email",
+      "e-mail",
+      "mail",
+      "email_address",
+      "phone",
+      "tel",
+      "telephone",
+      "mobile",
+      "phone_number",
+      "ssn",
+      "social_security",
+      "social_security_number",
+      "address",
+      "street",
+      "street_address",
+      "city",
+      "zip",
+      "zipcode",
+      "postal",
+      "postcode",
+      "name",
+      "firstname",
+      "first_name",
+      "lastname",
+      "last_name",
+      "fullname",
+      "full_name",
+      "password",
+      "pwd",
+      "secret",
+      "token",
+      "api_key",
+      "card",
+      "credit_card",
+      "creditcard",
+      "card_number",
+      "account",
+      "account_number",
+      "iban",
+      "swift",
+      "passport",
+      "passport_number",
+      "license",
+      "licence",
+      "driver_license",
+      "dob",
+      "date_of_birth",
+      "birth_date",
+      "birthdate",
     ],
     preserveFormatting: true,
-    preserveFormulas: true
+    preserveFormulas: true,
   };
 
   constructor() {
     // Try to load xlsx dependency
     try {
-      this.xlsx = require('xlsx');
+      this.xlsx = require("xlsx");
     } catch {
       // xlsx not installed
     }
@@ -146,12 +208,16 @@ export class XlsxProcessor {
   parse(buffer: Buffer): any {
     if (!this.xlsx) {
       throw new Error(
-        '[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx'
+        "[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx",
       );
     }
 
     try {
-      return this.xlsx.read(buffer, { type: 'buffer', cellFormula: true, cellStyles: true });
+      return this.xlsx.read(buffer, {
+        type: "buffer",
+        cellFormula: true,
+        cellStyles: true,
+      });
     } catch (error: any) {
       throw new Error(`[XlsxProcessor] Failed to parse XLSX: ${error.message}`);
     }
@@ -163,11 +229,11 @@ export class XlsxProcessor {
   async detect(
     buffer: Buffer,
     detector: OpenRedaction,
-    options?: XlsxProcessorOptions
+    options?: XlsxProcessorOptions,
   ): Promise<XlsxDetectionResult> {
     if (!this.xlsx) {
       throw new Error(
-        '[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx'
+        "[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx",
       );
     }
 
@@ -190,30 +256,36 @@ export class XlsxProcessor {
         sheetName,
         sheetIndex,
         detector,
-        opts
+        opts,
       );
 
       sheetResults.push(sheetResult);
-      allDetections.push(...sheetResult.matchesByCell.flatMap(c => c.matches));
-      sheetResult.matchesByCell.forEach(cell => {
-        cell.matches.forEach(det => allTypes.add(det.type));
+      allDetections.push(
+        ...sheetResult.matchesByCell.flatMap((c) => c.matches),
+      );
+      sheetResult.matchesByCell.forEach((cell) => {
+        cell.matches.forEach((det) => allTypes.add(det.type));
       });
     }
 
     const original = this.extractText(buffer, options);
-    const redactedBuffer = this.redact(buffer, {
-      original,
-      redacted: original,
-      detections: allDetections,
-      redactionMap: {},
-      stats: { piiCount: allDetections.length },
-      sheetResults,
-      sheetCount: sheetResults.length
-    } as XlsxDetectionResult, options);
+    const redactedBuffer = this.redact(
+      buffer,
+      {
+        original,
+        redacted: original,
+        detections: allDetections,
+        redactionMap: {},
+        stats: { piiCount: allDetections.length },
+        sheetResults,
+        sheetCount: sheetResults.length,
+      } as XlsxDetectionResult,
+      options,
+    );
     const redacted = this.extractText(redactedBuffer, options);
 
     const redactionMap: Record<string, string> = {};
-    allDetections.forEach(det => {
+    allDetections.forEach((det) => {
       redactionMap[det.placeholder] = det.value;
     });
 
@@ -223,10 +295,10 @@ export class XlsxProcessor {
       detections: allDetections,
       redactionMap,
       stats: {
-        piiCount: allDetections.length
+        piiCount: allDetections.length,
       },
       sheetResults,
-      sheetCount: sheetResults.length
+      sheetCount: sheetResults.length,
     };
   }
 
@@ -238,23 +310,48 @@ export class XlsxProcessor {
     sheetName: string,
     sheetIndex: number,
     detector: OpenRedaction,
-    options: Required<Omit<XlsxProcessorOptions, 'sheets' | 'sheetIndices' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns' | 'hasHeader'>> & Partial<Pick<XlsxProcessorOptions, 'sheets' | 'sheetIndices' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns' | 'hasHeader'>>
+    options: Required<
+      Omit<
+        XlsxProcessorOptions,
+        | "sheets"
+        | "sheetIndices"
+        | "maxRows"
+        | "alwaysRedactColumns"
+        | "alwaysRedactColumnNames"
+        | "skipColumns"
+        | "hasHeader"
+      >
+    > &
+      Partial<
+        Pick<
+          XlsxProcessorOptions,
+          | "sheets"
+          | "sheetIndices"
+          | "maxRows"
+          | "alwaysRedactColumns"
+          | "alwaysRedactColumnNames"
+          | "skipColumns"
+          | "hasHeader"
+        >
+      >,
   ): Promise<SheetDetectionResult> {
     // Get sheet range
-    const range = this.xlsx.utils.decode_range(sheet['!ref'] || 'A1');
+    const range = this.xlsx.utils.decode_range(sheet["!ref"] || "A1");
     const startRow = range.s.r;
-    const endRow = options.maxRows !== undefined
-      ? Math.min(range.e.r, startRow + options.maxRows - 1)
-      : range.e.r;
+    const endRow =
+      options.maxRows !== undefined
+        ? Math.min(range.e.r, startRow + options.maxRows - 1)
+        : range.e.r;
     const startCol = range.s.c;
     const endCol = range.e.c;
 
     const columnCount = endCol - startCol + 1;
 
     // Detect header
-    const hasHeader = options.hasHeader !== undefined
-      ? options.hasHeader
-      : this.detectHeader(sheet, range);
+    const hasHeader =
+      options.hasHeader !== undefined
+        ? options.hasHeader
+        : this.detectHeader(sheet, range);
 
     const headers = hasHeader
       ? this.getRowValues(sheet, startRow, startCol, endCol)
@@ -275,7 +372,7 @@ export class XlsxProcessor {
     // Determine which columns to always redact
     const alwaysRedactCols = new Set<number>(options.alwaysRedactColumns || []);
     if (options.alwaysRedactColumnNames && headers) {
-      options.alwaysRedactColumnNames.forEach(name => {
+      options.alwaysRedactColumnNames.forEach((name) => {
         const index = columnNameToIndex.get(name.toLowerCase().trim());
         if (index !== undefined) {
           alwaysRedactCols.add(index);
@@ -295,7 +392,7 @@ export class XlsxProcessor {
         columnName: headers?.[col],
         piiCount: 0,
         piiPercentage: 0,
-        piiTypes: []
+        piiTypes: [],
       };
     }
 
@@ -324,12 +421,12 @@ export class XlsxProcessor {
         // Always redact this column?
         if (alwaysRedactCols.has(colIndex)) {
           const detection: PIIDetection = {
-            type: 'SENSITIVE_COLUMN',
+            type: "SENSITIVE_COLUMN",
             value: cellValue,
             placeholder: `[SENSITIVE_COLUMN_${colIndex}]`,
             position: [0, cellValue.length],
-            severity: 'high',
-            confidence: 1.0
+            severity: "high",
+            confidence: 1.0,
           };
 
           matchesByCell.push({
@@ -340,7 +437,7 @@ export class XlsxProcessor {
             columnName: headers?.[colIndex],
             value: cellValue,
             formula: cellFormula,
-            matches: [detection]
+            matches: [detection],
           });
 
           columnStats[colIndex].piiCount++;
@@ -355,7 +452,7 @@ export class XlsxProcessor {
           const boostedDetections = this.boostConfidenceFromColumnName(
             result.detections,
             headers?.[colIndex],
-            options.piiIndicatorNames || []
+            options.piiIndicatorNames || [],
           );
 
           matchesByCell.push({
@@ -366,14 +463,14 @@ export class XlsxProcessor {
             columnName: headers?.[colIndex],
             value: cellValue,
             formula: cellFormula,
-            matches: boostedDetections
+            matches: boostedDetections,
           });
 
           columnStats[colIndex].piiCount += boostedDetections.length;
 
           // Track PII types by column
           const columnTypes = new Set(columnStats[colIndex].piiTypes);
-          boostedDetections.forEach(d => columnTypes.add(d.type));
+          boostedDetections.forEach((d) => columnTypes.add(d.type));
           columnStats[colIndex].piiTypes = Array.from(columnTypes);
         }
       }
@@ -382,10 +479,9 @@ export class XlsxProcessor {
     // Calculate column PII percentages
     const dataRowCount = endRow - dataStartRow + 1;
     for (let col = 0; col <= endCol - startCol; col++) {
-      const rowsWithPii = matchesByCell.filter(m => m.column === col).length;
-      columnStats[col].piiPercentage = dataRowCount > 0
-        ? (rowsWithPii / dataRowCount) * 100
-        : 0;
+      const rowsWithPii = matchesByCell.filter((m) => m.column === col).length;
+      columnStats[col].piiPercentage =
+        dataRowCount > 0 ? (rowsWithPii / dataRowCount) * 100 : 0;
     }
 
     return {
@@ -395,7 +491,7 @@ export class XlsxProcessor {
       columnCount,
       headers: headers?.filter((h): h is string => h !== undefined),
       columnStats,
-      matchesByCell
+      matchesByCell,
     };
   }
 
@@ -405,11 +501,11 @@ export class XlsxProcessor {
   redact(
     buffer: Buffer,
     detectionResult: XlsxDetectionResult,
-    options?: XlsxProcessorOptions
+    options?: XlsxProcessorOptions,
   ): Buffer {
     if (!this.xlsx) {
       throw new Error(
-        '[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx'
+        "[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx",
       );
     }
 
@@ -427,8 +523,8 @@ export class XlsxProcessor {
         if (!cell) continue;
 
         // Redact value
-        cell.v = '[REDACTED]';
-        cell.w = '[REDACTED]';
+        cell.v = "[REDACTED]";
+        cell.w = "[REDACTED]";
 
         // Preserve formula if configured
         if (!opts.preserveFormulas) {
@@ -436,19 +532,19 @@ export class XlsxProcessor {
         }
 
         // Update cell type to string
-        cell.t = 's';
+        cell.t = "s";
       }
     }
 
     // Write back to buffer
-    return this.xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    return this.xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
   }
 
   /**
    * Get cell value as string
    */
   private getCellValue(cell: any): string {
-    if (!cell) return '';
+    if (!cell) return "";
 
     // Try formatted value first
     if (cell.w !== undefined) {
@@ -460,13 +556,18 @@ export class XlsxProcessor {
       return String(cell.v);
     }
 
-    return '';
+    return "";
   }
 
   /**
    * Get row values
    */
-  private getRowValues(sheet: any, row: number, startCol: number, endCol: number): (string | undefined)[] {
+  private getRowValues(
+    sheet: any,
+    row: number,
+    startCol: number,
+    endCol: number,
+  ): (string | undefined)[] {
     const values: (string | undefined)[] = [];
 
     for (let col = startCol; col <= endCol; col++) {
@@ -483,22 +584,29 @@ export class XlsxProcessor {
    */
   private detectHeader(sheet: any, range: any): boolean {
     const firstRow = this.getRowValues(sheet, range.s.r, range.s.c, range.e.c);
-    const secondRow = range.s.r + 1 <= range.e.r
-      ? this.getRowValues(sheet, range.s.r + 1, range.s.c, range.e.c)
-      : null;
+    const secondRow =
+      range.s.r + 1 <= range.e.r
+        ? this.getRowValues(sheet, range.s.r + 1, range.s.c, range.e.c)
+        : null;
 
     if (!secondRow) return false;
 
     // Check if first row values are shorter and more text-like
-    const firstRowValues = firstRow.filter(v => v !== undefined) as string[];
-    const secondRowValues = secondRow.filter(v => v !== undefined) as string[];
+    const firstRowValues = firstRow.filter((v) => v !== undefined) as string[];
+    const secondRowValues = secondRow.filter(
+      (v) => v !== undefined,
+    ) as string[];
 
     if (firstRowValues.length === 0 || secondRowValues.length === 0) {
       return false;
     }
 
-    const firstRowAvgLen = firstRowValues.reduce((sum, v) => sum + v.length, 0) / firstRowValues.length;
-    const secondRowAvgLen = secondRowValues.reduce((sum, v) => sum + v.length, 0) / secondRowValues.length;
+    const firstRowAvgLen =
+      firstRowValues.reduce((sum, v) => sum + v.length, 0) /
+      firstRowValues.length;
+    const secondRowAvgLen =
+      secondRowValues.reduce((sum, v) => sum + v.length, 0) /
+      secondRowValues.length;
 
     // Headers tend to be shorter
     if (firstRowAvgLen > secondRowAvgLen * 1.5) {
@@ -506,7 +614,9 @@ export class XlsxProcessor {
     }
 
     // Check if first row contains mostly text (not numbers)
-    const firstRowNumeric = firstRowValues.filter(v => !isNaN(Number(v)) && v.trim() !== '').length;
+    const firstRowNumeric = firstRowValues.filter(
+      (v) => !isNaN(Number(v)) && v.trim() !== "",
+    ).length;
     const firstRowNonNumeric = firstRowValues.length - firstRowNumeric;
 
     return firstRowNonNumeric >= firstRowNumeric;
@@ -516,7 +626,7 @@ export class XlsxProcessor {
    * Convert column index to letter (0 = A, 25 = Z, 26 = AA)
    */
   private columnToLetter(col: number): string {
-    let letter = '';
+    let letter = "";
     while (col >= 0) {
       letter = String.fromCharCode((col % 26) + 65) + letter;
       col = Math.floor(col / 26) - 1;
@@ -527,19 +637,22 @@ export class XlsxProcessor {
   /**
    * Get sheet names to process based on options
    */
-  private getSheetNamesToProcess(workbook: any, options: Partial<XlsxProcessorOptions>): string[] {
+  private getSheetNamesToProcess(
+    workbook: any,
+    options: Partial<XlsxProcessorOptions>,
+  ): string[] {
     const allSheetNames = workbook.SheetNames;
 
     // If specific sheets requested by name
     if (options.sheets && options.sheets.length > 0) {
-      return options.sheets.filter(name => allSheetNames.includes(name));
+      return options.sheets.filter((name) => allSheetNames.includes(name));
     }
 
     // If specific sheets requested by index
     if (options.sheetIndices && options.sheetIndices.length > 0) {
       return options.sheetIndices
-        .filter(index => index >= 0 && index < allSheetNames.length)
-        .map(index => allSheetNames[index]);
+        .filter((index) => index >= 0 && index < allSheetNames.length)
+        .map((index) => allSheetNames[index]);
     }
 
     // Process all sheets
@@ -552,21 +665,21 @@ export class XlsxProcessor {
   private boostConfidenceFromColumnName(
     detections: PIIDetection[],
     columnName: string | undefined,
-    piiIndicatorNames: string[]
+    piiIndicatorNames: string[],
   ): PIIDetection[] {
     if (!columnName) return detections;
 
     const nameLower = columnName.toLowerCase().trim();
-    const isPiiColumn = piiIndicatorNames.some(indicator =>
-      nameLower.includes(indicator.toLowerCase())
+    const isPiiColumn = piiIndicatorNames.some((indicator) =>
+      nameLower.includes(indicator.toLowerCase()),
     );
 
     if (!isPiiColumn) return detections;
 
     // Boost confidence by 20% (capped at 1.0)
-    return detections.map(detection => ({
+    return detections.map((detection) => ({
       ...detection,
-      confidence: Math.min(1.0, (detection.confidence || 0.5) * 1.2)
+      confidence: Math.min(1.0, (detection.confidence || 0.5) * 1.2),
     }));
   }
 
@@ -576,7 +689,7 @@ export class XlsxProcessor {
   extractText(buffer: Buffer, options?: XlsxProcessorOptions): string {
     if (!this.xlsx) {
       throw new Error(
-        '[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx'
+        "[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx",
       );
     }
 
@@ -588,7 +701,7 @@ export class XlsxProcessor {
 
     for (const sheetName of sheetNames) {
       const sheet = workbook.Sheets[sheetName];
-      const range = this.xlsx.utils.decode_range(sheet['!ref'] || 'A1');
+      const range = this.xlsx.utils.decode_range(sheet["!ref"] || "A1");
 
       for (let row = range.s.r; row <= range.e.r; row++) {
         for (let col = range.s.c; col <= range.e.c; col++) {
@@ -605,7 +718,7 @@ export class XlsxProcessor {
       }
     }
 
-    return textParts.join(' ');
+    return textParts.join(" ");
   }
 
   /**
@@ -617,7 +730,7 @@ export class XlsxProcessor {
   } {
     if (!this.xlsx) {
       throw new Error(
-        '[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx'
+        "[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx",
       );
     }
 
@@ -625,7 +738,7 @@ export class XlsxProcessor {
 
     return {
       sheetNames: workbook.SheetNames,
-      sheetCount: workbook.SheetNames.length
+      sheetCount: workbook.SheetNames.length,
     };
   }
 }

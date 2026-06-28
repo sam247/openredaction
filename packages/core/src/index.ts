@@ -1,10 +1,13 @@
 /**
- * OpenRedaction - Production-ready PII detection and redaction library
+ * @openredaction/core - Production-ready PII detection and redaction library
+ *
+ * HTTP servers, multi-tenancy, persistent audit, webhooks, and RBAC
+ * have moved to @openredaction/api.
  *
  * @packageDocumentation
  */
 
-export { OpenRedaction } from './detector';
+export { OpenRedaction } from "./detector";
 
 export type {
   PIIPattern,
@@ -24,17 +27,17 @@ export type {
   IRBACManager,
   Role,
   Permission,
-  RoleName
-} from './types';
+  RoleName,
+} from "./types";
 
-// Audit logging
+// Audit logging (in-memory only; persistent backends are in @openredaction/api)
 export {
   InMemoryAuditLogger,
-  ConsoleAuditLogger
-} from './audit';
+  ConsoleAuditLogger,
+} from "./audit";
 
-// Metrics collection
-export { InMemoryMetricsCollector } from './metrics';
+// Metrics collection (in-memory only; Prometheus HTTP server is in @openredaction/api)
+export { InMemoryMetricsCollector } from "./metrics";
 
 // RBAC (Role-Based Access Control)
 export {
@@ -46,8 +49,8 @@ export {
   VIEWER_ROLE,
   ALL_PERMISSIONS,
   getPredefinedRole,
-  createCustomRole
-} from './rbac';
+  createCustomRole,
+} from "./rbac";
 
 // Document processing (optional - requires peer dependencies)
 export {
@@ -60,8 +63,8 @@ export {
   CsvProcessor,
   createCsvProcessor,
   XlsxProcessor,
-  createXlsxProcessor
-} from './document';
+  createXlsxProcessor,
+} from "./document";
 export type {
   DocumentFormat,
   DocumentOptions,
@@ -81,8 +84,8 @@ export type {
   CellMatch,
   XlsxProcessorOptions,
   XlsxDetectionResult,
-  SheetDetectionResult
-} from './document';
+  SheetDetectionResult,
+} from "./document";
 
 export {
   allPatterns,
@@ -91,8 +94,8 @@ export {
   governmentPatterns,
   contactPatterns,
   networkPatterns,
-  getPatternsByCategory
-} from './patterns';
+  getPatternsByCategory,
+} from "./patterns";
 
 export {
   validateLuhn,
@@ -107,8 +110,8 @@ export {
   validateCanadianSIN,
   validateAustralianTFN,
   validateName,
-  validateEmail
-} from './validators';
+  validateEmail,
+} from "./validators";
 
 export {
   gdprPreset,
@@ -121,21 +124,21 @@ export {
   transportLogisticsPreset,
   pciDssPreset,
   soc2Preset,
-  getPreset
-} from './utils/presets';
+  getPreset,
+} from "./utils/presets";
 
 // Local learning system
-export { LocalLearningStore } from './learning/LocalLearningStore';
+export { LocalLearningStore } from "./learning/LocalLearningStore";
 export type {
   WhitelistEntry,
   PatternAdjustment,
   LearningStats,
-  LearningData
-} from './learning/LocalLearningStore';
+  LearningData,
+} from "./learning/LocalLearningStore";
 
 // Config system
-export { ConfigLoader } from './config/ConfigLoader';
-export type { OpenRedactionConfig } from './config/ConfigLoader';
+export { ConfigLoader } from "./config/ConfigLoader";
+export type { OpenRedactionConfig } from "./config/ConfigLoader";
 
 // Context analysis system
 export {
@@ -143,36 +146,36 @@ export {
   inferDocumentType,
   analyzeContextFeatures,
   calculateContextConfidence,
-  analyzeFullContext
-} from './context/ContextAnalyzer';
+  analyzeFullContext,
+} from "./context/ContextAnalyzer";
 export type {
   ContextAnalysis,
-  ContextFeatures
-} from './context/ContextAnalyzer';
+  ContextFeatures,
+} from "./context/ContextAnalyzer";
 
 // Context rules engine (Phase 2)
 export {
   ContextRulesEngine,
   createContextRulesEngine,
   DEFAULT_PROXIMITY_RULES,
-  DEFAULT_DOMAIN_VOCABULARIES
-} from './context/ContextRules';
+  DEFAULT_DOMAIN_VOCABULARIES,
+} from "./context/ContextRules";
 export type {
   ProximityRule,
   DomainVocabulary,
-  ContextRulesConfig
-} from './context/ContextRules';
+  ContextRulesConfig,
+} from "./context/ContextRules";
 
 // NER detection (Phase 2 - requires compromise.js peer dependency)
 export {
   NERDetector,
-  createNERDetector
-} from './ml/NERDetector';
+  createNERDetector,
+} from "./ml/NERDetector";
 export type {
   NEREntityType,
   NERMatch,
-  HybridMatch
-} from './ml/NERDetector';
+  HybridMatch,
+} from "./ml/NERDetector";
 
 // Severity classification (Phase 2)
 export {
@@ -181,111 +184,109 @@ export {
   getSeverity,
   calculateRisk,
   DEFAULT_SEVERITY_MAP,
-  SEVERITY_SCORES
-} from './severity/SeverityClassifier';
+  SEVERITY_SCORES,
+} from "./severity/SeverityClassifier";
 export type {
   SeverityLevel,
   SeverityClassification,
-  RiskScore
-} from './severity/SeverityClassifier';
+  RiskScore,
+} from "./severity/SeverityClassifier";
 
 // False positive filtering
 export {
   isFalsePositive,
   filterFalsePositives,
-  commonFalsePositives
-} from './filters/FalsePositiveFilter';
-export type {
-  FalsePositiveRule
-} from './filters/FalsePositiveFilter';
+  commonFalsePositives,
+} from "./filters/FalsePositiveFilter";
+export type { FalsePositiveRule } from "./filters/FalsePositiveFilter";
 
 // Multi-pass detection
 export {
   groupPatternsByPass,
   mergePassDetections,
   createSimpleMultiPass,
-  defaultPasses
-} from './multipass/MultiPassDetector';
+  defaultPasses,
+} from "./multipass/MultiPassDetector";
 export type {
   DetectionPass,
-  MultiPassStats
-} from './multipass/MultiPassDetector';
+  MultiPassStats,
+} from "./multipass/MultiPassDetector";
 
 // Priority optimization
 export {
   PriorityOptimizer,
-  createPriorityOptimizer
-} from './optimizer/PriorityOptimizer';
+  createPriorityOptimizer,
+} from "./optimizer/PriorityOptimizer";
 export type {
   PatternStats,
-  OptimizerOptions
-} from './optimizer/PriorityOptimizer';
+  OptimizerOptions,
+} from "./optimizer/PriorityOptimizer";
 
 // Streaming API
 export {
   StreamingDetector,
-  createStreamingDetector
-} from './streaming/StreamingDetector';
+  createStreamingDetector,
+} from "./streaming/StreamingDetector";
 export type {
   ChunkResult,
-  StreamingOptions
-} from './streaming/StreamingDetector';
+  StreamingOptions,
+} from "./streaming/StreamingDetector";
 
 // Worker threads (parallel processing)
 export {
   WorkerPool,
-  createWorkerPool
-} from './workers';
+  createWorkerPool,
+} from "./workers";
 export type {
   WorkerTask,
   WorkerResult,
   WorkerPoolConfig,
   WorkerPoolStats,
   DetectTask,
-  DocumentTask
-} from './workers';
+  DocumentTask,
+} from "./workers";
 
 // Batch processing
 export {
   BatchProcessor,
-  createBatchProcessor
-} from './batch/BatchProcessor';
+  createBatchProcessor,
+} from "./batch/BatchProcessor";
 export type {
   BatchOptions,
-  BatchResult
-} from './batch/BatchProcessor';
+  BatchResult,
+} from "./batch/BatchProcessor";
 
 // Explain API
 export {
   ExplainAPI,
-  createExplainAPI
-} from './explain/ExplainAPI';
+  createExplainAPI,
+} from "./explain/ExplainAPI";
 export type {
   PatternMatchResult,
-  TextExplanation
-} from './explain/ExplainAPI';
+  TextExplanation,
+} from "./explain/ExplainAPI";
 
 // Report generation
 export {
   ReportGenerator,
-  createReportGenerator
-} from './reports/ReportGenerator';
+  createReportGenerator,
+} from "./reports/ReportGenerator";
 export type {
   ReportOptions,
   ReportFormat,
-  ReportType
-} from './reports/ReportGenerator';
+  ReportType,
+} from "./reports/ReportGenerator";
 
 // Express integration
 export {
   openredactionMiddleware,
   detectPII,
-  generateReport
-} from './integrations/express';
+  generateReport,
+} from "./integrations/express";
 export type {
   OpenRedactionMiddlewareOptions,
-  OpenRedactionRequest
-} from './integrations/express';
+  OpenRedactionRequest,
+} from "./integrations/express";
 
 // React integration is available via subpath: import from '@openredaction/core/react'
 
@@ -298,11 +299,9 @@ export {
   createLearningDisabledError,
   createOptimizationDisabledError,
   createMultiPassDisabledError,
-  createCacheDisabledError
-} from './errors/OpenRedactionError';
-export type {
-  ErrorSuggestion
-} from './errors/OpenRedactionError';
+  createCacheDisabledError,
+} from "./errors/OpenRedactionError";
+export type { ErrorSuggestion } from "./errors/OpenRedactionError";
 
 // Multi-tenancy, webhooks, RBAC, and REST API server → moved to @openredaction/api
 
@@ -310,23 +309,21 @@ export type {
 export {
   ConfigExporter,
   createConfigPreset,
-  exportForVersionControl
-} from './config/ConfigExporter';
-export type {
-  ExportedConfig
-} from './config/ConfigExporter';
+  exportForVersionControl,
+} from "./config/ConfigExporter";
+export type { ExportedConfig } from "./config/ConfigExporter";
 
 // Health Check API (Phase 3)
 export {
   HealthChecker,
   createHealthChecker,
-  healthCheckMiddleware
-} from './health/HealthCheck';
+  healthCheckMiddleware,
+} from "./health/HealthCheck";
 export type {
   HealthCheckResult,
   HealthCheckStatus,
-  HealthCheckOptions
-} from './health/HealthCheck';
+  HealthCheckOptions,
+} from "./health/HealthCheck";
 
 // Safe Regex Utilities (Security)
 export {
@@ -336,9 +333,6 @@ export {
   isUnsafePattern,
   compileSafeRegex,
   RegexTimeoutError,
-  RegexMaxMatchesError
-} from './utils/safe-regex';
-export type {
-  SafeRegexOptions
-} from './utils/safe-regex';
-
+  RegexMaxMatchesError,
+} from "./utils/safe-regex";
+export type { SafeRegexOptions } from "./utils/safe-regex";

@@ -2,18 +2,18 @@
  * Worker thread types and interfaces
  */
 
-import type { DetectionResult, OpenRedactionOptions } from '../types';
+import type { DetectionResult, OpenRedactionOptions } from "../types";
 
 /**
  * Worker task types
  */
-export type WorkerTaskType = 'detect' | 'document';
+export type WorkerTaskType = "detect" | "document";
 
 /**
  * Worker task for text detection
  */
 export interface DetectTask {
-  type: 'detect';
+  type: "detect";
   id: string;
   text: string;
   options?: OpenRedactionOptions;
@@ -23,7 +23,7 @@ export interface DetectTask {
  * Worker task for document processing
  */
 export interface DocumentTask {
-  type: 'document';
+  type: "document";
   id: string;
   buffer: Buffer;
   options?: any;

@@ -2,11 +2,14 @@
  * Document processing module
  */
 
-export { DocumentProcessor, createDocumentProcessor } from './DocumentProcessor';
-export { OCRProcessor, createOCRProcessor } from './OCRProcessor';
-export { JsonProcessor, createJsonProcessor } from './JsonProcessor';
-export { CsvProcessor, createCsvProcessor } from './CsvProcessor';
-export { XlsxProcessor, createXlsxProcessor } from './XlsxProcessor';
+export {
+  DocumentProcessor,
+  createDocumentProcessor,
+} from "./DocumentProcessor";
+export { OCRProcessor, createOCRProcessor } from "./OCRProcessor";
+export { JsonProcessor, createJsonProcessor } from "./JsonProcessor";
+export { CsvProcessor, createCsvProcessor } from "./CsvProcessor";
+export { XlsxProcessor, createXlsxProcessor } from "./XlsxProcessor";
 export type {
   DocumentFormat,
   DocumentOptions,
@@ -17,20 +20,20 @@ export type {
   OCRLanguage,
   OCROptions,
   IOCRProcessor,
-  OCRResult
-} from './types';
+  OCRResult,
+} from "./types";
 export type {
   JsonProcessorOptions,
-  JsonDetectionResult
-} from './JsonProcessor';
+  JsonDetectionResult,
+} from "./JsonProcessor";
 export type {
   CsvProcessorOptions,
   CsvDetectionResult,
   ColumnStats,
-  CellMatch
-} from './CsvProcessor';
+  CellMatch,
+} from "./CsvProcessor";
 export type {
   XlsxProcessorOptions,
   XlsxDetectionResult,
-  SheetDetectionResult
-} from './XlsxProcessor';
+  SheetDetectionResult,
+} from "./XlsxProcessor";

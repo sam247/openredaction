@@ -5,5 +5,5 @@
  * use @openredaction/api instead.
  */
 
-export { InMemoryAuditLogger, ConsoleAuditLogger } from './AuditLogger';
-export type { IAuditLogger, AuditLogEntry, AuditStats } from '../types';
+export { InMemoryAuditLogger, ConsoleAuditLogger } from "./AuditLogger";
+export type { IAuditLogger, AuditLogEntry, AuditStats } from "../types";

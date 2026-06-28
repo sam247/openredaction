@@ -2,10 +2,15 @@
  * Worker thread pool for parallel processing
  */
 
-import { Worker } from 'worker_threads';
-import { cpus } from 'os';
-import { join } from 'path';
-import type { WorkerTask, WorkerResult, WorkerPoolConfig, WorkerPoolStats } from './types';
+import { Worker } from "worker_threads";
+import { cpus } from "os";
+import { join } from "path";
+import type {
+  WorkerTask,
+  WorkerResult,
+  WorkerPoolConfig,
+  WorkerPoolStats,
+} from "./types";
 
 /**
  * Worker pool for parallel text detection and document processing
@@ -13,7 +18,11 @@ import type { WorkerTask, WorkerResult, WorkerPoolConfig, WorkerPoolStats } from
 export class WorkerPool {
   private workers: Worker[] = [];
   private availableWorkers: Worker[] = [];
-  private taskQueue: Array<{ task: WorkerTask; resolve: Function; reject: Function }> = [];
+  private taskQueue: Array<{
+    task: WorkerTask;
+    resolve: Function;
+    reject: Function;
+  }> = [];
   private config: Required<WorkerPoolConfig>;
   private stats: WorkerPoolStats;
   private workerPath: string;
@@ -23,7 +32,7 @@ export class WorkerPool {
     this.config = {
       numWorkers: config.numWorkers || cpus().length,
       maxQueueSize: config.maxQueueSize || 100,
-      idleTimeout: config.idleTimeout || 30000
+      idleTimeout: config.idleTimeout || 30000,
     };
 
     this.stats = {
@@ -32,11 +41,11 @@ export class WorkerPool {
       queueSize: 0,
       totalProcessed: 0,
       totalErrors: 0,
-      avgProcessingTime: 0
+      avgProcessingTime: 0,
     };
 
     // Worker script path (will be in dist after build)
-    this.workerPath = join(__dirname, 'worker.js');
+    this.workerPath = join(__dirname, "worker.js");
   }
 
   /**
@@ -54,19 +63,19 @@ export class WorkerPool {
   private async createWorker(): Promise<Worker> {
     const worker = new Worker(this.workerPath);
 
-    worker.on('message', (result: WorkerResult) => {
+    worker.on("message", (result: WorkerResult) => {
       this.handleWorkerResult(worker, result);
     });
 
-    worker.on('error', (error) => {
-      console.error('[WorkerPool] Worker error:', error);
+    worker.on("error", (error) => {
+      console.error("[WorkerPool] Worker error:", error);
       this.stats.totalErrors++;
       this.removeWorker(worker);
       // Create replacement worker
       this.createWorker();
     });
 
-    worker.on('exit', (code) => {
+    worker.on("exit", (code) => {
       if (code !== 0) {
         console.error(`[WorkerPool] Worker exited with code ${code}`);
       }
@@ -86,7 +95,9 @@ export class WorkerPool {
   async execute<T = any>(task: WorkerTask): Promise<T> {
     // Check queue size
     if (this.taskQueue.length >= this.config.maxQueueSize) {
-      throw new Error(`[WorkerPool] Queue is full (max: ${this.config.maxQueueSize})`);
+      throw new Error(
+        `[WorkerPool] Queue is full (max: ${this.config.maxQueueSize})`,
+      );
     }
 
     return new Promise((resolve, reject) => {
@@ -109,7 +120,11 @@ export class WorkerPool {
       this.stats.queueSize = this.taskQueue.length;
 
       // Store resolve/reject for this task
-      (worker as any).__currentTask = { resolve, reject, startTime: Date.now() };
+      (worker as any).__currentTask = {
+        resolve,
+        reject,
+        startTime: Date.now(),
+      };
 
       // Send task to worker
       worker.postMessage(task);
@@ -129,7 +144,8 @@ export class WorkerPool {
 
     // Update processing time stats
     this.totalProcessingTime += result.processingTime;
-    this.stats.avgProcessingTime = this.totalProcessingTime / this.stats.totalProcessed;
+    this.stats.avgProcessingTime =
+      this.totalProcessingTime / this.stats.totalProcessed;
 
     // Return worker to available pool
     this.availableWorkers.push(worker);
@@ -174,7 +190,7 @@ export class WorkerPool {
    * Terminate all workers
    */
   async terminate(): Promise<void> {
-    const terminatePromises = this.workers.map(worker => worker.terminate());
+    const terminatePromises = this.workers.map((worker) => worker.terminate());
     await Promise.all(terminatePromises);
     this.workers = [];
     this.availableWorkers = [];

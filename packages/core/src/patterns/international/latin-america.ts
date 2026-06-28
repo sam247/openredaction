@@ -3,25 +3,27 @@
  * Government identification numbers for Latin American countries
  */
 
-import type { PIIPattern } from '../../types';
+import type { PIIPattern } from "../../types";
 
 /**
  * Argentina DNI (Documento Nacional de Identidad)
  * Format: 7-8 digits
  */
 export const ARGENTINA_DNI: PIIPattern = {
-  type: 'ARGENTINA_DNI',
+  type: "ARGENTINA_DNI",
   regex: /\b(\d{7,8})\b/g,
-  placeholder: '[AR_DNI_{n}]',
+  placeholder: "[AR_DNI_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Argentina National ID (DNI)',
+  severity: "high",
+  description: "Argentina National ID (DNI)",
   validator: (value: string, context: string) => {
     const len = value.length;
     if (len !== 7 && len !== 8) return false;
 
-    return /argentina|argentin|dni|documento\s?nacional|identidad/i.test(context);
-  }
+    return /argentina|argentin|dni|documento\s?nacional|identidad/i.test(
+      context,
+    );
+  },
 };
 
 /**
@@ -29,18 +31,18 @@ export const ARGENTINA_DNI: PIIPattern = {
  * Format: XX-XXXXXXXX-X (11 digits with check digit)
  */
 export const ARGENTINA_CUIT: PIIPattern = {
-  type: 'ARGENTINA_CUIT',
+  type: "ARGENTINA_CUIT",
   regex: /\b(\d{2}-\d{8}-\d{1})\b/g,
-  placeholder: '[AR_CUIT_{n}]',
+  placeholder: "[AR_CUIT_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Argentina CUIT/CUIL (Tax ID)',
+  severity: "high",
+  description: "Argentina CUIT/CUIL (Tax ID)",
   validator: (value: string, context: string) => {
-    const digits = value.replace(/-/g, '');
+    const digits = value.replace(/-/g, "");
     if (digits.length !== 11) return false;
 
     return /argentina|cuit|cuil|tax|impuesto|tributario/i.test(context);
-  }
+  },
 };
 
 /**
@@ -48,15 +50,15 @@ export const ARGENTINA_CUIT: PIIPattern = {
  * Format: XX.XXX.XXX-X (8-9 digits + check digit K or 0-9)
  */
 export const CHILE_RUT: PIIPattern = {
-  type: 'CHILE_RUT',
+  type: "CHILE_RUT",
   regex: /\b(\d{1,2}\.\d{3}\.\d{3}-[\dKk])\b/g,
-  placeholder: '[CL_RUT_{n}]',
+  placeholder: "[CL_RUT_{n}]",
   priority: 95,
-  severity: 'high',
-  description: 'Chile RUT (National ID/Tax ID)',
+  severity: "high",
+  description: "Chile RUT (National ID/Tax ID)",
   validator: (value: string, context: string) => {
     // Remove formatting
-    const clean = value.replace(/[.\-]/g, '');
+    const clean = value.replace(/[.-]/g, "");
 
     // Must be 8-9 digits + check digit
     if (clean.length < 8 || clean.length > 9) return false;
@@ -74,12 +76,13 @@ export const CHILE_RUT: PIIPattern = {
     }
 
     const remainder = sum % 11;
-    const expectedCheck = remainder === 0 ? '0' : remainder === 1 ? 'K' : String(11 - remainder);
+    const expectedCheck =
+      remainder === 0 ? "0" : remainder === 1 ? "K" : String(11 - remainder);
 
     if (checkDigit !== expectedCheck) return false;
 
     return /chile|chilean|rut|rol\s?único|tributario|cédula/i.test(context);
-  }
+  },
 };
 
 /**
@@ -87,18 +90,18 @@ export const CHILE_RUT: PIIPattern = {
  * Format: 6-10 digits
  */
 export const COLOMBIA_CEDULA: PIIPattern = {
-  type: 'COLOMBIA_CEDULA',
-  regex: /\b(?:CC|CÉDULA|CEDULA)[\-\s]?(?:NO|NUM)?[\-\s]?[:#]?\s*(\d{6,10})\b/gi,
-  placeholder: '[CO_CC_{n}]',
+  type: "COLOMBIA_CEDULA",
+  regex: /\b(?:CC|CÉDULA|CEDULA)[-\s]?(?:NO|NUM)?[-\s]?[:#]?\s*(\d{6,10})\b/gi,
+  placeholder: "[CO_CC_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Colombia Cédula de Ciudadanía',
+  severity: "high",
+  description: "Colombia Cédula de Ciudadanía",
   validator: (value: string, context: string) => {
     const len = value.length;
     if (len < 6 || len > 10) return false;
 
     return /colombia|colombian|cédula|cedula|ciudadanía|cc\s/i.test(context);
-  }
+  },
 };
 
 /**
@@ -106,18 +109,18 @@ export const COLOMBIA_CEDULA: PIIPattern = {
  * Format: 9 digits + check digit
  */
 export const COLOMBIA_NIT: PIIPattern = {
-  type: 'COLOMBIA_NIT',
-  regex: /\bNIT[\-\s]?(?:NO|NUM)?[\-\s]?[:#]?\s*(\d{9}-\d{1})\b/gi,
-  placeholder: '[CO_NIT_{n}]',
+  type: "COLOMBIA_NIT",
+  regex: /\bNIT[-\s]?(?:NO|NUM)?[-\s]?[:#]?\s*(\d{9}-\d{1})\b/gi,
+  placeholder: "[CO_NIT_{n}]",
   priority: 85,
-  severity: 'high',
-  description: 'Colombia NIT (Tax ID)',
+  severity: "high",
+  description: "Colombia NIT (Tax ID)",
   validator: (value: string, context: string) => {
-    const digits = value.replace(/-/g, '');
+    const digits = value.replace(/-/g, "");
     if (digits.length !== 10) return false;
 
     return /colombia|nit|tax|impuesto|tributario|empresa/i.test(context);
-  }
+  },
 };
 
 /**
@@ -125,17 +128,19 @@ export const COLOMBIA_NIT: PIIPattern = {
  * Format: 8 digits
  */
 export const PERU_DNI: PIIPattern = {
-  type: 'PERU_DNI',
+  type: "PERU_DNI",
   regex: /\b(\d{8})\b/g,
-  placeholder: '[PE_DNI_{n}]',
+  placeholder: "[PE_DNI_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Peru National ID (DNI)',
+  severity: "high",
+  description: "Peru National ID (DNI)",
   validator: (value: string, context: string) => {
     if (value.length !== 8) return false;
 
-    return /peru|peruvian|perú|peruano|dni|documento\s?nacional|identidad|reniec/i.test(context);
-  }
+    return /peru|peruvian|perú|peruano|dni|documento\s?nacional|identidad|reniec/i.test(
+      context,
+    );
+  },
 };
 
 /**
@@ -143,21 +148,21 @@ export const PERU_DNI: PIIPattern = {
  * Format: 11 digits
  */
 export const PERU_RUC: PIIPattern = {
-  type: 'PERU_RUC',
-  regex: /\bRUC[\-\s]?(?:NO|NUM)?[\-\s]?[:#]?\s*(\d{11})\b/gi,
-  placeholder: '[PE_RUC_{n}]',
+  type: "PERU_RUC",
+  regex: /\bRUC[-\s]?(?:NO|NUM)?[-\s]?[:#]?\s*(\d{11})\b/gi,
+  placeholder: "[PE_RUC_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Peru RUC (Tax ID)',
+  severity: "high",
+  description: "Peru RUC (Tax ID)",
   validator: (value: string, context: string) => {
     if (value.length !== 11) return false;
 
     // RUC starts with 10, 15, 17, or 20
     const prefix = value.substring(0, 2);
-    if (!['10', '15', '17', '20'].includes(prefix)) return false;
+    if (!["10", "15", "17", "20"].includes(prefix)) return false;
 
     return /peru|perú|ruc|tax|sunat|tributario/i.test(context);
-  }
+  },
 };
 
 /**
@@ -165,20 +170,23 @@ export const PERU_RUC: PIIPattern = {
  * Format: V-XXXXXXXX or E-XXXXXXXX (1-8 digits)
  */
 export const VENEZUELA_CEDULA: PIIPattern = {
-  type: 'VENEZUELA_CEDULA',
+  type: "VENEZUELA_CEDULA",
   regex: /\b([VE]-\d{1,8})\b/gi,
-  placeholder: '[VE_CI_{n}]',
+  placeholder: "[VE_CI_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Venezuela Cédula de Identidad',
+  severity: "high",
+  description: "Venezuela Cédula de Identidad",
   validator: (value: string, context: string) => {
     // V = Venezuelan, E = Foreign resident
-    if (!value.toUpperCase().startsWith('V-') && !value.toUpperCase().startsWith('E-')) {
+    if (
+      !value.toUpperCase().startsWith("V-") &&
+      !value.toUpperCase().startsWith("E-")
+    ) {
       return false;
     }
 
     return /venezuela|venezuelan|cédula|cedula|identidad|ci\s/i.test(context);
-  }
+  },
 };
 
 /**
@@ -186,19 +194,19 @@ export const VENEZUELA_CEDULA: PIIPattern = {
  * Format: J-XXXXXXXX-X or V-XXXXXXXX-X
  */
 export const VENEZUELA_RIF: PIIPattern = {
-  type: 'VENEZUELA_RIF',
+  type: "VENEZUELA_RIF",
   regex: /\b([VEJG]-\d{8,9}-\d{1})\b/gi,
-  placeholder: '[VE_RIF_{n}]',
+  placeholder: "[VE_RIF_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Venezuela RIF (Tax ID)',
+  severity: "high",
+  description: "Venezuela RIF (Tax ID)",
   validator: (value: string, context: string) => {
     const prefix = value[0].toUpperCase();
     // V=Person, E=Foreign, J=Legal entity, G=Government
-    if (!['V', 'E', 'J', 'G'].includes(prefix)) return false;
+    if (!["V", "E", "J", "G"].includes(prefix)) return false;
 
     return /venezuela|rif|tax|seniat|tributario/i.test(context);
-  }
+  },
 };
 
 /**
@@ -206,12 +214,12 @@ export const VENEZUELA_RIF: PIIPattern = {
  * Format: 10 digits
  */
 export const ECUADOR_CEDULA: PIIPattern = {
-  type: 'ECUADOR_CEDULA',
+  type: "ECUADOR_CEDULA",
   regex: /\b(\d{10})\b/g,
-  placeholder: '[EC_CI_{n}]',
+  placeholder: "[EC_CI_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Ecuador Cédula de Identidad',
+  severity: "high",
+  description: "Ecuador Cédula de Identidad",
   validator: (value: string, context: string) => {
     if (value.length !== 10) return false;
 
@@ -224,7 +232,7 @@ export const ECUADOR_CEDULA: PIIPattern = {
     if (thirdDigit > 6 && thirdDigit !== 9) return false;
 
     return /ecuador|ecuadorian|cédula|cedula|identidad/i.test(context);
-  }
+  },
 };
 
 /**
@@ -232,18 +240,18 @@ export const ECUADOR_CEDULA: PIIPattern = {
  * Format: X.XXX.XXX-X (7 digits + check digit)
  */
 export const URUGUAY_CEDULA: PIIPattern = {
-  type: 'URUGUAY_CEDULA',
+  type: "URUGUAY_CEDULA",
   regex: /\b(\d{1}\.\d{3}\.\d{3}-\d{1})\b/g,
-  placeholder: '[UY_CI_{n}]',
+  placeholder: "[UY_CI_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Uruguay Cédula de Identidad',
+  severity: "high",
+  description: "Uruguay Cédula de Identidad",
   validator: (value: string, context: string) => {
-    const digits = value.replace(/[.\-]/g, '');
+    const digits = value.replace(/[.-]/g, "");
     if (digits.length !== 8) return false;
 
     return /uruguay|uruguayan|cédula|cedula|identidad/i.test(context);
-  }
+  },
 };
 
 export const latinAmericaPatterns: PIIPattern[] = [
@@ -257,5 +265,5 @@ export const latinAmericaPatterns: PIIPattern[] = [
   VENEZUELA_CEDULA,
   VENEZUELA_RIF,
   ECUADOR_CEDULA,
-  URUGUAY_CEDULA
+  URUGUAY_CEDULA,
 ];

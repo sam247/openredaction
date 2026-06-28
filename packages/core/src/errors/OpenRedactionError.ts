@@ -15,12 +15,12 @@ export class OpenRedactionError extends Error {
 
   constructor(
     message: string,
-    code: string = 'OPENREDACTION_ERROR',
+    code: string = "OPENREDACTION_ERROR",
     suggestion?: ErrorSuggestion,
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
   ) {
     super(message);
-    this.name = 'OpenRedactionError';
+    this.name = "OpenRedactionError";
     this.code = code;
     this.suggestion = suggestion;
     this.context = context;
@@ -61,12 +61,15 @@ export class OpenRedactionError extends Error {
  * Factory functions for common error scenarios
  */
 
-export function createInvalidPatternError(patternType: string, reason: string): OpenRedactionError {
+export function createInvalidPatternError(
+  patternType: string,
+  reason: string,
+): OpenRedactionError {
   return new OpenRedactionError(
     `Invalid pattern '${patternType}': ${reason}`,
-    'INVALID_PATTERN',
+    "INVALID_PATTERN",
     {
-      message: 'Check your pattern regex and validator functions',
+      message: "Check your pattern regex and validator functions",
       code: `const pattern: PIIPattern = {
   type: '${patternType}',
   regex: /your-regex-here/g,
@@ -76,64 +79,73 @@ export function createInvalidPatternError(patternType: string, reason: string): 
   description: 'Your description',
   validator: (value, context) => true
 };`,
-      docs: 'https://github.com/sam247/openredaction#custom-patterns'
+      docs: "https://github.com/sam247/openredaction#custom-patterns",
     },
-    { patternType, reason }
+    { patternType, reason },
   );
 }
 
-export function createValidationError(value: string, patternType: string): OpenRedactionError {
+export function createValidationError(
+  value: string,
+  patternType: string,
+): OpenRedactionError {
   return new OpenRedactionError(
     `Value '${value}' failed validation for pattern type '${patternType}'`,
-    'VALIDATION_FAILED',
+    "VALIDATION_FAILED",
     {
-      message: 'The value matched the regex but failed custom validation. Consider whitelisting if this is expected.',
+      message:
+        "The value matched the regex but failed custom validation. Consider whitelisting if this is expected.",
       code: `redactor.addToWhitelist('${value}', 0.9);`,
-      docs: 'https://github.com/sam247/openredaction#whitelisting'
+      docs: "https://github.com/sam247/openredaction#whitelisting",
     },
-    { value, patternType }
+    { value, patternType },
   );
 }
 
-export function createConfigLoadError(path: string, reason: string): OpenRedactionError {
+export function createConfigLoadError(
+  path: string,
+  reason: string,
+): OpenRedactionError {
   return new OpenRedactionError(
     `Failed to load config from '${path}': ${reason}`,
-    'CONFIG_LOAD_ERROR',
+    "CONFIG_LOAD_ERROR",
     {
-      message: 'Check that your config file exists and is valid JSON',
+      message: "Check that your config file exists and is valid JSON",
       code: `{
   "patterns": ["EMAIL", "PHONE", "SSN"],
   "preset": "gdpr",
   "customPatterns": [],
   "whitelist": []
 }`,
-      docs: 'https://github.com/sam247/openredaction#configuration'
+      docs: "https://github.com/sam247/openredaction#configuration",
     },
-    { path, reason }
+    { path, reason },
   );
 }
 
 export function createLearningDisabledError(): OpenRedactionError {
   return new OpenRedactionError(
-    'Learning system is disabled',
-    'LEARNING_DISABLED',
+    "Learning system is disabled",
+    "LEARNING_DISABLED",
     {
-      message: 'Enable learning to use recordFalsePositive, recordFalseNegative, and other learning features',
+      message:
+        "Enable learning to use recordFalsePositive, recordFalseNegative, and other learning features",
       code: `const redactor = new OpenRedaction({
   enableLearning: true,
   learningStorePath: '.openredaction/learnings.json'
 });`,
-      docs: 'https://github.com/sam247/openredaction#learning-system'
-    }
+      docs: "https://github.com/sam247/openredaction#learning-system",
+    },
   );
 }
 
 export function createOptimizationDisabledError(): OpenRedactionError {
   return new OpenRedactionError(
-    'Priority optimization is disabled',
-    'OPTIMIZATION_DISABLED',
+    "Priority optimization is disabled",
+    "OPTIMIZATION_DISABLED",
     {
-      message: 'Enable priority optimization to use dynamic priority adjustment features',
+      message:
+        "Enable priority optimization to use dynamic priority adjustment features",
       code: `const redactor = new OpenRedaction({
   enablePriorityOptimization: true,
   optimizerOptions: {
@@ -142,37 +154,38 @@ export function createOptimizationDisabledError(): OpenRedactionError {
     maxPriorityAdjustment: 15
   }
 });`,
-      docs: 'https://github.com/sam247/openredaction#priority-optimization'
-    }
+      docs: "https://github.com/sam247/openredaction#priority-optimization",
+    },
   );
 }
 
 export function createMultiPassDisabledError(): OpenRedactionError {
   return new OpenRedactionError(
-    'Multi-pass detection is disabled',
-    'MULTIPASS_DISABLED',
+    "Multi-pass detection is disabled",
+    "MULTIPASS_DISABLED",
     {
-      message: 'Enable multi-pass detection for improved accuracy with priority-based passes',
+      message:
+        "Enable multi-pass detection for improved accuracy with priority-based passes",
       code: `const redactor = new OpenRedaction({
   enableMultiPass: true,
   multiPassCount: 3
 });`,
-      docs: 'https://github.com/sam247/openredaction#multi-pass-detection'
-    }
+      docs: "https://github.com/sam247/openredaction#multi-pass-detection",
+    },
   );
 }
 
 export function createCacheDisabledError(): OpenRedactionError {
   return new OpenRedactionError(
-    'Result caching is disabled',
-    'CACHE_DISABLED',
+    "Result caching is disabled",
+    "CACHE_DISABLED",
     {
-      message: 'Enable caching for high-volume usage and better performance',
+      message: "Enable caching for high-volume usage and better performance",
       code: `const redactor = new OpenRedaction({
   enableCache: true,
   cacheSize: 100  // Cache last 100 results
 });`,
-      docs: 'https://github.com/sam247/openredaction#caching'
-    }
+      docs: "https://github.com/sam247/openredaction#caching",
+    },
   );
 }

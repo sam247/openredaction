@@ -2,7 +2,7 @@
  * OCR (Optical Character Recognition) processor using Tesseract.js
  */
 
-import type { IOCRProcessor, OCROptions, OCRResult } from './types';
+import type { IOCRProcessor, OCROptions, OCRResult } from "./types";
 
 /**
  * OCR processor with optional Tesseract.js support
@@ -15,7 +15,7 @@ export class OCRProcessor implements IOCRProcessor {
   constructor() {
     // Try to load optional dependency
     try {
-      this.tesseract = require('tesseract.js');
+      this.tesseract = require("tesseract.js");
     } catch {
       // tesseract.js not installed
     }
@@ -24,10 +24,13 @@ export class OCRProcessor implements IOCRProcessor {
   /**
    * Extract text from image buffer using OCR
    */
-  async recognizeText(buffer: Buffer, options?: OCROptions): Promise<OCRResult> {
+  async recognizeText(
+    buffer: Buffer,
+    options?: OCROptions,
+  ): Promise<OCRResult> {
     if (!this.tesseract) {
       throw new Error(
-        '[OCRProcessor] OCR support requires tesseract.js. Install with: npm install tesseract.js'
+        "[OCRProcessor] OCR support requires tesseract.js. Install with: npm install tesseract.js",
       );
     }
 
@@ -36,15 +39,18 @@ export class OCRProcessor implements IOCRProcessor {
     try {
       // Configure worker
       const language = Array.isArray(options?.language)
-        ? options.language.join('+')
-        : options?.language || 'eng';
+        ? options.language.join("+")
+        : options?.language || "eng";
 
-      const worker = await this.tesseract.createWorker(language, options?.oem || 3);
+      const worker = await this.tesseract.createWorker(
+        language,
+        options?.oem || 3,
+      );
 
       // Set page segmentation mode if specified
       if (options?.psm !== undefined) {
         await worker.setParameters({
-          tessedit_pageseg_mode: options.psm
+          tessedit_pageseg_mode: options.psm,
         });
       }
 
@@ -58,12 +64,14 @@ export class OCRProcessor implements IOCRProcessor {
       const processingTime = Math.round((endTime - startTime) * 100) / 100;
 
       return {
-        text: result.data.text || '',
+        text: result.data.text || "",
         confidence: result.data.confidence || 0,
-        processingTime
+        processingTime,
       };
     } catch (error: any) {
-      throw new Error(`[OCRProcessor] OCR recognition failed: ${error.message}`);
+      throw new Error(
+        `[OCRProcessor] OCR recognition failed: ${error.message}`,
+      );
     }
   }
 
@@ -81,7 +89,7 @@ export class OCRProcessor implements IOCRProcessor {
   async createScheduler(workerCount: number = 4): Promise<any> {
     if (!this.tesseract) {
       throw new Error(
-        '[OCRProcessor] OCR support requires tesseract.js. Install with: npm install tesseract.js'
+        "[OCRProcessor] OCR support requires tesseract.js. Install with: npm install tesseract.js",
       );
     }
 
@@ -94,7 +102,7 @@ export class OCRProcessor implements IOCRProcessor {
     // Create workers
     const workers = [];
     for (let i = 0; i < workerCount; i++) {
-      const worker = await this.tesseract.createWorker('eng');
+      const worker = await this.tesseract.createWorker("eng");
       this.scheduler.addWorker(worker);
       workers.push(worker);
     }
@@ -105,10 +113,13 @@ export class OCRProcessor implements IOCRProcessor {
   /**
    * Batch process multiple images
    */
-  async recognizeBatch(buffers: Buffer[], _options?: OCROptions): Promise<OCRResult[]> {
+  async recognizeBatch(
+    buffers: Buffer[],
+    _options?: OCROptions,
+  ): Promise<OCRResult[]> {
     if (!this.tesseract) {
       throw new Error(
-        '[OCRProcessor] OCR support requires tesseract.js. Install with: npm install tesseract.js'
+        "[OCRProcessor] OCR support requires tesseract.js. Install with: npm install tesseract.js",
       );
     }
 
@@ -119,15 +130,15 @@ export class OCRProcessor implements IOCRProcessor {
       const results = await Promise.all(
         buffers.map(async (buffer) => {
           const startTime = performance.now();
-          const result = await scheduler.addJob('recognize', buffer);
+          const result = await scheduler.addJob("recognize", buffer);
           const endTime = performance.now();
 
           return {
-            text: result.data.text || '',
+            text: result.data.text || "",
             confidence: result.data.confidence || 0,
-            processingTime: Math.round((endTime - startTime) * 100) / 100
+            processingTime: Math.round((endTime - startTime) * 100) / 100,
           };
-        })
+        }),
       );
 
       // Clean up scheduler
