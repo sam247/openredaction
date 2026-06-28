@@ -1,0 +1,12 @@
+name: Lint
+description: Run turbo lint for a workspace
+inputs:
+  filter:
+    description: Turbo package filter (e.g. openredaction)
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Lint
+      run: bunx turbo run lint --filter=${{ inputs.filter }}
+      shell: bash

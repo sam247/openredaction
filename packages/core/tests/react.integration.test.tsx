@@ -12,6 +12,8 @@ import {
   useAutoRedact,
 } from '../src/integrations/react';
 
+// @vitest-environment happy-dom
+
 /** Deterministic hook tests: skip FP filter + context scoring. Use non–test-domain emails (see EMAIL validator in personal patterns). */
 const demoOptions = {
   enableFalsePositiveFilter: false,

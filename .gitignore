@@ -9,7 +9,6 @@ coverage/
 
 # Build outputs
 dist/
-build/
 .next/
 out/
 
@@ -34,3 +33,13 @@ __pycache__/
 .Python
 venv/
 ENV/
+*.tsbuildinfo
+.cursor/plans
+.beads/
+AGENTS.md
+CLAUDE.md
+.agents
+.cursor
+.claude
+.codex
+BEADS.md

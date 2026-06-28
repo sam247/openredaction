@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "private": true,
   "description": "Production-ready PII detection and redaction library",
-  "packageManager": "npm@10.0.0",
+  "packageManager": "npm@11.3.0",
   "workspaces": [
     "packages/*",
     "site"
@@ -16,17 +16,17 @@
     "clean": "turbo run clean"
   },
   "devDependencies": {
-    "turbo": "^2.0.0",
     "glob": "^13.0.6",
-    "typescript": "^5.3.3",
-    "tsx": "^4.22.4"
+    "tsx": "^4.22.4",
+    "turbo": "^2.10.0",
+    "typescript": "^5.8.3"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sam247/redactit.git"
+    "url": "https://github.com/sam247/openredaction"
   },
   "keywords": [
     "pii",

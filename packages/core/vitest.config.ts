@@ -16,7 +16,6 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    environmentMatchGlobs: [['**/react.integration.test.tsx', 'jsdom']],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
