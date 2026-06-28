@@ -50,7 +50,8 @@
     "test:coverage": "vitest run --coverage",
     "bench": "vitest bench --run",
     "bench:watch": "vitest bench",
-    "lint": "tsc --noEmit",
+    "lint": "biome check . --diagnostic-level=error",
+    "typecheck": "tsc --noEmit --incremental",
     "clean": "rm -rf dist"
   },
   "license": "MIT",

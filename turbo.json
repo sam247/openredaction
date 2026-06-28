@@ -13,6 +13,9 @@
     "lint": {
       "outputs": []
     },
+    "typecheck": {
+      "outputs": ["*.tsbuildinfo"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
