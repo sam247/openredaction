@@ -45,9 +45,9 @@ describe('LocalLearningStore', () => {
     tmpFiles.push(tmpA, tmpB);
     const a = new LocalLearningStore(tmpA, { autoSave: false });
     a.addToWhitelist('shared-pattern', 0.95);
-    const exported = a.export({ minConfidence: 0.5 });
+    const exported = a.exportData({ minConfidence: 0.5 });
     const b = new LocalLearningStore(tmpB, { autoSave: false });
-    b.import(exported, true);
+    b.importData(exported, true);
     expect(b.getWhitelist()).toContain('shared-pattern');
   });
 });

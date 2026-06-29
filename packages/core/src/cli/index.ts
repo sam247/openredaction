@@ -240,7 +240,7 @@ async function main() {
       }
     }
   } else if (command === 'scan') {
-    const scan = shield.scan(text);
+    const scan = await shield.scan(text);
 
     if (jsonOutput) {
       console.log(JSON.stringify(scan, null, 2));
