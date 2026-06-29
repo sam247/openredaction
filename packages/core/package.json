@@ -89,7 +89,7 @@
     "@types/node": "^26.0.1",
     "@types/react": "^19.2.6",
     "@vitest/coverage-v8": "^4.1.9",
-    "express": "^4.22.1",
+    "express": "^5.2.1",
     "happy-dom": "^20.10.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
