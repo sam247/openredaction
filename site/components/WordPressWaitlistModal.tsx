@@ -296,7 +296,7 @@ export default function WordPressWaitlistModal({
           <button
             type="button"
             onClick={close}
-            className="absolute right-3 top-3 rounded-md p-1 text-gray-400 hover:bg-gray-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-600"
+            className="absolute right-3 top-3 rounded-md p-1 text-gray-400 hover:bg-gray-800 hover:text-white focus:outline-hidden focus:ring-2 focus:ring-gray-600"
             aria-label="Close dialog"
           >
             <X size={20} />
@@ -321,7 +321,7 @@ export default function WordPressWaitlistModal({
                 <button
                   type="button"
                   onClick={close}
-                  className="w-full rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-black hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  className="w-full rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-black hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-gray-500"
                 >
                   Close
                 </button>
@@ -340,7 +340,7 @@ export default function WordPressWaitlistModal({
                     autoComplete="name"
                     value={name}
                     onChange={(ev) => setName(ev.target.value)}
-                    className="w-full rounded-md border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-gray-600 focus:outline-none"
+                    className="w-full rounded-md border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-gray-600 focus:outline-hidden"
                     placeholder="Your name"
                     disabled={submitState === 'loading'}
                   />
@@ -356,7 +356,7 @@ export default function WordPressWaitlistModal({
                     autoComplete="email"
                     value={email}
                     onChange={(ev) => setEmail(ev.target.value)}
-                    className="w-full rounded-md border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-gray-600 focus:outline-none"
+                    className="w-full rounded-md border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-gray-600 focus:outline-hidden"
                     placeholder="you@example.com"
                     disabled={submitState === 'loading'}
                   />
@@ -369,7 +369,7 @@ export default function WordPressWaitlistModal({
                 <button
                   type="submit"
                   disabled={submitState === 'loading'}
-                  className="w-full rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-black hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  className="w-full rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-black hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-gray-500"
                 >
                   {submitState === 'loading' ? 'Joining…' : 'Join waitlist'}
                 </button>
@@ -390,7 +390,7 @@ export default function WordPressWaitlistModal({
             onClick={() => openModal()}
             className={
               triggerClassName ||
-              'inline-flex items-center justify-center rounded-md border border-gray-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600'
+              'inline-flex items-center justify-center rounded-md border border-gray-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-gray-600'
             }
           >
             {triggerLabel}

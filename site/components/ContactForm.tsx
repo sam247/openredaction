@@ -114,7 +114,7 @@ export default function ContactForm() {
             required
             value={formData.name}
             onChange={handleChange}
-            className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gray-700"
+            className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-hidden focus:border-gray-700"
             placeholder="John Doe"
           />
         </div>
@@ -130,7 +130,7 @@ export default function ContactForm() {
             required
             value={formData.email}
             onChange={handleChange}
-            className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gray-700"
+            className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-hidden focus:border-gray-700"
             placeholder="john@company.com"
           />
         </div>
@@ -147,7 +147,7 @@ export default function ContactForm() {
             name="company"
             value={formData.company}
             onChange={handleChange}
-            className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gray-700"
+            className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-hidden focus:border-gray-700"
             placeholder="Acme Inc."
           />
         </div>
@@ -162,7 +162,7 @@ export default function ContactForm() {
             name="useCase"
             value={formData.useCase}
             onChange={handleChange}
-            className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gray-700"
+            className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-hidden focus:border-gray-700"
             placeholder="Healthcare, Legal, Finance, etc."
           />
         </div>
@@ -179,7 +179,7 @@ export default function ContactForm() {
             required
             value={formData.interest}
             onChange={handleChange}
-            className="w-full bg-gray-900 border border-gray-800 rounded-md pl-4 pr-10 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gray-700 appearance-none cursor-pointer"
+            className="w-full bg-gray-900 border border-gray-800 rounded-md pl-4 pr-10 py-3 text-white placeholder-gray-500 focus:outline-hidden focus:border-gray-700 appearance-none cursor-pointer"
           >
             <option value="">Select an option...</option>
             <option value="self-hosted">Self-Hosted Deployment Support</option>
@@ -203,7 +203,7 @@ export default function ContactForm() {
           rows={6}
           value={formData.message}
           onChange={handleChange}
-          className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gray-700 resize-none"
+          className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white placeholder-gray-500 focus:outline-hidden focus:border-gray-700 resize-none"
           placeholder="Tell us about your needs..."
         />
       </div>

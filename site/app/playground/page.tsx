@@ -303,7 +303,7 @@ export default function Playground() {
                   <select
                     value={selectedPreset}
                     onChange={(e) => handleApiPreset(e.target.value)}
-                    className="w-full bg-gray-900 border border-gray-800 rounded-md pl-3 pr-9 py-2.5 text-sm text-white focus:outline-none focus:border-gray-600 appearance-none cursor-pointer"
+                    className="w-full bg-gray-900 border border-gray-800 rounded-md pl-3 pr-9 py-2.5 text-sm text-white focus:outline-hidden focus:border-gray-600 appearance-none cursor-pointer"
                   >
                     <option value="">None (default)</option>
                     {Object.entries(apiPresets).map(([key, label]) => (
@@ -325,7 +325,7 @@ export default function Playground() {
                         e.target.value = ''; // Reset to placeholder
                       }
                     }}
-                    className="w-full bg-gray-900 border border-gray-800 rounded-md pl-3 pr-9 py-2.5 text-sm text-white focus:outline-none focus:border-gray-600 appearance-none cursor-pointer"
+                    className="w-full bg-gray-900 border border-gray-800 rounded-md pl-3 pr-9 py-2.5 text-sm text-white focus:outline-hidden focus:border-gray-600 appearance-none cursor-pointer"
                     defaultValue=""
                   >
                     <option value="" disabled>Select sample text...</option>
@@ -349,7 +349,7 @@ export default function Playground() {
                 }}
                 placeholder="Paste chat logs, emails, or JSON here…"
                 rows={10}
-                className="w-full min-h-[10rem] max-h-[14rem] bg-gray-900/50 border border-gray-800 rounded-lg p-4 font-mono text-sm text-white placeholder-gray-500 focus:outline-none focus:border-gray-600 focus:ring-1 focus:ring-gray-600 resize-y transition-all"
+                className="w-full min-h-[10rem] max-h-[14rem] bg-gray-900/50 border border-gray-800 rounded-lg p-4 font-mono text-sm text-white placeholder-gray-500 focus:outline-hidden focus:border-gray-600 focus:ring-1 focus:ring-gray-600 resize-y transition-all"
               />
               <div className="mt-2 flex justify-between items-center text-xs">
                 <span className={`${inputText.length > MAX_INPUT_REGEX ? 'text-red-400' : 'text-gray-500'}`}>
