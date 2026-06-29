@@ -3,17 +3,13 @@
  * Provides tamper-proof, cryptographic audit logging for production environments
  */
 
-import { createHash } from 'crypto';
-import type {
-  IAuditLogger,
-  AuditLogEntry,
-  AuditStats
-} from '../types';
+import { createHash } from "crypto";
+import type { AuditLogEntry, AuditStats, IAuditLogger } from "../types";
 
 /**
  * Supported database backends
  */
-export type AuditBackend = 'sqlite' | 'postgresql' | 'mongodb' | 's3' | 'file';
+export type AuditBackend = "sqlite" | "postgresql" | "mongodb" | "s3" | "file";
 
 /**
  * Database connection configuration
@@ -66,7 +62,7 @@ export interface PersistentAuditLoggerOptions {
   /** Enable cryptographic hashing for tamper detection (default: true) */
   enableHashing?: boolean;
   /** Hash algorithm (default: 'sha256') */
-  hashAlgorithm?: 'sha256' | 'sha512';
+  hashAlgorithm?: "sha256" | "sha512";
   /** Enable write-ahead logging for crash recovery (default: true) */
   enableWAL?: boolean;
   /** Secret key for HMAC hashing (optional, recommended for production) */
@@ -104,7 +100,10 @@ export interface IAuditDatabaseAdapter {
   /** Get the last log entry */
   getLastEntry(): Promise<HashedAuditLogEntry | null>;
   /** Verify log chain integrity */
-  verifyChain(startSequence?: number, endSequence?: number): Promise<{ valid: boolean; brokenAt?: number }>;
+  verifyChain(
+    startSequence?: number,
+    endSequence?: number,
+  ): Promise<{ valid: boolean; brokenAt?: number }>;
   /** Close connection */
   close(): Promise<void>;
 }
@@ -114,7 +113,7 @@ export interface IAuditDatabaseAdapter {
  */
 export interface AuditQueryFilter {
   /** Filter by operation type */
-  operation?: AuditLogEntry['operation'];
+  operation?: AuditLogEntry["operation"];
   /** Filter by user */
   user?: string;
   /** Filter by session ID */
@@ -130,7 +129,7 @@ export interface AuditQueryFilter {
   /** Offset for pagination */
   offset?: number;
   /** Sort order */
-  sort?: 'asc' | 'desc';
+  sort?: "asc" | "desc";
 }
 
 /**
@@ -138,9 +137,10 @@ export interface AuditQueryFilter {
  */
 export class PersistentAuditLogger implements IAuditLogger {
   private adapter: IAuditDatabaseAdapter;
-  private options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>;
+  private options: Required<Omit<PersistentAuditLoggerOptions, "secretKey">> &
+    Pick<PersistentAuditLoggerOptions, "secretKey">;
   private batchBuffer: HashedAuditLogEntry[] = [];
-  private lastHash: string = '';
+  private lastHash: string = "";
   private sequence: number = 0;
   private cleanupTimer?: NodeJS.Timeout;
   private initialized: boolean = false;
@@ -152,12 +152,12 @@ export class PersistentAuditLogger implements IAuditLogger {
         maxAgeDays: options.retention?.maxAgeDays ?? 90,
         maxLogs: options.retention?.maxLogs,
         autoCleanup: options.retention?.autoCleanup ?? false,
-        cleanupIntervalHours: options.retention?.cleanupIntervalHours ?? 24
+        cleanupIntervalHours: options.retention?.cleanupIntervalHours ?? 24,
       },
       enableHashing: options.enableHashing ?? true,
-      hashAlgorithm: options.hashAlgorithm ?? 'sha256',
+      hashAlgorithm: options.hashAlgorithm ?? "sha256",
       enableWAL: options.enableWAL ?? true,
-      secretKey: options.secretKey ?? undefined
+      secretKey: options.secretKey ?? undefined,
     };
 
     // Create appropriate database adapter
@@ -192,12 +192,12 @@ export class PersistentAuditLogger implements IAuditLogger {
   /**
    * Log an audit entry
    */
-  log(entry: Omit<AuditLogEntry, 'id' | 'timestamp'>): void {
+  log(entry: Omit<AuditLogEntry, "id" | "timestamp">): void {
     // Create full entry with ID and timestamp
     const fullEntry: AuditLogEntry = {
       id: this.generateId(),
       timestamp: new Date().toISOString(),
-      ...entry
+      ...entry,
     };
 
     // Create hashed entry
@@ -210,8 +210,8 @@ export class PersistentAuditLogger implements IAuditLogger {
     const batchSize = this.options.database.batchSize ?? 100;
     if (this.batchBuffer.length >= batchSize) {
       // Async flush (fire and forget for performance)
-      this.flushBatch().catch(err => {
-        console.error('[PersistentAuditLogger] Failed to flush batch:', err);
+      this.flushBatch().catch((err) => {
+        console.error("[PersistentAuditLogger] Failed to flush batch:", err);
       });
     }
   }
@@ -221,7 +221,7 @@ export class PersistentAuditLogger implements IAuditLogger {
    */
   getLogs(): AuditLogEntry[] {
     throw new Error(
-      '[PersistentAuditLogger] getLogs() is not supported for persistent storage. Use queryLogs() instead for filtered queries.'
+      "[PersistentAuditLogger] getLogs() is not supported for persistent storage. Use queryLogs() instead for filtered queries.",
     );
   }
 
@@ -242,9 +242,9 @@ export class PersistentAuditLogger implements IAuditLogger {
   /**
    * Get logs by operation type
    */
-  getLogsByOperation(_operation: AuditLogEntry['operation']): AuditLogEntry[] {
+  getLogsByOperation(_operation: AuditLogEntry["operation"]): AuditLogEntry[] {
     throw new Error(
-      '[PersistentAuditLogger] getLogsByOperation() is not supported for persistent storage. Use queryLogs({ operation }) instead.'
+      "[PersistentAuditLogger] getLogsByOperation() is not supported for persistent storage. Use queryLogs({ operation }) instead.",
     );
   }
 
@@ -253,7 +253,7 @@ export class PersistentAuditLogger implements IAuditLogger {
    */
   getLogsByDateRange(_startDate: Date, _endDate: Date): AuditLogEntry[] {
     throw new Error(
-      '[PersistentAuditLogger] getLogsByDateRange() is not supported for persistent storage. Use queryLogs({ startDate, endDate }) instead.'
+      "[PersistentAuditLogger] getLogsByDateRange() is not supported for persistent storage. Use queryLogs({ startDate, endDate }) instead.",
     );
   }
 
@@ -262,7 +262,7 @@ export class PersistentAuditLogger implements IAuditLogger {
    */
   exportAsJson(): string {
     throw new Error(
-      '[PersistentAuditLogger] Synchronous export not supported. Use exportAsJsonAsync() instead.'
+      "[PersistentAuditLogger] Synchronous export not supported. Use exportAsJsonAsync() instead.",
     );
   }
 
@@ -279,7 +279,7 @@ export class PersistentAuditLogger implements IAuditLogger {
    */
   exportAsCsv(): string {
     throw new Error(
-      '[PersistentAuditLogger] Synchronous export not supported. Use exportAsCsvAsync() instead.'
+      "[PersistentAuditLogger] Synchronous export not supported. Use exportAsCsvAsync() instead.",
     );
   }
 
@@ -290,50 +290,52 @@ export class PersistentAuditLogger implements IAuditLogger {
     const logs = await this.queryLogs(filter);
 
     if (logs.length === 0) {
-      return '';
+      return "";
     }
 
     // CSV header
     const headers = [
-      'id',
-      'timestamp',
-      'operation',
-      'piiCount',
-      'piiTypes',
-      'textLength',
-      'processingTimeMs',
-      'redactionMode',
-      'success',
-      'error',
-      'user',
-      'sessionId',
-      'hash',
-      'previousHash',
-      'sequence'
+      "id",
+      "timestamp",
+      "operation",
+      "piiCount",
+      "piiTypes",
+      "textLength",
+      "processingTimeMs",
+      "redactionMode",
+      "success",
+      "error",
+      "user",
+      "sessionId",
+      "hash",
+      "previousHash",
+      "sequence",
     ];
 
-    const rows = logs.map(log => [
+    const rows = logs.map((log) => [
       log.id,
       log.timestamp,
       log.operation,
       log.piiCount,
-      log.piiTypes.join(';'),
+      log.piiTypes.join(";"),
       log.textLength,
       log.processingTimeMs,
-      log.redactionMode || '',
+      log.redactionMode || "",
       log.success,
-      log.error || '',
-      log.user || '',
-      log.sessionId || '',
+      log.error || "",
+      log.user || "",
+      log.sessionId || "",
       log.hash,
-      log.previousHash || '',
-      log.sequence
+      log.previousHash || "",
+      log.sequence,
     ]);
 
     return [
-      headers.join(','),
-      ...rows.map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(','))
-    ].join('\n');
+      headers.join(","),
+      ...rows.map((row) =>
+        row.map((field) => `"${String(field).replace(/"/g, '""')}"`).join(","),
+      ),
+    ].join("\n");
   }
 
   /**
@@ -341,7 +343,7 @@ export class PersistentAuditLogger implements IAuditLogger {
    */
   clear(): void {
     throw new Error(
-      '[PersistentAuditLogger] clear() is not supported for persistent storage. Audit logs are immutable. Use deleteOlderThan() for retention policies.'
+      "[PersistentAuditLogger] clear() is not supported for persistent storage. Audit logs are immutable. Use deleteOlderThan() for retention policies.",
     );
   }
 
@@ -361,7 +363,7 @@ export class PersistentAuditLogger implements IAuditLogger {
    */
   getStats(): AuditStats {
     throw new Error(
-      '[PersistentAuditLogger] Synchronous getStats() not supported. Use getStatsAsync() instead.'
+      "[PersistentAuditLogger] Synchronous getStats() not supported. Use getStatsAsync() instead.",
     );
   }
 
@@ -382,19 +384,22 @@ export class PersistentAuditLogger implements IAuditLogger {
         averageProcessingTime: 0,
         topPiiTypes: [],
         operationsByType: {},
-        successRate: 0
+        successRate: 0,
       };
     }
 
     const totalOperations = logs.length;
     const totalPiiDetected = logs.reduce((sum, log) => sum + log.piiCount, 0);
-    const totalProcessingTime = logs.reduce((sum, log) => sum + log.processingTimeMs, 0);
+    const totalProcessingTime = logs.reduce(
+      (sum, log) => sum + log.processingTimeMs,
+      0,
+    );
     const averageProcessingTime = totalProcessingTime / totalOperations;
 
     // Count PII types
     const piiTypeCounts = new Map<string, number>();
-    logs.forEach(log => {
-      log.piiTypes.forEach(type => {
+    logs.forEach((log) => {
+      log.piiTypes.forEach((type) => {
         piiTypeCounts.set(type, (piiTypeCounts.get(type) || 0) + 1);
       });
     });
@@ -406,12 +411,13 @@ export class PersistentAuditLogger implements IAuditLogger {
 
     // Count operations by type
     const operationsByType: Record<string, number> = {};
-    logs.forEach(log => {
-      operationsByType[log.operation] = (operationsByType[log.operation] || 0) + 1;
+    logs.forEach((log) => {
+      operationsByType[log.operation] =
+        (operationsByType[log.operation] || 0) + 1;
     });
 
     // Calculate success rate
-    const successCount = logs.filter(log => log.success).length;
+    const successCount = logs.filter((log) => log.success).length;
     const successRate = successCount / totalOperations;
 
     return {
@@ -420,14 +426,17 @@ export class PersistentAuditLogger implements IAuditLogger {
       averageProcessingTime,
       topPiiTypes,
       operationsByType,
-      successRate
+      successRate,
     };
   }
 
   /**
    * Verify log chain integrity
    */
-  async verifyChainIntegrity(startSequence?: number, endSequence?: number): Promise<{
+  async verifyChainIntegrity(
+    startSequence?: number,
+    endSequence?: number,
+  ): Promise<{
     valid: boolean;
     brokenAt?: number;
     message: string;
@@ -439,7 +448,7 @@ export class PersistentAuditLogger implements IAuditLogger {
     if (!this.options.enableHashing) {
       return {
         valid: true,
-        message: 'Hashing is disabled, chain verification not available'
+        message: "Hashing is disabled, chain verification not available",
       };
     }
 
@@ -448,13 +457,13 @@ export class PersistentAuditLogger implements IAuditLogger {
     if (result.valid) {
       return {
         valid: true,
-        message: 'Audit log chain is intact and has not been tampered with'
+        message: "Audit log chain is intact and has not been tampered with",
       };
     } else {
       return {
         valid: false,
         brokenAt: result.brokenAt,
-        message: `Audit log chain is broken at sequence ${result.brokenAt}. Possible tampering detected.`
+        message: `Audit log chain is broken at sequence ${result.brokenAt}. Possible tampering detected.`,
       };
     }
   }
@@ -509,9 +518,9 @@ export class PersistentAuditLogger implements IAuditLogger {
 
     const hashedEntry: HashedAuditLogEntry = {
       ...entry,
-      hash: '',
+      hash: "",
       previousHash: this.lastHash || undefined,
-      sequence: this.sequence
+      sequence: this.sequence,
     };
 
     // Calculate hash
@@ -519,7 +528,7 @@ export class PersistentAuditLogger implements IAuditLogger {
       hashedEntry.hash = this.calculateHash(hashedEntry);
       this.lastHash = hashedEntry.hash;
     } else {
-      hashedEntry.hash = 'disabled';
+      hashedEntry.hash = "disabled";
     }
 
     return hashedEntry;
@@ -528,7 +537,7 @@ export class PersistentAuditLogger implements IAuditLogger {
   /**
    * Calculate cryptographic hash of entry
    */
-  private calculateHash(entry: Omit<HashedAuditLogEntry, 'hash'>): string {
+  private calculateHash(entry: Omit<HashedAuditLogEntry, "hash">): string {
     const algorithm = this.options.hashAlgorithm;
 
     // Create deterministic string representation
@@ -547,18 +556,16 @@ export class PersistentAuditLogger implements IAuditLogger {
       sessionId: entry.sessionId,
       metadata: entry.metadata,
       previousHash: entry.previousHash,
-      sequence: entry.sequence
+      sequence: entry.sequence,
     });
 
     // Use HMAC if secret key provided, otherwise simple hash
     if (this.options.secretKey) {
       return createHash(algorithm)
         .update(this.options.secretKey + data)
-        .digest('hex');
+        .digest("hex");
     } else {
-      return createHash(algorithm)
-        .update(data)
-        .digest('hex');
+      return createHash(algorithm).update(data).digest("hex");
     }
   }
 
@@ -574,18 +581,20 @@ export class PersistentAuditLogger implements IAuditLogger {
    */
   private createAdapter(config: AuditDatabaseConfig): IAuditDatabaseAdapter {
     switch (config.backend) {
-      case 'sqlite':
+      case "sqlite":
         return new SQLiteAuditAdapter(config, this.options);
-      case 'postgresql':
+      case "postgresql":
         return new PostgreSQLAuditAdapter(config, this.options);
-      case 'mongodb':
+      case "mongodb":
         return new MongoDBuditAdapter(config, this.options);
-      case 's3':
+      case "s3":
         return new S3AuditAdapter(config, this.options);
-      case 'file':
+      case "file":
         return new FileAuditAdapter(config, this.options);
       default:
-        throw new Error(`[PersistentAuditLogger] Unsupported backend: ${config.backend}`);
+        throw new Error(
+          `[PersistentAuditLogger] Unsupported backend: ${config.backend}`,
+        );
     }
   }
 
@@ -593,12 +602,13 @@ export class PersistentAuditLogger implements IAuditLogger {
    * Start automatic cleanup schedule
    */
   private startCleanupSchedule(): void {
-    const cleanupIntervalHours = this.options.retention?.cleanupIntervalHours ?? 24;
+    const cleanupIntervalHours =
+      this.options.retention?.cleanupIntervalHours ?? 24;
     const intervalMs = cleanupIntervalHours * 60 * 60 * 1000;
 
     this.cleanupTimer = setInterval(() => {
-      this.runCleanup().catch(err => {
-        console.error('[PersistentAuditLogger] Cleanup failed:', err);
+      this.runCleanup().catch((err) => {
+        console.error("[PersistentAuditLogger] Cleanup failed:", err);
       });
     }, intervalMs);
   }
@@ -620,7 +630,9 @@ export class PersistentAuditLogger implements IAuditLogger {
 
       const deleted = await this.deleteOlderThan(cutoffDate);
       if (deleted > 0) {
-        console.log(`[PersistentAuditLogger] Cleanup: Deleted ${deleted} logs older than ${maxAgeDays} days`);
+        console.log(
+          `[PersistentAuditLogger] Cleanup: Deleted ${deleted} logs older than ${maxAgeDays} days`,
+        );
       }
     }
 
@@ -630,7 +642,9 @@ export class PersistentAuditLogger implements IAuditLogger {
       if (count > maxLogs) {
         const toDelete = count - maxLogs;
         // Implementation depends on adapter
-        console.log(`[PersistentAuditLogger] Cleanup: Need to delete ${toDelete} oldest logs (maxLogs: ${maxLogs})`);
+        console.log(
+          `[PersistentAuditLogger] Cleanup: Need to delete ${toDelete} oldest logs (maxLogs: ${maxLogs})`,
+        );
       }
     }
   }
@@ -642,9 +656,14 @@ export class PersistentAuditLogger implements IAuditLogger {
 class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
   private db?: any;
   private config: AuditDatabaseConfig;
-  private options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>;
+  private options: Required<Omit<PersistentAuditLoggerOptions, "secretKey">> &
+    Pick<PersistentAuditLoggerOptions, "secretKey">;
 
-  constructor(config: AuditDatabaseConfig, options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>) {
+  constructor(
+    config: AuditDatabaseConfig,
+    options: Required<Omit<PersistentAuditLoggerOptions, "secretKey">> &
+      Pick<PersistentAuditLoggerOptions, "secretKey">,
+  ) {
     this.config = config;
     this.options = options;
   }
@@ -652,18 +671,18 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
   async initialize(): Promise<void> {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const sqlite3 = require('better-sqlite3');
-      const filePath = this.config.filePath || './audit-logs.db';
+      const sqlite3 = require("better-sqlite3");
+      const filePath = this.config.filePath || "./audit-logs.db";
 
       this.db = sqlite3(filePath);
 
       // Enable WAL mode for better concurrency
       if (this.options.enableWAL) {
-        this.db.pragma('journal_mode = WAL');
+        this.db.pragma("journal_mode = WAL");
       }
 
       // Create table
-      const tableName = this.config.tableName || 'audit_logs';
+      const tableName = this.config.tableName || "audit_logs";
       this.db.exec(`
         CREATE TABLE IF NOT EXISTS ${tableName} (
           sequence INTEGER PRIMARY KEY,
@@ -696,13 +715,13 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
       `);
     } catch (error: any) {
       throw new Error(
-        `[SQLiteAuditAdapter] Failed to initialize: ${error.message}. Install with: npm install better-sqlite3`
+        `[SQLiteAuditAdapter] Failed to initialize: ${error.message}. Install with: npm install better-sqlite3`,
       );
     }
   }
 
   async insert(entry: HashedAuditLogEntry): Promise<void> {
-    const tableName = this.config.tableName || 'audit_logs';
+    const tableName = this.config.tableName || "audit_logs";
     const stmt = this.db.prepare(`
       INSERT INTO ${tableName} (
         sequence, id, timestamp, operation, piiCount, piiTypes, textLength,
@@ -727,12 +746,12 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
       entry.sessionId || null,
       entry.metadata ? JSON.stringify(entry.metadata) : null,
       entry.hash,
-      entry.previousHash || null
+      entry.previousHash || null,
     );
   }
 
   async batchInsert(entries: HashedAuditLogEntry[]): Promise<void> {
-    const tableName = this.config.tableName || 'audit_logs';
+    const tableName = this.config.tableName || "audit_logs";
     const stmt = this.db.prepare(`
       INSERT INTO ${tableName} (
         sequence, id, timestamp, operation, piiCount, piiTypes, textLength,
@@ -741,71 +760,74 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    const transaction = this.db.transaction((entries: HashedAuditLogEntry[]) => {
-      for (const entry of entries) {
-        stmt.run(
-          entry.sequence,
-          entry.id,
-          entry.timestamp,
-          entry.operation,
-          entry.piiCount,
-          JSON.stringify(entry.piiTypes),
-          entry.textLength,
-          entry.processingTimeMs,
-          entry.redactionMode || null,
-          entry.success ? 1 : 0,
-          entry.error || null,
-          entry.user || null,
-          entry.sessionId || null,
-          entry.metadata ? JSON.stringify(entry.metadata) : null,
-          entry.hash,
-          entry.previousHash || null
-        );
-      }
-    });
+    const transaction = this.db.transaction(
+      (entries: HashedAuditLogEntry[]) => {
+        for (const entry of entries) {
+          stmt.run(
+            entry.sequence,
+            entry.id,
+            entry.timestamp,
+            entry.operation,
+            entry.piiCount,
+            JSON.stringify(entry.piiTypes),
+            entry.textLength,
+            entry.processingTimeMs,
+            entry.redactionMode || null,
+            entry.success ? 1 : 0,
+            entry.error || null,
+            entry.user || null,
+            entry.sessionId || null,
+            entry.metadata ? JSON.stringify(entry.metadata) : null,
+            entry.hash,
+            entry.previousHash || null,
+          );
+        }
+      },
+    );
 
     transaction(entries);
   }
 
   async query(filter: AuditQueryFilter): Promise<HashedAuditLogEntry[]> {
-    const tableName = this.config.tableName || 'audit_logs';
+    const tableName = this.config.tableName || "audit_logs";
     const conditions: string[] = [];
     const params: any[] = [];
 
     if (filter.operation) {
-      conditions.push('operation = ?');
+      conditions.push("operation = ?");
       params.push(filter.operation);
     }
 
     if (filter.user) {
-      conditions.push('user = ?');
+      conditions.push("user = ?");
       params.push(filter.user);
     }
 
     if (filter.sessionId) {
-      conditions.push('sessionId = ?');
+      conditions.push("sessionId = ?");
       params.push(filter.sessionId);
     }
 
     if (filter.startDate) {
-      conditions.push('timestamp >= ?');
+      conditions.push("timestamp >= ?");
       params.push(filter.startDate.toISOString());
     }
 
     if (filter.endDate) {
-      conditions.push('timestamp <= ?');
+      conditions.push("timestamp <= ?");
       params.push(filter.endDate.toISOString());
     }
 
     if (filter.success !== undefined) {
-      conditions.push('success = ?');
+      conditions.push("success = ?");
       params.push(filter.success ? 1 : 0);
     }
 
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-    const sortOrder = filter.sort === 'asc' ? 'ASC' : 'DESC';
-    const limit = filter.limit ? `LIMIT ${filter.limit}` : '';
-    const offset = filter.offset ? `OFFSET ${filter.offset}` : '';
+    const whereClause =
+      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const sortOrder = filter.sort === "asc" ? "ASC" : "DESC";
+    const limit = filter.limit ? `LIMIT ${filter.limit}` : "";
+    const offset = filter.offset ? `OFFSET ${filter.offset}` : "";
 
     const query = `
       SELECT * FROM ${tableName}
@@ -820,26 +842,27 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
   }
 
   async count(filter?: Partial<AuditQueryFilter>): Promise<number> {
-    const tableName = this.config.tableName || 'audit_logs';
+    const tableName = this.config.tableName || "audit_logs";
     const conditions: string[] = [];
     const params: any[] = [];
 
     if (filter?.operation) {
-      conditions.push('operation = ?');
+      conditions.push("operation = ?");
       params.push(filter.operation);
     }
 
     if (filter?.startDate) {
-      conditions.push('timestamp >= ?');
+      conditions.push("timestamp >= ?");
       params.push(filter.startDate.toISOString());
     }
 
     if (filter?.endDate) {
-      conditions.push('timestamp <= ?');
+      conditions.push("timestamp <= ?");
       params.push(filter.endDate.toISOString());
     }
 
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const whereClause =
+      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
     const query = `SELECT COUNT(*) as count FROM ${tableName} ${whereClause}`;
 
     const result = this.db.prepare(query).get(...params);
@@ -847,31 +870,40 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
   }
 
   async deleteOlderThan(date: Date): Promise<number> {
-    const tableName = this.config.tableName || 'audit_logs';
-    const result = this.db.prepare(`
+    const tableName = this.config.tableName || "audit_logs";
+    const result = this.db
+      .prepare(`
       DELETE FROM ${tableName} WHERE timestamp < ?
-    `).run(date.toISOString());
+    `)
+      .run(date.toISOString());
 
     return result.changes;
   }
 
   async getLastEntry(): Promise<HashedAuditLogEntry | null> {
-    const tableName = this.config.tableName || 'audit_logs';
-    const row = this.db.prepare(`
+    const tableName = this.config.tableName || "audit_logs";
+    const row = this.db
+      .prepare(`
       SELECT * FROM ${tableName} ORDER BY sequence DESC LIMIT 1
-    `).get();
+    `)
+      .get();
 
     return row ? this.rowToEntry(row) : null;
   }
 
-  async verifyChain(startSequence?: number, endSequence?: number): Promise<{ valid: boolean; brokenAt?: number }> {
-    const tableName = this.config.tableName || 'audit_logs';
+  async verifyChain(
+    startSequence?: number,
+    endSequence?: number,
+  ): Promise<{ valid: boolean; brokenAt?: number }> {
+    const tableName = this.config.tableName || "audit_logs";
     const start = startSequence || 1;
     const end = endSequence || (await this.count());
 
-    const rows = this.db.prepare(`
+    const rows = this.db
+      .prepare(`
       SELECT * FROM ${tableName} WHERE sequence >= ? AND sequence <= ? ORDER BY sequence ASC
-    `).all(start, end);
+    `)
+      .all(start, end);
 
     let previousHash: string | undefined;
 
@@ -911,7 +943,7 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
       metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
       hash: row.hash,
       previousHash: row.previousHash || undefined,
-      sequence: row.sequence
+      sequence: row.sequence,
     };
   }
 }
@@ -920,40 +952,49 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
  * PostgreSQL adapter implementation (stub - requires pg package)
  */
 class PostgreSQLAuditAdapter implements IAuditDatabaseAdapter {
-  constructor(_config: AuditDatabaseConfig, _options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>) {
+  constructor(
+    _config: AuditDatabaseConfig,
+    _options: Required<Omit<PersistentAuditLoggerOptions, "secretKey">> &
+      Pick<PersistentAuditLoggerOptions, "secretKey">,
+  ) {
     // Implementation will be added later
   }
 
   async initialize(): Promise<void> {
-    throw new Error('[PostgreSQLAuditAdapter] Not implemented yet. Install with: npm install pg');
+    throw new Error(
+      "[PostgreSQLAuditAdapter] Not implemented yet. Install with: npm install pg",
+    );
   }
 
   async insert(_entry: HashedAuditLogEntry): Promise<void> {
-    throw new Error('[PostgreSQLAuditAdapter] Not implemented yet');
+    throw new Error("[PostgreSQLAuditAdapter] Not implemented yet");
   }
 
   async batchInsert(_entries: HashedAuditLogEntry[]): Promise<void> {
-    throw new Error('[PostgreSQLAuditAdapter] Not implemented yet');
+    throw new Error("[PostgreSQLAuditAdapter] Not implemented yet");
   }
 
   async query(_filter: AuditQueryFilter): Promise<HashedAuditLogEntry[]> {
-    throw new Error('[PostgreSQLAuditAdapter] Not implemented yet');
+    throw new Error("[PostgreSQLAuditAdapter] Not implemented yet");
   }
 
   async count(_filter?: Partial<AuditQueryFilter>): Promise<number> {
-    throw new Error('[PostgreSQLAuditAdapter] Not implemented yet');
+    throw new Error("[PostgreSQLAuditAdapter] Not implemented yet");
   }
 
   async deleteOlderThan(_date: Date): Promise<number> {
-    throw new Error('[PostgreSQLAuditAdapter] Not implemented yet');
+    throw new Error("[PostgreSQLAuditAdapter] Not implemented yet");
   }
 
   async getLastEntry(): Promise<HashedAuditLogEntry | null> {
-    throw new Error('[PostgreSQLAuditAdapter] Not implemented yet');
+    throw new Error("[PostgreSQLAuditAdapter] Not implemented yet");
   }
 
-  async verifyChain(_startSequence?: number, _endSequence?: number): Promise<{ valid: boolean; brokenAt?: number }> {
-    throw new Error('[PostgreSQLAuditAdapter] Not implemented yet');
+  async verifyChain(
+    _startSequence?: number,
+    _endSequence?: number,
+  ): Promise<{ valid: boolean; brokenAt?: number }> {
+    throw new Error("[PostgreSQLAuditAdapter] Not implemented yet");
   }
 
   async close(): Promise<void> {
@@ -965,40 +1006,49 @@ class PostgreSQLAuditAdapter implements IAuditDatabaseAdapter {
  * MongoDB adapter implementation (stub - requires mongodb package)
  */
 class MongoDBuditAdapter implements IAuditDatabaseAdapter {
-  constructor(_config: AuditDatabaseConfig, _options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>) {
+  constructor(
+    _config: AuditDatabaseConfig,
+    _options: Required<Omit<PersistentAuditLoggerOptions, "secretKey">> &
+      Pick<PersistentAuditLoggerOptions, "secretKey">,
+  ) {
     // Implementation will be added later
   }
 
   async initialize(): Promise<void> {
-    throw new Error('[MongoDBuditAdapter] Not implemented yet. Install with: npm install mongodb');
+    throw new Error(
+      "[MongoDBuditAdapter] Not implemented yet. Install with: npm install mongodb",
+    );
   }
 
   async insert(_entry: HashedAuditLogEntry): Promise<void> {
-    throw new Error('[MongoDBuditAdapter] Not implemented yet');
+    throw new Error("[MongoDBuditAdapter] Not implemented yet");
   }
 
   async batchInsert(_entries: HashedAuditLogEntry[]): Promise<void> {
-    throw new Error('[MongoDBuditAdapter] Not implemented yet');
+    throw new Error("[MongoDBuditAdapter] Not implemented yet");
   }
 
   async query(_filter: AuditQueryFilter): Promise<HashedAuditLogEntry[]> {
-    throw new Error('[MongoDBuditAdapter] Not implemented yet');
+    throw new Error("[MongoDBuditAdapter] Not implemented yet");
   }
 
   async count(_filter?: Partial<AuditQueryFilter>): Promise<number> {
-    throw new Error('[MongoDBuditAdapter] Not implemented yet');
+    throw new Error("[MongoDBuditAdapter] Not implemented yet");
   }
 
   async deleteOlderThan(_date: Date): Promise<number> {
-    throw new Error('[MongoDBuditAdapter] Not implemented yet');
+    throw new Error("[MongoDBuditAdapter] Not implemented yet");
   }
 
   async getLastEntry(): Promise<HashedAuditLogEntry | null> {
-    throw new Error('[MongoDBuditAdapter] Not implemented yet');
+    throw new Error("[MongoDBuditAdapter] Not implemented yet");
   }
 
-  async verifyChain(_startSequence?: number, _endSequence?: number): Promise<{ valid: boolean; brokenAt?: number }> {
-    throw new Error('[MongoDBuditAdapter] Not implemented yet');
+  async verifyChain(
+    _startSequence?: number,
+    _endSequence?: number,
+  ): Promise<{ valid: boolean; brokenAt?: number }> {
+    throw new Error("[MongoDBuditAdapter] Not implemented yet");
   }
 
   async close(): Promise<void> {
@@ -1010,40 +1060,49 @@ class MongoDBuditAdapter implements IAuditDatabaseAdapter {
  * S3 adapter implementation (stub - requires aws-sdk)
  */
 class S3AuditAdapter implements IAuditDatabaseAdapter {
-  constructor(_config: AuditDatabaseConfig, _options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>) {
+  constructor(
+    _config: AuditDatabaseConfig,
+    _options: Required<Omit<PersistentAuditLoggerOptions, "secretKey">> &
+      Pick<PersistentAuditLoggerOptions, "secretKey">,
+  ) {
     // Implementation will be added later
   }
 
   async initialize(): Promise<void> {
-    throw new Error('[S3AuditAdapter] Not implemented yet. Install with: npm install @aws-sdk/client-s3');
+    throw new Error(
+      "[S3AuditAdapter] Not implemented yet. Install with: npm install @aws-sdk/client-s3",
+    );
   }
 
   async insert(_entry: HashedAuditLogEntry): Promise<void> {
-    throw new Error('[S3AuditAdapter] Not implemented yet');
+    throw new Error("[S3AuditAdapter] Not implemented yet");
   }
 
   async batchInsert(_entries: HashedAuditLogEntry[]): Promise<void> {
-    throw new Error('[S3AuditAdapter] Not implemented yet');
+    throw new Error("[S3AuditAdapter] Not implemented yet");
   }
 
   async query(_filter: AuditQueryFilter): Promise<HashedAuditLogEntry[]> {
-    throw new Error('[S3AuditAdapter] Not implemented yet');
+    throw new Error("[S3AuditAdapter] Not implemented yet");
   }
 
   async count(_filter?: Partial<AuditQueryFilter>): Promise<number> {
-    throw new Error('[S3AuditAdapter] Not implemented yet');
+    throw new Error("[S3AuditAdapter] Not implemented yet");
   }
 
   async deleteOlderThan(_date: Date): Promise<number> {
-    throw new Error('[S3AuditAdapter] Not implemented yet');
+    throw new Error("[S3AuditAdapter] Not implemented yet");
   }
 
   async getLastEntry(): Promise<HashedAuditLogEntry | null> {
-    throw new Error('[S3AuditAdapter] Not implemented yet');
+    throw new Error("[S3AuditAdapter] Not implemented yet");
   }
 
-  async verifyChain(_startSequence?: number, _endSequence?: number): Promise<{ valid: boolean; brokenAt?: number }> {
-    throw new Error('[S3AuditAdapter] Not implemented yet');
+  async verifyChain(
+    _startSequence?: number,
+    _endSequence?: number,
+  ): Promise<{ valid: boolean; brokenAt?: number }> {
+    throw new Error("[S3AuditAdapter] Not implemented yet");
   }
 
   async close(): Promise<void> {
@@ -1055,40 +1114,47 @@ class S3AuditAdapter implements IAuditDatabaseAdapter {
  * File-based adapter implementation (append-only log file)
  */
 class FileAuditAdapter implements IAuditDatabaseAdapter {
-  constructor(_config: AuditDatabaseConfig, _options: Required<Omit<PersistentAuditLoggerOptions, 'secretKey'>> & Pick<PersistentAuditLoggerOptions, 'secretKey'>) {
+  constructor(
+    _config: AuditDatabaseConfig,
+    _options: Required<Omit<PersistentAuditLoggerOptions, "secretKey">> &
+      Pick<PersistentAuditLoggerOptions, "secretKey">,
+  ) {
     // Implementation will be added later
   }
 
   async initialize(): Promise<void> {
-    throw new Error('[FileAuditAdapter] Not implemented yet');
+    throw new Error("[FileAuditAdapter] Not implemented yet");
   }
 
   async insert(_entry: HashedAuditLogEntry): Promise<void> {
-    throw new Error('[FileAuditAdapter] Not implemented yet');
+    throw new Error("[FileAuditAdapter] Not implemented yet");
   }
 
   async batchInsert(_entries: HashedAuditLogEntry[]): Promise<void> {
-    throw new Error('[FileAuditAdapter] Not implemented yet');
+    throw new Error("[FileAuditAdapter] Not implemented yet");
   }
 
   async query(_filter: AuditQueryFilter): Promise<HashedAuditLogEntry[]> {
-    throw new Error('[FileAuditAdapter] Not implemented yet');
+    throw new Error("[FileAuditAdapter] Not implemented yet");
   }
 
   async count(_filter?: Partial<AuditQueryFilter>): Promise<number> {
-    throw new Error('[FileAuditAdapter] Not implemented yet');
+    throw new Error("[FileAuditAdapter] Not implemented yet");
   }
 
   async deleteOlderThan(_date: Date): Promise<number> {
-    throw new Error('[FileAuditAdapter] Not implemented yet');
+    throw new Error("[FileAuditAdapter] Not implemented yet");
   }
 
   async getLastEntry(): Promise<HashedAuditLogEntry | null> {
-    throw new Error('[FileAuditAdapter] Not implemented yet');
+    throw new Error("[FileAuditAdapter] Not implemented yet");
   }
 
-  async verifyChain(_startSequence?: number, _endSequence?: number): Promise<{ valid: boolean; brokenAt?: number }> {
-    throw new Error('[FileAuditAdapter] Not implemented yet');
+  async verifyChain(
+    _startSequence?: number,
+    _endSequence?: number,
+  ): Promise<{ valid: boolean; brokenAt?: number }> {
+    throw new Error("[FileAuditAdapter] Not implemented yet");
   }
 
   async close(): Promise<void> {
@@ -1099,6 +1165,8 @@ class FileAuditAdapter implements IAuditDatabaseAdapter {
 /**
  * Create a persistent audit logger
  */
-export function createPersistentAuditLogger(options: PersistentAuditLoggerOptions): PersistentAuditLogger {
+export function createPersistentAuditLogger(
+  options: PersistentAuditLoggerOptions,
+): PersistentAuditLogger {
   return new PersistentAuditLogger(options);
 }

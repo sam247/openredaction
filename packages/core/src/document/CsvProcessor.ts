@@ -2,8 +2,8 @@
  * CSV document processor for PII detection and redaction in tabular data
  */
 
-import type { DetectionResult, PIIDetection } from '../types';
-import type { OpenRedaction } from '../detector';
+import type { OpenRedaction } from "../detector";
+import type { DetectionResult, PIIDetection } from "../types";
 
 /**
  * CSV processing options
@@ -108,23 +108,83 @@ interface CsvRow {
  * CSV processor for tabular data
  */
 export class CsvProcessor {
-  private readonly defaultOptions: Required<Omit<CsvProcessorOptions, 'delimiter' | 'hasHeader' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns'>> & Partial<Pick<CsvProcessorOptions, 'delimiter' | 'hasHeader' | 'maxRows' | 'alwaysRedactColumns' | 'alwaysRedactColumnNames' | 'skipColumns'>> = {
+  private readonly defaultOptions: Required<
+    Omit<
+      CsvProcessorOptions,
+      | "delimiter"
+      | "hasHeader"
+      | "maxRows"
+      | "alwaysRedactColumns"
+      | "alwaysRedactColumnNames"
+      | "skipColumns"
+    >
+  > &
+    Partial<
+      Pick<
+        CsvProcessorOptions,
+        | "delimiter"
+        | "hasHeader"
+        | "maxRows"
+        | "alwaysRedactColumns"
+        | "alwaysRedactColumnNames"
+        | "skipColumns"
+      >
+    > = {
     quote: '"',
     escape: '"',
     skipEmptyLines: true,
     piiIndicatorNames: [
-      'email', 'e-mail', 'mail', 'email_address',
-      'phone', 'tel', 'telephone', 'mobile', 'phone_number',
-      'ssn', 'social_security', 'social_security_number',
-      'address', 'street', 'street_address', 'city', 'zip', 'zipcode', 'postal', 'postcode',
-      'name', 'firstname', 'first_name', 'lastname', 'last_name', 'fullname', 'full_name',
-      'password', 'pwd', 'secret', 'token', 'api_key',
-      'card', 'credit_card', 'creditcard', 'card_number',
-      'account', 'account_number', 'iban', 'swift',
-      'passport', 'passport_number', 'license', 'licence', 'driver_license',
-      'dob', 'date_of_birth', 'birth_date', 'birthdate'
+      "email",
+      "e-mail",
+      "mail",
+      "email_address",
+      "phone",
+      "tel",
+      "telephone",
+      "mobile",
+      "phone_number",
+      "ssn",
+      "social_security",
+      "social_security_number",
+      "address",
+      "street",
+      "street_address",
+      "city",
+      "zip",
+      "zipcode",
+      "postal",
+      "postcode",
+      "name",
+      "firstname",
+      "first_name",
+      "lastname",
+      "last_name",
+      "fullname",
+      "full_name",
+      "password",
+      "pwd",
+      "secret",
+      "token",
+      "api_key",
+      "card",
+      "credit_card",
+      "creditcard",
+      "card_number",
+      "account",
+      "account_number",
+      "iban",
+      "swift",
+      "passport",
+      "passport_number",
+      "license",
+      "licence",
+      "driver_license",
+      "dob",
+      "date_of_birth",
+      "birth_date",
+      "birthdate",
     ],
-    treatFirstRowAsHeader: true
+    treatFirstRowAsHeader: true,
   };
 
   /**
@@ -132,7 +192,7 @@ export class CsvProcessor {
    */
   parse(input: Buffer | string, options?: CsvProcessorOptions): CsvRow[] {
     const opts = { ...this.defaultOptions, ...options };
-    const text = typeof input === 'string' ? input : input.toString('utf-8');
+    const text = typeof input === "string" ? input : input.toString("utf-8");
 
     // Auto-detect delimiter if not specified
     const delimiter = opts.delimiter || this.detectDelimiter(text);
@@ -160,7 +220,7 @@ export class CsvProcessor {
 
       rows.push({
         index: rowIndex,
-        values
+        values,
       });
 
       rowIndex++;
@@ -175,32 +235,32 @@ export class CsvProcessor {
   async detect(
     input: Buffer | string,
     detector: OpenRedaction,
-    options?: CsvProcessorOptions
+    options?: CsvProcessorOptions,
   ): Promise<CsvDetectionResult> {
     const opts = { ...this.defaultOptions, ...options };
     const rows = this.parse(input, options);
 
     if (rows.length === 0) {
-      const original = typeof input === 'string' ? input : input.toString('utf-8');
+      const original =
+        typeof input === "string" ? input : input.toString("utf-8");
       return {
         original,
         redacted: original,
         detections: [],
         redactionMap: {},
         stats: {
-          piiCount: 0
+          piiCount: 0,
         },
         rowCount: 0,
         columnCount: 0,
         columnStats: {},
-        matchesByCell: []
+        matchesByCell: [],
       };
     }
 
     // Determine if first row is header
-    const hasHeader = opts.hasHeader !== undefined
-      ? opts.hasHeader
-      : this.detectHeader(rows);
+    const hasHeader =
+      opts.hasHeader !== undefined ? opts.hasHeader : this.detectHeader(rows);
 
     const headers = hasHeader && rows.length > 0 ? rows[0].values : undefined;
     const dataRows = hasHeader ? rows.slice(1) : rows;
@@ -217,7 +277,7 @@ export class CsvProcessor {
     // Determine which columns to always redact
     const alwaysRedactCols = new Set<number>(opts.alwaysRedactColumns || []);
     if (opts.alwaysRedactColumnNames && headers) {
-      opts.alwaysRedactColumnNames.forEach(name => {
+      opts.alwaysRedactColumnNames.forEach((name) => {
         const index = columnNameToIndex.get(name.toLowerCase().trim());
         if (index !== undefined) {
           alwaysRedactCols.add(index);
@@ -240,7 +300,7 @@ export class CsvProcessor {
         columnName: headers?.[col],
         piiCount: 0,
         piiPercentage: 0,
-        piiTypes: []
+        piiTypes: [],
       };
     }
 
@@ -257,12 +317,12 @@ export class CsvProcessor {
         // Always redact this column?
         if (alwaysRedactCols.has(col)) {
           const detection: PIIDetection = {
-            type: 'SENSITIVE_COLUMN',
+            type: "SENSITIVE_COLUMN",
             value: cellValue,
             placeholder: `[SENSITIVE_COLUMN_${col}]`,
             position: [0, cellValue.length],
-            severity: 'high',
-            confidence: 1.0
+            severity: "high",
+            confidence: 1.0,
           };
 
           matchesByCell.push({
@@ -270,7 +330,7 @@ export class CsvProcessor {
             column: col,
             columnName: headers?.[col],
             value: cellValue,
-            matches: [detection]
+            matches: [detection],
           });
 
           allDetections.push(detection);
@@ -286,7 +346,7 @@ export class CsvProcessor {
           const boostedDetections = this.boostConfidenceFromColumnName(
             result.detections,
             headers?.[col],
-            opts.piiIndicatorNames || []
+            opts.piiIndicatorNames || [],
           );
 
           matchesByCell.push({
@@ -294,7 +354,7 @@ export class CsvProcessor {
             column: col,
             columnName: headers?.[col],
             value: cellValue,
-            matches: boostedDetections
+            matches: boostedDetections,
           });
 
           allDetections.push(...boostedDetections);
@@ -302,7 +362,11 @@ export class CsvProcessor {
 
           // Track PII types by column
           const columnTypes = new Set(columnStats[col].piiTypes);
-          boostedDetections.forEach(d => columnTypes.add(d.type));
+
+          boostedDetections.forEach((d) => {
+            columnTypes.add(d.type);
+          });
+
           columnStats[col].piiTypes = Array.from(columnTypes);
         }
       }
@@ -310,26 +374,30 @@ export class CsvProcessor {
 
     // Calculate column PII percentages
     for (let col = 0; col < columnCount; col++) {
-      const rowsWithPii = matchesByCell.filter(m => m.column === col).length;
-      columnStats[col].piiPercentage = dataRows.length > 0
-        ? (rowsWithPii / dataRows.length) * 100
-        : 0;
+      const rowsWithPii = matchesByCell.filter((m) => m.column === col).length;
+      columnStats[col].piiPercentage =
+        dataRows.length > 0 ? (rowsWithPii / dataRows.length) * 100 : 0;
     }
 
     // Build redacted text
-    const original = typeof input === 'string' ? input : input.toString('utf-8');
-    const redacted = this.redact(original, {
+    const original =
+      typeof input === "string" ? input : input.toString("utf-8");
+    const redacted = this.redact(
       original,
-      redacted: original,
-      detections: allDetections,
-      redactionMap: {},
-      stats: { piiCount: allDetections.length },
-      rowCount: dataRows.length,
-      columnCount,
-      headers,
-      columnStats,
-      matchesByCell
-    } as CsvDetectionResult, opts);
+      {
+        original,
+        redacted: original,
+        detections: allDetections,
+        redactionMap: {},
+        stats: { piiCount: allDetections.length },
+        rowCount: dataRows.length,
+        columnCount,
+        headers,
+        columnStats,
+        matchesByCell,
+      } as CsvDetectionResult,
+      opts,
+    );
 
     // Build redaction map
     const redactionMap: Record<string, string> = {};
@@ -343,13 +411,13 @@ export class CsvProcessor {
       detections: allDetections,
       redactionMap,
       stats: {
-        piiCount: allDetections.length
+        piiCount: allDetections.length,
       },
       rowCount: dataRows.length,
       columnCount,
       headers: headers?.filter((h): h is string => h !== undefined),
       columnStats,
-      matchesByCell
+      matchesByCell,
     };
   }
 
@@ -359,18 +427,20 @@ export class CsvProcessor {
   redact(
     input: Buffer | string,
     detectionResult: CsvDetectionResult,
-    options?: CsvProcessorOptions
+    options?: CsvProcessorOptions,
   ): string {
     const opts = { ...this.defaultOptions, ...options };
     const rows = this.parse(input, options);
 
     if (rows.length === 0) {
-      return '';
+      return "";
     }
 
-    const delimiter = opts.delimiter || this.detectDelimiter(
-      typeof input === 'string' ? input : input.toString('utf-8')
-    );
+    const delimiter =
+      opts.delimiter ||
+      this.detectDelimiter(
+        typeof input === "string" ? input : input.toString("utf-8"),
+      );
 
     const hasHeader = detectionResult.headers !== undefined;
 
@@ -381,10 +451,7 @@ export class CsvProcessor {
       if (!redactionMap.has(cellMatch.row)) {
         redactionMap.set(cellMatch.row, new Map());
       }
-      redactionMap.get(cellMatch.row)!.set(
-        cellMatch.column,
-        '[REDACTED]'
-      );
+      redactionMap.get(cellMatch.row)!.set(cellMatch.column, "[REDACTED]");
     }
 
     // Build redacted CSV
@@ -407,7 +474,7 @@ export class CsvProcessor {
       }
     }
 
-    return outputRows.join('\n');
+    return outputRows.join("\n");
   }
 
   /**
@@ -417,10 +484,10 @@ export class CsvProcessor {
     line: string,
     delimiter: string,
     quote: string,
-    _escape: string
+    _escape: string,
   ): string[] {
     const values: string[] = [];
-    let current = '';
+    let current = "";
     let inQuotes = false;
     let i = 0;
 
@@ -441,7 +508,7 @@ export class CsvProcessor {
       } else if (char === delimiter && !inQuotes) {
         // End of field
         values.push(current);
-        current = '';
+        current = "";
         i++;
       } else {
         current += char;
@@ -458,30 +525,40 @@ export class CsvProcessor {
   /**
    * Format a row as CSV
    */
-  private formatRow(values: string[], delimiter: string, quote: string): string {
-    return values.map(value => {
-      // Quote if contains delimiter, quote, or newline
-      if (value.includes(delimiter) || value.includes(quote) || value.includes('\n')) {
-        // Escape quotes
-        const escaped = value.replace(new RegExp(quote, 'g'), quote + quote);
-        return `${quote}${escaped}${quote}`;
-      }
-      return value;
-    }).join(delimiter);
+  private formatRow(
+    values: string[],
+    delimiter: string,
+    quote: string,
+  ): string {
+    return values
+      .map((value) => {
+        // Quote if contains delimiter, quote, or newline
+        if (
+          value.includes(delimiter) ||
+          value.includes(quote) ||
+          value.includes("\n")
+        ) {
+          // Escape quotes
+          const escaped = value.replace(new RegExp(quote, "g"), quote + quote);
+          return `${quote}${escaped}${quote}`;
+        }
+        return value;
+      })
+      .join(delimiter);
   }
 
   /**
    * Auto-detect CSV delimiter
    */
   private detectDelimiter(text: string): string {
-    const delimiters = [',', '\t', ';', '|'];
+    const delimiters = [",", "\t", ";", "|"];
     const lines = text.split(/\r?\n/).slice(0, 5); // Check first 5 lines
 
-    let bestDelimiter = ',';
+    let bestDelimiter = ",";
     let bestScore = 0;
 
     for (const delimiter of delimiters) {
-      const counts = lines.map(line => {
+      const counts = lines.map((line) => {
         // Count non-quoted occurrences
         let count = 0;
         let inQuotes = false;
@@ -495,7 +572,8 @@ export class CsvProcessor {
       // Good delimiter has consistent count across lines
       if (counts.length > 0 && counts[0] > 0) {
         const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
-        const variance = counts.reduce((sum, c) => sum + Math.pow(c - avg, 2), 0) / counts.length;
+        const variance =
+          counts.reduce((sum, c) => sum + (c - avg) ** 2, 0) / counts.length;
 
         // Score: high count, low variance
         const score = avg / (variance + 1);
@@ -521,8 +599,10 @@ export class CsvProcessor {
     const secondRow = rows[1].values;
 
     // Check if first row values are shorter and more text-like
-    const firstRowAvgLen = firstRow.reduce((sum, v) => sum + v.length, 0) / firstRow.length;
-    const secondRowAvgLen = secondRow.reduce((sum, v) => sum + v.length, 0) / secondRow.length;
+    const firstRowAvgLen =
+      firstRow.reduce((sum, v) => sum + v.length, 0) / firstRow.length;
+    const secondRowAvgLen =
+      secondRow.reduce((sum, v) => sum + v.length, 0) / secondRow.length;
 
     // Headers tend to be shorter
     if (firstRowAvgLen > secondRowAvgLen * 1.5) {
@@ -530,7 +610,9 @@ export class CsvProcessor {
     }
 
     // Check if first row contains mostly text (not numbers)
-    const firstRowNumeric = firstRow.filter(v => !isNaN(Number(v)) && v.trim() !== '').length;
+    const firstRowNumeric = firstRow.filter(
+      (v) => !isNaN(Number(v)) && v.trim() !== "",
+    ).length;
     const firstRowNonNumeric = firstRow.length - firstRowNumeric;
 
     return firstRowNonNumeric >= firstRowNumeric;
@@ -542,21 +624,21 @@ export class CsvProcessor {
   private boostConfidenceFromColumnName(
     detections: PIIDetection[],
     columnName: string | undefined,
-    piiIndicatorNames: string[]
+    piiIndicatorNames: string[],
   ): PIIDetection[] {
     if (!columnName) return detections;
 
     const nameLower = columnName.toLowerCase().trim();
-    const isPiiColumn = piiIndicatorNames.some(indicator =>
-      nameLower.includes(indicator.toLowerCase())
+    const isPiiColumn = piiIndicatorNames.some((indicator) =>
+      nameLower.includes(indicator.toLowerCase()),
     );
 
     if (!isPiiColumn) return detections;
 
     // Boost confidence by 20% (capped at 1.0)
-    return detections.map(detection => ({
+    return detections.map((detection) => ({
       ...detection,
-      confidence: Math.min(1.0, (detection.confidence || 0.5) * 1.2)
+      confidence: Math.min(1.0, (detection.confidence || 0.5) * 1.2),
     }));
   }
 
@@ -575,13 +657,16 @@ export class CsvProcessor {
       }
     }
 
-    return textParts.join(' ');
+    return textParts.join(" ");
   }
 
   /**
    * Get column statistics without full PII detection
    */
-  getColumnInfo(input: Buffer | string, options?: CsvProcessorOptions): {
+  getColumnInfo(
+    input: Buffer | string,
+    options?: CsvProcessorOptions,
+  ): {
     columnCount: number;
     rowCount: number;
     headers?: string[];
@@ -593,24 +678,23 @@ export class CsvProcessor {
       return {
         columnCount: 0,
         rowCount: 0,
-        sampleRows: []
+        sampleRows: [],
       };
     }
 
     const opts = { ...this.defaultOptions, ...options };
-    const hasHeader = opts.hasHeader !== undefined
-      ? opts.hasHeader
-      : this.detectHeader(rows);
+    const hasHeader =
+      opts.hasHeader !== undefined ? opts.hasHeader : this.detectHeader(rows);
 
     const headers = hasHeader && rows.length > 0 ? rows[0].values : undefined;
     const dataRows = hasHeader ? rows.slice(1) : rows;
-    const sampleRows = dataRows.slice(0, 5).map(r => r.values);
+    const sampleRows = dataRows.slice(0, 5).map((r) => r.values);
 
     return {
       columnCount: rows[0].values.length,
       rowCount: dataRows.length,
       headers,
-      sampleRows
+      sampleRows,
     };
   }
 }

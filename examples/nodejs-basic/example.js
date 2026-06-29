@@ -3,53 +3,61 @@
  * Demonstrates core PII detection without any framework
  */
 
-const fs = require('fs');
-const { OpenRedaction, createBatchProcessor, createStreamingDetector } = require('openredaction');
+const fs = require("node:fs");
+const {
+  OpenRedaction,
+  createBatchProcessor,
+  createStreamingDetector,
+} = require("openredaction");
 
 async function main() {
   const detector = new OpenRedaction({
     enableContextAnalysis: true,
-    enableCache: true
+    enableCache: true,
   });
 
-  console.log('🔍 OpenRedaction - Basic Detection Example\n');
+  console.log("🔍 OpenRedaction - Basic Detection Example\n");
 
   // Example 1: Simple detection
-  console.log('Example 1: Simple Detection');
-  const text1 = 'Contact John at john.smith@company.com or call 07700 900123';
+  console.log("Example 1: Simple Detection");
+  const text1 = "Contact John at john.smith@company.com or call 07700 900123";
   const result1 = await detector.detect(text1);
 
   console.log(`Original: ${result1.original}`);
   console.log(`Redacted: ${result1.redacted}`);
   console.log(`Found ${result1.detections.length} PII items:\n`);
-  result1.detections.forEach(d => {
-    console.log(`  - ${d.type}: "${d.value}" (confidence: ${(d.confidence * 100).toFixed(1)}%)`);
+  result1.detections.forEach((d) => {
+    console.log(
+      `  - ${d.type}: "${d.value}" (confidence: ${(d.confidence * 100).toFixed(1)}%)`,
+    );
   });
-  console.log('\n---\n');
+  console.log("\n---\n");
 
   // Example 2: Batch processing
-  console.log('Example 2: Batch Processing');
+  console.log("Example 2: Batch Processing");
   const batch = createBatchProcessor(detector);
 
   const documents = [
-    'Customer email: alice@example.com',
-    'Support ticket: Call +44 7700 900456',
-    'Payment: Card 4532015112830366'
+    "Customer email: alice@example.com",
+    "Support ticket: Call +44 7700 900456",
+    "Payment: Card 4532015112830366",
   ];
 
   const batchResult = await batch.processSequential(documents);
   console.log(`Processed ${batchResult.stats.totalDocuments} documents`);
   console.log(`Found ${batchResult.stats.totalDetections} total PII items`);
-  console.log(`Average time: ${batchResult.stats.avgTimePerDocument.toFixed(2)}ms per document\n`);
+  console.log(
+    `Average time: ${batchResult.stats.avgTimePerDocument.toFixed(2)}ms per document\n`,
+  );
 
   // Example 3: Streaming large documents
-  console.log('Example 3: Streaming Large Documents');
+  console.log("Example 3: Streaming Large Documents");
   const streaming = createStreamingDetector(detector, {
     chunkSize: 1000,
-    overlap: 100
+    overlap: 100,
   });
 
-  const largeText = 'Contact info: admin@business.co.uk. '.repeat(100);
+  const largeText = "Contact info: admin@business.co.uk. ".repeat(100);
   let chunkCount = 0;
   let totalDetections = 0;
 
@@ -62,7 +70,7 @@ async function main() {
   console.log(`Found ${totalDetections} PII items\n`);
 
   // Example 4: HTML Report generation
-  console.log('Example 4: Generating Reports');
+  console.log("Example 4: Generating Reports");
   const text4 = `
   Customer Support Ticket #12345
 
@@ -75,22 +83,22 @@ async function main() {
 
   const result4 = await detector.detect(text4);
   const htmlReport = detector.generateReport(result4, {
-    format: 'html',
-    title: 'PII Detection Report',
-    organizationName: 'Example Corp',
+    format: "html",
+    title: "PII Detection Report",
+    organizationName: "Example Corp",
     includeStatistics: true,
     includeDetectionDetails: true,
     includeRedactedText: true,
-    includeOriginalText: false // Privacy-safe
+    includeOriginalText: false, // Privacy-safe
   });
 
-  fs.writeFileSync('pii-report.html', htmlReport);
-  console.log('✅ HTML report saved to pii-report.html\n');
+  fs.writeFileSync("pii-report.html", htmlReport);
+  console.log("✅ HTML report saved to pii-report.html\n");
 
   // Example 5: Debug with explain()
-  console.log('Example 5: Debugging with explain()');
+  console.log("Example 5: Debugging with explain()");
   const explainAPI = detector.explain();
-  const text5 = 'Email me at test@example.com';
+  const text5 = "Email me at test@example.com";
   const explanation = await explainAPI.explain(text5);
 
   console.log(`Matched patterns: ${explanation.matchedPatterns.length}`);
@@ -98,16 +106,16 @@ async function main() {
   console.log(`Final detections: ${explanation.detections.length}`);
 
   if (explanation.filteredPatterns.length > 0) {
-    console.log('\nFiltered out:');
-    explanation.filteredPatterns.forEach(p => {
+    console.log("\nFiltered out:");
+    explanation.filteredPatterns.forEach((p) => {
       console.log(`  - ${p.pattern.type}: ${p.reason}`);
     });
   }
 
-  console.log('\n✅ All examples completed!');
+  console.log("\n✅ All examples completed!");
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });

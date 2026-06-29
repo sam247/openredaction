@@ -3,21 +3,22 @@
  * Demonstrates OpenRedaction hooks for real-time PII detection
  */
 
-import React, { useState } from 'react';
 import {
+  useAutoRedact,
+  useBatchDetector,
+  useFormFieldValidator,
   useOpenRedaction,
   usePIIDetector,
-  useFormFieldValidator,
-  useBatchDetector,
-  useAutoRedact
-} from 'openredaction/react';
+} from "openredaction/react";
+import type React from "react";
+import { useState } from "react";
 
 // Example 1: Basic detection with manual control
 export function BasicDetectionExample() {
   const { detect, result, hasPII, count } = useOpenRedaction({
-    enableContextAnalysis: true
+    enableContextAnalysis: true,
   });
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
 
   const handleCheck = () => {
     detect(input);
@@ -31,18 +32,23 @@ export function BasicDetectionExample() {
         onChange={(e) => setInput(e.target.value)}
         placeholder="Enter text to check for PII..."
         rows={4}
-        style={{ width: '100%' }}
+        style={{ width: "100%" }}
       />
-      <button onClick={handleCheck}>Check for PII</button>
+      <button type="button" onClick={handleCheck}>
+        Check for PII
+      </button>
 
       {result && (
-        <div className={`result ${hasPII ? 'warning' : 'success'}`}>
+        <div className={`result ${hasPII ? "warning" : "success"}`}>
           <p>
-            <strong>Status:</strong> {hasPII ? `⚠️ Found ${count} PII item(s)` : '✅ No PII detected'}
+            <strong>Status:</strong>{" "}
+            {hasPII ? `⚠️ Found ${count} PII item(s)` : "✅ No PII detected"}
           </p>
           {hasPII && (
             <>
-              <p><strong>Redacted:</strong></p>
+              <p>
+                <strong>Redacted:</strong>
+              </p>
               <pre>{result.redacted}</pre>
               <details>
                 <summary>Detection Details</summary>
@@ -50,7 +56,8 @@ export function BasicDetectionExample() {
                   {result.detections.map((d, i) => (
                     <li key={i}>
                       {d.type} - Severity: {d.severity}
-                      {d.confidence && ` - Confidence: ${(d.confidence * 100).toFixed(1)}%`}
+                      {d.confidence &&
+                        ` - Confidence: ${(d.confidence * 100).toFixed(1)}%`}
                     </li>
                   ))}
                 </ul>
@@ -65,10 +72,10 @@ export function BasicDetectionExample() {
 
 // Example 2: Real-time detection with debouncing
 export function RealTimeDetectionExample() {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const { hasPII, detections, isDetecting } = usePIIDetector(text, {
     debounce: 500,
-    enableContextAnalysis: true
+    enableContextAnalysis: true,
   });
 
   return (
@@ -79,7 +86,7 @@ export function RealTimeDetectionExample() {
         onChange={(e) => setText(e.target.value)}
         placeholder="Type to detect PII in real-time..."
         rows={4}
-        style={{ width: '100%' }}
+        style={{ width: "100%" }}
       />
 
       <div className="status">
@@ -107,18 +114,18 @@ export function FormValidationExample() {
   const emailValidator = useFormFieldValidator({
     enableContextAnalysis: true,
     failOnPII: true,
-    types: ['EMAIL', 'PHONE']
+    types: ["EMAIL", "PHONE"],
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!emailValidator.isValid) {
-      alert('Please fix validation errors');
+      alert("Please fix validation errors");
       return;
     }
 
-    alert('Form submitted successfully!');
+    alert("Form submitted successfully!");
   };
 
   return (
@@ -133,7 +140,7 @@ export function FormValidationExample() {
               onChange={(e) => emailValidator.validate(e.target.value)}
               placeholder="Enter your comment..."
               rows={3}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             />
           </label>
           {emailValidator.error && (
@@ -152,14 +159,15 @@ export function FormValidationExample() {
 
 // Example 4: Batch processing with progress
 export function BatchProcessingExample() {
-  const { processAll, results, isProcessing, progress, totalDetections } = useBatchDetector({
-    enableContextAnalysis: true
-  });
+  const { processAll, results, isProcessing, progress, totalDetections } =
+    useBatchDetector({
+      enableContextAnalysis: true,
+    });
 
   const documents = [
-    'Customer 1: john@example.com, 555-0123',
-    'Customer 2: sarah@example.com, 555-0456',
-    'Customer 3: mike@example.com, 555-0789'
+    "Customer 1: john@example.com, 555-0123",
+    "Customer 2: sarah@example.com, 555-0456",
+    "Customer 3: mike@example.com, 555-0789",
   ];
 
   const handleProcess = async () => {
@@ -169,8 +177,10 @@ export function BatchProcessingExample() {
   return (
     <div className="example">
       <h3>Example 4: Batch Processing</h3>
-      <button onClick={handleProcess} disabled={isProcessing}>
-        {isProcessing ? `Processing... ${progress.toFixed(0)}%` : 'Process Documents'}
+      <button type="button" onClick={handleProcess} disabled={isProcessing}>
+        {isProcessing
+          ? `Processing... ${progress.toFixed(0)}%`
+          : "Process Documents"}
       </button>
 
       {isProcessing && (
@@ -204,30 +214,34 @@ export function BatchProcessingExample() {
 export function AutoRedactionExample() {
   const { text, setText, redactedText, hasPII, detections } = useAutoRedact({
     debounce: 500,
-    enableContextAnalysis: true
+    enableContextAnalysis: true,
   });
 
   return (
     <div className="example">
       <h3>Example 5: Auto-Redaction</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div
+        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}
+      >
         <div>
-          <label>Original Text:</label>
+          <label htmlFor="original-text">Original Text:</label>
           <textarea
+            id="original-text"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Enter text with PII..."
             rows={6}
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
           />
         </div>
         <div>
-          <label>Redacted Text:</label>
+          <label htmlFor="redacted-text">Redacted Text:</label>
           <textarea
+            id="redacted-text"
             value={redactedText}
             readOnly
             rows={6}
-            style={{ width: '100%', background: '#f5f5f5' }}
+            style={{ width: "100%", background: "#f5f5f5" }}
           />
         </div>
       </div>
@@ -265,8 +279,9 @@ export function App() {
         {[1, 2, 3, 4, 5].map((num) => (
           <button
             key={num}
+            type="button"
             onClick={() => setActiveExample(num)}
-            className={activeExample === num ? 'active' : ''}
+            className={activeExample === num ? "active" : ""}
           >
             Example {num}
           </button>

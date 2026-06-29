@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const dist = path.join(__dirname, '..', 'dist');
+const fs = require("node:fs");
+const path = require("node:path");
+const dist = path.join(__dirname, "..", "dist");
 
 function dualTypes(base) {
   const dTs = path.join(dist, `${base}.d.ts`);
@@ -11,6 +11,6 @@ function dualTypes(base) {
   fs.copyFileSync(dCts, dTs);
 }
 
-dualTypes('index');
-dualTypes('react');
-dualTypes('server');
+dualTypes("index");
+dualTypes("react");
+dualTypes("server");

@@ -1,4 +1,4 @@
-import { Resend } from 'resend';
+import { Resend } from "resend";
 
 export type AddResendAudienceContactResult =
   | { ok: true; contactId?: string; duplicate: boolean }
@@ -34,21 +34,21 @@ export async function addResendAudienceContact(params: {
   }
 
   if (error) {
-    const msg = (error.message || '').toLowerCase();
+    const msg = (error.message || "").toLowerCase();
     const duplicate =
-      msg.includes('already') ||
-      msg.includes('duplicate') ||
-      msg.includes('exists') ||
+      msg.includes("already") ||
+      msg.includes("duplicate") ||
+      msg.includes("exists") ||
       error.statusCode === 409;
     if (duplicate) {
       return { ok: true, duplicate: true };
     }
     return {
       ok: false,
-      code: error.name || 'resend_error',
+      code: error.name || "resend_error",
       statusCode: error.statusCode,
     };
   }
 
-  return { ok: false, code: 'unknown', statusCode: null };
+  return { ok: false, code: "unknown", statusCode: null };
 }

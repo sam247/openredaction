@@ -2,9 +2,9 @@
  * Worker thread script for parallel processing
  */
 
-import { parentPort } from 'worker_threads';
-import { OpenRedaction } from '../detector';
-import type { WorkerTask, WorkerResult } from './types';
+import { parentPort } from "worker_threads";
+import { OpenRedaction } from "../detector";
+import type { WorkerResult, WorkerTask } from "./types";
 
 // Initialize OpenRedaction instance
 let redactor: OpenRedaction | null = null;
@@ -12,14 +12,14 @@ let redactor: OpenRedaction | null = null;
 /**
  * Process incoming tasks
  */
-parentPort?.on('message', async (task: WorkerTask) => {
+parentPort?.on("message", async (task: WorkerTask) => {
   const startTime = performance.now();
 
   try {
     let result: any;
 
     switch (task.type) {
-      case 'detect':
+      case "detect":
         // Initialize redactor if needed
         if (!redactor) {
           redactor = new OpenRedaction(task.options);
@@ -27,7 +27,7 @@ parentPort?.on('message', async (task: WorkerTask) => {
         result = await redactor.detect(task.text);
         break;
 
-      case 'document':
+      case "document":
         // Initialize redactor if needed
         if (!redactor) {
           redactor = new OpenRedaction();
@@ -45,7 +45,7 @@ parentPort?.on('message', async (task: WorkerTask) => {
     const workerResult: WorkerResult = {
       id: task.id,
       result,
-      processingTime
+      processingTime,
     };
 
     parentPort?.postMessage(workerResult);
@@ -57,7 +57,7 @@ parentPort?.on('message', async (task: WorkerTask) => {
       id: task.id,
       result: null,
       error: error.message,
-      processingTime
+      processingTime,
     };
 
     parentPort?.postMessage(workerResult);

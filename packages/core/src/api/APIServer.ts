@@ -3,11 +3,11 @@
  * Provides HTTP/REST endpoints for PII detection and redaction
  */
 
-import type { OpenRedactionOptions, DetectionResult } from '../types';
-import { OpenRedaction } from '../detector';
-import type { TenantManager } from '../tenancy/TenantManager';
-import type { WebhookManager } from '../webhooks/WebhookManager';
-import type { PersistentAuditLogger } from '../audit/PersistentAuditLogger';
+import type { PersistentAuditLogger } from "../audit/PersistentAuditLogger";
+import { OpenRedaction } from "../detector";
+import type { TenantManager } from "../tenancy/TenantManager";
+import type { DetectionResult, OpenRedactionOptions } from "../types";
+import type { WebhookManager } from "../webhooks/WebhookManager";
 
 /**
  * API Server configuration
@@ -81,8 +81,26 @@ export interface APIResponse {
  */
 export class APIServer {
   private server?: any;
-  private config: Required<Omit<APIServerConfig, 'apiKey' | 'tenantManager' | 'webhookManager' | 'auditLogger' | 'defaultOptions' | 'corsOrigin'>> &
-    Pick<APIServerConfig, 'apiKey' | 'tenantManager' | 'webhookManager' | 'auditLogger' | 'defaultOptions' | 'corsOrigin'>;
+  private config: Required<
+    Omit<
+      APIServerConfig,
+      | "apiKey"
+      | "tenantManager"
+      | "webhookManager"
+      | "auditLogger"
+      | "defaultOptions"
+      | "corsOrigin"
+    >
+  > &
+    Pick<
+      APIServerConfig,
+      | "apiKey"
+      | "tenantManager"
+      | "webhookManager"
+      | "auditLogger"
+      | "defaultOptions"
+      | "corsOrigin"
+    >;
   private detector?: OpenRedaction;
   private isRunning: boolean = false;
   private rateLimitTracking: Map<string, number[]> = new Map();
@@ -90,18 +108,18 @@ export class APIServer {
   constructor(config?: APIServerConfig) {
     this.config = {
       port: config?.port ?? 3000,
-      host: config?.host ?? '0.0.0.0',
+      host: config?.host ?? "0.0.0.0",
       enableCors: config?.enableCors ?? true,
-      corsOrigin: config?.corsOrigin ?? '*',
+      corsOrigin: config?.corsOrigin ?? "*",
       apiKey: config?.apiKey,
       enableRateLimit: config?.enableRateLimit ?? true,
       rateLimit: config?.rateLimit ?? 60,
-      bodyLimit: config?.bodyLimit ?? '10mb',
+      bodyLimit: config?.bodyLimit ?? "10mb",
       enableLogging: config?.enableLogging ?? true,
       tenantManager: config?.tenantManager,
       webhookManager: config?.webhookManager,
       auditLogger: config?.auditLogger,
-      defaultOptions: config?.defaultOptions
+      defaultOptions: config?.defaultOptions,
     };
 
     // Initialize detector if not using multi-tenant mode
@@ -115,30 +133,38 @@ export class APIServer {
    */
   async start(): Promise<void> {
     if (this.isRunning) {
-      throw new Error('[APIServer] Server is already running');
+      throw new Error("[APIServer] Server is already running");
     }
 
     try {
       // Try to use native http module
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const http = require('http');
+      const http = require("http");
 
       this.server = http.createServer(this.handleRequest.bind(this));
 
       return new Promise<void>((resolve, reject) => {
         this.server.listen(this.config.port, this.config.host, () => {
           this.isRunning = true;
-          console.log(`[APIServer] Server started on http://${this.config.host}:${this.config.port}`);
-          console.log(`[APIServer] API Documentation: http://${this.config.host}:${this.config.port}/api/docs`);
+          console.log(
+            `[APIServer] Server started on http://${this.config.host}:${this.config.port}`,
+          );
+          console.log(
+            `[APIServer] API Documentation: http://${this.config.host}:${this.config.port}/api/docs`,
+          );
           resolve();
         });
 
-        this.server.on('error', (error: any) => {
-          reject(new Error(`[APIServer] Failed to start server: ${error.message}`));
+        this.server.on("error", (error: any) => {
+          reject(
+            new Error(`[APIServer] Failed to start server: ${error.message}`),
+          );
         });
       });
     } catch (error: any) {
-      throw new Error(`[APIServer] Failed to initialize HTTP server: ${error.message}`);
+      throw new Error(
+        `[APIServer] Failed to initialize HTTP server: ${error.message}`,
+      );
     }
   }
 
@@ -153,10 +179,12 @@ export class APIServer {
     return new Promise<void>((resolve, reject) => {
       this.server.close((error: any) => {
         if (error) {
-          reject(new Error(`[APIServer] Failed to stop server: ${error.message}`));
+          reject(
+            new Error(`[APIServer] Failed to stop server: ${error.message}`),
+          );
         } else {
           this.isRunning = false;
-          console.log('[APIServer] Server stopped');
+          console.log("[APIServer] Server stopped");
           resolve();
         }
       });
@@ -175,11 +203,22 @@ export class APIServer {
 
       // CORS
       if (this.config.enableCors) {
-        res.setHeader('Access-Control-Allow-Origin', Array.isArray(this.config.corsOrigin) ? this.config.corsOrigin.join(', ') : this.config.corsOrigin);
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key, X-Tenant-ID');
+        res.setHeader(
+          "Access-Control-Allow-Origin",
+          Array.isArray(this.config.corsOrigin)
+            ? this.config.corsOrigin.join(", ")
+            : this.config.corsOrigin,
+        );
+        res.setHeader(
+          "Access-Control-Allow-Methods",
+          "GET, POST, PUT, DELETE, OPTIONS",
+        );
+        res.setHeader(
+          "Access-Control-Allow-Headers",
+          "Content-Type, Authorization, X-API-Key, X-Tenant-ID",
+        );
 
-        if (req.method === 'OPTIONS') {
+        if (req.method === "OPTIONS") {
           res.writeHead(204);
           res.end();
           return;
@@ -188,11 +227,13 @@ export class APIServer {
 
       // Authentication
       if (this.config.apiKey) {
-        const providedKey = apiReq.headers['x-api-key'] as string || apiReq.headers['authorization']?.toString().replace('Bearer ', '');
+        const providedKey =
+          (apiReq.headers["x-api-key"] as string) ||
+          apiReq.headers["authorization"]?.toString().replace("Bearer ", "");
         if (providedKey !== this.config.apiKey) {
           this.sendResponse(res, {
             status: 401,
-            body: { error: 'Unauthorized', message: 'Invalid API key' }
+            body: { error: "Unauthorized", message: "Invalid API key" },
           });
           return;
         }
@@ -200,25 +241,32 @@ export class APIServer {
 
       // Multi-tenant authentication
       if (this.config.tenantManager) {
-        const tenantApiKey = apiReq.headers['x-api-key'] as string;
+        const tenantApiKey = apiReq.headers["x-api-key"] as string;
         if (tenantApiKey) {
-          const tenant = this.config.tenantManager.authenticateByApiKey(tenantApiKey);
+          const tenant =
+            this.config.tenantManager.authenticateByApiKey(tenantApiKey);
           if (tenant) {
             apiReq.tenantId = tenant.tenantId;
           } else {
             this.sendResponse(res, {
               status: 401,
-              body: { error: 'Unauthorized', message: 'Invalid tenant API key' }
+              body: {
+                error: "Unauthorized",
+                message: "Invalid tenant API key",
+              },
             });
             return;
           }
         } else {
           // Check X-Tenant-ID header
-          const tenantId = apiReq.headers['x-tenant-id'] as string;
+          const tenantId = apiReq.headers["x-tenant-id"] as string;
           if (!tenantId) {
             this.sendResponse(res, {
               status: 400,
-              body: { error: 'Bad Request', message: 'X-Tenant-ID header required for multi-tenant mode' }
+              body: {
+                error: "Bad Request",
+                message: "X-Tenant-ID header required for multi-tenant mode",
+              },
             });
             return;
           }
@@ -228,11 +276,14 @@ export class APIServer {
 
       // Rate limiting
       if (this.config.enableRateLimit) {
-        const clientKey = apiReq.tenantId || apiReq.ip || 'unknown';
+        const clientKey = apiReq.tenantId || apiReq.ip || "unknown";
         if (!this.checkRateLimit(clientKey)) {
           this.sendResponse(res, {
             status: 429,
-            body: { error: 'Too Many Requests', message: `Rate limit exceeded: ${this.config.rateLimit} requests per minute` }
+            body: {
+              error: "Too Many Requests",
+              message: `Rate limit exceeded: ${this.config.rateLimit} requests per minute`,
+            },
           });
           return;
         }
@@ -244,23 +295,25 @@ export class APIServer {
       // Log request
       if (this.config.enableLogging) {
         const durationMs = Date.now() - startTime;
-        console.log(`[APIServer] ${req.method} ${req.url} ${response.status} ${durationMs}ms`);
+        console.log(
+          `[APIServer] ${req.method} ${req.url} ${response.status} ${durationMs}ms`,
+        );
       }
 
       this.sendResponse(res, response);
     } catch (error: any) {
-      console.error('[APIServer] Request handler error:', error);
-      const msg = error?.message || '';
-      if (msg.includes('exceeds limit')) {
+      console.error("[APIServer] Request handler error:", error);
+      const msg = error?.message || "";
+      if (msg.includes("exceeds limit")) {
         this.sendResponse(res, {
           status: 413,
-          body: { error: 'Payload Too Large', message: msg }
+          body: { error: "Payload Too Large", message: msg },
         });
         return;
       }
       this.sendResponse(res, {
         status: 500,
-        body: { error: 'Internal Server Error', message: msg }
+        body: { error: "Internal Server Error", message: msg },
       });
     }
   }
@@ -270,22 +323,22 @@ export class APIServer {
    */
   private async parseRequest(req: any): Promise<APIRequest> {
     // Parse URL
-    const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
 
     // Parse body
     let body: any = {};
-    if (req.method !== 'GET' && req.method !== 'HEAD') {
+    if (req.method !== "GET" && req.method !== "HEAD") {
       body = await this.parseBody(req);
     }
 
     return {
-      method: (req.method || 'GET').toUpperCase(),
-      pathname: url.pathname || '/',
+      method: (req.method || "GET").toUpperCase(),
+      pathname: url.pathname || "/",
       body,
       headers: req.headers,
       query: Object.fromEntries(url.searchParams),
       params: {},
-      ip: req.socket.remoteAddress
+      ip: req.socket.remoteAddress,
     };
   }
 
@@ -296,8 +349,15 @@ export class APIServer {
     const m = /^(\d+(?:\.\d+)?)\s*(b|kb|mb|gb)?$/i.exec(limit.trim());
     if (!m) return 10 * 1024 * 1024;
     const n = parseFloat(m[1]);
-    const unit = (m[2] || 'b').toLowerCase();
-    const mult = unit === 'gb' ? 1024 ** 3 : unit === 'mb' ? 1024 ** 2 : unit === 'kb' ? 1024 : 1;
+    const unit = (m[2] || "b").toLowerCase();
+    const mult =
+      unit === "gb"
+        ? 1024 ** 3
+        : unit === "mb"
+          ? 1024 ** 2
+          : unit === "kb"
+            ? 1024
+            : 1;
     return Math.floor(n * mult);
   }
 
@@ -309,24 +369,26 @@ export class APIServer {
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = [];
       let total = 0;
-      req.on('data', (chunk: Buffer | string) => {
-        const buf = typeof chunk === 'string' ? Buffer.from(chunk) : chunk;
+      req.on("data", (chunk: Buffer | string) => {
+        const buf = typeof chunk === "string" ? Buffer.from(chunk) : chunk;
         total += buf.length;
         if (total > maxBytes) {
-          reject(new Error(`Request body exceeds limit (${this.config.bodyLimit})`));
+          reject(
+            new Error(`Request body exceeds limit (${this.config.bodyLimit})`),
+          );
           return;
         }
         chunks.push(buf);
       });
-      req.on('end', () => {
+      req.on("end", () => {
         try {
-          const raw = Buffer.concat(chunks).toString('utf8');
-          resolve(JSON.parse(raw || '{}'));
+          const raw = Buffer.concat(chunks).toString("utf8");
+          resolve(JSON.parse(raw || "{}"));
         } catch {
           resolve({});
         }
       });
-      req.on('error', reject);
+      req.on("error", reject);
     });
   }
 
@@ -338,40 +400,43 @@ export class APIServer {
     const method = req.method;
 
     // API routes
-    if (path === '/api/detect' && method === 'POST') {
+    if (path === "/api/detect" && method === "POST") {
       return this.handleDetect(req);
     }
-    if (path === '/api/redact' && method === 'POST') {
+    if (path === "/api/redact" && method === "POST") {
       return this.handleRedact(req);
     }
-    if (path === '/api/restore' && method === 'POST') {
+    if (path === "/api/restore" && method === "POST") {
       return this.handleRestore(req);
     }
-    if (path === '/api/audit/logs' && method === 'GET') {
+    if (path === "/api/audit/logs" && method === "GET") {
       return this.handleAuditLogs(req);
     }
-    if (path === '/api/audit/stats' && method === 'GET') {
+    if (path === "/api/audit/stats" && method === "GET") {
       return this.handleAuditStats(req);
     }
-    if (path === '/api/metrics' && method === 'GET') {
+    if (path === "/api/metrics" && method === "GET") {
       return this.handleMetrics(req);
     }
-    if (path === '/api/patterns' && method === 'GET') {
+    if (path === "/api/patterns" && method === "GET") {
       return this.handleGetPatterns(req);
     }
-    if (path === '/api/health' && method === 'GET') {
+    if (path === "/api/health" && method === "GET") {
       return this.handleHealth(req);
     }
-    if (path === '/api/docs' && method === 'GET') {
+    if (path === "/api/docs" && method === "GET") {
       return this.handleDocs(req);
     }
-    if (path === '/' && method === 'GET') {
+    if (path === "/" && method === "GET") {
       return this.handleRoot(req);
     }
 
     return {
       status: 404,
-      body: { error: 'Not Found', message: `Route not found: ${method} ${path}` }
+      body: {
+        error: "Not Found",
+        message: `Route not found: ${method} ${path}`,
+      },
     };
   }
 
@@ -381,10 +446,13 @@ export class APIServer {
   private async handleDetect(req: APIRequest): Promise<APIResponse> {
     const { text } = req.body;
 
-    if (!text || typeof text !== 'string') {
+    if (!text || typeof text !== "string") {
       return {
         status: 400,
-        body: { error: 'Bad Request', message: 'Missing or invalid "text" field' }
+        body: {
+          error: "Bad Request",
+          message: 'Missing or invalid "text" field',
+        },
       };
     }
 
@@ -398,7 +466,7 @@ export class APIServer {
         // Single-tenant mode
         result = await this.detector.detect(text);
       } else {
-        throw new Error('No detector available');
+        throw new Error("No detector available");
       }
 
       // Emit webhook events
@@ -413,14 +481,14 @@ export class APIServer {
           success: true,
           result: {
             detections: result.detections,
-            stats: result.stats
-          }
-        }
+            stats: result.stats,
+          },
+        },
       };
     } catch (error: any) {
       return {
         status: 500,
-        body: { error: 'Detection Failed', message: error.message }
+        body: { error: "Detection Failed", message: error.message },
       };
     }
   }
@@ -431,10 +499,13 @@ export class APIServer {
   private async handleRedact(req: APIRequest): Promise<APIResponse> {
     const { text } = req.body;
 
-    if (!text || typeof text !== 'string') {
+    if (!text || typeof text !== "string") {
       return {
         status: 400,
-        body: { error: 'Bad Request', message: 'Missing or invalid "text" field' }
+        body: {
+          error: "Bad Request",
+          message: 'Missing or invalid "text" field',
+        },
       };
     }
 
@@ -446,7 +517,7 @@ export class APIServer {
       } else if (this.detector) {
         result = await this.detector.detect(text);
       } else {
-        throw new Error('No detector available');
+        throw new Error("No detector available");
       }
 
       return {
@@ -457,14 +528,14 @@ export class APIServer {
             original: result.original,
             redacted: result.redacted,
             detections: result.detections,
-            stats: result.stats
-          }
-        }
+            stats: result.stats,
+          },
+        },
       };
     } catch (error: any) {
       return {
         status: 500,
-        body: { error: 'Redaction Failed', message: error.message }
+        body: { error: "Redaction Failed", message: error.message },
       };
     }
   }
@@ -478,7 +549,10 @@ export class APIServer {
     if (!redacted || !redactionMap) {
       return {
         status: 400,
-        body: { error: 'Bad Request', message: 'Missing "redacted" or "redactionMap" fields' }
+        body: {
+          error: "Bad Request",
+          message: 'Missing "redacted" or "redactionMap" fields',
+        },
       };
     }
 
@@ -490,7 +564,7 @@ export class APIServer {
       } else if (this.detector) {
         detector = this.detector;
       } else {
-        throw new Error('No detector available');
+        throw new Error("No detector available");
       }
 
       const restored = detector.restore(redacted, redactionMap);
@@ -499,13 +573,13 @@ export class APIServer {
         status: 200,
         body: {
           success: true,
-          result: { restored }
-        }
+          result: { restored },
+        },
       };
     } catch (error: any) {
       return {
         status: 500,
-        body: { error: 'Restore Failed', message: error.message }
+        body: { error: "Restore Failed", message: error.message },
       };
     }
   }
@@ -517,25 +591,28 @@ export class APIServer {
     if (!this.config.auditLogger) {
       return {
         status: 501,
-        body: { error: 'Not Implemented', message: 'Audit logging not configured' }
+        body: {
+          error: "Not Implemented",
+          message: "Audit logging not configured",
+        },
       };
     }
 
     try {
-      const limit = parseInt(req.query.limit as string || '100');
+      const limit = parseInt((req.query.limit as string) || "100");
       const logs = await this.config.auditLogger.queryLogs({ limit });
 
       return {
         status: 200,
         body: {
           success: true,
-          logs
-        }
+          logs,
+        },
       };
     } catch (error: any) {
       return {
         status: 500,
-        body: { error: 'Query Failed', message: error.message }
+        body: { error: "Query Failed", message: error.message },
       };
     }
   }
@@ -547,7 +624,10 @@ export class APIServer {
     if (!this.config.auditLogger) {
       return {
         status: 501,
-        body: { error: 'Not Implemented', message: 'Audit logging not configured' }
+        body: {
+          error: "Not Implemented",
+          message: "Audit logging not configured",
+        },
       };
     }
 
@@ -558,13 +638,13 @@ export class APIServer {
         status: 200,
         body: {
           success: true,
-          stats
-        }
+          stats,
+        },
       };
     } catch (error: any) {
       return {
         status: 500,
-        body: { error: 'Query Failed', message: error.message }
+        body: { error: "Query Failed", message: error.message },
       };
     }
   }
@@ -579,8 +659,8 @@ export class APIServer {
         status: 200,
         body: {
           success: true,
-          metrics: {}
-        }
+          metrics: {},
+        },
       };
     }
 
@@ -592,14 +672,14 @@ export class APIServer {
         status: 200,
         body: {
           success: true,
-          metrics: usage
-        }
+          metrics: usage,
+        },
       };
     }
 
     return {
       status: 501,
-      body: { error: 'Not Implemented', message: 'Metrics not configured' }
+      body: { error: "Not Implemented", message: "Metrics not configured" },
     };
   }
 
@@ -615,7 +695,7 @@ export class APIServer {
       } else if (this.detector) {
         detector = this.detector;
       } else {
-        throw new Error('No detector available');
+        throw new Error("No detector available");
       }
 
       const patterns = detector.getPatterns();
@@ -624,18 +704,18 @@ export class APIServer {
         status: 200,
         body: {
           success: true,
-          patterns: patterns.map(p => ({
+          patterns: patterns.map((p) => ({
             type: p.type,
             priority: p.priority,
             description: p.description,
-            severity: p.severity
-          }))
-        }
+            severity: p.severity,
+          })),
+        },
       };
     } catch (error: any) {
       return {
         status: 500,
-        body: { error: 'Query Failed', message: error.message }
+        body: { error: "Query Failed", message: error.message },
       };
     }
   }
@@ -647,15 +727,15 @@ export class APIServer {
     return {
       status: 200,
       body: {
-        status: 'healthy',
+        status: "healthy",
         uptime: process.uptime(),
         timestamp: new Date().toISOString(),
         multiTenant: !!this.config.tenantManager,
         features: {
           audit: !!this.config.auditLogger,
-          webhooks: !!this.config.webhookManager
-        }
-      }
+          webhooks: !!this.config.webhookManager,
+        },
+      },
     };
   }
 
@@ -686,7 +766,7 @@ export class APIServer {
 
   <h2>Authentication</h2>
   <p>Include your API key in the <code>X-API-Key</code> header or <code>Authorization: Bearer YOUR_KEY</code> header.</p>
-  ${this.config.tenantManager ? '<p>For multi-tenant mode, also include <code>X-Tenant-ID</code> header.</p>' : ''}
+  ${this.config.tenantManager ? "<p>For multi-tenant mode, also include <code>X-Tenant-ID</code> header.</p>" : ""}
 
   <h2>Endpoints</h2>
 
@@ -762,11 +842,11 @@ export class APIServer {
   <ul>
     <li>Port: ${this.config.port}</li>
     <li>Host: ${this.config.host}</li>
-    <li>CORS: ${this.config.enableCors ? 'Enabled' : 'Disabled'}</li>
-    <li>Rate Limiting: ${this.config.enableRateLimit ? `${this.config.rateLimit} req/min` : 'Disabled'}</li>
-    <li>Multi-Tenant: ${this.config.tenantManager ? 'Enabled' : 'Disabled'}</li>
-    <li>Audit Logging: ${this.config.auditLogger ? 'Enabled' : 'Disabled'}</li>
-    <li>Webhooks: ${this.config.webhookManager ? 'Enabled' : 'Disabled'}</li>
+    <li>CORS: ${this.config.enableCors ? "Enabled" : "Disabled"}</li>
+    <li>Rate Limiting: ${this.config.enableRateLimit ? `${this.config.rateLimit} req/min` : "Disabled"}</li>
+    <li>Multi-Tenant: ${this.config.tenantManager ? "Enabled" : "Disabled"}</li>
+    <li>Audit Logging: ${this.config.auditLogger ? "Enabled" : "Disabled"}</li>
+    <li>Webhooks: ${this.config.webhookManager ? "Enabled" : "Disabled"}</li>
   </ul>
 </body>
 </html>
@@ -775,7 +855,7 @@ export class APIServer {
     return {
       status: 200,
       body: html,
-      headers: { 'Content-Type': 'text/html' }
+      headers: { "Content-Type": "text/html" },
     };
   }
 
@@ -786,21 +866,21 @@ export class APIServer {
     return {
       status: 200,
       body: {
-        name: 'OpenRedaction API',
-        version: '1.0.0',
+        name: "OpenRedaction API",
+        version: "1.0.0",
         documentation: `/api/docs`,
         health: `/api/health`,
         endpoints: [
-          'POST /api/detect',
-          'POST /api/redact',
-          'POST /api/restore',
-          'GET /api/patterns',
-          'GET /api/audit/logs',
-          'GET /api/audit/stats',
-          'GET /api/metrics',
-          'GET /api/health'
-        ]
-      }
+          "POST /api/detect",
+          "POST /api/redact",
+          "POST /api/restore",
+          "GET /api/patterns",
+          "GET /api/audit/logs",
+          "GET /api/audit/stats",
+          "GET /api/metrics",
+          "GET /api/health",
+        ],
+      },
     };
   }
 
@@ -809,13 +889,13 @@ export class APIServer {
    */
   private sendResponse(res: any, response: APIResponse): void {
     const headers = {
-      'Content-Type': 'application/json',
-      ...response.headers
+      "Content-Type": "application/json",
+      ...response.headers,
     };
 
     res.writeHead(response.status, headers);
 
-    if (typeof response.body === 'string') {
+    if (typeof response.body === "string") {
       res.end(response.body);
     } else {
       res.end(JSON.stringify(response.body));
@@ -831,7 +911,7 @@ export class APIServer {
 
     // Remove timestamps older than 1 minute
     const oneMinuteAgo = now - 60 * 1000;
-    const recentTimestamps = timestamps.filter(ts => ts > oneMinuteAgo);
+    const recentTimestamps = timestamps.filter((ts) => ts > oneMinuteAgo);
 
     if (recentTimestamps.length >= this.config.rateLimit) {
       return false;

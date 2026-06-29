@@ -2,7 +2,7 @@
  * Compliance preset configurations
  */
 
-import { OpenRedactionOptions, PresetName } from '../types';
+import type { OpenRedactionOptions, PresetName } from "../types";
 
 /**
  * GDPR compliance preset - European Union data protection
@@ -13,22 +13,22 @@ export const gdprPreset: Partial<OpenRedactionOptions> = {
   includePhones: true,
   includeAddresses: true,
   patterns: [
-    'EMAIL',
-    'NAME',
-    'PHONE_UK',
-    'PHONE_UK_MOBILE',
-    'PHONE_INTERNATIONAL',
-    'IPV4',
-    'IPV6',
-    'POSTCODE_UK',
-    'ADDRESS_STREET',
-    'NATIONAL_INSURANCE_UK',
-    'NHS_NUMBER',
-    'PASSPORT_UK',
-    'DRIVING_LICENSE_UK',
-    'IBAN',
-    'CREDIT_CARD'
-  ]
+    "EMAIL",
+    "NAME",
+    "PHONE_UK",
+    "PHONE_UK_MOBILE",
+    "PHONE_INTERNATIONAL",
+    "IPV4",
+    "IPV6",
+    "POSTCODE_UK",
+    "ADDRESS_STREET",
+    "NATIONAL_INSURANCE_UK",
+    "NHS_NUMBER",
+    "PASSPORT_UK",
+    "DRIVING_LICENSE_UK",
+    "IBAN",
+    "CREDIT_CARD",
+  ],
 };
 
 /**
@@ -40,21 +40,21 @@ export const hipaaPreset: Partial<OpenRedactionOptions> = {
   includePhones: true,
   includeAddresses: true,
   patterns: [
-    'EMAIL',
-    'NAME',
-    'SSN',
-    'PHONE_US',
-    'ZIP_CODE_US',
-    'ADDRESS_STREET',
-    'DATE_OF_BIRTH',
-    'PASSPORT_US',
-    'DRIVING_LICENSE_US',
-    'CREDIT_CARD',
-    'BANK_ACCOUNT_UK',
-    'IPV4',
-    'IPV6',
-    'EMPLOYEE_ID'
-  ]
+    "EMAIL",
+    "NAME",
+    "SSN",
+    "PHONE_US",
+    "ZIP_CODE_US",
+    "ADDRESS_STREET",
+    "DATE_OF_BIRTH",
+    "PASSPORT_US",
+    "DRIVING_LICENSE_US",
+    "CREDIT_CARD",
+    "BANK_ACCOUNT_UK",
+    "IPV4",
+    "IPV6",
+    "EMPLOYEE_ID",
+  ],
 };
 
 /**
@@ -66,19 +66,19 @@ export const ccpaPreset: Partial<OpenRedactionOptions> = {
   includePhones: true,
   includeAddresses: true,
   patterns: [
-    'EMAIL',
-    'NAME',
-    'SSN',
-    'PHONE_US',
-    'ZIP_CODE_US',
-    'ADDRESS_STREET',
-    'IPV4',
-    'IPV6',
-    'CREDIT_CARD',
-    'PASSPORT_US',
-    'DRIVING_LICENSE_US',
-    'USERNAME'
-  ]
+    "EMAIL",
+    "NAME",
+    "SSN",
+    "PHONE_US",
+    "ZIP_CODE_US",
+    "ADDRESS_STREET",
+    "IPV4",
+    "IPV6",
+    "CREDIT_CARD",
+    "PASSPORT_US",
+    "DRIVING_LICENSE_US",
+    "USERNAME",
+  ],
 };
 
 /**
@@ -89,7 +89,7 @@ export const healthcarePreset: Partial<OpenRedactionOptions> = {
   includeEmails: true,
   includePhones: true,
   includeAddresses: true,
-  categories: ['personal', 'contact', 'healthcare', 'insurance', 'government']
+  categories: ["personal", "contact", "healthcare", "insurance", "government"],
 };
 
 /**
@@ -100,7 +100,7 @@ export const healthcareResearchPreset: Partial<OpenRedactionOptions> = {
   includeEmails: true,
   includePhones: true,
   includeAddresses: true,
-  categories: ['personal', 'contact', 'healthcare', 'insurance', 'government']
+  categories: ["personal", "contact", "healthcare", "insurance", "government"],
 };
 
 /**
@@ -111,7 +111,7 @@ export const financePreset: Partial<OpenRedactionOptions> = {
   includeEmails: true,
   includePhones: true,
   includeAddresses: true,
-  categories: ['personal', 'contact', 'financial', 'government', 'network']
+  categories: ["personal", "contact", "financial", "government", "network"],
 };
 
 /**
@@ -122,7 +122,7 @@ export const educationPreset: Partial<OpenRedactionOptions> = {
   includeEmails: true,
   includePhones: true,
   includeAddresses: true,
-  categories: ['personal', 'contact', 'education', 'government', 'network']
+  categories: ["personal", "contact", "education", "government", "network"],
 };
 
 /**
@@ -133,7 +133,14 @@ export const transportLogisticsPreset: Partial<OpenRedactionOptions> = {
   includeEmails: true,
   includePhones: true,
   includeAddresses: true,
-  categories: ['personal', 'contact', 'transportation', 'logistics', 'vehicles', 'network']
+  categories: [
+    "personal",
+    "contact",
+    "transportation",
+    "logistics",
+    "vehicles",
+    "network",
+  ],
 };
 
 /**
@@ -144,7 +151,7 @@ export const pciDssPreset: Partial<OpenRedactionOptions> = {
   includeEmails: true,
   includePhones: true,
   includeAddresses: true,
-  categories: ['personal', 'contact', 'financial', 'network']
+  categories: ["personal", "contact", "financial", "network"],
 };
 
 /**
@@ -155,7 +162,14 @@ export const soc2Preset: Partial<OpenRedactionOptions> = {
   includeEmails: true,
   includePhones: true,
   includeAddresses: true,
-  categories: ['personal', 'contact', 'financial', 'government', 'network', 'digital-identity']
+  categories: [
+    "personal",
+    "contact",
+    "financial",
+    "government",
+    "network",
+    "digital-identity",
+  ],
 };
 
 /**
@@ -165,31 +179,31 @@ export function getPreset(name: string): Partial<OpenRedactionOptions> {
   const presetName = name.toLowerCase() as PresetName | string;
 
   switch (presetName) {
-    case 'gdpr':
+    case "gdpr":
       return gdprPreset;
-    case 'hipaa':
+    case "hipaa":
       return hipaaPreset;
-    case 'ccpa':
+    case "ccpa":
       return ccpaPreset;
-    case 'healthcare':
-    case 'healthcare-provider':
+    case "healthcare":
+    case "healthcare-provider":
       return healthcarePreset;
-    case 'healthcare-research':
+    case "healthcare-research":
       return healthcareResearchPreset;
-    case 'finance':
-    case 'financial-services':
+    case "finance":
+    case "financial-services":
       return financePreset;
-    case 'education':
+    case "education":
       return educationPreset;
-    case 'transport-logistics':
-    case 'transportation':
-    case 'logistics':
+    case "transport-logistics":
+    case "transportation":
+    case "logistics":
       return transportLogisticsPreset;
-    case 'pci-dss':
-    case 'pci_dss':
+    case "pci-dss":
+    case "pci_dss":
       return pciDssPreset;
-    case 'soc2':
-    case 'soc-2':
+    case "soc2":
+    case "soc-2":
       return soc2Preset;
     default:
       return {};

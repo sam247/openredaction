@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { OpenRedactionOptions, PresetName } from '../types.js';
+import * as fs from "fs";
+import * as path from "path";
+import type { OpenRedactionOptions, PresetName } from "../types.js";
 
 export interface OpenRedactionConfig extends OpenRedactionOptions {
   extends?: string | string[];
@@ -19,11 +19,11 @@ export class ConfigLoader {
   private searchPaths: string[];
 
   constructor(configPath?: string, cwd: string = process.cwd()) {
-    this.configPath = configPath || '';
+    this.configPath = configPath || "";
     this.searchPaths = [
       cwd,
-      path.join(cwd, '.openredaction'),
-      path.join(process.env.HOME || '~', '.openredaction')
+      path.join(cwd, ".openredaction"),
+      path.join(process.env.HOME || "~", ".openredaction"),
     ];
   }
 
@@ -36,12 +36,12 @@ export class ConfigLoader {
     }
 
     const configNames = [
-      '.openredaction.config.js',
-      '.openredaction.config.mjs',
-      '.openredaction.config.json',
-      'openredaction.config.js',
-      'openredaction.config.mjs',
-      'openredaction.config.json'
+      ".openredaction.config.js",
+      ".openredaction.config.mjs",
+      ".openredaction.config.json",
+      "openredaction.config.js",
+      "openredaction.config.mjs",
+      "openredaction.config.json",
     ];
 
     for (const searchPath of this.searchPaths) {
@@ -67,8 +67,8 @@ export class ConfigLoader {
     }
 
     try {
-      if (configFile.endsWith('.json')) {
-        const content = fs.readFileSync(configFile, 'utf-8');
+      if (configFile.endsWith(".json")) {
+        const content = fs.readFileSync(configFile, "utf-8");
         return JSON.parse(content);
       }
 
@@ -89,7 +89,9 @@ export class ConfigLoader {
 
     // Handle extends
     if (config.extends) {
-      const presets = Array.isArray(config.extends) ? config.extends : [config.extends];
+      const presets = Array.isArray(config.extends)
+        ? config.extends
+        : [config.extends];
 
       for (const preset of presets) {
         const presetConfig = this.loadPreset(preset);
@@ -107,53 +109,53 @@ export class ConfigLoader {
    */
   private loadPreset(preset: string): OpenRedactionOptions | null {
     // Handle built-in presets
-    if (preset === 'openredaction:recommended') {
-      return {
-        includeNames: true,
-        includeAddresses: true,
-        includePhones: true,
-        includeEmails: true,
-        deterministic: true
-      };
-    }
-
-    if (preset === 'openredaction:strict') {
+    if (preset === "openredaction:recommended") {
       return {
         includeNames: true,
         includeAddresses: true,
         includePhones: true,
         includeEmails: true,
         deterministic: true,
-        preset: 'gdpr'
       };
     }
 
-    if (preset === 'openredaction:minimal') {
+    if (preset === "openredaction:strict") {
+      return {
+        includeNames: true,
+        includeAddresses: true,
+        includePhones: true,
+        includeEmails: true,
+        deterministic: true,
+        preset: "gdpr",
+      };
+    }
+
+    if (preset === "openredaction:minimal") {
       return {
         includeNames: false,
         includeAddresses: false,
         includePhones: true,
         includeEmails: true,
-        deterministic: true
+        deterministic: true,
       };
     }
 
     // Handle compliance presets
-    if (preset.startsWith('openredaction:')) {
-      const presetName = preset.replace('openredaction:', '') as PresetName;
+    if (preset.startsWith("openredaction:")) {
+      const presetName = preset.replace("openredaction:", "") as PresetName;
       const supportedPresets: PresetName[] = [
-        'gdpr',
-        'hipaa',
-        'ccpa',
-        'healthcare',
-        'healthcare-provider',
-        'healthcare-research',
-        'finance',
-        'financial-services',
-        'education',
-        'transport-logistics',
-        'transportation',
-        'logistics'
+        "gdpr",
+        "hipaa",
+        "ccpa",
+        "healthcare",
+        "healthcare-provider",
+        "healthcare-research",
+        "finance",
+        "financial-services",
+        "education",
+        "transport-logistics",
+        "transportation",
+        "logistics",
       ];
 
       if (supportedPresets.includes(presetName)) {
@@ -167,7 +169,9 @@ export class ConfigLoader {
   /**
    * Create a default config file
    */
-  static createDefaultConfig(outputPath: string = '.openredaction.config.js'): void {
+  static createDefaultConfig(
+    outputPath: string = ".openredaction.config.js",
+  ): void {
     const defaultConfig = `/**
  * OpenRedaction Configuration
  * @see https://github.com/sam247/openredaction

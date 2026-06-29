@@ -3,7 +3,7 @@
  * Social media, gaming platforms, and modern digital identifiers
  */
 
-import { PIIPattern } from '../types';
+import type { PIIPattern } from "../types";
 
 /**
  * Discord User ID (Snowflake)
@@ -11,23 +11,23 @@ import { PIIPattern } from '../types';
  * Example: 123456789012345678
  */
 export const DISCORD_USER_ID: PIIPattern = {
-  type: 'DISCORD_USER_ID',
+  type: "DISCORD_USER_ID",
   regex: /\b(\d{17,19})\b/g,
-  placeholder: '[DISCORD_ID_{n}]',
+  placeholder: "[DISCORD_ID_{n}]",
   priority: 85,
-  severity: 'medium',
-  description: 'Discord user ID (Snowflake format)',
+  severity: "medium",
+  description: "Discord user ID (Snowflake format)",
   validator: (value: string, context: string) => {
     // Normalize separators (though Discord IDs typically don't have them)
-    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
-    
+    const cleaned = value.replace(/[\s\u00A0.-]/g, "");
+
     // Must be 17-19 digits after normalization
     if (cleaned.length < 17 || cleaned.length > 19) return false;
-    
+
     // Context validation required (many numeric IDs could match)
     // This is the primary validation - snowflake timestamp validation is optional
     return /discord|snowflake|user[-_]?id|server|guild/i.test(context);
-  }
+  },
 };
 
 /**
@@ -36,21 +36,21 @@ export const DISCORD_USER_ID: PIIPattern = {
  * Example: 76561198012345678
  */
 export const STEAM_ID64: PIIPattern = {
-  type: 'STEAM_ID64',
+  type: "STEAM_ID64",
   regex: /\b(765\d{14})\b/g,
-  placeholder: '[STEAM_ID_{n}]',
+  placeholder: "[STEAM_ID_{n}]",
   priority: 85,
-  severity: 'medium',
-  description: 'Steam 64-bit user ID',
+  severity: "medium",
+  description: "Steam 64-bit user ID",
   validator: (value: string, context: string) => {
     // Normalize separators
-    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
-    
-    if (!cleaned.startsWith('765') || cleaned.length !== 17) return false;
+    const cleaned = value.replace(/[\s\u00A0.-]/g, "");
+
+    if (!cleaned.startsWith("765") || cleaned.length !== 17) return false;
 
     // Context validation
     return /steam|gaming|player|profile|valve|community/i.test(context);
-  }
+  },
 };
 
 /**
@@ -59,19 +59,21 @@ export const STEAM_ID64: PIIPattern = {
  * Covers Twitter, Instagram, TikTok, etc.
  */
 export const SOCIAL_MEDIA_HANDLE: PIIPattern = {
-  type: 'SOCIAL_MEDIA_HANDLE',
+  type: "SOCIAL_MEDIA_HANDLE",
   regex: /@([a-zA-Z0-9_]{3,30})\b/g,
-  placeholder: '[@HANDLE_{n}]',
+  placeholder: "[@HANDLE_{n}]",
   priority: 75,
-  severity: 'medium',
-  description: 'Social media handle/username',
+  severity: "medium",
+  description: "Social media handle/username",
   validator: (value: string, context: string) => {
     // Must be valid handle format
     if (value.length < 3 || value.length > 30) return false;
 
     // Context validation
-    return /twitter|instagram|tiktok|social|handle|profile|mention|tag/i.test(context);
-  }
+    return /twitter|instagram|tiktok|social|handle|profile|mention|tag/i.test(
+      context,
+    );
+  },
 };
 
 /**
@@ -80,19 +82,19 @@ export const SOCIAL_MEDIA_HANDLE: PIIPattern = {
  * Example: 12345678901234567
  */
 export const TWITTER_USER_ID: PIIPattern = {
-  type: 'TWITTER_USER_ID',
+  type: "TWITTER_USER_ID",
   regex: /\b(\d{5,19})\b/g,
-  placeholder: '[TWITTER_ID_{n}]',
+  placeholder: "[TWITTER_ID_{n}]",
   priority: 75,
-  severity: 'medium',
-  description: 'Twitter/X numeric user ID',
+  severity: "medium",
+  description: "Twitter/X numeric user ID",
   validator: (value: string, context: string) => {
     const length = value.length;
     if (length < 5 || length > 19) return false;
 
     // Context validation required for numeric ID
     return /twitter|tweet|@|user[-_]?id|x\.com/i.test(context);
-  }
+  },
 };
 
 /**
@@ -101,19 +103,19 @@ export const TWITTER_USER_ID: PIIPattern = {
  * Example: 100012345678901
  */
 export const FACEBOOK_ID: PIIPattern = {
-  type: 'FACEBOOK_ID',
+  type: "FACEBOOK_ID",
   regex: /\b(\d{15,17})\b/g,
-  placeholder: '[FB_ID_{n}]',
+  placeholder: "[FB_ID_{n}]",
   priority: 75,
-  severity: 'medium',
-  description: 'Facebook numeric profile ID',
+  severity: "medium",
+  description: "Facebook numeric profile ID",
   validator: (value: string, context: string) => {
     const length = value.length;
     if (length < 15 || length > 17) return false;
 
     // Context validation required
     return /facebook|fb|profile|meta|user[-_]?id/i.test(context);
-  }
+  },
 };
 
 /**
@@ -122,12 +124,12 @@ export const FACEBOOK_ID: PIIPattern = {
  * Example: user.name_123
  */
 export const INSTAGRAM_USERNAME: PIIPattern = {
-  type: 'INSTAGRAM_USERNAME',
+  type: "INSTAGRAM_USERNAME",
   regex: /\b([a-zA-Z0-9._]{3,30})\b/g,
-  placeholder: '[IG_USER_{n}]',
+  placeholder: "[IG_USER_{n}]",
   priority: 70,
-  severity: 'medium',
-  description: 'Instagram username',
+  severity: "medium",
+  description: "Instagram username",
   validator: (value: string, context: string) => {
     // Must be valid Instagram format
     if (value.length < 3 || value.length > 30) return false;
@@ -135,7 +137,7 @@ export const INSTAGRAM_USERNAME: PIIPattern = {
 
     // Context validation strongly required (avoid matching email parts)
     return /instagram|ig|insta|profile|handle|username|follow/i.test(context);
-  }
+  },
 };
 
 /**
@@ -144,18 +146,18 @@ export const INSTAGRAM_USERNAME: PIIPattern = {
  * Example: @user.name123
  */
 export const TIKTOK_USERNAME: PIIPattern = {
-  type: 'TIKTOK_USERNAME',
+  type: "TIKTOK_USERNAME",
   regex: /@([a-zA-Z0-9._]{2,24})\b/g,
-  placeholder: '[@TIKTOK_{n}]',
+  placeholder: "[@TIKTOK_{n}]",
   priority: 75,
-  severity: 'medium',
-  description: 'TikTok username',
+  severity: "medium",
+  description: "TikTok username",
   validator: (value: string, context: string) => {
     if (value.length < 2 || value.length > 24) return false;
 
     // Context validation
     return /tiktok|tt|video|profile|creator/i.test(context);
-  }
+  },
 };
 
 /**
@@ -164,18 +166,18 @@ export const TIKTOK_USERNAME: PIIPattern = {
  * Example: /in/john-smith-123456/
  */
 export const LINKEDIN_PROFILE: PIIPattern = {
-  type: 'LINKEDIN_PROFILE',
+  type: "LINKEDIN_PROFILE",
   regex: /\/in\/([a-zA-Z0-9-]{3,100})\/?/g,
-  placeholder: '[LINKEDIN_{n}]',
+  placeholder: "[LINKEDIN_{n}]",
   priority: 80,
-  severity: 'medium',
-  description: 'LinkedIn profile URL identifier',
+  severity: "medium",
+  description: "LinkedIn profile URL identifier",
   validator: (value: string, context: string) => {
     if (value.length < 3 || value.length > 100) return false;
 
     // Context validation
     return /linkedin|profile|professional|connection|network/i.test(context);
-  }
+  },
 };
 
 /**
@@ -184,18 +186,18 @@ export const LINKEDIN_PROFILE: PIIPattern = {
  * Example: UC1234567890abcdefghijk
  */
 export const YOUTUBE_CHANNEL_ID: PIIPattern = {
-  type: 'YOUTUBE_CHANNEL_ID',
+  type: "YOUTUBE_CHANNEL_ID",
   regex: /\b(UC[a-zA-Z0-9_-]{22})\b/g,
-  placeholder: '[YT_CHANNEL_{n}]',
+  placeholder: "[YT_CHANNEL_{n}]",
   priority: 75,
-  severity: 'low',
-  description: 'YouTube channel ID',
+  severity: "low",
+  description: "YouTube channel ID",
   validator: (value: string, context: string) => {
-    if (!value.startsWith('UC') || value.length !== 24) return false;
+    if (!value.startsWith("UC") || value.length !== 24) return false;
 
     // Context validation
     return /youtube|yt|channel|video|creator|subscriber/i.test(context);
-  }
+  },
 };
 
 /**
@@ -204,18 +206,18 @@ export const YOUTUBE_CHANNEL_ID: PIIPattern = {
  * Example: u/username123
  */
 export const REDDIT_USERNAME: PIIPattern = {
-  type: 'REDDIT_USERNAME',
+  type: "REDDIT_USERNAME",
   regex: /u\/([a-zA-Z0-9_-]{3,20})\b/g,
-  placeholder: '[REDDIT_{n}]',
+  placeholder: "[REDDIT_{n}]",
   priority: 75,
-  severity: 'medium',
-  description: 'Reddit username',
+  severity: "medium",
+  description: "Reddit username",
   validator: (value: string, context: string) => {
     if (value.length < 3 || value.length > 20) return false;
 
     // Context validation
     return /reddit|subreddit|post|comment|karma/i.test(context);
-  }
+  },
 };
 
 /**
@@ -224,19 +226,19 @@ export const REDDIT_USERNAME: PIIPattern = {
  * Example: GamerName123
  */
 export const XBOX_GAMERTAG: PIIPattern = {
-  type: 'XBOX_GAMERTAG',
+  type: "XBOX_GAMERTAG",
   regex: /\b([a-zA-Z][a-zA-Z0-9 ]{2,14})\b/g,
-  placeholder: '[XBOX_TAG_{n}]',
+  placeholder: "[XBOX_TAG_{n}]",
   priority: 70,
-  severity: 'medium',
-  description: 'Xbox Live Gamertag',
+  severity: "medium",
+  description: "Xbox Live Gamertag",
   validator: (value: string, context: string) => {
     if (value.length < 3 || value.length > 15) return false;
     if (!/^[a-zA-Z]/.test(value)) return false;
 
     // Context validation strongly required
     return /xbox|gamertag|live|microsoft|gaming|player/i.test(context);
-  }
+  },
 };
 
 /**
@@ -245,19 +247,19 @@ export const XBOX_GAMERTAG: PIIPattern = {
  * Example: PSN_User123
  */
 export const PSN_ID: PIIPattern = {
-  type: 'PSN_ID',
+  type: "PSN_ID",
   regex: /\b([a-zA-Z][a-zA-Z0-9_-]{2,15})\b/g,
-  placeholder: '[PSN_{n}]',
+  placeholder: "[PSN_{n}]",
   priority: 70,
-  severity: 'medium',
-  description: 'PlayStation Network ID',
+  severity: "medium",
+  description: "PlayStation Network ID",
   validator: (value: string, context: string) => {
     if (value.length < 3 || value.length > 16) return false;
     if (!/^[a-zA-Z]/.test(value)) return false;
 
     // Context validation required
     return /playstation|psn|sony|ps4|ps5|gamer|player/i.test(context);
-  }
+  },
 };
 
 /**
@@ -266,23 +268,23 @@ export const PSN_ID: PIIPattern = {
  * Example: SW-1234-5678-9012
  */
 export const NINTENDO_FRIEND_CODE: PIIPattern = {
-  type: 'NINTENDO_FRIEND_CODE',
-  regex: /\bSW[\-\s]?(\d{4}[\-\s]?\d{4}[\-\s]?\d{4})\b/gi,
-  placeholder: '[NINTENDO_FC_{n}]',
+  type: "NINTENDO_FRIEND_CODE",
+  regex: /\bSW[-\s]?(\d{4}[-\s]?\d{4}[-\s]?\d{4})\b/gi,
+  placeholder: "[NINTENDO_FC_{n}]",
   priority: 90,
-  severity: 'medium',
-  description: 'Nintendo Switch Friend Code',
+  severity: "medium",
+  description: "Nintendo Switch Friend Code",
   validator: (value: string, context: string) => {
-    const digits = value.replace(/\D/g, '');
+    const digits = value.replace(/\D/g, "");
     if (digits.length !== 12) return false;
 
     // Context validation - require Nintendo/Switch context (strict validation)
     // The format SW-XXXX-XXXX-XXXX is distinctive, but we still require context to avoid false positives
     const hasContext = /nintendo|switch|friend[- ]?code|gaming/i.test(context);
-    
+
     // Only allow if we have explicit Nintendo/Switch context
     return hasContext;
-  }
+  },
 };
 
 /**
@@ -291,22 +293,22 @@ export const NINTENDO_FRIEND_CODE: PIIPattern = {
  * Example: Player#12345
  */
 export const BATTLETAG: PIIPattern = {
-  type: 'BATTLETAG',
+  type: "BATTLETAG",
   regex: /\b([a-zA-Z][a-zA-Z0-9]{2,11}#\d{4,5})\b/g,
-  placeholder: '[BTAG_{n}]',
+  placeholder: "[BTAG_{n}]",
   priority: 80,
-  severity: 'medium',
-  description: 'Battle.net BattleTag',
+  severity: "medium",
+  description: "Battle.net BattleTag",
   validator: (value: string, context: string) => {
     // Value should be Name#NNNN format
-    const parts = value.split('#');
+    const parts = value.split("#");
     if (parts.length !== 2) return false;
     if (parts[0].length < 3 || parts[0].length > 12) return false;
     if (parts[1].length < 4 || parts[1].length > 5) return false;
 
     // Context validation
     return /battle|battletag|blizzard|overwatch|warcraft|diablo/i.test(context);
-  }
+  },
 };
 
 /**
@@ -315,19 +317,19 @@ export const BATTLETAG: PIIPattern = {
  * Example: 1234567890abcdef1234567890abcdef
  */
 export const EPIC_GAMES_ID: PIIPattern = {
-  type: 'EPIC_GAMES_ID',
+  type: "EPIC_GAMES_ID",
   regex: /\b([a-f0-9]{32})\b/gi,
-  placeholder: '[EPIC_ID_{n}]',
+  placeholder: "[EPIC_ID_{n}]",
   priority: 75,
-  severity: 'medium',
-  description: 'Epic Games account ID',
+  severity: "medium",
+  description: "Epic Games account ID",
   validator: (value: string, context: string) => {
     if (value.length !== 32) return false;
     if (!/^[a-f0-9]+$/i.test(value)) return false;
 
     // Context validation required
     return /epic|fortnite|unreal|games|launcher|account/i.test(context);
-  }
+  },
 };
 
 /**
@@ -336,19 +338,19 @@ export const EPIC_GAMES_ID: PIIPattern = {
  * Example: 123456789
  */
 export const TELEGRAM_USER_ID: PIIPattern = {
-  type: 'TELEGRAM_USER_ID',
+  type: "TELEGRAM_USER_ID",
   regex: /\b(\d{6,10})\b/g,
-  placeholder: '[TG_ID_{n}]',
+  placeholder: "[TG_ID_{n}]",
   priority: 70,
-  severity: 'medium',
-  description: 'Telegram user ID',
+  severity: "medium",
+  description: "Telegram user ID",
   validator: (value: string, context: string) => {
     const length = value.length;
     if (length < 6 || length > 10) return false;
 
     // Context validation required
     return /telegram|tg|chat|user[-_]?id|messenger/i.test(context);
-  }
+  },
 };
 
 // Export all digital identity patterns
@@ -368,5 +370,5 @@ export const digitalIdentityPatterns: PIIPattern[] = [
   NINTENDO_FRIEND_CODE,
   BATTLETAG,
   EPIC_GAMES_ID,
-  TELEGRAM_USER_ID
+  TELEGRAM_USER_ID,
 ];

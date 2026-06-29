@@ -1,17 +1,16 @@
-import nextra from 'nextra'
+import nextra from "nextra";
 
 const withNextra = nextra({
-  theme: 'nextra-theme-docs',
-  themeConfig: './theme.config.tsx',
-})
+  theme: "nextra-theme-docs",
+  themeConfig: "./theme.config.tsx",
+});
 
 export default withNextra({
   // Serve docs under /docs on the main site
-  basePath: '/docs',
+  basePath: "/docs",
   // Export a fully static version we can host from the main app's public folder
-  output: 'export',
+  output: "export",
   images: {
     unoptimized: true,
   },
-})
-
+});

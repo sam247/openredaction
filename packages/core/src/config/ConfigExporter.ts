@@ -3,7 +3,7 @@
  * Share configurations between projects and version control
  */
 
-import type { OpenRedactionOptions, PIIPattern } from '../types';
+import type { OpenRedactionOptions, PIIPattern } from "../types";
 
 export interface ExportedConfig {
   version: string; // Config version for compatibility
@@ -47,7 +47,7 @@ export interface ExportedConfig {
 }
 
 export class ConfigExporter {
-  private static readonly CONFIG_VERSION = '1.0';
+  private static readonly CONFIG_VERSION = "1.0";
 
   /**
    * Export configuration to JSON
@@ -62,10 +62,10 @@ export class ConfigExporter {
       description?: string;
       author?: string;
       tags?: string[];
-    }
+    },
   ): ExportedConfig {
     const exported: ExportedConfig = {
-      version: this.CONFIG_VERSION,
+      version: ConfigExporter.CONFIG_VERSION,
       timestamp: new Date().toISOString(),
       options: {
         includeNames: options.includeNames,
@@ -87,21 +87,21 @@ export class ConfigExporter {
         enableCache: options.enableCache,
         cacheSize: options.cacheSize,
         maxInputSize: options.maxInputSize,
-        regexTimeout: options.regexTimeout
+        regexTimeout: options.regexTimeout,
       },
-      metadata
+      metadata,
     };
 
     // Export custom patterns if present
     if (options.customPatterns && options.customPatterns.length > 0) {
-      exported.customPatterns = options.customPatterns.map(p => ({
+      exported.customPatterns = options.customPatterns.map((p) => ({
         type: p.type,
         regex: p.regex.source,
         flags: p.regex.flags,
         priority: p.priority,
         placeholder: p.placeholder,
         description: p.description,
-        severity: p.severity
+        severity: p.severity,
       }));
     }
 
@@ -117,16 +117,19 @@ export class ConfigExporter {
     _options?: {
       mergeWithDefaults?: boolean;
       validatePatterns?: boolean;
-    }
+    },
   ): OpenRedactionOptions & {
     categories?: string[];
     maxInputSize?: number;
     regexTimeout?: number;
   } {
     // Validate version compatibility
-    if (!exported.version || exported.version !== this.CONFIG_VERSION) {
+    if (
+      !exported.version ||
+      exported.version !== ConfigExporter.CONFIG_VERSION
+    ) {
       console.warn(
-        `[OpenRedaction] Config version mismatch. Expected ${this.CONFIG_VERSION}, got ${exported.version}`
+        `[OpenRedaction] Config version mismatch. Expected ${ConfigExporter.CONFIG_VERSION}, got ${exported.version}`,
       );
     }
 
@@ -134,14 +137,14 @@ export class ConfigExporter {
 
     // Reconstruct custom patterns
     if (exported.customPatterns) {
-      config.customPatterns = exported.customPatterns.map(p => {
+      config.customPatterns = exported.customPatterns.map((p) => {
         const pattern: PIIPattern = {
           type: p.type,
           regex: new RegExp(p.regex, p.flags),
           priority: p.priority,
           placeholder: p.placeholder,
           description: p.description,
-          severity: p.severity as any
+          severity: p.severity as any,
         };
         return pattern;
       });
@@ -164,9 +167,9 @@ export class ConfigExporter {
       author?: string;
       tags?: string[];
     },
-    pretty?: boolean
+    pretty?: boolean,
   ): string {
-    const exported = this.exportConfig(options, metadata);
+    const exported = ConfigExporter.exportConfig(options, metadata);
     return JSON.stringify(exported, null, pretty ? 2 : undefined);
   }
 
@@ -179,7 +182,7 @@ export class ConfigExporter {
     regexTimeout?: number;
   } {
     const exported: ExportedConfig = JSON.parse(json);
-    return this.importConfig(exported);
+    return ConfigExporter.importConfig(exported);
   }
 
   /**
@@ -196,24 +199,26 @@ export class ConfigExporter {
       description?: string;
       author?: string;
       tags?: string[];
-    }
+    },
   ): Promise<void> {
-    const fs = await import('fs/promises');
-    const content = this.exportToString(options, metadata, true);
-    await fs.writeFile(filePath, content, 'utf-8');
+    const fs = await import("fs/promises");
+    const content = ConfigExporter.exportToString(options, metadata, true);
+    await fs.writeFile(filePath, content, "utf-8");
   }
 
   /**
    * Import configuration from file (Node.js only)
    */
-  static async importFromFile(filePath: string): Promise<OpenRedactionOptions & {
-    categories?: string[];
-    maxInputSize?: number;
-    regexTimeout?: number;
-  }> {
-    const fs = await import('fs/promises');
-    const content = await fs.readFile(filePath, 'utf-8');
-    return this.importFromString(content);
+  static async importFromFile(filePath: string): Promise<
+    OpenRedactionOptions & {
+      categories?: string[];
+      maxInputSize?: number;
+      regexTimeout?: number;
+    }
+  > {
+    const fs = await import("fs/promises");
+    const content = await fs.readFile(filePath, "utf-8");
+    return ConfigExporter.importFromString(content);
   }
 
   /**
@@ -226,15 +231,15 @@ export class ConfigExporter {
     const errors: string[] = [];
 
     if (!exported.version) {
-      errors.push('Missing version field');
+      errors.push("Missing version field");
     }
 
     if (!exported.timestamp) {
-      errors.push('Missing timestamp field');
+      errors.push("Missing timestamp field");
     }
 
     if (!exported.options) {
-      errors.push('Missing options field');
+      errors.push("Missing options field");
     }
 
     // Validate custom patterns if present
@@ -247,14 +252,16 @@ export class ConfigExporter {
         try {
           new RegExp(pattern.regex, pattern.flags);
         } catch (e) {
-          errors.push(`Invalid regex in pattern ${pattern.type}: ${(e as Error).message}`);
+          errors.push(
+            `Invalid regex in pattern ${pattern.type}: ${(e as Error).message}`,
+          );
         }
       }
     }
 
     return {
       valid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -263,10 +270,10 @@ export class ConfigExporter {
    */
   static mergeConfigs(
     base: ExportedConfig,
-    override: ExportedConfig
+    override: ExportedConfig,
   ): ExportedConfig {
     return {
-      version: this.CONFIG_VERSION,
+      version: ConfigExporter.CONFIG_VERSION,
       timestamp: new Date().toISOString(),
       options: {
         ...base.options,
@@ -276,17 +283,17 @@ export class ConfigExporter {
         categories: override.options.categories || base.options.categories,
         whitelist: [
           ...(base.options.whitelist || []),
-          ...(override.options.whitelist || [])
-        ]
+          ...(override.options.whitelist || []),
+        ],
       },
       customPatterns: [
         ...(base.customPatterns || []),
-        ...(override.customPatterns || [])
+        ...(override.customPatterns || []),
       ],
       metadata: {
         ...base.metadata,
-        ...override.metadata
-      }
+        ...override.metadata,
+      },
     };
   }
 }
@@ -305,12 +312,16 @@ export function createConfigPreset(
     categories?: string[];
     maxInputSize?: number;
     regexTimeout?: number;
-  }
+  },
 ): string {
-  return ConfigExporter.exportToString(options, {
-    description: `${name}: ${description}`,
-    tags: [name, 'preset']
-  }, true);
+  return ConfigExporter.exportToString(
+    options,
+    {
+      description: `${name}: ${description}`,
+      tags: [name, "preset"],
+    },
+    true,
+  );
 }
 
 /**
@@ -321,11 +332,15 @@ export function exportForVersionControl(
     categories?: string[];
     maxInputSize?: number;
     regexTimeout?: number;
-  }
+  },
 ): string {
-  return ConfigExporter.exportToString(options, {
-    description: 'OpenRedaction configuration',
-    author: 'Generated automatically',
-    tags: ['version-control']
-  }, true);
+  return ConfigExporter.exportToString(
+    options,
+    {
+      description: "OpenRedaction configuration",
+      author: "Generated automatically",
+      tags: ["version-control"],
+    },
+    true,
+  );
 }

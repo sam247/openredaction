@@ -6,10 +6,10 @@
  * static analysis and supply-chain scanners).
  */
 
-export { APIServer, createAPIServer } from './api';
-export type { APIServerConfig, APIRequest, APIResponse } from './api';
+export type { APIRequest, APIResponse, APIServerConfig } from "./api";
+export { APIServer, createAPIServer } from "./api";
+export type { PrometheusServerOptions } from "./metrics/PrometheusServer";
 export {
+  createPrometheusServer,
   PrometheusServer,
-  createPrometheusServer
-} from './metrics/PrometheusServer';
-export type { PrometheusServerOptions } from './metrics/PrometheusServer';
+} from "./metrics/PrometheusServer";

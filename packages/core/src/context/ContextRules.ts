@@ -3,7 +3,7 @@
  * Defines proximity-based rules and keyword patterns for confidence boosting
  */
 
-import type { PIIMatch } from '../types';
+import type { PIIMatch } from "../types";
 
 /**
  * Proximity rule for context-based confidence adjustment
@@ -32,7 +32,7 @@ export interface ProximityRule {
  */
 export interface DomainVocabulary {
   /** Domain name */
-  domain: 'medical' | 'legal' | 'financial' | 'technical' | 'hr' | 'custom';
+  domain: "medical" | "legal" | "financial" | "technical" | "hr" | "custom";
   /** Domain-specific terms */
   terms: string[];
   /** Pattern types to boost in this domain */
@@ -59,152 +59,200 @@ export interface ContextRulesConfig {
 export const DEFAULT_PROXIMITY_RULES: ProximityRule[] = [
   // EMAIL rules
   {
-    patternType: 'EMAIL',
-    keywords: ['email', 'e-mail', 'contact', 'reach', 'write', 'send to'],
+    patternType: "EMAIL",
+    keywords: ["email", "e-mail", "contact", "reach", "write", "send to"],
     proximityWindow: 5,
     confidenceBoost: 0.2,
     keywordBefore: true,
-    description: 'Email preceded by email-related keywords'
+    description: "Email preceded by email-related keywords",
   },
   {
-    patternType: 'EMAIL',
-    keywords: ['example', 'test', 'sample', 'demo'],
+    patternType: "EMAIL",
+    keywords: ["example", "test", "sample", "demo"],
     proximityWindow: 8,
     confidencePenalty: 0.25,
-    description: 'Email near test/example keywords'
+    description: "Email near test/example keywords",
   },
 
   // PHONE rules
   {
-    patternType: ['PHONE', 'PHONE_UK', 'PHONE_US', 'PHONE_UK_MOBILE'],
-    keywords: ['call', 'phone', 'tel', 'telephone', 'mobile', 'cell', 'ring', 'dial'],
+    patternType: ["PHONE", "PHONE_UK", "PHONE_US", "PHONE_UK_MOBILE"],
+    keywords: [
+      "call",
+      "phone",
+      "tel",
+      "telephone",
+      "mobile",
+      "cell",
+      "ring",
+      "dial",
+    ],
     proximityWindow: 5,
     confidenceBoost: 0.2,
     keywordBefore: true,
-    description: 'Phone number preceded by phone-related keywords'
+    description: "Phone number preceded by phone-related keywords",
   },
   {
-    patternType: ['PHONE', 'PHONE_UK', 'PHONE_US'],
-    keywords: ['fax', 'fax number'],
+    patternType: ["PHONE", "PHONE_UK", "PHONE_US"],
+    keywords: ["fax", "fax number"],
     proximityWindow: 5,
     confidencePenalty: 0.15,
-    description: 'Likely a fax number, not personal phone'
+    description: "Likely a fax number, not personal phone",
   },
 
   // NAME rules
   {
-    patternType: 'NAME',
-    keywords: ['mr', 'mrs', 'ms', 'miss', 'dr', 'prof', 'professor', 'dear', 'hello', 'hi'],
+    patternType: "NAME",
+    keywords: [
+      "mr",
+      "mrs",
+      "ms",
+      "miss",
+      "dr",
+      "prof",
+      "professor",
+      "dear",
+      "hello",
+      "hi",
+    ],
     proximityWindow: 3,
     confidenceBoost: 0.25,
     keywordBefore: true,
-    description: 'Name preceded by salutation'
+    description: "Name preceded by salutation",
   },
   {
-    patternType: 'NAME',
-    keywords: ['said', 'wrote', 'told', 'asked', 'replied', 'mentioned', 'stated'],
+    patternType: "NAME",
+    keywords: [
+      "said",
+      "wrote",
+      "told",
+      "asked",
+      "replied",
+      "mentioned",
+      "stated",
+    ],
     proximityWindow: 5,
     confidenceBoost: 0.15,
     keywordBefore: true,
-    description: 'Name preceded by speech verb'
+    description: "Name preceded by speech verb",
   },
   {
-    patternType: 'NAME',
-    keywords: ['the', 'a', 'an', 'this', 'that'],
+    patternType: "NAME",
+    keywords: ["the", "a", "an", "this", "that"],
     proximityWindow: 1,
     confidencePenalty: 0.3,
     keywordBefore: true,
-    description: 'Preceded by article - likely not a name'
+    description: "Preceded by article - likely not a name",
   },
 
   // SSN rules
   {
-    patternType: 'SSN',
-    keywords: ['ssn', 'social security', 'social security number', 'social-security'],
+    patternType: "SSN",
+    keywords: [
+      "ssn",
+      "social security",
+      "social security number",
+      "social-security",
+    ],
     proximityWindow: 8,
     confidenceBoost: 0.25,
-    description: 'SSN near SSN-related keywords'
+    description: "SSN near SSN-related keywords",
   },
   {
-    patternType: 'SSN',
-    keywords: ['example', 'test', 'sample', '123-45-6789', '000-00-0000'],
+    patternType: "SSN",
+    keywords: ["example", "test", "sample", "123-45-6789", "000-00-0000"],
     proximityWindow: 10,
     confidencePenalty: 0.4,
-    description: 'SSN near example/test keywords or obvious test SSN'
+    description: "SSN near example/test keywords or obvious test SSN",
   },
 
   // ACCOUNT rules
   {
-    patternType: ['BANK_ACCOUNT', 'ACCOUNT_NUMBER', 'IBAN', 'SWIFT'],
-    keywords: ['account', 'acct', 'account number', 'account#', 'bank account'],
+    patternType: ["BANK_ACCOUNT", "ACCOUNT_NUMBER", "IBAN", "SWIFT"],
+    keywords: ["account", "acct", "account number", "account#", "bank account"],
     proximityWindow: 8,
     confidenceBoost: 0.2,
-    description: 'Account number near account-related keywords'
+    description: "Account number near account-related keywords",
   },
 
   // CREDIT CARD rules (English + Japanese and other card-related terms)
   {
-    patternType: 'CREDIT_CARD',
+    patternType: "CREDIT_CARD",
     keywords: [
-      'card', 'credit card', 'debit card', 'visa', 'mastercard', 'amex', 'discover',
-      'カード', 'クレジット', '番号'
+      "card",
+      "credit card",
+      "debit card",
+      "visa",
+      "mastercard",
+      "amex",
+      "discover",
+      "カード",
+      "クレジット",
+      "番号",
     ],
     proximityWindow: 8,
     confidenceBoost: 0.2,
-    description: 'Card number near card-related keywords'
+    description: "Card number near card-related keywords",
   },
   {
-    patternType: 'CREDIT_CARD',
-    keywords: ['test', 'example', '4111', '4111111111111111'],
+    patternType: "CREDIT_CARD",
+    keywords: ["test", "example", "4111", "4111111111111111"],
     proximityWindow: 10,
     confidencePenalty: 0.35,
-    description: 'Near test card numbers'
+    description: "Near test card numbers",
   },
 
   // ADDRESS rules
   {
-    patternType: ['ADDRESS', 'STREET_ADDRESS'],
-    keywords: ['address', 'street', 'lives at', 'located at', 'residing at'],
+    patternType: ["ADDRESS", "STREET_ADDRESS"],
+    keywords: ["address", "street", "lives at", "located at", "residing at"],
     proximityWindow: 8,
     confidenceBoost: 0.15,
-    description: 'Address near address-related keywords'
+    description: "Address near address-related keywords",
   },
 
   // MEDICAL rules
   {
-    patternType: ['MRN', 'PATIENT_ID', 'NHS_NUMBER', 'MEDICAL_RECORD'],
-    keywords: ['patient', 'subject', 'participant', 'mrn', 'medical record'],
+    patternType: ["MRN", "PATIENT_ID", "NHS_NUMBER", "MEDICAL_RECORD"],
+    keywords: ["patient", "subject", "participant", "mrn", "medical record"],
     proximityWindow: 8,
     confidenceBoost: 0.25,
-    description: 'Medical ID near medical keywords'
+    description: "Medical ID near medical keywords",
   },
 
   // DATE OF BIRTH rules
   {
-    patternType: 'DATE_OF_BIRTH',
-    keywords: ['dob', 'date of birth', 'birth date', 'birthdate', 'born', 'birthday'],
+    patternType: "DATE_OF_BIRTH",
+    keywords: [
+      "dob",
+      "date of birth",
+      "birth date",
+      "birthdate",
+      "born",
+      "birthday",
+    ],
     proximityWindow: 8,
     confidenceBoost: 0.25,
-    description: 'DOB near birth-related keywords'
+    description: "DOB near birth-related keywords",
   },
 
   // PASSPORT rules
   {
-    patternType: 'PASSPORT',
-    keywords: ['passport', 'passport number', 'passport#'],
+    patternType: "PASSPORT",
+    keywords: ["passport", "passport number", "passport#"],
     proximityWindow: 8,
     confidenceBoost: 0.2,
-    description: 'Passport near passport keywords'
+    description: "Passport near passport keywords",
   },
 
   // DRIVER LICENSE rules
   {
-    patternType: ['DRIVERS_LICENSE', 'DRIVING_LICENCE'],
-    keywords: ['license', 'licence', 'driver', 'driving', 'dl#', 'dl number'],
+    patternType: ["DRIVERS_LICENSE", "DRIVING_LICENCE"],
+    keywords: ["license", "licence", "driver", "driving", "dl#", "dl number"],
     proximityWindow: 8,
     confidenceBoost: 0.2,
-    description: 'License near license keywords'
-  }
+    description: "License near license keywords",
+  },
 ];
 
 /**
@@ -212,59 +260,173 @@ export const DEFAULT_PROXIMITY_RULES: ProximityRule[] = [
  */
 export const DEFAULT_DOMAIN_VOCABULARIES: DomainVocabulary[] = [
   {
-    domain: 'medical',
+    domain: "medical",
     terms: [
-      'patient', 'doctor', 'physician', 'nurse', 'hospital', 'clinic', 'medical',
-      'health', 'diagnosis', 'treatment', 'prescription', 'medication', 'surgery',
-      'exam', 'test', 'lab', 'specimen', 'chart', 'record', 'mrn', 'hipaa',
-      'healthcare', 'practitioner', 'provider', 'pharmacy', 'radiology'
+      "patient",
+      "doctor",
+      "physician",
+      "nurse",
+      "hospital",
+      "clinic",
+      "medical",
+      "health",
+      "diagnosis",
+      "treatment",
+      "prescription",
+      "medication",
+      "surgery",
+      "exam",
+      "test",
+      "lab",
+      "specimen",
+      "chart",
+      "record",
+      "mrn",
+      "hipaa",
+      "healthcare",
+      "practitioner",
+      "provider",
+      "pharmacy",
+      "radiology",
     ],
-    boostPatterns: ['MRN', 'PATIENT_ID', 'NHS_NUMBER', 'NPI', 'DEA', 'MEDICAL'],
-    boostAmount: 0.15
+    boostPatterns: ["MRN", "PATIENT_ID", "NHS_NUMBER", "NPI", "DEA", "MEDICAL"],
+    boostAmount: 0.15,
   },
   {
-    domain: 'legal',
+    domain: "legal",
     terms: [
-      'case', 'court', 'judge', 'attorney', 'lawyer', 'counsel', 'plaintiff',
-      'defendant', 'lawsuit', 'litigation', 'docket', 'tribunal', 'hearing',
-      'deposition', 'subpoena', 'warrant', 'verdict', 'settlement', 'contract',
-      'agreement', 'legal', 'law', 'bar number', 'case number'
+      "case",
+      "court",
+      "judge",
+      "attorney",
+      "lawyer",
+      "counsel",
+      "plaintiff",
+      "defendant",
+      "lawsuit",
+      "litigation",
+      "docket",
+      "tribunal",
+      "hearing",
+      "deposition",
+      "subpoena",
+      "warrant",
+      "verdict",
+      "settlement",
+      "contract",
+      "agreement",
+      "legal",
+      "law",
+      "bar number",
+      "case number",
     ],
-    boostPatterns: ['CASE_NUMBER', 'DOCKET', 'BAR_NUMBER', 'LEGAL'],
-    boostAmount: 0.15
+    boostPatterns: ["CASE_NUMBER", "DOCKET", "BAR_NUMBER", "LEGAL"],
+    boostAmount: 0.15,
   },
   {
-    domain: 'financial',
+    domain: "financial",
     terms: [
-      'bank', 'account', 'payment', 'transaction', 'transfer', 'wire', 'credit',
-      'debit', 'balance', 'deposit', 'withdrawal', 'loan', 'mortgage', 'investment',
-      'trading', 'stock', 'bond', 'portfolio', 'iban', 'swift', 'routing',
-      'bic', 'ach', 'financial', 'finance', 'money', 'currency', 'crypto'
+      "bank",
+      "account",
+      "payment",
+      "transaction",
+      "transfer",
+      "wire",
+      "credit",
+      "debit",
+      "balance",
+      "deposit",
+      "withdrawal",
+      "loan",
+      "mortgage",
+      "investment",
+      "trading",
+      "stock",
+      "bond",
+      "portfolio",
+      "iban",
+      "swift",
+      "routing",
+      "bic",
+      "ach",
+      "financial",
+      "finance",
+      "money",
+      "currency",
+      "crypto",
     ],
-    boostPatterns: ['BANK_ACCOUNT', 'IBAN', 'SWIFT', 'ROUTING', 'CREDIT_CARD', 'BITCOIN'],
-    boostAmount: 0.15
+    boostPatterns: [
+      "BANK_ACCOUNT",
+      "IBAN",
+      "SWIFT",
+      "ROUTING",
+      "CREDIT_CARD",
+      "BITCOIN",
+    ],
+    boostAmount: 0.15,
   },
   {
-    domain: 'hr',
+    domain: "hr",
     terms: [
-      'employee', 'staff', 'personnel', 'workforce', 'human resources', 'hr',
-      'payroll', 'salary', 'compensation', 'benefits', 'onboarding', 'offboarding',
-      'termination', 'resignation', 'promotion', 'performance', 'review',
-      'evaluation', 'disciplinary', 'complaint', 'grievance', 'harassment'
+      "employee",
+      "staff",
+      "personnel",
+      "workforce",
+      "human resources",
+      "hr",
+      "payroll",
+      "salary",
+      "compensation",
+      "benefits",
+      "onboarding",
+      "offboarding",
+      "termination",
+      "resignation",
+      "promotion",
+      "performance",
+      "review",
+      "evaluation",
+      "disciplinary",
+      "complaint",
+      "grievance",
+      "harassment",
     ],
-    boostPatterns: ['EMPLOYEE_ID', 'PAYROLL', 'HR'],
-    boostAmount: 0.15
+    boostPatterns: ["EMPLOYEE_ID", "PAYROLL", "HR"],
+    boostAmount: 0.15,
   },
   {
-    domain: 'technical',
+    domain: "technical",
     terms: [
-      'api', 'key', 'token', 'secret', 'password', 'credential', 'auth',
-      'authentication', 'authorization', 'oauth', 'jwt', 'bearer', 'session',
-      'access', 'refresh', 'client', 'server', 'endpoint', 'webhook', 'sdk'
+      "api",
+      "key",
+      "token",
+      "secret",
+      "password",
+      "credential",
+      "auth",
+      "authentication",
+      "authorization",
+      "oauth",
+      "jwt",
+      "bearer",
+      "session",
+      "access",
+      "refresh",
+      "client",
+      "server",
+      "endpoint",
+      "webhook",
+      "sdk",
     ],
-    boostPatterns: ['API_KEY', 'JWT', 'BEARER_TOKEN', 'AWS_ACCESS_KEY', 'SECRET'],
-    boostAmount: 0.2
-  }
+    boostPatterns: [
+      "API_KEY",
+      "JWT",
+      "BEARER_TOKEN",
+      "AWS_ACCESS_KEY",
+      "SECRET",
+    ],
+    boostAmount: 0.2,
+  },
 ];
 
 /**
@@ -279,28 +441,25 @@ export class ContextRulesEngine {
 
     this.proximityRules = [
       ...(useDefaults ? DEFAULT_PROXIMITY_RULES : []),
-      ...(config?.proximityRules || [])
+      ...(config?.proximityRules || []),
     ];
 
     this.domainVocabularies = [
       ...(useDefaults ? DEFAULT_DOMAIN_VOCABULARIES : []),
-      ...(config?.domainVocabularies || [])
+      ...(config?.domainVocabularies || []),
     ];
   }
 
   /**
    * Apply proximity rules to adjust confidence
    */
-  applyProximityRules(
-    match: PIIMatch,
-    text: string
-  ): PIIMatch {
+  applyProximityRules(match: PIIMatch, text: string): PIIMatch {
     let adjustedConfidence = match.confidence;
 
     // Find applicable rules for this pattern type
-    const applicableRules = this.proximityRules.filter(rule => {
+    const applicableRules = this.proximityRules.filter((rule) => {
       if (Array.isArray(rule.patternType)) {
-        return rule.patternType.some(type => match.type.includes(type));
+        return rule.patternType.some((type) => match.type.includes(type));
       }
       return match.type.includes(rule.patternType);
     });
@@ -313,7 +472,7 @@ export class ContextRulesEngine {
         rule.keywords,
         rule.proximityWindow || 10,
         rule.keywordBefore,
-        rule.keywordAfter
+        rule.keywordAfter,
       );
 
       if (hasKeyword) {
@@ -331,17 +490,14 @@ export class ContextRulesEngine {
 
     return {
       ...match,
-      confidence: adjustedConfidence
+      confidence: adjustedConfidence,
     };
   }
 
   /**
    * Apply domain vocabulary boosting
    */
-  applyDomainBoosting(
-    matches: PIIMatch[],
-    text: string
-  ): PIIMatch[] {
+  applyDomainBoosting(matches: PIIMatch[], text: string): PIIMatch[] {
     // Detect which domain(s) the text belongs to
     const detectedDomains = this.detectDomains(text);
 
@@ -350,16 +506,18 @@ export class ContextRulesEngine {
     }
 
     // Apply domain-specific boosts
-    return matches.map(match => {
+    return matches.map((match) => {
       let boosted = false;
       let adjustedConfidence = match.confidence;
 
       for (const domain of detectedDomains) {
-        const vocabulary = this.domainVocabularies.find(v => v.domain === domain);
+        const vocabulary = this.domainVocabularies.find(
+          (v) => v.domain === domain,
+        );
 
         if (vocabulary && vocabulary.boostPatterns) {
-          const shouldBoost = vocabulary.boostPatterns.some(pattern =>
-            match.type.includes(pattern)
+          const shouldBoost = vocabulary.boostPatterns.some((pattern) =>
+            match.type.includes(pattern),
           );
 
           if (shouldBoost) {
@@ -372,7 +530,7 @@ export class ContextRulesEngine {
       if (boosted) {
         return {
           ...match,
-          confidence: Math.min(1, adjustedConfidence)
+          confidence: Math.min(1, adjustedConfidence),
         };
       }
 
@@ -390,23 +548,29 @@ export class ContextRulesEngine {
     keywords: string[],
     proximityWindow: number,
     keywordBefore?: boolean,
-    keywordAfter?: boolean
+    keywordAfter?: boolean,
   ): boolean {
     // Extract context before and after match
-    const beforeText = text.substring(Math.max(0, matchStart - 500), matchStart);
-    const afterText = text.substring(matchEnd, Math.min(text.length, matchEnd + 500));
+    const beforeText = text.substring(
+      Math.max(0, matchStart - 500),
+      matchStart,
+    );
+    const afterText = text.substring(
+      matchEnd,
+      Math.min(text.length, matchEnd + 500),
+    );
 
     // Split into words
-    const beforeWords = beforeText.split(/\s+/).filter(w => w.length > 0);
-    const afterWords = afterText.split(/\s+/).filter(w => w.length > 0);
+    const beforeWords = beforeText.split(/\s+/).filter((w) => w.length > 0);
+    const afterWords = afterText.split(/\s+/).filter((w) => w.length > 0);
 
     // Get proximity window
     const beforeWindowWords = beforeWords.slice(-proximityWindow);
     const afterWindowWords = afterWords.slice(0, proximityWindow);
 
     // Check for keywords
-    const beforeLower = beforeWindowWords.join(' ').toLowerCase();
-    const afterLower = afterWindowWords.join(' ').toLowerCase();
+    const beforeLower = beforeWindowWords.join(" ").toLowerCase();
+    const afterLower = afterWindowWords.join(" ").toLowerCase();
 
     for (const keyword of keywords) {
       const keywordLower = keyword.toLowerCase();
@@ -421,7 +585,10 @@ export class ContextRulesEngine {
 
       if (!keywordBefore && !keywordAfter) {
         // Check both directions
-        if (beforeLower.includes(keywordLower) || afterLower.includes(keywordLower)) {
+        if (
+          beforeLower.includes(keywordLower) ||
+          afterLower.includes(keywordLower)
+        ) {
           return true;
         }
       }
@@ -433,9 +600,9 @@ export class ContextRulesEngine {
   /**
    * Detect which domains the text belongs to
    */
-  private detectDomains(text: string): DomainVocabulary['domain'][] {
+  private detectDomains(text: string): DomainVocabulary["domain"][] {
     const textLower = text.toLowerCase();
-    const detectedDomains: DomainVocabulary['domain'][] = [];
+    const detectedDomains: DomainVocabulary["domain"][] = [];
 
     for (const vocabulary of this.domainVocabularies) {
       let termCount = 0;
@@ -487,6 +654,8 @@ export class ContextRulesEngine {
 /**
  * Create a context rules engine instance
  */
-export function createContextRulesEngine(config?: ContextRulesConfig): ContextRulesEngine {
+export function createContextRulesEngine(
+  config?: ContextRulesConfig,
+): ContextRulesEngine {
   return new ContextRulesEngine(config);
 }

@@ -1,14 +1,16 @@
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import Link from 'next/link';
-import { generatePageMetadata } from '@/lib/metadata';
-import type { Metadata } from 'next';
-import { Search, Eye, Shield, CheckCircle2, AlertCircle } from 'lucide-react';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Link from "next/link";
+import { generatePageMetadata } from "@/lib/metadata";
+import type { Metadata } from "next";
+import { Search, Eye, Shield, CheckCircle2, AlertCircle } from "lucide-react";
 
 export const metadata: Metadata = generatePageMetadata({
-  title: 'PII Detection - Identify Personally Identifiable Information | OpenRedaction',
-  description: 'Detect PII in text with 500+ regex patterns. Open-source PII detection library for emails, phones, SSNs, credit cards, and more. GDPR/HIPAA compliant.',
-  path: '/pii-detection',
+  title:
+    "PII Detection - Identify Personally Identifiable Information | OpenRedaction",
+  description:
+    "Detect PII in text with 500+ regex patterns. Open-source PII detection library for emails, phones, SSNs, credit cards, and more. GDPR/HIPAA compliant.",
+  path: "/pii-detection",
 });
 
 export default function PiiDetection() {
@@ -23,7 +25,9 @@ export default function PiiDetection() {
               PII Detection Made Simple
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-              Automatically detect personally identifiable information (PII) in text using 500+ tested regex patterns. Fast, deterministic, and fully offline.
+              Automatically detect personally identifiable information (PII) in
+              text using 500+ tested regex patterns. Fast, deterministic, and
+              fully offline.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -42,9 +46,13 @@ export default function PiiDetection() {
           </div>
 
           <div className="bg-gray-900 rounded-lg p-8 border border-gray-800 mb-12">
-            <h2 className="text-3xl font-semibold mb-6">What is PII Detection?</h2>
+            <h2 className="text-3xl font-semibold mb-6">
+              What is PII Detection?
+            </h2>
             <p className="text-gray-300 mb-4">
-              Personally Identifiable Information (PII) detection is the process of identifying sensitive data in text that could be used to identify, contact, or locate an individual. This includes:
+              Personally Identifiable Information (PII) detection is the process
+              of identifying sensitive data in text that could be used to
+              identify, contact, or locate an individual. This includes:
             </p>
             <div className="grid md:grid-cols-2 gap-4 mt-6">
               <div>
@@ -57,7 +65,9 @@ export default function PiiDetection() {
               </div>
               <div>
                 <CheckCircle2 className="text-white inline mr-2" size={20} />
-                <span className="text-gray-300">Social Security Numbers (SSN)</span>
+                <span className="text-gray-300">
+                  Social Security Numbers (SSN)
+                </span>
               </div>
               <div>
                 <CheckCircle2 className="text-white inline mr-2" size={20} />
@@ -77,11 +87,15 @@ export default function PiiDetection() {
               </div>
               <div>
                 <CheckCircle2 className="text-white inline mr-2" size={20} />
-                <span className="text-gray-300">Driver&apos;s license numbers</span>
+                <span className="text-gray-300">
+                  Driver&apos;s license numbers
+                </span>
               </div>
               <div>
                 <CheckCircle2 className="text-white inline mr-2" size={20} />
-                <span className="text-gray-300">Names and personal identifiers</span>
+                <span className="text-gray-300">
+                  Names and personal identifiers
+                </span>
               </div>
               <div>
                 <CheckCircle2 className="text-white inline mr-2" size={20} />
@@ -93,17 +107,24 @@ export default function PiiDetection() {
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
               <Search className="text-white mb-4" size={32} />
-              <h2 className="text-2xl font-semibold mb-3">Pattern-Based Detection</h2>
+              <h2 className="text-2xl font-semibold mb-3">
+                Pattern-Based Detection
+              </h2>
               <p className="text-gray-300">
-                500+ tested regex patterns for fast, deterministic PII detection. Works entirely offline with no external dependencies.
+                500+ tested regex patterns for fast, deterministic PII
+                detection. Works entirely offline with no external dependencies.
               </p>
             </div>
 
             <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
               <Eye className="text-white mb-4" size={32} />
-              <h2 className="text-2xl font-semibold mb-3">Context-Aware Detection</h2>
+              <h2 className="text-2xl font-semibold mb-3">
+                Context-Aware Detection
+              </h2>
               <p className="text-gray-300">
-                Proximity rules and confidence scoring improve accuracy. Multi-pass detection and industry patterns (e.g. API keys, credentials) for robust coverage.
+                Proximity rules and confidence scoring improve accuracy.
+                Multi-pass detection and industry patterns (e.g. API keys,
+                credentials) for robust coverage.
               </p>
             </div>
 
@@ -111,19 +132,27 @@ export default function PiiDetection() {
               <Shield className="text-white mb-4" size={32} />
               <h2 className="text-2xl font-semibold mb-3">Compliance Ready</h2>
               <p className="text-gray-300">
-                Built-in presets for GDPR, HIPAA, and CCPA compliance. Helps organizations meet regulatory requirements for data protection.
+                Built-in presets for GDPR, HIPAA, and CCPA compliance. Helps
+                organizations meet regulatory requirements for data protection.
               </p>
             </div>
           </div>
 
           <div className="bg-yellow-900/20 border border-yellow-800 rounded-lg p-6 mb-12">
             <div className="flex items-start">
-              <AlertCircle className="text-yellow-400 mr-4 mt-1 flex-shrink-0" size={24} />
+              <AlertCircle
+                className="text-yellow-400 mr-4 mt-1 flex-shrink-0"
+                size={24}
+              />
               <div>
-                <h3 className="text-xl font-semibold text-yellow-400 mb-2">Why PII Detection Matters</h3>
+                <h3 className="text-xl font-semibold text-yellow-400 mb-2">
+                  Why PII Detection Matters
+                </h3>
                 <p className="text-yellow-200">
-                  Unprotected PII in logs, databases, or shared documents can lead to data breaches, compliance violations, and privacy risks. 
-                  Automated PII detection helps organizations identify and protect sensitive data before it&apos;s exposed.
+                  Unprotected PII in logs, databases, or shared documents can
+                  lead to data breaches, compliance violations, and privacy
+                  risks. Automated PII detection helps organizations identify
+                  and protect sensitive data before it&apos;s exposed.
                 </p>
               </div>
             </div>
@@ -135,34 +164,49 @@ export default function PiiDetection() {
               <div>
                 <h3 className="text-xl font-semibold mb-2">Log Sanitization</h3>
                 <p className="text-gray-300">
-                  Remove PII from application logs before storage or analysis to prevent sensitive data from leaking into log management tools.
+                  Remove PII from application logs before storage or analysis to
+                  prevent sensitive data from leaking into log management tools.
                 </p>
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">API Request Filtering</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  API Request Filtering
+                </h3>
                 <p className="text-gray-300">
-                  Detect and redact PII in API requests and responses to ensure sensitive data doesn&apos;t get logged or stored unintentionally.
+                  Detect and redact PII in API requests and responses to ensure
+                  sensitive data doesn&apos;t get logged or stored
+                  unintentionally.
                 </p>
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">Document Processing</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Document Processing
+                </h3>
                 <p className="text-gray-300">
-                  Process documents, emails, and chat logs to identify PII before sharing, archiving, or using in AI training datasets.
+                  Process documents, emails, and chat logs to identify PII
+                  before sharing, archiving, or using in AI training datasets.
                 </p>
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">Compliance Automation</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Compliance Automation
+                </h3>
                 <p className="text-gray-300">
-                  Automate GDPR, HIPAA, and CCPA compliance by detecting PII in data exports, backups, and shared documents.
+                  Automate GDPR, HIPAA, and CCPA compliance by detecting PII in
+                  data exports, backups, and shared documents.
                 </p>
               </div>
             </div>
           </div>
 
           <div className="bg-gray-900 rounded-lg p-8 border border-gray-800">
-            <h2 className="text-3xl font-semibold mb-4">Start Detecting PII Today</h2>
+            <h2 className="text-3xl font-semibold mb-4">
+              Start Detecting PII Today
+            </h2>
             <p className="text-gray-300 mb-6">
-              OpenRedaction provides pattern-based PII detection with 500+ regex patterns. The open-source library is free and works entirely offline.
+              OpenRedaction provides pattern-based PII detection with 500+ regex
+              patterns. The open-source library is free and works entirely
+              offline.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
@@ -189,16 +233,28 @@ export default function PiiDetection() {
           <div className="mt-12 text-center">
             <p className="text-gray-400 mb-4">Related Resources</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/nodejs-redaction" className="text-gray-300 hover:text-white underline">
+              <Link
+                href="/nodejs-redaction"
+                className="text-gray-300 hover:text-white underline"
+              >
                 Node.js Redaction
               </Link>
-              <Link href="/gdpr-redaction" className="text-gray-300 hover:text-white underline">
+              <Link
+                href="/gdpr-redaction"
+                className="text-gray-300 hover:text-white underline"
+              >
                 GDPR Redaction
               </Link>
-              <Link href="/hipaa-redaction" className="text-gray-300 hover:text-white underline">
+              <Link
+                href="/hipaa-redaction"
+                className="text-gray-300 hover:text-white underline"
+              >
                 HIPAA Redaction
               </Link>
-              <Link href="/blog/pii-detection-for-ai" className="text-gray-300 hover:text-white underline">
+              <Link
+                href="/blog/pii-detection-for-ai"
+                className="text-gray-300 hover:text-white underline"
+              >
                 PII Detection for AI
               </Link>
             </div>
@@ -210,4 +266,3 @@ export default function PiiDetection() {
     </div>
   );
 }
-

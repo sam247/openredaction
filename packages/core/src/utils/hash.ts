@@ -11,7 +11,8 @@ export function deterministicHash(str: string): number {
 
   for (let i = 0; i < str.length; i++) {
     hash ^= str.charCodeAt(i);
-    hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+    hash +=
+      (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
   }
 
   return hash >>> 0; // Convert to unsigned 32-bit integer
@@ -23,5 +24,5 @@ export function deterministicHash(str: string): number {
  */
 export function generateDeterministicId(value: string, type: string): string {
   const hash = deterministicHash(`${type}:${value.toLowerCase()}`);
-  return (hash % 10000).toString().padStart(4, '0');
+  return (hash % 10000).toString().padStart(4, "0");
 }

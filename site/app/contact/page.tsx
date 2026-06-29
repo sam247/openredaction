@@ -1,21 +1,22 @@
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import ContactForm from '@/components/ContactForm';
-import Link from 'next/link';
-import { generatePageMetadata } from '@/lib/metadata';
-import type { Metadata } from 'next';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ContactForm from "@/components/ContactForm";
+import Link from "next/link";
+import { generatePageMetadata } from "@/lib/metadata";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = generatePageMetadata({
-  title: 'Get Support for Self-Hosted Deployments',
-  description: 'Contact OpenRedaction for self-hosted deployment support, GitHub issue reporting, community support, or learn more about Disclosurely.com.',
-  path: '/contact',
+  title: "Get Support for Self-Hosted Deployments",
+  description:
+    "Contact OpenRedaction for self-hosted deployment support, GitHub issue reporting, community support, or learn more about Disclosurely.com.",
+  path: "/contact",
 });
 
 export default function Contact() {
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />
-      
+
       <main className="pt-[148px] pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -23,12 +24,13 @@ export default function Contact() {
               Get Support for Self-Hosted Deployments
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-4">
-              Need help with self-hosted deployment? Have questions about the library? 
-              Want to report issues or contribute?
+              Need help with self-hosted deployment? Have questions about the
+              library? Want to report issues or contribute?
             </p>
             <div className="bg-yellow-900/20 border border-yellow-800 rounded-lg p-4 max-w-2xl mx-auto">
               <p className="text-yellow-400 text-sm">
-                <strong>Note:</strong> For self-hosted support only. We do not provide cloud-hosted API service.
+                <strong>Note:</strong> For self-hosted support only. We do not
+                provide cloud-hosted API service.
               </p>
             </div>
           </div>
@@ -38,7 +40,9 @@ export default function Contact() {
           </div>
 
           <div className="bg-gray-900 rounded-lg p-8 border border-gray-800">
-            <h2 className="text-2xl font-semibold mb-4 text-center">Other Ways to Get Help</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-center">
+              Other Ways to Get Help
+            </h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h3 className="text-lg font-semibold mb-2">GitHub Issues</h3>
@@ -69,7 +73,6 @@ export default function Contact() {
               </div>
             </div>
           </div>
-
         </div>
       </main>
 
@@ -77,4 +80,3 @@ export default function Contact() {
     </div>
   );
 }
-

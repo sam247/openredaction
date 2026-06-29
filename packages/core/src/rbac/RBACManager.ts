@@ -2,8 +2,8 @@
  * RBAC Manager for role-based access control
  */
 
-import type { Role, Permission, IRBACManager, PIIPattern } from '../types';
-import { ADMIN_ROLE } from './roles';
+import type { IRBACManager, Permission, PIIPattern, Role } from "../types";
+import { ADMIN_ROLE } from "./roles";
 
 /**
  * Default RBAC Manager implementation
@@ -27,14 +27,14 @@ export class RBACManager implements IRBACManager {
    * Check if current role has all specified permissions
    */
   hasAllPermissions(permissions: Permission[]): boolean {
-    return permissions.every(permission => this.hasPermission(permission));
+    return permissions.every((permission) => this.hasPermission(permission));
   }
 
   /**
    * Check if current role has any of the specified permissions
    */
   hasAnyPermission(permissions: Permission[]): boolean {
-    return permissions.some(permission => this.hasPermission(permission));
+    return permissions.some((permission) => this.hasPermission(permission));
   }
 
   /**
@@ -63,7 +63,7 @@ export class RBACManager implements IRBACManager {
    * Returns empty array if user lacks pattern:read permission
    */
   filterPatterns(patterns: PIIPattern[]): PIIPattern[] {
-    if (!this.hasPermission('pattern:read')) {
+    if (!this.hasPermission("pattern:read")) {
       return [];
     }
     return patterns;

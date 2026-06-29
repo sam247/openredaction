@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 interface LogoProps {
   size?: number;
   className?: string;
 }
 
-export default function Logo({ size = 32, className = '' }: LogoProps) {
+export default function Logo({ size = 32, className = "" }: LogoProps) {
   const [hasError, setHasError] = useState(false);
 
   // Show fallback if image fails to load
   if (hasError) {
     return (
-      <div 
+      <div
         className={`bg-white rounded-full flex items-center justify-center flex-shrink-0 ${className}`}
-        style={{ 
-          width: size, 
+        style={{
+          width: size,
           height: size,
           minWidth: size,
           minHeight: size,
           maxWidth: size,
-          maxHeight: size
+          maxHeight: size,
         }}
       >
         <span className="text-black font-bold" style={{ fontSize: size * 0.4 }}>
@@ -36,17 +36,16 @@ export default function Logo({ size = 32, className = '' }: LogoProps) {
       src="/logo.png"
       alt="OpenRedaction"
       className={`object-contain flex-shrink-0 ${className}`}
-      style={{ 
-        width: size, 
-        height: size, 
-        display: 'block',
+      style={{
+        width: size,
+        height: size,
+        display: "block",
         minWidth: size,
         minHeight: size,
         maxWidth: size,
-        maxHeight: size
+        maxHeight: size,
       }}
       onError={() => setHasError(true)}
     />
   );
 }
-

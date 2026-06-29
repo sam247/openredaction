@@ -12,11 +12,13 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
     "prepare": "husky"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.1",
     "husky": "9.1.7",
     "lint-staged": "17.0.8",
     "tsx": "^4.22.4",

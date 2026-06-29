@@ -1,5 +1,5 @@
-import { PIIPattern } from '../types';
-import { LocalLearningStore } from '../learning/LocalLearningStore';
+import type { LocalLearningStore } from "../learning/LocalLearningStore";
+import type { PIIPattern } from "../types";
 
 export interface PatternStats {
   type: string;
@@ -24,12 +24,15 @@ export class PriorityOptimizer {
   private learningStore: LocalLearningStore;
   private options: OptimizerOptions;
 
-  constructor(learningStore: LocalLearningStore, options: Partial<OptimizerOptions> = {}) {
+  constructor(
+    learningStore: LocalLearningStore,
+    options: Partial<OptimizerOptions> = {},
+  ) {
     this.learningStore = learningStore;
     this.options = {
       learningWeight: options.learningWeight ?? 0.3, // 30% weight to learning data
       minSampleSize: options.minSampleSize ?? 10, // Need 10+ detections to adjust
-      maxPriorityAdjustment: options.maxPriorityAdjustment ?? 15 // Max ±15 priority points
+      maxPriorityAdjustment: options.maxPriorityAdjustment ?? 15, // Max ±15 priority points
     };
   }
 
@@ -53,7 +56,10 @@ export class PriorityOptimizer {
       const inferredType = this.inferPatternType(entry.pattern);
 
       if (inferredType) {
-        fpCountByType.set(inferredType, (fpCountByType.get(inferredType) || 0) + occurrences);
+        fpCountByType.set(
+          inferredType,
+          (fpCountByType.get(inferredType) || 0) + occurrences,
+        );
       }
     }
 
@@ -61,7 +67,10 @@ export class PriorityOptimizer {
     const fnCountByType = new Map<string, number>();
 
     for (const adjustment of patternAdjustments) {
-      fnCountByType.set(adjustment.type, (fnCountByType.get(adjustment.type) || 0) + adjustment.occurrences);
+      fnCountByType.set(
+        adjustment.type,
+        (fnCountByType.get(adjustment.type) || 0) + adjustment.occurrences,
+      );
     }
 
     // Calculate total detections per type (estimated)
@@ -77,7 +86,7 @@ export class PriorityOptimizer {
     }
 
     // Optimize each pattern's priority
-    const optimizedPatterns = patterns.map(pattern => {
+    const optimizedPatterns = patterns.map((pattern) => {
       const fpCount = fpCountByType.get(pattern.type) || 0;
       const fnCount = fnCountByType.get(pattern.type) || 0;
       const totalDetections = totalDetectionsByType.get(pattern.type) || 1;
@@ -92,13 +101,15 @@ export class PriorityOptimizer {
 
       // If high false positive rate, decrease priority
       const fpRate = fpCount / totalDetections;
-      if (fpRate > 0.1) { // More than 10% FP rate
+      if (fpRate > 0.1) {
+        // More than 10% FP rate
         adjustment -= fpRate * this.options.maxPriorityAdjustment;
       }
 
       // If high false negative rate, increase priority
       const fnRate = fnCount / totalDetections;
-      if (fnRate > 0.1) { // More than 10% FN rate
+      if (fnRate > 0.1) {
+        // More than 10% FN rate
         adjustment += fnRate * this.options.maxPriorityAdjustment;
       }
 
@@ -108,17 +119,20 @@ export class PriorityOptimizer {
       // Clamp adjustment
       adjustment = Math.max(
         -this.options.maxPriorityAdjustment,
-        Math.min(this.options.maxPriorityAdjustment, adjustment)
+        Math.min(this.options.maxPriorityAdjustment, adjustment),
       );
 
       // Calculate new priority
-      const newPriority = Math.max(0, Math.min(100, pattern.priority + adjustment));
+      const newPriority = Math.max(
+        0,
+        Math.min(100, pattern.priority + adjustment),
+      );
 
       // Return pattern with adjusted priority (if significant change)
       if (Math.abs(adjustment) > 1) {
         return {
           ...pattern,
-          priority: Math.round(newPriority)
+          priority: Math.round(newPriority),
         };
       }
 
@@ -140,17 +154,23 @@ export class PriorityOptimizer {
     for (const entry of whitelistEntries) {
       const inferredType = this.inferPatternType(entry.pattern);
       if (inferredType) {
-        fpCountByType.set(inferredType, (fpCountByType.get(inferredType) || 0) + entry.occurrences);
+        fpCountByType.set(
+          inferredType,
+          (fpCountByType.get(inferredType) || 0) + entry.occurrences,
+        );
       }
     }
 
     const fnCountByType = new Map<string, number>();
     for (const adjustment of patternAdjustments) {
-      fnCountByType.set(adjustment.type, (fnCountByType.get(adjustment.type) || 0) + adjustment.occurrences);
+      fnCountByType.set(
+        adjustment.type,
+        (fnCountByType.get(adjustment.type) || 0) + adjustment.occurrences,
+      );
     }
 
     // Build stats for each pattern
-    const stats: PatternStats[] = patterns.map(pattern => {
+    const stats: PatternStats[] = patterns.map((pattern) => {
       const fpCount = fpCountByType.get(pattern.type) || 0;
       const fnCount = fnCountByType.get(pattern.type) || 0;
       const totalDetections = Math.max(fpCount + fnCount + 10, 1);
@@ -164,7 +184,7 @@ export class PriorityOptimizer {
         falseNegatives: fnCount,
         accuracy,
         priority: pattern.priority,
-        adjustedPriority: pattern.priority // Will be updated by optimizePatterns
+        adjustedPriority: pattern.priority, // Will be updated by optimizePatterns
       };
     });
 
@@ -177,22 +197,23 @@ export class PriorityOptimizer {
    */
   private inferPatternType(value: string): string | null {
     // Email pattern
-    if (/@/.test(value)) return 'EMAIL';
+    if (/@/.test(value)) return "EMAIL";
 
     // Phone pattern
-    if (/^\+?\d[\d\s\-()]{7,}$/.test(value)) return 'PHONE';
+    if (/^\+?\d[\d\s\-()]{7,}$/.test(value)) return "PHONE";
 
     // SSN pattern
-    if (/^\d{3}-\d{2}-\d{4}$/.test(value)) return 'SSN';
+    if (/^\d{3}-\d{2}-\d{4}$/.test(value)) return "SSN";
 
     // Credit card pattern
-    if (/^\d{4}[\s\-]?\d{4}[\s\-]?\d{4}[\s\-]?\d{4}$/.test(value)) return 'CREDIT_CARD';
+    if (/^\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}$/.test(value))
+      return "CREDIT_CARD";
 
     // IP address pattern
-    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(value)) return 'IP_ADDRESS';
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(value)) return "IP_ADDRESS";
 
     // Name pattern (2-4 capitalized words)
-    if (/^[A-Z][a-z]+(\s[A-Z][a-z]+){1,3}$/.test(value)) return 'NAME';
+    if (/^[A-Z][a-z]+(\s[A-Z][a-z]+){1,3}$/.test(value)) return "NAME";
 
     // Default: couldn't infer
     return null;
@@ -220,7 +241,7 @@ export class PriorityOptimizer {
   setOptions(options: Partial<OptimizerOptions>): void {
     this.options = {
       ...this.options,
-      ...options
+      ...options,
     };
   }
 }
@@ -230,7 +251,7 @@ export class PriorityOptimizer {
  */
 export function createPriorityOptimizer(
   learningStore: LocalLearningStore,
-  options?: Partial<OptimizerOptions>
+  options?: Partial<OptimizerOptions>,
 ): PriorityOptimizer {
   return new PriorityOptimizer(learningStore, options);
 }

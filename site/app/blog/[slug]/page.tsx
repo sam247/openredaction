@@ -1,25 +1,25 @@
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import Link from 'next/link';
-import { Calendar, ArrowLeft } from 'lucide-react';
-import { notFound } from 'next/navigation';
-import { generatePageMetadata } from '@/lib/metadata';
-import type { Metadata } from 'next';
-import BlogPostTracker from '@/components/BlogPostTracker';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Link from "next/link";
+import { Calendar, ArrowLeft } from "lucide-react";
+import { notFound } from "next/navigation";
+import { generatePageMetadata } from "@/lib/metadata";
+import type { Metadata } from "next";
+import BlogPostTracker from "@/components/BlogPostTracker";
 
 // Blog posts data
 const blogPosts: { [key: string]: any } = {
-  'building-openredaction-developer-journey': {
-    title: 'Building OpenRedaction: A Regex-First Open Source Story',
-    date: '2025-12-04',
-    category: 'Guide',
-    authorName: 'Sam Pettiford',
-    authorImage: '/author.jpg',
-    authorLinkedIn: 'https://www.linkedin.com/in/sampettiford/',
+  "building-openredaction-developer-journey": {
+    title: "Building OpenRedaction: A Regex-First Open Source Story",
+    date: "2025-12-04",
+    category: "Guide",
+    authorName: "Sam Pettiford",
+    authorImage: "/author.jpg",
+    authorLinkedIn: "https://www.linkedin.com/in/sampettiford/",
     authorBio:
-      'Founder of OpenRedaction, focused on building practical privacy infrastructure for developers shipping AI and data-heavy applications.',
+      "Founder of OpenRedaction, focused on building practical privacy infrastructure for developers shipping AI and data-heavy applications.",
     excerpt:
-      'Why OpenRedaction was built regex-first, what broke in production, and how deterministic redaction became a practical open-source foundation.',
+      "Why OpenRedaction was built regex-first, what broke in production, and how deterministic redaction became a practical open-source foundation.",
     content: `
       <p>Most open-source stories start with a vague idea and end with a maintainer's backlog.</p>
       <p>OpenRedaction started with something much more practical: a need for deterministic, self-hosted PII redaction that developers could trust in production. Not a black box. Not a model that behaves differently depending on prompt wording. Not a hosted service that quietly moves sensitive text through infrastructure you do not control. Just a library that takes text in, finds sensitive spans, and redacts them in a way you can inspect, test, and deploy on your own terms.</p>
@@ -119,17 +119,17 @@ const blogPosts: { [key: string]: any } = {
       </div>
     `,
   },
-  'pii-detection-for-ai': {
-    title: 'PII Detection for AI: How to Safely Use User Data with LLMs',
-    date: '2025-12-05',
-    category: 'Guide',
-    authorName: 'Sam Pettiford',
-    authorImage: '/author.jpg',
-    authorLinkedIn: 'https://www.linkedin.com/in/sampettiford/',
+  "pii-detection-for-ai": {
+    title: "PII Detection for AI: How to Safely Use User Data with LLMs",
+    date: "2025-12-05",
+    category: "Guide",
+    authorName: "Sam Pettiford",
+    authorImage: "/author.jpg",
+    authorLinkedIn: "https://www.linkedin.com/in/sampettiford/",
     authorBio:
-      'Founder of OpenRedaction, focused on privacy-safe LLM pipelines and production-grade data redaction patterns for modern teams.',
+      "Founder of OpenRedaction, focused on privacy-safe LLM pipelines and production-grade data redaction patterns for modern teams.",
     excerpt:
-      'How to detect and redact PII across LLM pipelines with pattern-first controls, optional NER, and infrastructure-level privacy safeguards.',
+      "How to detect and redact PII across LLM pipelines with pattern-first controls, optional NER, and infrastructure-level privacy safeguards.",
     content: `
       <p>Large Language Models (LLMs) are extraordinary at handling messy, unstructured text. They effortlessly parse incomplete sentences, analyze context, and synthesize fluent replies—but that same flexibility makes them eager to absorb anything passed their way: names, email addresses, national IDs, financial details, or confidential documents.</p>
       <p>Without strict boundaries, your AI system can unintentionally become a privacy sink—logging sensitive content across model pipelines, traces, or fine-tuning datasets. The solution is not blind trust, it is visibility and repeatable redaction layers built directly into every boundary of your data flow.</p>
@@ -299,16 +299,18 @@ async function safeCompletion(prompt) {
       </div>
     `,
   },
-  'pii-in-support-tickets': {
-    title: 'How to Handle PII Safely in Support Tickets, Emails and Chat Transcripts',
-    date: '2025-12-11',
-    category: 'Guide',
-    authorName: 'Sam Pettiford',
-    authorImage: '/author.jpg',
-    authorLinkedIn: 'https://www.linkedin.com/in/sampettiford/',
+  "pii-in-support-tickets": {
+    title:
+      "How to Handle PII Safely in Support Tickets, Emails and Chat Transcripts",
+    date: "2025-12-11",
+    category: "Guide",
+    authorName: "Sam Pettiford",
+    authorImage: "/author.jpg",
+    authorLinkedIn: "https://www.linkedin.com/in/sampettiford/",
     authorBio:
-      'Founder of OpenRedaction, writing about practical controls for handling sensitive data in real-world support and product workflows.',
-    excerpt: 'Minimize what support channels store, redact early, and keep agents aligned — practical controls for tickets, email, and chat.',
+      "Founder of OpenRedaction, writing about practical controls for handling sensitive data in real-world support and product workflows.",
+    excerpt:
+      "Minimize what support channels store, redact early, and keep agents aligned — practical controls for tickets, email, and chat.",
     content: `
       <p>Customer support is a paradoxical frontline in data security: it is where users come seeking help and often hand over their most private information in the process. Between urgent troubleshooting and unscripted human dialogue, sensitive identifiers appear freely in emails, ticket comments, and live chat. Passwords, card numbers, tax IDs, and even medical context routinely find their way into support threads, creating high exposure risk across systems never designed for long-term storage of personal data.</p>
       <p>To handle Personally Identifiable Information (PII) safely, assume every inbound support channel will receive sensitive data. Then design for least collection, early redaction, and short retention, a data minimization triad that should shape every interaction, policy, and pipeline across your helpdesk stack.</p>
@@ -432,10 +434,11 @@ async function safeCompletion(prompt) {
       </div>
     `,
   },
-
 };
 
-export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const params = await props.params;
   const post = blogPosts[params.slug];
 
@@ -443,7 +446,10 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
     return {};
   }
 
-  const excerpt = post.excerpt || post.content?.replace(/<[^>]*>/g, '').substring(0, 160) || '';
+  const excerpt =
+    post.excerpt ||
+    post.content?.replace(/<[^>]*>/g, "").substring(0, 160) ||
+    "";
 
   return generatePageMetadata({
     title: post.title,
@@ -452,7 +458,9 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   });
 }
 
-export default async function BlogPost(props: { params: Promise<{ slug: string }> }) {
+export default async function BlogPost(props: {
+  params: Promise<{ slug: string }>;
+}) {
   const params = await props.params;
   const post = blogPosts[params.slug];
 
@@ -463,7 +471,10 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
   // Process content - ensure links have proper styling
   const processedContent = post.content
     .replace(/<a href="([^"]+)">/g, (_match: string, href: string) => {
-      if (href.startsWith('/') || href.startsWith('https://openredaction.com')) {
+      if (
+        href.startsWith("/") ||
+        href.startsWith("https://openredaction.com")
+      ) {
         return `<a href="${href}" style="color: #fff; text-decoration: underline; hover:color: #d1d5db;">`;
       }
       return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;">`;
@@ -474,7 +485,7 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
     <div className="min-h-screen bg-black text-white">
       <Header />
       <BlogPostTracker slug={params.slug} title={post.title} />
-      
+
       <main className="pt-[148px] pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
@@ -491,26 +502,28 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
                 {post.category}
               </span>
             </div>
-            
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight max-w-7xl mx-auto">{post.title}</h1>
-            
+
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight max-w-7xl mx-auto">
+              {post.title}
+            </h1>
+
             <div className="flex items-center text-gray-400 text-sm mb-8 gap-2">
               <Calendar size={16} className="mr-1" />
               {post.authorName ? (
                 <span>
-                  By {post.authorName},{' '}
-                  {new Date(post.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
+                  By {post.authorName},{" "}
+                  {new Date(post.date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </span>
               ) : (
                 <span>
-                  {new Date(post.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
+                  {new Date(post.date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </span>
               )}
@@ -529,9 +542,11 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
                     <div className="h-14 w-14 rounded-full border border-gray-700 bg-gray-900" />
                   )}
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-white">{post.authorName}</p>
+                    <p className="text-sm font-semibold text-white">
+                      {post.authorName}
+                    </p>
                     <p className="mt-1 text-sm leading-6 text-gray-300">
-                      {post.authorBio || 'Author profile coming soon.'}
+                      {post.authorBio || "Author profile coming soon."}
                     </p>
                     {post.authorLinkedIn ? (
                       <a
@@ -548,7 +563,7 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
               </div>
             )}
 
-            <div 
+            <div
               className="blog-content prose prose-invert prose-lg max-w-none
                 prose-headings:text-white prose-headings:font-semibold
                 prose-h1:text-3xl prose-h1:font-bold prose-h1:mt-8 prose-h1:mb-4
@@ -565,7 +580,9 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
                 prose-blockquote:border-l-gray-800 prose-blockquote:text-gray-400"
               dangerouslySetInnerHTML={{ __html: processedContent }}
             />
-            <style dangerouslySetInnerHTML={{ __html: `
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
               .blog-content p {
                 margin-bottom: 1.5rem !important;
                 line-height: 1.75 !important;
@@ -591,7 +608,9 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
                 margin-top: 2.5rem !important;
                 margin-bottom: 2.5rem !important;
               }
-            `}} />
+            `,
+              }}
+            />
           </article>
         </div>
       </main>

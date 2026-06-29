@@ -3,24 +3,24 @@
  * Ship registration, IMO numbers, MMSI, maritime radio callsigns
  */
 
-import type { PIIPattern } from '../../types';
+import type { PIIPattern } from "../../types";
 
 /**
  * IMO Ship Identification Number
  * Format: IMO followed by 7 digits
  */
 export const IMO_NUMBER: PIIPattern = {
-  type: 'IMO_NUMBER',
-  regex: /\bIMO[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{7})\b/gi,
-  placeholder: '[IMO_{n}]',
+  type: "IMO_NUMBER",
+  regex: /\bIMO[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{7})\b/gi,
+  placeholder: "[IMO_{n}]",
   priority: 90,
-  severity: 'medium',
-  description: 'IMO Ship Identification Number',
+  severity: "medium",
+  description: "IMO Ship Identification Number",
   validator: (value: string, context: string) => {
     if (value.length !== 7) return false;
 
     // IMO number checksum validation
-    const digits = value.split('').map(Number);
+    const digits = value.split("").map(Number);
     let sum = 0;
     for (let i = 0; i < 6; i++) {
       sum += digits[i] * (7 - i);
@@ -30,7 +30,7 @@ export const IMO_NUMBER: PIIPattern = {
     if (checkDigit !== digits[6]) return false;
 
     return /imo|ship|vessel|maritime|shipping|marine/i.test(context);
-  }
+  },
 };
 
 /**
@@ -38,12 +38,12 @@ export const IMO_NUMBER: PIIPattern = {
  * Format: 9 digits
  */
 export const MMSI_NUMBER: PIIPattern = {
-  type: 'MMSI_NUMBER',
-  regex: /\bMMSI[\-\s]?(?:NO|NUM|NUMBER)?[\-\s]?[:#]?\s*(\d{9})\b/gi,
-  placeholder: '[MMSI_{n}]',
+  type: "MMSI_NUMBER",
+  regex: /\bMMSI[-\s]?(?:NO|NUM|NUMBER)?[-\s]?[:#]?\s*(\d{9})\b/gi,
+  placeholder: "[MMSI_{n}]",
   priority: 90,
-  severity: 'medium',
-  description: 'MMSI (Maritime Mobile Service Identity)',
+  severity: "medium",
+  description: "MMSI (Maritime Mobile Service Identity)",
   validator: (value: string, context: string) => {
     if (value.length !== 9) return false;
 
@@ -53,7 +53,7 @@ export const MMSI_NUMBER: PIIPattern = {
     if (mid < 200 || mid > 799) return false;
 
     return /mmsi|maritime|ship|vessel|ais|vhf|radio/i.test(context);
-  }
+  },
 };
 
 /**
@@ -61,15 +61,15 @@ export const MMSI_NUMBER: PIIPattern = {
  * Format: Varies by country, typically 3-7 alphanumeric
  */
 export const MARITIME_CALLSIGN: PIIPattern = {
-  type: 'MARITIME_CALLSIGN',
-  regex: /\b(?:CALLSIGN|CALL\s?SIGN)[\-\s]?[:#]?\s*([A-Z0-9]{3,7})\b/gi,
-  placeholder: '[CALLSIGN_{n}]',
+  type: "MARITIME_CALLSIGN",
+  regex: /\b(?:CALLSIGN|CALL\s?SIGN)[-\s]?[:#]?\s*([A-Z0-9]{3,7})\b/gi,
+  placeholder: "[CALLSIGN_{n}]",
   priority: 85,
-  severity: 'low',
-  description: 'Maritime Radio Callsign',
+  severity: "low",
+  description: "Maritime Radio Callsign",
   validator: (_value: string, context: string) => {
     return /callsign|call\s?sign|radio|maritime|vessel|ship|vhf/i.test(context);
-  }
+  },
 };
 
 /**
@@ -77,15 +77,18 @@ export const MARITIME_CALLSIGN: PIIPattern = {
  * Format: Varies by country registry
  */
 export const OFFICIAL_SHIP_NUMBER: PIIPattern = {
-  type: 'OFFICIAL_SHIP_NUMBER',
-  regex: /\b(?:OFFICIAL|SHIP)[\-\s]?(?:NO|NUM|NUMBER)[\-\s]?[:#]?\s*([A-Z0-9]{5,12})\b/gi,
-  placeholder: '[SHIP_NUM_{n}]',
+  type: "OFFICIAL_SHIP_NUMBER",
+  regex:
+    /\b(?:OFFICIAL|SHIP)[-\s]?(?:NO|NUM|NUMBER)[-\s]?[:#]?\s*([A-Z0-9]{5,12})\b/gi,
+  placeholder: "[SHIP_NUM_{n}]",
   priority: 80,
-  severity: 'medium',
-  description: 'Official Ship Number',
+  severity: "medium",
+  description: "Official Ship Number",
   validator: (_value: string, context: string) => {
-    return /official|ship|vessel|registration|registry|flag\s?state/i.test(context);
-  }
+    return /official|ship|vessel|registration|registry|flag\s?state/i.test(
+      context,
+    );
+  },
 };
 
 /**
@@ -93,15 +96,18 @@ export const OFFICIAL_SHIP_NUMBER: PIIPattern = {
  * Format: Varies, typically alphanumeric
  */
 export const PSC_INSPECTION_ID: PIIPattern = {
-  type: 'PSC_INSPECTION_ID',
-  regex: /\b(?:PSC|INSPECTION)[\-\s]?(?:ID|NO|NUM|NUMBER)[\-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
-  placeholder: '[PSC_{n}]',
+  type: "PSC_INSPECTION_ID",
+  regex:
+    /\b(?:PSC|INSPECTION)[-\s]?(?:ID|NO|NUM|NUMBER)[-\s]?[:#]?\s*([A-Z0-9]{6,15})\b/gi,
+  placeholder: "[PSC_{n}]",
   priority: 80,
-  severity: 'low',
-  description: 'Port State Control Inspection ID',
+  severity: "low",
+  description: "Port State Control Inspection ID",
   validator: (_value: string, context: string) => {
-    return /psc|port\s?state|inspection|maritime|vessel|ship|compliance/i.test(context);
-  }
+    return /psc|port\s?state|inspection|maritime|vessel|ship|compliance/i.test(
+      context,
+    );
+  },
 };
 
 /**
@@ -109,17 +115,18 @@ export const PSC_INSPECTION_ID: PIIPattern = {
  * Format: Country code + 9 alphanumeric (varies by issuing country)
  */
 export const SEAFARER_ID: PIIPattern = {
-  type: 'SEAFARER_ID',
-  regex: /\b(?:SEAFARER|MARINER|SID)[\-\s]?(?:ID|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z]{2,3}[A-Z0-9]{9})\b/gi,
-  placeholder: '[SEAFARER_{n}]',
+  type: "SEAFARER_ID",
+  regex:
+    /\b(?:SEAFARER|MARINER|SID)[-\s]?(?:ID|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z]{2,3}[A-Z0-9]{9})\b/gi,
+  placeholder: "[SEAFARER_{n}]",
   priority: 85,
-  severity: 'high',
-  description: 'Seafarer Identification Number',
+  severity: "high",
+  description: "Seafarer Identification Number",
   validator: (value: string, context: string) => {
     if (value.length < 11 || value.length > 12) return false;
 
     return /seafarer|mariner|sid|maritime|crew|seaman|sailor/i.test(context);
-  }
+  },
 };
 
 /**
@@ -127,15 +134,18 @@ export const SEAFARER_ID: PIIPattern = {
  * Format: Alphanumeric, typically 7 characters
  */
 export const LLOYDS_REGISTER_NUMBER: PIIPattern = {
-  type: 'LLOYDS_REGISTER_NUMBER',
-  regex: /\b(?:LLOYD'?S?|LR)[\-\s]?(?:REG(?:ISTER)?|NO|NUM|NUMBER)?[\-\s]?[:#]?\s*([A-Z0-9]{7})\b/gi,
-  placeholder: '[LR_NUM_{n}]',
+  type: "LLOYDS_REGISTER_NUMBER",
+  regex:
+    /\b(?:LLOYD'?S?|LR)[-\s]?(?:REG(?:ISTER)?|NO|NUM|NUMBER)?[-\s]?[:#]?\s*([A-Z0-9]{7})\b/gi,
+  placeholder: "[LR_NUM_{n}]",
   priority: 85,
-  severity: 'low',
-  description: 'Lloyd\'s Register Number',
+  severity: "low",
+  description: "Lloyd's Register Number",
   validator: (_value: string, context: string) => {
-    return /lloyd|lr|register|classification|ship|vessel|maritime/i.test(context);
-  }
+    return /lloyd|lr|register|classification|ship|vessel|maritime/i.test(
+      context,
+    );
+  },
 };
 
 export const maritimePatterns: PIIPattern[] = [
@@ -145,5 +155,5 @@ export const maritimePatterns: PIIPattern[] = [
   OFFICIAL_SHIP_NUMBER,
   PSC_INSPECTION_ID,
   SEAFARER_ID,
-  LLOYDS_REGISTER_NUMBER
+  LLOYDS_REGISTER_NUMBER,
 ];

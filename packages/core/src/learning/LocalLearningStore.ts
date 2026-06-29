@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from "fs";
+import * as path from "path";
 
 export interface WhitelistEntry {
   pattern: string;
@@ -48,10 +48,13 @@ export class LocalLearningStore {
   private autoSave: boolean;
   private confidenceThreshold: number;
 
-  constructor(filePath: string = '.openredaction/learnings.json', options: {
-    autoSave?: boolean;
-    confidenceThreshold?: number;
-  } = {}) {
+  constructor(
+    filePath: string = ".openredaction/learnings.json",
+    options: {
+      autoSave?: boolean;
+      confidenceThreshold?: number;
+    } = {},
+  ) {
     this.filePath = filePath;
     this.autoSave = options.autoSave ?? true;
     this.confidenceThreshold = options.confidenceThreshold ?? 0.85;
@@ -64,7 +67,7 @@ export class LocalLearningStore {
   private load(): LearningData {
     try {
       if (fs.existsSync(this.filePath)) {
-        const content = fs.readFileSync(this.filePath, 'utf-8');
+        const content = fs.readFileSync(this.filePath, "utf-8");
         return JSON.parse(content);
       }
     } catch (error) {
@@ -72,7 +75,7 @@ export class LocalLearningStore {
     }
 
     return {
-      version: '1.0',
+      version: "1.0",
       whitelist: [],
       patternAdjustments: [],
       stats: {
@@ -80,8 +83,8 @@ export class LocalLearningStore {
         falsePositives: 0,
         falseNegatives: 0,
         accuracy: 1.0,
-        lastUpdated: Date.now()
-      }
+        lastUpdated: Date.now(),
+      },
     };
   }
 
@@ -98,7 +101,7 @@ export class LocalLearningStore {
       this.data.stats.lastUpdated = Date.now();
       fs.writeFileSync(this.filePath, JSON.stringify(this.data, null, 2));
     } catch (error) {
-      console.error('Failed to save learning data:', error);
+      console.error("Failed to save learning data:", error);
     }
   }
 
@@ -111,7 +114,7 @@ export class LocalLearningStore {
     this.updateAccuracy();
 
     // Find or create whitelist entry
-    let entry = this.data.whitelist.find(e => e.pattern === text);
+    let entry = this.data.whitelist.find((e) => e.pattern === text);
 
     if (entry) {
       entry.occurrences++;
@@ -128,7 +131,7 @@ export class LocalLearningStore {
         occurrences: 1,
         firstSeen: Date.now(),
         lastSeen: Date.now(),
-        contexts: [context]
+        contexts: [context],
       };
       this.data.whitelist.push(entry);
     }
@@ -148,7 +151,7 @@ export class LocalLearningStore {
 
     // Find or create pattern adjustment
     let adjustment = this.data.patternAdjustments.find(
-      a => a.type === type && a.examples.includes(text)
+      (a) => a.type === type && a.examples.includes(text),
     );
 
     if (adjustment) {
@@ -161,7 +164,7 @@ export class LocalLearningStore {
         suggestion: `Consider adding pattern for: ${text}`,
         confidence: 0.5,
         examples: [text],
-        occurrences: 1
+        occurrences: 1,
       };
       this.data.patternAdjustments.push(adjustment);
     }
@@ -193,7 +196,8 @@ export class LocalLearningStore {
       return;
     }
 
-    const incorrect = this.data.stats.falsePositives + this.data.stats.falseNegatives;
+    const incorrect =
+      this.data.stats.falsePositives + this.data.stats.falseNegatives;
     this.data.stats.accuracy = (total - incorrect) / total;
   }
 
@@ -202,8 +206,8 @@ export class LocalLearningStore {
    */
   getWhitelist(): string[] {
     return this.data.whitelist
-      .filter(e => e.confidence >= this.confidenceThreshold)
-      .map(e => e.pattern);
+      .filter((e) => e.confidence >= this.confidenceThreshold)
+      .map((e) => e.pattern);
   }
 
   /**
@@ -218,7 +222,7 @@ export class LocalLearningStore {
    */
   getPatternAdjustments(): PatternAdjustment[] {
     return this.data.patternAdjustments
-      .filter(a => a.confidence >= this.confidenceThreshold)
+      .filter((a) => a.confidence >= this.confidenceThreshold)
       .sort((a, b) => b.occurrences - a.occurrences);
   }
 
@@ -240,7 +244,7 @@ export class LocalLearningStore {
    * Get confidence score for a specific pattern
    */
   getConfidence(pattern: string): number {
-    const entry = this.data.whitelist.find(e => e.pattern === pattern);
+    const entry = this.data.whitelist.find((e) => e.pattern === pattern);
     return entry?.confidence ?? 0;
   }
 
@@ -248,7 +252,7 @@ export class LocalLearningStore {
    * Get occurrences count for a specific pattern
    */
   getOccurrences(pattern: string): number {
-    const entry = this.data.whitelist.find(e => e.pattern === pattern);
+    const entry = this.data.whitelist.find((e) => e.pattern === pattern);
     return entry?.occurrences ?? 0;
   }
 
@@ -256,7 +260,7 @@ export class LocalLearningStore {
    * Manually add pattern to whitelist
    */
   addToWhitelist(pattern: string, confidence: number = 0.9): void {
-    const existing = this.data.whitelist.find(e => e.pattern === pattern);
+    const existing = this.data.whitelist.find((e) => e.pattern === pattern);
 
     if (existing) {
       existing.confidence = confidence;
@@ -269,7 +273,7 @@ export class LocalLearningStore {
         occurrences: 1,
         firstSeen: Date.now(),
         lastSeen: Date.now(),
-        contexts: []
+        contexts: [],
       });
     }
 
@@ -282,7 +286,9 @@ export class LocalLearningStore {
    * Remove pattern from whitelist
    */
   removeFromWhitelist(pattern: string): void {
-    this.data.whitelist = this.data.whitelist.filter(e => e.pattern !== pattern);
+    this.data.whitelist = this.data.whitelist.filter(
+      (e) => e.pattern !== pattern,
+    );
 
     if (this.autoSave) {
       this.save();
@@ -294,7 +300,7 @@ export class LocalLearningStore {
    */
   clear(): void {
     this.data = {
-      version: '1.0',
+      version: "1.0",
       whitelist: [],
       patternAdjustments: [],
       stats: {
@@ -302,8 +308,8 @@ export class LocalLearningStore {
         falsePositives: 0,
         falseNegatives: 0,
         accuracy: 1.0,
-        lastUpdated: Date.now()
-      }
+        lastUpdated: Date.now(),
+      },
     };
 
     if (this.autoSave) {
@@ -314,24 +320,24 @@ export class LocalLearningStore {
   /**
    * Export learning data (for sharing)
    */
-  exportData(options: {
-    includeContexts?: boolean;
-    minConfidence?: number;
-  } = {}): LearningData {
+  exportData(
+    options: { includeContexts?: boolean; minConfidence?: number } = {},
+  ): LearningData {
     const minConfidence = options.minConfidence ?? 0.7;
     const includeContexts = options.includeContexts ?? false;
 
     return {
       version: this.data.version,
       whitelist: this.data.whitelist
-        .filter(e => e.confidence >= minConfidence)
-        .map(e => ({
+        .filter((e) => e.confidence >= minConfidence)
+        .map((e) => ({
           ...e,
-          contexts: includeContexts ? e.contexts : []
+          contexts: includeContexts ? e.contexts : [],
         })),
-      patternAdjustments: this.data.patternAdjustments
-        .filter(a => a.confidence >= minConfidence),
-      stats: this.data.stats
+      patternAdjustments: this.data.patternAdjustments.filter(
+        (a) => a.confidence >= minConfidence,
+      ),
+      stats: this.data.stats,
     };
   }
 
@@ -347,14 +353,18 @@ export class LocalLearningStore {
 
     // Merge whitelist entries
     for (const entry of data.whitelist) {
-      const existing = this.data.whitelist.find(e => e.pattern === entry.pattern);
+      const existing = this.data.whitelist.find(
+        (e) => e.pattern === entry.pattern,
+      );
 
       if (existing) {
         // Keep higher confidence and sum occurrences
         existing.confidence = Math.max(existing.confidence, entry.confidence);
         existing.occurrences += entry.occurrences;
         existing.lastSeen = Math.max(existing.lastSeen, entry.lastSeen);
-        existing.contexts = [...new Set([...existing.contexts, ...entry.contexts])];
+        existing.contexts = [
+          ...new Set([...existing.contexts, ...entry.contexts]),
+        ];
       } else {
         this.data.whitelist.push(entry);
       }
@@ -362,14 +372,19 @@ export class LocalLearningStore {
 
     // Merge pattern adjustments
     for (const adjustment of data.patternAdjustments) {
-      const existing = this.data.patternAdjustments.find(a =>
-        a.type === adjustment.type && a.issue === adjustment.issue
+      const existing = this.data.patternAdjustments.find(
+        (a) => a.type === adjustment.type && a.issue === adjustment.issue,
       );
 
       if (existing) {
-        existing.confidence = Math.max(existing.confidence, adjustment.confidence);
+        existing.confidence = Math.max(
+          existing.confidence,
+          adjustment.confidence,
+        );
         existing.occurrences += adjustment.occurrences;
-        existing.examples = [...new Set([...existing.examples, ...adjustment.examples])];
+        existing.examples = [
+          ...new Set([...existing.examples, ...adjustment.examples]),
+        ];
       } else {
         this.data.patternAdjustments.push(adjustment);
       }

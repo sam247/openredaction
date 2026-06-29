@@ -3,84 +3,98 @@
  * Demonstrates OpenRedaction middleware and route handlers
  */
 
-const express = require('express');
+const express = require("express");
 const {
   OpenRedaction,
   openredactionMiddleware,
   detectPII,
   generateReport,
-  createBatchProcessor
-} = require('openredaction');
+  createBatchProcessor,
+} = require("openredaction");
 
 const app = express();
 app.use(express.json());
 
 // Example 1: Global middleware with auto-redaction
-app.use('/api/secure', openredactionMiddleware({
-  autoRedact: true,
-  enableContextAnalysis: true,
-  addHeaders: true,
-  onDetection: (req, result) => {
-    console.log(`⚠️  PII detected in ${req.path}: ${result.detections.length} items`);
-  }
-}));
+app.use(
+  "/api/secure",
+  openredactionMiddleware({
+    autoRedact: true,
+    enableContextAnalysis: true,
+    addHeaders: true,
+    onDetection: (req, result) => {
+      console.log(
+        `⚠️  PII detected in ${req.path}: ${result.detections.length} items`,
+      );
+    },
+  }),
+);
 
 // Example 2: Middleware that fails on PII
-app.use('/api/strict', openredactionMiddleware({
-  failOnPII: true,
-  fields: ['message', 'content'], // Only check specific fields
-  skipRoutes: [/^\/api\/strict\/public/] // Skip certain routes
-}));
+app.use(
+  "/api/strict",
+  openredactionMiddleware({
+    failOnPII: true,
+    fields: ["message", "content"], // Only check specific fields
+    skipRoutes: [/^\/api\/strict\/public/], // Skip certain routes
+  }),
+);
 
 // Example 3: Basic route with middleware
-app.post('/api/secure/submit', (req, res) => {
-  console.log('Received (redacted):', req.body);
+app.post("/api/secure/submit", (req, res) => {
+  console.log("Received (redacted):", req.body);
 
   res.json({
     success: true,
-    message: 'Data processed with PII redaction',
+    message: "Data processed with PII redaction",
     piiDetected: req.pii?.detected || false,
-    piiCount: req.pii?.count || 0
+    piiCount: req.pii?.count || 0,
   });
 });
 
 // Example 4: Strict endpoint that rejects PII
-app.post('/api/strict/comment', (req, res) => {
+app.post("/api/strict/comment", (req, res) => {
   res.json({
     success: true,
-    message: 'Comment accepted (no PII detected)'
+    message: "Comment accepted (no PII detected)",
   });
 });
 
 // Example 5: Public endpoint (skipped by middleware)
-app.post('/api/strict/public/feedback', (req, res) => {
+app.post("/api/strict/public/feedback", (req, res) => {
   res.json({
     success: true,
-    message: 'Public feedback received'
+    message: "Public feedback received",
   });
 });
 
 // Example 6: Direct detection endpoint
-app.post('/api/detect', detectPII({
-  enableContextAnalysis: true
-}));
+app.post(
+  "/api/detect",
+  detectPII({
+    enableContextAnalysis: true,
+  }),
+);
 
 // Example 7: Report generation endpoint
-app.post('/api/report', generateReport({
-  enableContextAnalysis: true
-}));
+app.post(
+  "/api/report",
+  generateReport({
+    enableContextAnalysis: true,
+  }),
+);
 
 // Example 8: Custom detection logic
-app.post('/api/analyze', async (req, res) => {
+app.post("/api/analyze", async (req, res) => {
   const { text, options = {} } = req.body;
 
   if (!text) {
-    return res.status(400).json({ error: 'Text is required' });
+    return res.status(400).json({ error: "Text is required" });
   }
 
   const detector = new OpenRedaction({
     enableContextAnalysis: true,
-    ...options
+    ...options,
   });
 
   const result = await detector.detect(text);
@@ -89,26 +103,26 @@ app.post('/api/analyze', async (req, res) => {
     hasPII: result.detections.length > 0,
     count: result.detections.length,
     redacted: result.redacted,
-    detections: result.detections.map(d => ({
+    detections: result.detections.map((d) => ({
       type: d.type,
       severity: d.severity,
       confidence: d.confidence,
-      position: d.position
+      position: d.position,
     })),
     stats: result.stats,
     breakdown: result.detections.reduce((acc, d) => {
       acc[d.type] = (acc[d.type] || 0) + 1;
       return acc;
-    }, {})
+    }, {}),
   });
 });
 
 // Example 9: Batch processing endpoint
-app.post('/api/batch', async (req, res) => {
+app.post("/api/batch", async (req, res) => {
   const { documents, parallel = false } = req.body;
 
   if (!Array.isArray(documents)) {
-    return res.status(400).json({ error: 'Documents array is required' });
+    return res.status(400).json({ error: "Documents array is required" });
   }
 
   const detector = new OpenRedaction({ enableContextAnalysis: true });
@@ -127,29 +141,29 @@ app.post('/api/batch', async (req, res) => {
     bySeverity: stats.detectionsBySeverity,
     avgConfidence: stats.avgConfidence,
     processingTime: result.stats.totalTime,
-    avgTimePerDoc: result.stats.avgTimePerDocument
+    avgTimePerDoc: result.stats.avgTimePerDocument,
   });
 });
 
 // Example 10: Health check with PII detection status
-app.get('/api/health', async (req, res) => {
+app.get("/api/health", async (req, res) => {
   const detector = new OpenRedaction();
-  await detector.detect('test@example.com');
+  await detector.detect("test@example.com");
 
   res.json({
-    status: 'healthy',
-    piiDetection: 'operational',
+    status: "healthy",
+    piiDetection: "operational",
     patterns: detector.getPatterns().length,
-    version: require('../../packages/core/package.json').version
+    version: require("../../packages/core/package.json").version,
   });
 });
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
+  console.error("Error:", err);
   res.status(500).json({
-    error: 'Internal server error',
-    message: err.message
+    error: "Internal server error",
+    message: err.message,
   });
 });
 

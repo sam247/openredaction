@@ -2,13 +2,21 @@
  * Metrics collection and export for monitoring redaction operations
  */
 
-import type { IMetricsCollector, IMetricsExporter, RedactionMetrics, DetectionResult, RedactionMode } from '../types';
+import type {
+  DetectionResult,
+  IMetricsCollector,
+  IMetricsExporter,
+  RedactionMetrics,
+  RedactionMode,
+} from "../types";
 
 /**
  * In-memory metrics collector and exporter
  * Collects metrics and provides Prometheus and StatsD export formats
  */
-export class InMemoryMetricsCollector implements IMetricsCollector, IMetricsExporter {
+export class InMemoryMetricsCollector
+  implements IMetricsCollector, IMetricsExporter
+{
   private metrics: RedactionMetrics;
 
   constructor() {
@@ -28,27 +36,34 @@ export class InMemoryMetricsCollector implements IMetricsCollector, IMetricsExpo
       piiByType: {},
       byRedactionMode: {},
       totalErrors: 0,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     };
   }
 
   /**
    * Record a redaction operation
    */
-  recordRedaction(result: DetectionResult, processingTimeMs: number, redactionMode: RedactionMode): void {
+  recordRedaction(
+    result: DetectionResult,
+    processingTimeMs: number,
+    redactionMode: RedactionMode,
+  ): void {
     this.metrics.totalRedactions++;
     this.metrics.totalPiiDetected += result.detections.length;
     this.metrics.totalProcessingTime += processingTimeMs;
-    this.metrics.averageProcessingTime = this.metrics.totalProcessingTime / this.metrics.totalRedactions;
+    this.metrics.averageProcessingTime =
+      this.metrics.totalProcessingTime / this.metrics.totalRedactions;
     this.metrics.totalTextLength += result.original.length;
 
     // Count PII by type
     for (const detection of result.detections) {
-      this.metrics.piiByType[detection.type] = (this.metrics.piiByType[detection.type] || 0) + 1;
+      this.metrics.piiByType[detection.type] =
+        (this.metrics.piiByType[detection.type] || 0) + 1;
     }
 
     // Count by redaction mode
-    this.metrics.byRedactionMode[redactionMode] = (this.metrics.byRedactionMode[redactionMode] || 0) + 1;
+    this.metrics.byRedactionMode[redactionMode] =
+      (this.metrics.byRedactionMode[redactionMode] || 0) + 1;
 
     this.metrics.lastUpdated = new Date().toISOString();
   }
@@ -85,39 +100,62 @@ export class InMemoryMetricsCollector implements IMetricsCollector, IMetricsExpo
   /**
    * Export metrics in Prometheus format
    */
-  exportPrometheus(metrics: RedactionMetrics = this.metrics, prefix: string = 'openredaction'): string {
+  exportPrometheus(
+    metrics: RedactionMetrics = this.metrics,
+    prefix: string = "openredaction",
+  ): string {
     const lines: string[] = [];
     const timestamp = Date.now();
 
     // Total redactions
-    lines.push(`# HELP ${prefix}_total_redactions Total number of redaction operations`);
+    lines.push(
+      `# HELP ${prefix}_total_redactions Total number of redaction operations`,
+    );
     lines.push(`# TYPE ${prefix}_total_redactions counter`);
-    lines.push(`${prefix}_total_redactions ${metrics.totalRedactions} ${timestamp}`);
-    lines.push('');
+    lines.push(
+      `${prefix}_total_redactions ${metrics.totalRedactions} ${timestamp}`,
+    );
+    lines.push("");
 
     // Total PII detected
-    lines.push(`# HELP ${prefix}_total_pii_detected Total number of PII items detected`);
+    lines.push(
+      `# HELP ${prefix}_total_pii_detected Total number of PII items detected`,
+    );
     lines.push(`# TYPE ${prefix}_total_pii_detected counter`);
-    lines.push(`${prefix}_total_pii_detected ${metrics.totalPiiDetected} ${timestamp}`);
-    lines.push('');
+    lines.push(
+      `${prefix}_total_pii_detected ${metrics.totalPiiDetected} ${timestamp}`,
+    );
+    lines.push("");
 
     // Average processing time
-    lines.push(`# HELP ${prefix}_avg_processing_time_ms Average processing time in milliseconds`);
+    lines.push(
+      `# HELP ${prefix}_avg_processing_time_ms Average processing time in milliseconds`,
+    );
     lines.push(`# TYPE ${prefix}_avg_processing_time_ms gauge`);
-    lines.push(`${prefix}_avg_processing_time_ms ${metrics.averageProcessingTime.toFixed(2)} ${timestamp}`);
-    lines.push('');
+    lines.push(
+      `${prefix}_avg_processing_time_ms ${metrics.averageProcessingTime.toFixed(2)} ${timestamp}`,
+    );
+    lines.push("");
 
     // Total processing time
-    lines.push(`# HELP ${prefix}_total_processing_time_ms Total processing time in milliseconds`);
+    lines.push(
+      `# HELP ${prefix}_total_processing_time_ms Total processing time in milliseconds`,
+    );
     lines.push(`# TYPE ${prefix}_total_processing_time_ms counter`);
-    lines.push(`${prefix}_total_processing_time_ms ${metrics.totalProcessingTime.toFixed(2)} ${timestamp}`);
-    lines.push('');
+    lines.push(
+      `${prefix}_total_processing_time_ms ${metrics.totalProcessingTime.toFixed(2)} ${timestamp}`,
+    );
+    lines.push("");
 
     // Total text length
-    lines.push(`# HELP ${prefix}_total_text_length Total text length processed in characters`);
+    lines.push(
+      `# HELP ${prefix}_total_text_length Total text length processed in characters`,
+    );
     lines.push(`# TYPE ${prefix}_total_text_length counter`);
-    lines.push(`${prefix}_total_text_length ${metrics.totalTextLength} ${timestamp}`);
-    lines.push('');
+    lines.push(
+      `${prefix}_total_text_length ${metrics.totalTextLength} ${timestamp}`,
+    );
+    lines.push("");
 
     // PII by type
     lines.push(`# HELP ${prefix}_pii_by_type PII detection counts by type`);
@@ -125,40 +163,51 @@ export class InMemoryMetricsCollector implements IMetricsCollector, IMetricsExpo
     for (const [type, count] of Object.entries(metrics.piiByType)) {
       lines.push(`${prefix}_pii_by_type{type="${type}"} ${count} ${timestamp}`);
     }
-    lines.push('');
+    lines.push("");
 
     // Operations by redaction mode
-    lines.push(`# HELP ${prefix}_by_redaction_mode Operation counts by redaction mode`);
+    lines.push(
+      `# HELP ${prefix}_by_redaction_mode Operation counts by redaction mode`,
+    );
     lines.push(`# TYPE ${prefix}_by_redaction_mode counter`);
     for (const [mode, count] of Object.entries(metrics.byRedactionMode)) {
-      lines.push(`${prefix}_by_redaction_mode{mode="${mode}"} ${count} ${timestamp}`);
+      lines.push(
+        `${prefix}_by_redaction_mode{mode="${mode}"} ${count} ${timestamp}`,
+      );
     }
-    lines.push('');
+    lines.push("");
 
     // Total errors
     lines.push(`# HELP ${prefix}_total_errors Total number of errors`);
     lines.push(`# TYPE ${prefix}_total_errors counter`);
     lines.push(`${prefix}_total_errors ${metrics.totalErrors} ${timestamp}`);
-    lines.push('');
+    lines.push("");
 
-    return lines.join('\n');
+    return lines.join("\n");
   }
 
   /**
    * Export metrics in StatsD format
    */
-  exportStatsD(metrics: RedactionMetrics = this.metrics, prefix: string = 'openredaction'): string[] {
+  exportStatsD(
+    metrics: RedactionMetrics = this.metrics,
+    prefix: string = "openredaction",
+  ): string[] {
     const lines: string[] = [];
 
     // Counter metrics
     lines.push(`${prefix}.total_redactions:${metrics.totalRedactions}|c`);
     lines.push(`${prefix}.total_pii_detected:${metrics.totalPiiDetected}|c`);
-    lines.push(`${prefix}.total_processing_time_ms:${metrics.totalProcessingTime.toFixed(2)}|c`);
+    lines.push(
+      `${prefix}.total_processing_time_ms:${metrics.totalProcessingTime.toFixed(2)}|c`,
+    );
     lines.push(`${prefix}.total_text_length:${metrics.totalTextLength}|c`);
     lines.push(`${prefix}.total_errors:${metrics.totalErrors}|c`);
 
     // Gauge metrics
-    lines.push(`${prefix}.avg_processing_time_ms:${metrics.averageProcessingTime.toFixed(2)}|g`);
+    lines.push(
+      `${prefix}.avg_processing_time_ms:${metrics.averageProcessingTime.toFixed(2)}|g`,
+    );
 
     // PII by type (with tags)
     for (const [type, count] of Object.entries(metrics.piiByType)) {

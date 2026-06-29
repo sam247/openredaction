@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import WordPressWaitlistModal from '@/components/WordPressWaitlistModal';
+import WordPressWaitlistModal from "@/components/WordPressWaitlistModal";
 
 /** One modal for the whole site: timed open + listeners from page triggers. */
 export default function WordPressWaitlistRoot() {

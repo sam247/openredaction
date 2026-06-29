@@ -3,10 +3,13 @@
  * Provides detailed insights into why text was or wasn't detected
  */
 
-import { PIIPattern, PIIDetection } from '../types';
-import { OpenRedaction } from '../detector';
-import { analyzeFullContext, ContextAnalysis } from '../context/ContextAnalyzer';
-import { isFalsePositive } from '../filters/FalsePositiveFilter';
+import {
+  analyzeFullContext,
+  type ContextAnalysis,
+} from "../context/ContextAnalyzer";
+import type { OpenRedaction } from "../detector";
+import { isFalsePositive } from "../filters/FalsePositiveFilter";
+import type { PIIDetection, PIIPattern } from "../types";
 
 /**
  * Pattern match result for explain
@@ -85,9 +88,10 @@ export class ExplainAPI {
     this.options = {
       enableContextAnalysis: hasConfidence,
       confidenceThreshold: detectorOptions?.confidenceThreshold || 0.5,
-      enableFalsePositiveFilter: detectorOptions?.enableFalsePositiveFilter || false,
+      enableFalsePositiveFilter:
+        detectorOptions?.enableFalsePositiveFilter || false,
       falsePositiveThreshold: detectorOptions?.falsePositiveThreshold || 0.7,
-      whitelist: detectorOptions?.whitelist || []
+      whitelist: detectorOptions?.whitelist || [],
     };
   }
 
@@ -110,7 +114,7 @@ export class ExplainAPI {
         const result: PatternMatchResult = {
           pattern,
           matched: false,
-          reason: 'Pattern regex did not match text'
+          reason: "Pattern regex did not match text",
         };
         patternResults.push(result);
         unmatchedPatterns.push(result);
@@ -142,7 +146,7 @@ export class ExplainAPI {
         pattern,
         matched: true,
         matchedValue: value,
-        position: [startPos, endPos]
+        position: [startPos, endPos],
       };
 
       // Check validator
@@ -151,7 +155,7 @@ export class ExplainAPI {
         result.validatorPassed = validatorResult;
 
         if (!validatorResult) {
-          result.reason = 'Failed pattern validator';
+          result.reason = "Failed pattern validator";
           patternResults.push(result);
           filteredPatterns.push(result);
           continue;
@@ -164,11 +168,14 @@ export class ExplainAPI {
         result.falsePositiveCheck = {
           isFalsePositive: fpResult.isFalsePositive,
           confidence: fpResult.confidence,
-          reason: fpResult.matchedRule?.description
+          reason: fpResult.matchedRule?.description,
         };
 
-        if (fpResult.isFalsePositive && fpResult.confidence >= this.options.falsePositiveThreshold) {
-          result.reason = `Filtered as false positive: ${fpResult.matchedRule?.description || 'Unknown reason'}`;
+        if (
+          fpResult.isFalsePositive &&
+          fpResult.confidence >= this.options.falsePositiveThreshold
+        ) {
+          result.reason = `Filtered as false positive: ${fpResult.matchedRule?.description || "Unknown reason"}`;
           patternResults.push(result);
           filteredPatterns.push(result);
           continue;
@@ -182,7 +189,7 @@ export class ExplainAPI {
           value,
           pattern.type,
           startPos,
-          endPos
+          endPos,
         );
         result.contextAnalysis = contextAnalysis;
 
@@ -195,10 +202,12 @@ export class ExplainAPI {
       }
 
       // Check whitelist
-      if (this.options.whitelist.some(term =>
-        value.toLowerCase().includes(term.toLowerCase())
-      )) {
-        result.reason = 'Matched whitelist term';
+      if (
+        this.options.whitelist.some((term) =>
+          value.toLowerCase().includes(term.toLowerCase()),
+        )
+      ) {
+        result.reason = "Matched whitelist term";
         patternResults.push(result);
         filteredPatterns.push(result);
         continue;
@@ -224,22 +233,25 @@ export class ExplainAPI {
         totalPatternsChecked: this.patterns.length,
         patternsMatched: matchedPatterns.length,
         patternsFiltered: filteredPatterns.length,
-        finalDetections: detections.length
-      }
+        finalDetections: detections.length,
+      },
     };
   }
 
   /**
    * Explain a specific detection
    */
-  async explainDetection(detection: PIIDetection, text: string): Promise<{
+  async explainDetection(
+    detection: PIIDetection,
+    text: string,
+  ): Promise<{
     detection: PIIDetection;
     pattern?: PIIPattern;
     contextAnalysis?: ContextAnalysis;
     reasoning: string[];
     suggestions: string[];
   }> {
-    const pattern = this.patterns.find(p => p.type === detection.type);
+    const pattern = this.patterns.find((p) => p.type === detection.type);
     const reasoning: string[] = [];
 
     reasoning.push(`Detected as ${detection.type}`);
@@ -263,12 +275,14 @@ export class ExplainAPI {
         detection.value,
         detection.type,
         start,
-        end
+        end,
       );
 
       if (contextAnalysis) {
         reasoning.push(`Document type: ${contextAnalysis.documentType}`);
-        reasoning.push(`Context confidence: ${(contextAnalysis.confidence * 100).toFixed(1)}%`);
+        reasoning.push(
+          `Context confidence: ${(contextAnalysis.confidence * 100).toFixed(1)}%`,
+        );
       }
     }
 
@@ -277,14 +291,17 @@ export class ExplainAPI {
       pattern,
       contextAnalysis,
       reasoning,
-      suggestions: [] // Will be populated if needed
+      suggestions: [], // Will be populated if needed
     };
   }
 
   /**
    * Suggest why text wasn't detected
    */
-  async suggestWhy(text: string, expectedType: string): Promise<{
+  async suggestWhy(
+    text: string,
+    expectedType: string,
+  ): Promise<{
     text: string;
     expectedType: string;
     suggestions: string[];
@@ -294,13 +311,16 @@ export class ExplainAPI {
     const similarPatterns: PIIPattern[] = [];
 
     // Find patterns of expected type
-    const typePatterns = this.patterns.filter(p =>
-      p.type === expectedType || p.type.includes(expectedType)
+    const typePatterns = this.patterns.filter(
+      (p) => p.type === expectedType || p.type.includes(expectedType),
     );
 
     if (typePatterns.length === 0) {
       suggestions.push(`No patterns found for type: ${expectedType}`);
-      suggestions.push('Available types: ' + [...new Set(this.patterns.map(p => p.type))].join(', '));
+      suggestions.push(
+        "Available types: " +
+          [...new Set(this.patterns.map((p) => p.type))].join(", "),
+      );
       return { text, expectedType, suggestions, similarPatterns };
     }
 
@@ -316,7 +336,9 @@ export class ExplainAPI {
 
         // Check why it was filtered
         const explanation = await this.explain(text);
-        const filtered = explanation.filteredPatterns.find(r => r.pattern.type === pattern.type);
+        const filtered = explanation.filteredPatterns.find(
+          (r) => r.pattern.type === pattern.type,
+        );
 
         if (filtered && filtered.reason) {
           suggestions.push(`But was filtered: ${filtered.reason}`);
@@ -326,16 +348,18 @@ export class ExplainAPI {
 
     if (similarPatterns.length === 0) {
       suggestions.push(`Text didn't match any ${expectedType} patterns`);
-      suggestions.push('Possible reasons:');
-      suggestions.push('  - Format doesn\'t match expected pattern');
-      suggestions.push('  - Contains invalid characters');
-      suggestions.push('  - Fails validation checks');
-      suggestions.push('  - Too short or too long');
+      suggestions.push("Possible reasons:");
+      suggestions.push("  - Format doesn't match expected pattern");
+      suggestions.push("  - Contains invalid characters");
+      suggestions.push("  - Fails validation checks");
+      suggestions.push("  - Too short or too long");
 
       // Show example patterns
       if (typePatterns.length > 0) {
         const examplePattern = typePatterns[0];
-        suggestions.push(`\nExample ${expectedType} pattern: ${examplePattern.regex.source.substring(0, 100)}...`);
+        suggestions.push(
+          `\nExample ${expectedType} pattern: ${examplePattern.regex.source.substring(0, 100)}...`,
+        );
       }
     }
 
@@ -343,7 +367,7 @@ export class ExplainAPI {
       text,
       expectedType,
       suggestions,
-      similarPatterns
+      similarPatterns,
     };
   }
 
@@ -366,13 +390,15 @@ export class ExplainAPI {
 
     const enabledFeatures: string[] = [];
     if (this.options.enableContextAnalysis) {
-      enabledFeatures.push('Context Analysis');
+      enabledFeatures.push("Context Analysis");
     }
     if (this.options.enableFalsePositiveFilter) {
-      enabledFeatures.push('False Positive Filter');
+      enabledFeatures.push("False Positive Filter");
     }
     if (this.options.whitelist.length > 0) {
-      enabledFeatures.push(`Whitelist (${this.options.whitelist.length} entries)`);
+      enabledFeatures.push(
+        `Whitelist (${this.options.whitelist.length} entries)`,
+      );
     }
 
     return {
@@ -382,8 +408,8 @@ export class ExplainAPI {
       patternCount: this.patterns.length,
       explanation,
       performance: {
-        estimatedTime: `${duration.toFixed(2)}ms`
-      }
+        estimatedTime: `${duration.toFixed(2)}ms`,
+      },
     };
   }
 }

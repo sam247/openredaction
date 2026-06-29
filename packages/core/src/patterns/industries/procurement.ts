@@ -3,7 +3,7 @@
  * Detects identifiers commonly used in procurement, purchasing, and supply chain operations
  */
 
-import { PIIPattern } from '../../types';
+import type { PIIPattern } from "../../types";
 
 /**
  * Purchase Order (PO) Number
@@ -11,15 +11,15 @@ import { PIIPattern } from '../../types';
  * Priority: 75
  */
 export const PURCHASE_ORDER: PIIPattern = {
-  type: 'PURCHASE_ORDER',
+  type: "PURCHASE_ORDER",
   regex: /\b(?:PO|Purchase\s+Order)[-#\s]?(\d{6,12})\b/gi,
-  placeholder: '[PO_{n}]',
+  placeholder: "[PO_{n}]",
   priority: 75,
-  severity: 'medium',
-  description: 'Purchase order numbers',
+  severity: "medium",
+  description: "Purchase order numbers",
   validator: (_value: string, context: string) => {
     return /purchase|order|procurement|buying/i.test(context);
-  }
+  },
 };
 
 /**
@@ -28,12 +28,12 @@ export const PURCHASE_ORDER: PIIPattern = {
  * Priority: 70
  */
 export const RFQ_NUMBER: PIIPattern = {
-  type: 'RFQ_NUMBER',
+  type: "RFQ_NUMBER",
   regex: /\b(?:RFQ|Request\s+for\s+Quotation)[-#\s]?(\d{6,12})\b/gi,
-  placeholder: '[RFQ_{n}]',
+  placeholder: "[RFQ_{n}]",
   priority: 70,
-  severity: 'medium',
-  description: 'Request for Quotation reference numbers'
+  severity: "medium",
+  description: "Request for Quotation reference numbers",
 };
 
 /**
@@ -42,12 +42,12 @@ export const RFQ_NUMBER: PIIPattern = {
  * Priority: 70
  */
 export const RFP_NUMBER: PIIPattern = {
-  type: 'RFP_NUMBER',
+  type: "RFP_NUMBER",
   regex: /\b(?:RFP|Request\s+for\s+Proposal)[-#\s]?(\d{6,12})\b/gi,
-  placeholder: '[RFP_{n}]',
+  placeholder: "[RFP_{n}]",
   priority: 70,
-  severity: 'medium',
-  description: 'Request for Proposal reference numbers'
+  severity: "medium",
+  description: "Request for Proposal reference numbers",
 };
 
 /**
@@ -56,15 +56,15 @@ export const RFP_NUMBER: PIIPattern = {
  * Priority: 75
  */
 export const TENDER_REFERENCE: PIIPattern = {
-  type: 'TENDER_REFERENCE',
+  type: "TENDER_REFERENCE",
   regex: /\b(?:TENDER|TN|T)[-_]?\d{6,12}\b/gi,
-  placeholder: '[TENDER_{n}]',
+  placeholder: "[TENDER_{n}]",
   priority: 75,
-  severity: 'medium',
-  description: 'Tender and bidding reference numbers',
+  severity: "medium",
+  description: "Tender and bidding reference numbers",
   validator: (_value: string, context: string) => {
     return /tender|bid|bidding|procurement|competition/i.test(context);
-  }
+  },
 };
 
 /**
@@ -73,15 +73,15 @@ export const TENDER_REFERENCE: PIIPattern = {
  * Priority: 70
  */
 export const SUPPLIER_ID: PIIPattern = {
-  type: 'SUPPLIER_ID',
+  type: "SUPPLIER_ID",
   regex: /\b(?:SUPPLIER|SUP|VENDOR|VEN)[-_]?\d{6,10}\b/gi,
-  placeholder: '[SUPPLIER_ID_{n}]',
+  placeholder: "[SUPPLIER_ID_{n}]",
   priority: 70,
-  severity: 'medium',
-  description: 'Supplier and vendor identification numbers',
+  severity: "medium",
+  description: "Supplier and vendor identification numbers",
   validator: (_value: string, context: string) => {
     return /supplier|vendor|provider|contractor/i.test(context);
-  }
+  },
 };
 
 /**
@@ -90,15 +90,15 @@ export const SUPPLIER_ID: PIIPattern = {
  * Priority: 80
  */
 export const CONTRACT_REFERENCE: PIIPattern = {
-  type: 'CONTRACT_REFERENCE',
+  type: "CONTRACT_REFERENCE",
   regex: /\b(?:CONTRACT|CON|C)[-_]?\d{6,12}\b/gi,
-  placeholder: '[CONTRACT_{n}]',
+  placeholder: "[CONTRACT_{n}]",
   priority: 80,
-  severity: 'medium',
-  description: 'Procurement contract reference numbers',
+  severity: "medium",
+  description: "Procurement contract reference numbers",
   validator: (_value: string, context: string) => {
     return /contract|agreement|procurement|supply/i.test(context);
-  }
+  },
 };
 
 /**
@@ -107,12 +107,12 @@ export const CONTRACT_REFERENCE: PIIPattern = {
  * Priority: 70
  */
 export const REQUISITION_NUMBER: PIIPattern = {
-  type: 'REQUISITION_NUMBER',
+  type: "REQUISITION_NUMBER",
   regex: /\b(?:REQ|REQUISITION|PR|Purchase\s+Requisition)[-#\s]?(\d{6,12})\b/gi,
-  placeholder: '[REQ_{n}]',
+  placeholder: "[REQ_{n}]",
   priority: 70,
-  severity: 'medium',
-  description: 'Purchase requisition numbers'
+  severity: "medium",
+  description: "Purchase requisition numbers",
 };
 
 /**
@@ -121,12 +121,13 @@ export const REQUISITION_NUMBER: PIIPattern = {
  * Priority: 90
  */
 export const PCARD_REFERENCE: PIIPattern = {
-  type: 'PCARD_REFERENCE',
-  regex: /\b(?:P[\-\s]?Card|Procurement\s+Card).*?(?:ending|last\s+4|XXXX)[\-\s]?(\d{4})\b/gi,
-  placeholder: '[PCARD_{n}]',
+  type: "PCARD_REFERENCE",
+  regex:
+    /\b(?:P[-\s]?Card|Procurement\s+Card).*?(?:ending|last\s+4|XXXX)[-\s]?(\d{4})\b/gi,
+  placeholder: "[PCARD_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Procurement card references (partial numbers)'
+  severity: "high",
+  description: "Procurement card references (partial numbers)",
 };
 
 /**
@@ -135,15 +136,15 @@ export const PCARD_REFERENCE: PIIPattern = {
  * Priority: 60
  */
 export const CATALOG_NUMBER: PIIPattern = {
-  type: 'CATALOG_NUMBER',
+  type: "CATALOG_NUMBER",
   regex: /\b(?:CATALOG|CAT|PART|PN)[-#]?[A-Z0-9]{6,15}\b/gi,
-  placeholder: '[CATALOG_{n}]',
+  placeholder: "[CATALOG_{n}]",
   priority: 60,
-  severity: 'low',
-  description: 'Catalog and part numbers',
+  severity: "low",
+  description: "Catalog and part numbers",
   validator: (_value: string, context: string) => {
     return /catalog|part|sku|item|product/i.test(context);
-  }
+  },
 };
 
 /**
@@ -152,15 +153,15 @@ export const CATALOG_NUMBER: PIIPattern = {
  * Priority: 70
  */
 export const QUOTATION_REFERENCE: PIIPattern = {
-  type: 'QUOTATION_REFERENCE',
+  type: "QUOTATION_REFERENCE",
   regex: /\b(?:QUOTATION|QUOTE|QUO|Q)[-_]?\d{6,12}\b/gi,
-  placeholder: '[QUOTE_{n}]',
+  placeholder: "[QUOTE_{n}]",
   priority: 70,
-  severity: 'medium',
-  description: 'Quotation reference numbers',
+  severity: "medium",
+  description: "Quotation reference numbers",
   validator: (_value: string, context: string) => {
     return /quot|price|estimate|proposal/i.test(context);
-  }
+  },
 };
 
 /**
@@ -169,12 +170,12 @@ export const QUOTATION_REFERENCE: PIIPattern = {
  * Priority: 65
  */
 export const GOODS_RECEIPT: PIIPattern = {
-  type: 'GOODS_RECEIPT',
+  type: "GOODS_RECEIPT",
   regex: /\b(?:GRN|Goods\s+Receipt)[-#\s]?(\d{6,12})\b/gi,
-  placeholder: '[GRN_{n}]',
+  placeholder: "[GRN_{n}]",
   priority: 65,
-  severity: 'low',
-  description: 'Goods receipt note numbers'
+  severity: "low",
+  description: "Goods receipt note numbers",
 };
 
 /**
@@ -183,15 +184,15 @@ export const GOODS_RECEIPT: PIIPattern = {
  * Priority: 75
  */
 export const FRAMEWORK_AGREEMENT: PIIPattern = {
-  type: 'FRAMEWORK_AGREEMENT',
+  type: "FRAMEWORK_AGREEMENT",
   regex: /\b(?:FRAMEWORK|FWK|FA)[-_]?\d{6,12}\b/gi,
-  placeholder: '[FRAMEWORK_{n}]',
+  placeholder: "[FRAMEWORK_{n}]",
   priority: 75,
-  severity: 'medium',
-  description: 'Framework agreement reference numbers',
+  severity: "medium",
+  description: "Framework agreement reference numbers",
   validator: (_value: string, context: string) => {
     return /framework|agreement|procurement/i.test(context);
-  }
+  },
 };
 
 /**
@@ -200,12 +201,12 @@ export const FRAMEWORK_AGREEMENT: PIIPattern = {
  * Priority: 70
  */
 export const BLANKET_ORDER: PIIPattern = {
-  type: 'BLANKET_ORDER',
+  type: "BLANKET_ORDER",
   regex: /\b(?:BLANKET|BO|Blanket\s+Order)[-#\s]?(\d{6,12})\b/gi,
-  placeholder: '[BLANKET_ORDER_{n}]',
+  placeholder: "[BLANKET_ORDER_{n}]",
   priority: 70,
-  severity: 'medium',
-  description: 'Blanket purchase order numbers'
+  severity: "medium",
+  description: "Blanket purchase order numbers",
 };
 
 /**
@@ -224,5 +225,5 @@ export const procurementPatterns: PIIPattern[] = [
   QUOTATION_REFERENCE,
   GOODS_RECEIPT,
   FRAMEWORK_AGREEMENT,
-  BLANKET_ORDER
+  BLANKET_ORDER,
 ];

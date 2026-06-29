@@ -7,10 +7,12 @@
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "test": {
-      "dependsOn": [],
       "outputs": ["coverage/**"]
     },
     "lint": {
+      "outputs": []
+    },
+    "typecheck": {
       "outputs": []
     },
     "dev": {

@@ -3,14 +3,14 @@
  * Government IDs and identification numbers for countries worldwide
  */
 
-import { PIIPattern } from '../types';
-import { middleEastPatterns } from './international/middle-east';
-import { africaPatterns } from './international/africa';
-import { southeastAsiaPatterns } from './international/southeast-asia';
-import { latinAmericaPatterns } from './international/latin-america';
-import { easternEuropePatterns } from './international/eastern-europe';
-import { oceaniaPatterns } from './international/oceania';
-import { centralAsiaPatterns } from './international/central-asia';
+import type { PIIPattern } from "../types";
+import { africaPatterns } from "./international/africa";
+import { centralAsiaPatterns } from "./international/central-asia";
+import { easternEuropePatterns } from "./international/eastern-europe";
+import { latinAmericaPatterns } from "./international/latin-america";
+import { middleEastPatterns } from "./international/middle-east";
+import { oceaniaPatterns } from "./international/oceania";
+import { southeastAsiaPatterns } from "./international/southeast-asia";
 
 // ==================== EUROPE ====================
 
@@ -19,36 +19,40 @@ import { centralAsiaPatterns } from './international/central-asia';
  * Format: 11 digits with checksum
  */
 export const GERMAN_TAX_ID: PIIPattern = {
-  type: 'GERMAN_TAX_ID',
+  type: "GERMAN_TAX_ID",
   regex: /\b(\d{11})\b/g,
-  placeholder: '[DE_TAX_ID_{n}]',
+  placeholder: "[DE_TAX_ID_{n}]",
   priority: 85,
-  severity: 'high',
-  description: 'German Tax Identification Number (Steueridentifikationsnummer)',
+  severity: "high",
+  description: "German Tax Identification Number (Steueridentifikationsnummer)",
   validator: (value: string, context: string) => {
     // Normalize separators
-    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
-    
+    const cleaned = value.replace(/[\s\u00A0.-]/g, "");
+
     // Must be exactly 11 digits after normalization
     if (!/^\d{11}$/.test(cleaned)) return false;
-    
+
     // Must be in German/tax context
-    const relevantContext = /steuer|tax|german|deutschland|finanzamt/i.test(context);
+    const relevantContext = /steuer|tax|german|deutschland|finanzamt/i.test(
+      context,
+    );
     if (!relevantContext) return false;
 
     // Checksum validation (simplified - full validation is complex)
-    const digits = cleaned.split('').map(Number);
+    const digits = cleaned.split("").map(Number);
 
     // Basic rules: exactly 11 digits, one digit appears 2 or 3 times, others max once
     const digitCounts = new Map<number, number>();
-    digits.forEach(d => digitCounts.set(d, (digitCounts.get(d) || 0) + 1));
+    digits.forEach((d) => {
+      digitCounts.set(d, (digitCounts.get(d) || 0) + 1);
+    });
 
     const counts = Array.from(digitCounts.values());
-    const hasDoubleOrTriple = counts.some(c => c === 2 || c === 3);
-    const noQuadruple = counts.every(c => c <= 3);
+    const hasDoubleOrTriple = counts.some((c) => c === 2 || c === 3);
+    const noQuadruple = counts.every((c) => c <= 3);
 
     return hasDoubleOrTriple && noQuadruple;
-  }
+  },
 };
 
 /**
@@ -56,14 +60,14 @@ export const GERMAN_TAX_ID: PIIPattern = {
  * Format: 15 digits (1 sex + 2 year + 2 month + 2 dept + 3 commune + 3 order + 2 key)
  */
 export const FRENCH_SOCIAL_SECURITY: PIIPattern = {
-  type: 'FRENCH_SOCIAL_SECURITY',
+  type: "FRENCH_SOCIAL_SECURITY",
   regex: /\b([12]\s?\d{2}\s?\d{2}\s?\d{2}\s?\d{3}\s?\d{3}\s?\d{2})\b/g,
-  placeholder: '[FR_SSN_{n}]',
+  placeholder: "[FR_SSN_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'French Social Security Number',
+  severity: "high",
+  description: "French Social Security Number",
   validator: (value: string, _context: string) => {
-    const cleaned = value.replace(/\s/g, '');
+    const cleaned = value.replace(/\s/g, "");
 
     // Must start with 1 or 2 (sex)
     if (!/^[12]/.test(cleaned)) return false;
@@ -77,7 +81,7 @@ export const FRENCH_SOCIAL_SECURITY: PIIPattern = {
     if (month < 1 || month > 20) return false; // 20 allows for special codes
 
     return true;
-  }
+  },
 };
 
 /**
@@ -85,15 +89,15 @@ export const FRENCH_SOCIAL_SECURITY: PIIPattern = {
  * Format: 8 digits + 1 letter OR Letter + 7 digits + 1 letter
  */
 export const SPANISH_DNI: PIIPattern = {
-  type: 'SPANISH_DNI',
-  regex: /\b([0-9]{8}[\-\s]?[A-Z]|[XYZ][\-\s]?[0-9]{7}[\-\s]?[A-Z])\b/gi,
-  placeholder: '[ES_DNI_{n}]',
+  type: "SPANISH_DNI",
+  regex: /\b([0-9]{8}[-\s]?[A-Z]|[XYZ][-\s]?[0-9]{7}[-\s]?[A-Z])\b/gi,
+  placeholder: "[ES_DNI_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Spanish National ID (DNI) or Foreigner ID (NIE)',
+  severity: "high",
+  description: "Spanish National ID (DNI) or Foreigner ID (NIE)",
   validator: (value: string, _context: string) => {
-    const cleaned = value.replace(/[\-\s]/g, '').toUpperCase();
-    const letters = 'TRWAGMYFPDXBNJZSQVHLCKE';
+    const cleaned = value.replace(/[-\s]/g, "").toUpperCase();
+    const letters = "TRWAGMYFPDXBNJZSQVHLCKE";
 
     let numbers: string;
     let letter: string;
@@ -103,7 +107,7 @@ export const SPANISH_DNI: PIIPattern = {
       numbers = cleaned.substring(1, 8);
       letter = cleaned[8];
       // Replace X, Y, Z with 0, 1, 2 for calculation
-      const prefix = cleaned[0] === 'X' ? '0' : cleaned[0] === 'Y' ? '1' : '2';
+      const prefix = cleaned[0] === "X" ? "0" : cleaned[0] === "Y" ? "1" : "2";
       numbers = prefix + numbers;
     } else {
       // DNI format
@@ -115,7 +119,7 @@ export const SPANISH_DNI: PIIPattern = {
     const expectedLetter = letters[num % 23];
 
     return letter === expectedLetter;
-  }
+  },
 };
 
 /**
@@ -123,18 +127,18 @@ export const SPANISH_DNI: PIIPattern = {
  * Format: 16 characters (surname + name + birthdate + birthplace + checksum)
  */
 export const ITALIAN_FISCAL_CODE: PIIPattern = {
-  type: 'ITALIAN_FISCAL_CODE',
+  type: "ITALIAN_FISCAL_CODE",
   regex: /\b([A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z])\b/gi,
-  placeholder: '[IT_CF_{n}]',
+  placeholder: "[IT_CF_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Italian Fiscal Code (Codice Fiscale)',
+  severity: "high",
+  description: "Italian Fiscal Code (Codice Fiscale)",
   validator: (value: string, _context: string) => {
     const code = value.toUpperCase();
 
     // Month code must be valid (A-H = Jan-Aug, L-T = Sep-Dec, skipping I)
     const monthCode = code[8];
-    const validMonths = 'ABCDEHLMPRST';
+    const validMonths = "ABCDEHLMPRST";
     if (!validMonths.includes(monthCode)) return false;
 
     // Day must be valid (01-31 for males, 41-71 for females)
@@ -143,17 +147,81 @@ export const ITALIAN_FISCAL_CODE: PIIPattern = {
 
     // Checksum validation
     const oddMap: Record<string, number> = {
-      '0': 1, '1': 0, '2': 5, '3': 7, '4': 9, '5': 13, '6': 15, '7': 17, '8': 19, '9': 21,
-      'A': 1, 'B': 0, 'C': 5, 'D': 7, 'E': 9, 'F': 13, 'G': 15, 'H': 17, 'I': 19, 'J': 21,
-      'K': 2, 'L': 4, 'M': 18, 'N': 20, 'O': 11, 'P': 3, 'Q': 6, 'R': 8, 'S': 12, 'T': 14,
-      'U': 16, 'V': 10, 'W': 22, 'X': 25, 'Y': 24, 'Z': 23
+      "0": 1,
+      "1": 0,
+      "2": 5,
+      "3": 7,
+      "4": 9,
+      "5": 13,
+      "6": 15,
+      "7": 17,
+      "8": 19,
+      "9": 21,
+      A: 1,
+      B: 0,
+      C: 5,
+      D: 7,
+      E: 9,
+      F: 13,
+      G: 15,
+      H: 17,
+      I: 19,
+      J: 21,
+      K: 2,
+      L: 4,
+      M: 18,
+      N: 20,
+      O: 11,
+      P: 3,
+      Q: 6,
+      R: 8,
+      S: 12,
+      T: 14,
+      U: 16,
+      V: 10,
+      W: 22,
+      X: 25,
+      Y: 24,
+      Z: 23,
     };
 
     const evenMap: Record<string, number> = {
-      '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
-      'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9,
-      'K': 10, 'L': 11, 'M': 12, 'N': 13, 'O': 14, 'P': 15, 'Q': 16, 'R': 17, 'S': 18,
-      'T': 19, 'U': 20, 'V': 21, 'W': 22, 'X': 23, 'Y': 24, 'Z': 25
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 4,
+      "5": 5,
+      "6": 6,
+      "7": 7,
+      "8": 8,
+      "9": 9,
+      A: 0,
+      B: 1,
+      C: 2,
+      D: 3,
+      E: 4,
+      F: 5,
+      G: 6,
+      H: 7,
+      I: 8,
+      J: 9,
+      K: 10,
+      L: 11,
+      M: 12,
+      N: 13,
+      O: 14,
+      P: 15,
+      Q: 16,
+      R: 17,
+      S: 18,
+      T: 19,
+      U: 20,
+      V: 21,
+      W: 22,
+      X: 23,
+      Y: 24,
+      Z: 25,
     };
 
     let sum = 0;
@@ -164,7 +232,7 @@ export const ITALIAN_FISCAL_CODE: PIIPattern = {
 
     const checkChar = String.fromCharCode(65 + (sum % 26));
     return checkChar === code[15];
-  }
+  },
 };
 
 /**
@@ -172,25 +240,27 @@ export const ITALIAN_FISCAL_CODE: PIIPattern = {
  * Format: 9 digits with checksum (11-proof)
  */
 export const DUTCH_BSN: PIIPattern = {
-  type: 'DUTCH_BSN',
+  type: "DUTCH_BSN",
   regex: /\b(\d{9})\b/g,
-  placeholder: '[NL_BSN_{n}]',
+  placeholder: "[NL_BSN_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Dutch Citizen Service Number (BSN)',
+  severity: "high",
+  description: "Dutch Citizen Service Number (BSN)",
   validator: (value: string, context: string) => {
     // Normalize separators
-    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
-    
+    const cleaned = value.replace(/[\s\u00A0.-]/g, "");
+
     // Must be exactly 9 digits after normalization
     if (!/^\d{9}$/.test(cleaned)) return false;
-    
+
     // Must be in Dutch context
-    const relevantContext = /bsn|dutch|netherlands|nederland|burger/i.test(context);
+    const relevantContext = /bsn|dutch|netherlands|nederland|burger/i.test(
+      context,
+    );
     if (!relevantContext) return false;
 
     // 11-proof checksum
-    const digits = cleaned.split('').map(Number);
+    const digits = cleaned.split("").map(Number);
     let sum = 0;
     for (let i = 0; i < 8; i++) {
       sum += digits[i] * (9 - i);
@@ -198,7 +268,7 @@ export const DUTCH_BSN: PIIPattern = {
     sum -= digits[8]; // Last digit is subtracted
 
     return sum % 11 === 0;
-  }
+  },
 };
 
 /**
@@ -206,26 +276,26 @@ export const DUTCH_BSN: PIIPattern = {
  * Format: 11 digits (birthdate + serial + sex + checksum)
  */
 export const POLISH_PESEL: PIIPattern = {
-  type: 'POLISH_PESEL',
+  type: "POLISH_PESEL",
   regex: /\b(\d{11})\b/g,
-  placeholder: '[PL_PESEL_{n}]',
+  placeholder: "[PL_PESEL_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Polish National Identification Number (PESEL)',
+  severity: "high",
+  description: "Polish National Identification Number (PESEL)",
   validator: (value: string, context: string) => {
     // Normalize separators
-    const cleaned = value.replace(/[\s\u00A0.\-]/g, '');
-    
+    const cleaned = value.replace(/[\s\u00A0.-]/g, "");
+
     // Must be exactly 11 digits after normalization
     if (!/^\d{11}$/.test(cleaned)) return false;
-    
+
     // Must be in Polish context
     const relevantContext = /pesel|polish|poland|polska/i.test(context);
     if (!relevantContext) return false;
 
     // Checksum validation
     const weights = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
-    const digits = cleaned.split('').map(Number);
+    const digits = cleaned.split("").map(Number);
 
     let sum = 0;
     for (let i = 0; i < 10; i++) {
@@ -234,7 +304,7 @@ export const POLISH_PESEL: PIIPattern = {
 
     const checkDigit = (10 - (sum % 10)) % 10;
     return checkDigit === digits[10];
-  }
+  },
 };
 
 // ==================== ASIA-PACIFIC ====================
@@ -244,14 +314,14 @@ export const POLISH_PESEL: PIIPattern = {
  * Format: 12 digits with checksum (Verhoeff algorithm)
  */
 export const INDIAN_AADHAAR: PIIPattern = {
-  type: 'INDIAN_AADHAAR',
+  type: "INDIAN_AADHAAR",
   regex: /\b(\d{4}\s?\d{4}\s?\d{4})\b/g,
-  placeholder: '[IN_AADHAAR_{n}]',
+  placeholder: "[IN_AADHAAR_{n}]",
   priority: 95,
-  severity: 'high',
-  description: 'Indian Aadhaar Number',
+  severity: "high",
+  description: "Indian Aadhaar Number",
   validator: (value: string, context: string) => {
-    const cleaned = value.replace(/\s/g, '');
+    const cleaned = value.replace(/\s/g, "");
 
     // Must be in Indian context
     const relevantContext = /aadhaar|aadhar|india|indian|uid/i.test(context);
@@ -261,7 +331,7 @@ export const INDIAN_AADHAAR: PIIPattern = {
     // Full implementation would require multiplication and permutation tables
     // For now, basic length and format check
     return cleaned.length === 12 && /^\d{12}$/.test(cleaned);
-  }
+  },
 };
 
 /**
@@ -269,21 +339,21 @@ export const INDIAN_AADHAAR: PIIPattern = {
  * Format: 10 digits (9 digits + 1 check digit)
  */
 export const AUSTRALIAN_MEDICARE: PIIPattern = {
-  type: 'AUSTRALIAN_MEDICARE',
+  type: "AUSTRALIAN_MEDICARE",
   regex: /\b([2-6]\d{3}\s?\d{5}\s?\d)\b/g,
-  placeholder: '[AU_MEDICARE_{n}]',
+  placeholder: "[AU_MEDICARE_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Australian Medicare Number',
+  severity: "high",
+  description: "Australian Medicare Number",
   validator: (value: string, _context: string) => {
-    const cleaned = value.replace(/\s/g, '');
+    const cleaned = value.replace(/\s/g, "");
 
     // Must start with 2-6
     if (!/^[2-6]/.test(cleaned)) return false;
 
     // Checksum validation
     const weights = [1, 3, 7, 9, 1, 3, 7, 9];
-    const digits = cleaned.split('').map(Number);
+    const digits = cleaned.split("").map(Number);
 
     let sum = 0;
     for (let i = 0; i < 8; i++) {
@@ -292,7 +362,7 @@ export const AUSTRALIAN_MEDICARE: PIIPattern = {
 
     const checkDigit = sum % 10;
     return checkDigit === digits[8];
-  }
+  },
 };
 
 /**
@@ -300,14 +370,14 @@ export const AUSTRALIAN_MEDICARE: PIIPattern = {
  * Format: 9 digits with checksum
  */
 export const AUSTRALIAN_TFN: PIIPattern = {
-  type: 'AUSTRALIAN_TFN',
+  type: "AUSTRALIAN_TFN",
   regex: /\b(\d{3}\s?\d{3}\s?\d{3})\b/g,
-  placeholder: '[AU_TFN_{n}]',
+  placeholder: "[AU_TFN_{n}]",
   priority: 95,
-  severity: 'high',
-  description: 'Australian Tax File Number',
+  severity: "high",
+  description: "Australian Tax File Number",
   validator: (value: string, context: string) => {
-    const cleaned = value.replace(/\s/g, '');
+    const cleaned = value.replace(/\s/g, "");
 
     // Must be in tax/Australian context
     const relevantContext = /tfn|tax.file|australian|australia/i.test(context);
@@ -315,7 +385,7 @@ export const AUSTRALIAN_TFN: PIIPattern = {
 
     // Checksum validation
     const weights = [1, 4, 3, 7, 5, 8, 6, 9, 10];
-    const digits = cleaned.split('').map(Number);
+    const digits = cleaned.split("").map(Number);
 
     let sum = 0;
     for (let i = 0; i < 9; i++) {
@@ -323,7 +393,7 @@ export const AUSTRALIAN_TFN: PIIPattern = {
     }
 
     return sum % 11 === 0;
-  }
+  },
 };
 
 /**
@@ -331,16 +401,16 @@ export const AUSTRALIAN_TFN: PIIPattern = {
  * Format: Letter + 7 digits + checksum letter
  */
 export const SINGAPORE_NRIC: PIIPattern = {
-  type: 'SINGAPORE_NRIC',
+  type: "SINGAPORE_NRIC",
   regex: /\b([STFGM]\d{7}[A-Z])\b/gi,
-  placeholder: '[SG_NRIC_{n}]',
+  placeholder: "[SG_NRIC_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Singapore NRIC/FIN',
+  severity: "high",
+  description: "Singapore NRIC/FIN",
   validator: (value: string, _context: string) => {
     const code = value.toUpperCase();
     const prefix = code[0];
-    const digits = code.substring(1, 8).split('').map(Number);
+    const digits = code.substring(1, 8).split("").map(Number);
     const checkLetter = code[8];
 
     // Weight factors
@@ -351,21 +421,22 @@ export const SINGAPORE_NRIC: PIIPattern = {
     }
 
     // Different check letter tables for different prefixes
-    const stLetters = 'JZIHGFEDCBA';
-    const fgLetters = 'XWUTRQPNMLK';
-    const mLetters = 'KMLKJIHGFEDCBA';
+    const stLetters = "JZIHGFEDCBA";
+    const fgLetters = "XWUTRQPNMLK";
+    const mLetters = "KMLKJIHGFEDCBA";
 
     let expectedLetter: string;
-    if (prefix === 'S' || prefix === 'T') {
+    if (prefix === "S" || prefix === "T") {
       expectedLetter = stLetters[sum % 11];
-    } else if (prefix === 'F' || prefix === 'G') {
+    } else if (prefix === "F" || prefix === "G") {
       expectedLetter = fgLetters[sum % 11];
-    } else { // M
+    } else {
+      // M
       expectedLetter = mLetters[sum % 11];
     }
 
     return checkLetter === expectedLetter;
-  }
+  },
 };
 
 /**
@@ -373,32 +444,34 @@ export const SINGAPORE_NRIC: PIIPattern = {
  * Format: 12 digits with checksum
  */
 export const JAPANESE_MY_NUMBER: PIIPattern = {
-  type: 'JAPANESE_MY_NUMBER',
+  type: "JAPANESE_MY_NUMBER",
   regex: /\b(\d{4}\s?\d{4}\s?\d{4})\b/g,
-  placeholder: '[JP_MY_NUMBER_{n}]',
+  placeholder: "[JP_MY_NUMBER_{n}]",
   priority: 95,
-  severity: 'high',
-  description: 'Japanese My Number',
+  severity: "high",
+  description: "Japanese My Number",
   validator: (value: string, context: string) => {
-    const cleaned = value.replace(/\s/g, '');
+    const cleaned = value.replace(/\s/g, "");
 
     // Must be in Japanese context
-    const relevantContext = /my.number|japan|japanese|マイナンバー/i.test(context);
+    const relevantContext = /my.number|japan|japanese|マイナンバー/i.test(
+      context,
+    );
     if (!relevantContext) return false;
 
     // Checksum validation (Luhn-like)
-    const digits = cleaned.split('').map(Number);
+    const digits = cleaned.split("").map(Number);
     const weights = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1];
 
     let sum = 0;
     for (let i = 0; i < 11; i++) {
-      let product = digits[i] * weights[i];
+      const product = digits[i] * weights[i];
       sum += Math.floor(product / 10) + (product % 10);
     }
 
     const checkDigit = (10 - (sum % 10)) % 10;
     return checkDigit === digits[11];
-  }
+  },
 };
 
 /**
@@ -406,14 +479,14 @@ export const JAPANESE_MY_NUMBER: PIIPattern = {
  * Format: 6 digits (YYMMDD) + 7 digits (region + gender + serial + checksum)
  */
 export const SOUTH_KOREAN_RRN: PIIPattern = {
-  type: 'SOUTH_KOREAN_RRN',
-  regex: /\b(\d{6}[\-\s]?[1-4]\d{6})\b/g,
-  placeholder: '[KR_RRN_{n}]',
+  type: "SOUTH_KOREAN_RRN",
+  regex: /\b(\d{6}[-\s]?[1-4]\d{6})\b/g,
+  placeholder: "[KR_RRN_{n}]",
   priority: 95,
-  severity: 'high',
-  description: 'South Korean Resident Registration Number',
+  severity: "high",
+  description: "South Korean Resident Registration Number",
   validator: (value: string, context: string) => {
-    const cleaned = value.replace(/[\-\s]/g, '');
+    const cleaned = value.replace(/[-\s]/g, "");
 
     // Must be in Korean context
     const relevantContext = /rrn|korean|korea|주민등록번호/i.test(context);
@@ -425,7 +498,7 @@ export const SOUTH_KOREAN_RRN: PIIPattern = {
 
     // Checksum validation
     const weights = [2, 3, 4, 5, 6, 7, 8, 9, 2, 3, 4, 5];
-    const digits = cleaned.split('').map(Number);
+    const digits = cleaned.split("").map(Number);
 
     let sum = 0;
     for (let i = 0; i < 12; i++) {
@@ -434,7 +507,7 @@ export const SOUTH_KOREAN_RRN: PIIPattern = {
 
     const checkDigit = (11 - (sum % 11)) % 10;
     return checkDigit === digits[12];
-  }
+  },
 };
 
 // ==================== AMERICAS ====================
@@ -444,21 +517,23 @@ export const SOUTH_KOREAN_RRN: PIIPattern = {
  * Format: 9 digits with Luhn checksum
  */
 export const CANADIAN_SIN: PIIPattern = {
-  type: 'CANADIAN_SIN',
-  regex: /\b(\d{3}[\-\s]?\d{3}[\-\s]?\d{3})\b/g,
-  placeholder: '[CA_SIN_{n}]',
+  type: "CANADIAN_SIN",
+  regex: /\b(\d{3}[-\s]?\d{3}[-\s]?\d{3})\b/g,
+  placeholder: "[CA_SIN_{n}]",
   priority: 95,
-  severity: 'high',
-  description: 'Canadian Social Insurance Number',
+  severity: "high",
+  description: "Canadian Social Insurance Number",
   validator: (value: string, context: string) => {
-    const cleaned = value.replace(/[\-\s]/g, '');
+    const cleaned = value.replace(/[-\s]/g, "");
 
     // Must be in Canadian context
-    const relevantContext = /sin|social.insurance|canadian|canada/i.test(context);
+    const relevantContext = /sin|social.insurance|canadian|canada/i.test(
+      context,
+    );
     if (!relevantContext) return false;
 
     // Luhn checksum validation
-    const digits = cleaned.split('').map(Number);
+    const digits = cleaned.split("").map(Number);
     let sum = 0;
 
     for (let i = 0; i < 9; i++) {
@@ -471,7 +546,7 @@ export const CANADIAN_SIN: PIIPattern = {
     }
 
     return sum % 10 === 0;
-  }
+  },
 };
 
 /**
@@ -479,15 +554,15 @@ export const CANADIAN_SIN: PIIPattern = {
  * Format: 11 digits with checksum
  */
 export const BRAZILIAN_CPF: PIIPattern = {
-  type: 'BRAZILIAN_CPF',
+  type: "BRAZILIAN_CPF",
   regex: /\b(\d{3}\.?\d{3}\.?\d{3}-?\d{2})\b/g,
-  placeholder: '[BR_CPF_{n}]',
+  placeholder: "[BR_CPF_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Brazilian CPF (Individual Taxpayer ID)',
+  severity: "high",
+  description: "Brazilian CPF (Individual Taxpayer ID)",
   validator: (value: string, _context: string) => {
-    const cleaned = value.replace(/[.\-]/g, '');
-    const digits = cleaned.split('').map(Number);
+    const cleaned = value.replace(/[.-]/g, "");
+    const digits = cleaned.split("").map(Number);
 
     // Check for all same digits (invalid)
     if (new Set(digits).size === 1) return false;
@@ -511,7 +586,7 @@ export const BRAZILIAN_CPF: PIIPattern = {
     if (check2 >= 10) check2 = 0;
 
     return check2 === digits[10];
-  }
+  },
 };
 
 /**
@@ -519,15 +594,15 @@ export const BRAZILIAN_CPF: PIIPattern = {
  * Format: 14 digits with checksum
  */
 export const BRAZILIAN_CNPJ: PIIPattern = {
-  type: 'BRAZILIAN_CNPJ',
+  type: "BRAZILIAN_CNPJ",
   regex: /\b(\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2})\b/g,
-  placeholder: '[BR_CNPJ_{n}]',
+  placeholder: "[BR_CNPJ_{n}]",
   priority: 85,
-  severity: 'high',
-  description: 'Brazilian CNPJ (Company Tax ID)',
+  severity: "high",
+  description: "Brazilian CNPJ (Company Tax ID)",
   validator: (value: string, _context: string) => {
-    const cleaned = value.replace(/[.\-\/]/g, '');
-    const digits = cleaned.split('').map(Number);
+    const cleaned = value.replace(/[.\-/]/g, "");
+    const digits = cleaned.split("").map(Number);
 
     // First check digit
     const weights1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
@@ -550,7 +625,7 @@ export const BRAZILIAN_CNPJ: PIIPattern = {
     check2 = check2 < 2 ? 0 : 11 - check2;
 
     return check2 === digits[13];
-  }
+  },
 };
 
 /**
@@ -558,29 +633,58 @@ export const BRAZILIAN_CNPJ: PIIPattern = {
  * Format: 18 characters (4 letters + 6 digits (YYMMDD) + 1 letter + 6 alphanumeric + 1 digit)
  */
 export const MEXICAN_CURP: PIIPattern = {
-  type: 'MEXICAN_CURP',
+  type: "MEXICAN_CURP",
   regex: /\b([A-Z]{4}\d{6}[HM][A-Z]{5}[0-9A-Z]\d)\b/gi,
-  placeholder: '[MX_CURP_{n}]',
+  placeholder: "[MX_CURP_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Mexican CURP (Population Registry Code)',
+  severity: "high",
+  description: "Mexican CURP (Population Registry Code)",
   validator: (value: string, _context: string) => {
     const curp = value.toUpperCase();
 
     // Gender must be H (Hombre/Male) or M (Mujer/Female)
     const gender = curp[10];
-    if (gender !== 'H' && gender !== 'M') return false;
+    if (gender !== "H" && gender !== "M") return false;
 
     // State code (positions 11-12) must be valid
     const validStates = [
-      'AS', 'BC', 'BS', 'CC', 'CL', 'CM', 'CS', 'CH', 'DF', 'DG',
-      'GT', 'GR', 'HG', 'JC', 'MC', 'MN', 'MS', 'NT', 'NL', 'OC',
-      'PL', 'QT', 'QR', 'SP', 'SL', 'SR', 'TC', 'TS', 'TL', 'VZ',
-      'YN', 'ZS', 'NE' // NE = Nacido en el Extranjero (Born abroad)
+      "AS",
+      "BC",
+      "BS",
+      "CC",
+      "CL",
+      "CM",
+      "CS",
+      "CH",
+      "DF",
+      "DG",
+      "GT",
+      "GR",
+      "HG",
+      "JC",
+      "MC",
+      "MN",
+      "MS",
+      "NT",
+      "NL",
+      "OC",
+      "PL",
+      "QT",
+      "QR",
+      "SP",
+      "SL",
+      "SR",
+      "TC",
+      "TS",
+      "TL",
+      "VZ",
+      "YN",
+      "ZS",
+      "NE", // NE = Nacido en el Extranjero (Born abroad)
     ];
     const stateCode = curp.substring(11, 13);
     return validStates.includes(stateCode);
-  }
+  },
 };
 
 /**
@@ -588,17 +692,19 @@ export const MEXICAN_CURP: PIIPattern = {
  * Format: 12-13 characters (4 letters + 6 digits + 2-3 alphanumeric)
  */
 export const MEXICAN_RFC: PIIPattern = {
-  type: 'MEXICAN_RFC',
+  type: "MEXICAN_RFC",
   regex: /\b([A-Z&Ñ]{3,4}\d{6}[A-Z0-9]{2,3})\b/gi,
-  placeholder: '[MX_RFC_{n}]',
+  placeholder: "[MX_RFC_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Mexican RFC (Tax ID)',
+  severity: "high",
+  description: "Mexican RFC (Tax ID)",
   validator: (value: string, context: string) => {
     const rfc = value.toUpperCase();
 
     // Must be in Mexican/tax context
-    const relevantContext = /rfc|mexican|mexico|impuesto|contribuyente/i.test(context);
+    const relevantContext = /rfc|mexican|mexico|impuesto|contribuyente/i.test(
+      context,
+    );
     if (!relevantContext) return false;
 
     // Length must be 12 (individuals) or 13 (legal entities)
@@ -613,7 +719,7 @@ export const MEXICAN_RFC: PIIPattern = {
     if (day < 1 || day > 31) return false;
 
     return true;
-  }
+  },
 };
 
 // Export all international patterns
@@ -660,5 +766,5 @@ export const internationalPatterns: PIIPattern[] = [
   ...oceaniaPatterns,
 
   // Central Asia
-  ...centralAsiaPatterns
+  ...centralAsiaPatterns,
 ];

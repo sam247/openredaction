@@ -2,14 +2,14 @@
  * RBAC (Role-Based Access Control) module
  */
 
-export { RBACManager, createRBACManager } from './RBACManager';
+export type { IRBACManager, Permission, Role, RoleName } from "../types";
+export { createRBACManager, RBACManager } from "./RBACManager";
 export {
   ADMIN_ROLE,
+  ALL_PERMISSIONS,
   ANALYST_ROLE,
+  createCustomRole,
+  getPredefinedRole,
   OPERATOR_ROLE,
   VIEWER_ROLE,
-  ALL_PERMISSIONS,
-  getPredefinedRole,
-  createCustomRole
-} from './roles';
-export type { Role, Permission, RoleName, IRBACManager } from '../types';
+} from "./roles";

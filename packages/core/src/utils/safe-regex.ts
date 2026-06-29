@@ -11,14 +11,14 @@ export interface SafeRegexOptions {
 export class RegexTimeoutError extends Error {
   constructor(pattern: string, timeout: number) {
     super(`Regex execution exceeded timeout of ${timeout}ms: ${pattern}`);
-    this.name = 'RegexTimeoutError';
+    this.name = "RegexTimeoutError";
   }
 }
 
 export class RegexMaxMatchesError extends Error {
   constructor(pattern: string, maxMatches: number) {
     super(`Regex execution exceeded max matches of ${maxMatches}: ${pattern}`);
-    this.name = 'RegexMaxMatchesError';
+    this.name = "RegexMaxMatchesError";
   }
 }
 
@@ -31,7 +31,7 @@ export class RegexMaxMatchesError extends Error {
 export function safeExec(
   regex: RegExp,
   text: string,
-  options: SafeRegexOptions = {}
+  options: SafeRegexOptions = {},
 ): RegExpExecArray | null {
   const timeout = options.timeout ?? 100; // Default 100ms
   const startTime = performance.now();
@@ -65,7 +65,7 @@ export function safeExec(
 export function safeExecAll(
   regex: RegExp,
   text: string,
-  options: SafeRegexOptions = {}
+  options: SafeRegexOptions = {},
 ): RegExpExecArray[] {
   const timeout = options.timeout ?? 100; // Default 100ms per match check
   const maxMatches = options.maxMatches ?? 10000; // Default 10k matches
@@ -83,6 +83,7 @@ export function safeExecAll(
   let checkCounter = 0;
   const checkInterval = 10; // Check time every N iterations
 
+  // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
   while ((match = regex.exec(text)) !== null) {
     matches.push(match);
 
@@ -142,16 +143,20 @@ export function isUnsafePattern(pattern: string): boolean {
  * Throws error if pattern is potentially unsafe
  */
 export function validatePattern(pattern: string | RegExp): void {
-  const patternStr = typeof pattern === 'string' ? pattern : pattern.source;
+  const patternStr = typeof pattern === "string" ? pattern : pattern.source;
 
   // Check pattern length
   if (patternStr.length > 5000) {
-    throw new Error(`Regex pattern too long: ${patternStr.length} chars (max 5000)`);
+    throw new Error(
+      `Regex pattern too long: ${patternStr.length} chars (max 5000)`,
+    );
   }
 
   // Check for unsafe patterns
   if (isUnsafePattern(patternStr)) {
-    throw new Error(`Potentially unsafe regex pattern detected: ${patternStr.substring(0, 100)}...`);
+    throw new Error(
+      `Potentially unsafe regex pattern detected: ${patternStr.substring(0, 100)}...`,
+    );
   }
 
   // Try to compile the pattern to ensure it's valid
@@ -167,10 +172,11 @@ export function validatePattern(pattern: string | RegExp): void {
  */
 export function compileSafeRegex(
   pattern: string | RegExp,
-  flags?: string
+  flags?: string,
 ): RegExp {
-  const patternStr = typeof pattern === 'string' ? pattern : pattern.source;
-  const finalFlags = flags || (typeof pattern === 'string' ? undefined : pattern.flags);
+  const patternStr = typeof pattern === "string" ? pattern : pattern.source;
+  const finalFlags =
+    flags || (typeof pattern === "string" ? undefined : pattern.flags);
 
   // Validate before compilation
   validatePattern(patternStr);
