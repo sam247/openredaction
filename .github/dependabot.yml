@@ -1,0 +1,27 @@
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directories:
+      - .github/actions/
+      - .github/workflows/
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: 'ci(deps)'
+    labels:
+      - dependencies
+      - github-actions
+
+  - package-ecosystem: npm
+    directories:
+      - /
+      - packages/core/
+      - site/
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: 'deps'
+    labels:
+      - dependencies
+      - npm

@@ -435,7 +435,8 @@ async function safeCompletion(prompt) {
 
 };
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const post = blogPosts[params.slug];
 
   if (!post) {
@@ -451,7 +452,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   });
 }
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
+export default async function BlogPost(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const post = blogPosts[params.slug];
 
   if (!post) {

@@ -1022,7 +1022,7 @@ export class OpenRedaction {
       return null;
     }
 
-    return this.learningStore.export(options);
+    return this.learningStore.exportData(options);
   }
 
   /**
@@ -1033,7 +1033,7 @@ export class OpenRedaction {
       throw createLearningDisabledError();
     }
 
-    this.learningStore.import(data, merge);
+    this.learningStore.importData(data, merge);
 
     // Update whitelist with newly learned patterns
     const learnedWhitelist = this.learningStore.getWhitelist();

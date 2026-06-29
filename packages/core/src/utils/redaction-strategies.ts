@@ -2,7 +2,7 @@
  * Redaction strategies for different modes
  */
 
-import type { RedactionMode, PIIDetection } from '../types';
+import type { RedactionMode } from '../types';
 
 /**
  * Apply redaction based on mode
@@ -109,7 +109,7 @@ function maskMiddle(value: string, type: string): string {
  * - Email: XXXXX@XXXXXX.XXX
  * - Date: XX/XX/XXXX
  */
-function formatPreserving(value: string, type: string): string {
+function formatPreserving(value: string, _: string): string {
   let result = '';
 
   for (let i = 0; i < value.length; i++) {

@@ -314,7 +314,7 @@ export class LocalLearningStore {
   /**
    * Export learning data (for sharing)
    */
-  export(options: {
+  exportData(options: {
     includeContexts?: boolean;
     minConfidence?: number;
   } = {}): LearningData {
@@ -338,7 +338,7 @@ export class LocalLearningStore {
   /**
    * Import learning data (merge with existing)
    */
-  import(data: LearningData, merge: boolean = true): void {
+  importData(data: LearningData, merge: boolean = true): void {
     if (!merge) {
       this.data = data;
       this.save();

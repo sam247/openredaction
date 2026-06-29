@@ -252,7 +252,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="min-w-0 rounded-2xl border border-gray-800 bg-gradient-to-b from-gray-950 to-black p-5 sm:p-6">
+            <div className="min-w-0 rounded-2xl border border-gray-800 bg-linear-to-b from-gray-950 to-black p-5 sm:p-6">
               <div className="flex items-center justify-between text-xs uppercase tracking-[0.18em] text-gray-500">
                 <span>Input</span>
                 <span>Output</span>
@@ -508,7 +508,7 @@ console.log(redactedText);`}
         </section>
 
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32">
-          <div className="overflow-hidden rounded-3xl border border-gray-800 bg-gradient-to-br from-gray-950 via-[#07101f] to-black p-6 sm:p-8 lg:p-10">
+          <div className="overflow-hidden rounded-3xl border border-gray-800 bg-linear-to-br from-gray-950 via-[#07101f] to-black p-6 sm:p-8 lg:p-10">
             <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
               <div className="max-w-2xl">
                 <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Get started</p>

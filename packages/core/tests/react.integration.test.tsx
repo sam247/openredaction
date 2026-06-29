@@ -1,3 +1,5 @@
+// @vitest-environment happy-dom
+
 /**
  * MVP React integration tests for openredaction/react hooks (jsdom + RTL).
  */

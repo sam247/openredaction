@@ -1,0 +1,3 @@
+{
+  "site/**/*.{ts,tsx}": "eslint --fix --config site/eslint.config.mjs"
+}

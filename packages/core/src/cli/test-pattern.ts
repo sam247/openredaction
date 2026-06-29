@@ -4,9 +4,7 @@
  * Test custom patterns before deployment
  */
 
-import { OpenRedaction } from '../detector.js';
 import { validatePattern, isUnsafePattern } from '../utils/safe-regex.js';
-import type { PIIPattern } from '../types';
 
 const args = process.argv.slice(2);
 

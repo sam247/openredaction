@@ -144,7 +144,7 @@ export default function Footer() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   required
-                  className="flex-1 bg-gray-900 border border-gray-800 rounded-md px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-gray-700 text-sm"
+                  className="flex-1 bg-gray-900 border border-gray-800 rounded-md px-4 py-2 text-white placeholder-gray-500 focus:outline-hidden focus:border-gray-700 text-sm"
                 />
                 <button
                   type="submit"

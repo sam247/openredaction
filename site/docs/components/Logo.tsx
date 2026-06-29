@@ -11,6 +11,7 @@ export default function Logo({ className = '' }: LogoProps) {
   const logoHeight = (31 / 250) * logoWidth; // Maintain aspect ratio
   
   return (
+    // eslint-disable-next-line @next/next/no-img-element -- nextra docs component, next/image not practical here
     <img
       src="/docs_logo.png"
       alt="OpenRedaction"

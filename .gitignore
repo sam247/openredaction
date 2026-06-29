@@ -34,3 +34,8 @@ __pycache__/
 .Python
 venv/
 ENV/
+.beads
+.codex
+.claude
+.agents
+*.tsbuildinfo

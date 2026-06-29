@@ -1,4 +1,4 @@
-export default {
+const meta = {
   index: 'Introduction',
   'getting-started': 'Getting Started',
   tutorials: 'Tutorials',
@@ -6,5 +6,7 @@ export default {
   'self-hosting': 'Self Hosting',
   security: 'Security & Compliance',
   changelog: 'Changelog',
-}
+};
+
+export default meta;
 
