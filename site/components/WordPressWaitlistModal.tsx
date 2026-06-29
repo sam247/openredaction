@@ -1,12 +1,19 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
-import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
-import { analytics } from '@/lib/analytics';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import { createPortal } from "react-dom";
+import { X } from "lucide-react";
+import { analytics } from "@/lib/analytics";
 
 const FORTY_EIGHT_HOURS_MS = 48 * 60 * 60 * 1000;
-const DEFAULT_DISMISSAL_STORAGE_KEY = 'openredaction_wp_waitlist_dismissed_at';
+const DEFAULT_DISMISSAL_STORAGE_KEY = "openredaction_wp_waitlist_dismissed_at";
 
 function safeTrackWaitlistOpen(source: string) {
   try {
@@ -17,7 +24,7 @@ function safeTrackWaitlistOpen(source: string) {
 }
 
 function readDismissedAt(storageKey: string): number | null {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(storageKey);
     if (!raw) return null;
@@ -43,22 +50,22 @@ function writeDismissedNow(storageKey: string) {
 }
 
 /** Dispatched to open the singleton waitlist modal (see `WordPressWaitlistRoot` in layout). */
-export const WP_WAITLIST_OPEN_EVENT = 'openredaction:open-wp-waitlist';
+export const WP_WAITLIST_OPEN_EVENT = "openredaction:open-wp-waitlist";
 
 export type WordPressWaitlistSource =
-  | 'playground'
-  | 'roadmap'
-  | 'pricing'
-  | 'changelog'
+  | "playground"
+  | "roadmap"
+  | "pricing"
+  | "changelog"
   | string;
 
-type SubmitState = 'idle' | 'loading' | 'success' | 'error';
+type SubmitState = "idle" | "loading" | "success" | "error";
 
 export default function WordPressWaitlistModal({
   source,
-  triggerLabel = 'WordPress plugin — join waitlist',
-  className = '',
-  triggerClassName = '',
+  triggerLabel = "WordPress plugin — join waitlist",
+  className = "",
+  triggerClassName = "",
   autoOpenAfterMs,
   dismissalStorageKey,
   /** Layout singleton: no button; use `WP_WAITLIST_OPEN_EVENT` from page triggers. */
@@ -77,12 +84,13 @@ export default function WordPressWaitlistModal({
 }) {
   const titleId = useId();
   /** Submitted + analytics source (overridden when opened via custom event from a page trigger). */
-  const [effectiveSource, setEffectiveSource] = useState<WordPressWaitlistSource>(source);
+  const [effectiveSource, setEffectiveSource] =
+    useState<WordPressWaitlistSource>(source);
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [clientError, setClientError] = useState<string | null>(null);
-  const [submitState, setSubmitState] = useState<SubmitState>('idle');
+  const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [alreadySubscribed, setAlreadySubscribed] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const lastFocusRef = useRef<HTMLElement | null>(null);
@@ -91,7 +99,7 @@ export default function WordPressWaitlistModal({
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
-    () => false
+    () => false,
   );
   /** DOM timers are numeric IDs in the browser (Node typings use `Timeout`). */
   const autoOpenTimerRef = useRef<number | null>(null);
@@ -100,7 +108,7 @@ export default function WordPressWaitlistModal({
   const storageKey = dismissalStorageKey ?? DEFAULT_DISMISSAL_STORAGE_KEY;
 
   const clearAutoOpenTimer = useCallback(() => {
-    if (autoOpenTimerRef.current != null && typeof window !== 'undefined') {
+    if (autoOpenTimerRef.current != null && typeof window !== "undefined") {
       window.clearTimeout(autoOpenTimerRef.current);
       autoOpenTimerRef.current = null;
     }
@@ -110,8 +118,8 @@ export default function WordPressWaitlistModal({
     setOpen(false);
     setEffectiveSource(source);
     setClientError(null);
-    if (submitState !== 'loading') {
-      setSubmitState('idle');
+    if (submitState !== "loading") {
+      setSubmitState("idle");
       setAlreadySubscribed(false);
     }
     writeDismissedNow(storageKey);
@@ -123,24 +131,28 @@ export default function WordPressWaitlistModal({
       setEffectiveSource(overrideSource ?? source);
       lastFocusRef.current = document.activeElement as HTMLElement | null;
       setClientError(null);
-      setSubmitState('idle');
+      setSubmitState("idle");
       setAlreadySubscribed(false);
       setOpen(true);
       safeTrackWaitlistOpen(overrideSource ?? source);
     },
-    [source, clearAutoOpenTimer]
+    [source, clearAutoOpenTimer],
   );
 
   useEffect(() => {
-    if (!listenForOpenEvent || typeof window === 'undefined') return undefined;
+    if (!listenForOpenEvent || typeof window === "undefined") return undefined;
     const handler = (e: Event) => {
       const ce = e as CustomEvent<{ source?: string }>;
       const next =
-        typeof ce.detail?.source === 'string' ? ce.detail.source : source;
+        typeof ce.detail?.source === "string" ? ce.detail.source : source;
       openModal(next as WordPressWaitlistSource);
     };
     window.addEventListener(WP_WAITLIST_OPEN_EVENT, handler as EventListener);
-    return () => window.removeEventListener(WP_WAITLIST_OPEN_EVENT, handler as EventListener);
+    return () =>
+      window.removeEventListener(
+        WP_WAITLIST_OPEN_EVENT,
+        handler as EventListener,
+      );
   }, [listenForOpenEvent, source, openModal]);
 
   /** Delayed auto-open: skipped if dismissed within 48h (any close writes the same storage key). */
@@ -148,7 +160,7 @@ export default function WordPressWaitlistModal({
     if (!mounted || autoOpenAfterMs == null || autoOpenAfterMs <= 0) {
       return undefined;
     }
-    if (typeof window === 'undefined') return undefined;
+    if (typeof window === "undefined") return undefined;
 
     if (isDismissedWithin48h(storageKey)) {
       return undefined;
@@ -157,7 +169,7 @@ export default function WordPressWaitlistModal({
     const tid = window.setTimeout(() => {
       autoOpenTimerRef.current = null;
       if (isDismissedWithin48h(storageKey)) return;
-      openModal('sitewide_auto');
+      openModal("sitewide_auto");
     }, autoOpenAfterMs) as unknown as number;
 
     autoOpenTimerRef.current = tid;
@@ -171,26 +183,28 @@ export default function WordPressWaitlistModal({
 
   useEffect(() => {
     if (!open) return;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     const t = requestAnimationFrame(() => nameInputRef.current?.focus());
     return () => {
       cancelAnimationFrame(t);
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [open]);
 
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         e.preventDefault();
         close();
       }
-      if (e.key === 'Tab' && dialogRef.current) {
+      if (e.key === "Tab" && dialogRef.current) {
         const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
         );
-        const list = Array.from(focusables).filter((el) => !el.hasAttribute('disabled'));
+        const list = Array.from(focusables).filter(
+          (el) => !el.hasAttribute("disabled"),
+        );
         if (list.length === 0) return;
         const first = list[0];
         const last = list[list.length - 1];
@@ -203,8 +217,8 @@ export default function WordPressWaitlistModal({
         }
       }
     };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
   }, [open, close]);
 
   useEffect(() => {
@@ -216,15 +230,15 @@ export default function WordPressWaitlistModal({
 
   const validate = (): boolean => {
     if (!name.trim()) {
-      setClientError('Please enter your name.');
+      setClientError("Please enter your name.");
       return false;
     }
     if (!email.trim()) {
-      setClientError('Please enter your email.');
+      setClientError("Please enter your email.");
       return false;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setClientError('Please enter a valid email address.');
+      setClientError("Please enter a valid email address.");
       return false;
     }
     setClientError(null);
@@ -234,13 +248,13 @@ export default function WordPressWaitlistModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    setSubmitState('loading');
+    setSubmitState("loading");
     analytics.wordpressWaitlistSubmit(effectiveSource);
 
     try {
-      const response = await fetch('/api/wordpress-waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/wordpress-waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
@@ -253,25 +267,27 @@ export default function WordPressWaitlistModal({
       if (!response.ok) {
         const errType =
           response.status === 403
-            ? 'forbidden'
+            ? "forbidden"
             : response.status === 503
-              ? 'unavailable'
-              : 'http_error';
+              ? "unavailable"
+              : "http_error";
         analytics.wordpressWaitlistError(effectiveSource, errType);
-        setSubmitState('error');
+        setSubmitState("error");
         setClientError(
-          typeof data.error === 'string' ? data.error : 'Something went wrong. Please try again.'
+          typeof data.error === "string"
+            ? data.error
+            : "Something went wrong. Please try again.",
         );
         return;
       }
 
       setAlreadySubscribed(!!data.alreadySubscribed);
-      setSubmitState('success');
+      setSubmitState("success");
       analytics.wordpressWaitlistSuccess(effectiveSource);
     } catch {
-      analytics.wordpressWaitlistError(effectiveSource, 'network');
-      setSubmitState('error');
-      setClientError('Network error. Check your connection and try again.');
+      analytics.wordpressWaitlistError(effectiveSource, "network");
+      setSubmitState("error");
+      setClientError("Network error. Check your connection and try again.");
     }
   };
 
@@ -307,11 +323,12 @@ export default function WordPressWaitlistModal({
               WordPress plugin waitlist
             </h2>
             <p className="mt-2 text-sm text-gray-400 leading-relaxed">
-              We&apos;re exploring a future plugin for forms, comments, and UGC redaction. Join for
-              updates only — no spam. We use your email only for plugin-related updates.
+              We&apos;re exploring a future plugin for forms, comments, and UGC
+              redaction. Join for updates only — no spam. We use your email only
+              for plugin-related updates.
             </p>
 
-            {submitState === 'success' ? (
+            {submitState === "success" ? (
               <div className="mt-6 space-y-4">
                 <p className="text-sm text-gray-300">
                   {alreadySubscribed
@@ -327,9 +344,16 @@ export default function WordPressWaitlistModal({
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+              <form
+                onSubmit={handleSubmit}
+                className="mt-6 space-y-4"
+                noValidate
+              >
                 <div>
-                  <label htmlFor={`${titleId}-name`} className="block text-sm font-medium text-gray-300 mb-1">
+                  <label
+                    htmlFor={`${titleId}-name`}
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
                     Name
                   </label>
                   <input
@@ -342,11 +366,14 @@ export default function WordPressWaitlistModal({
                     onChange={(ev) => setName(ev.target.value)}
                     className="w-full rounded-md border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-gray-600 focus:outline-hidden"
                     placeholder="Your name"
-                    disabled={submitState === 'loading'}
+                    disabled={submitState === "loading"}
                   />
                 </div>
                 <div>
-                  <label htmlFor={`${titleId}-email`} className="block text-sm font-medium text-gray-300 mb-1">
+                  <label
+                    htmlFor={`${titleId}-email`}
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
                     Email
                   </label>
                   <input
@@ -358,7 +385,7 @@ export default function WordPressWaitlistModal({
                     onChange={(ev) => setEmail(ev.target.value)}
                     className="w-full rounded-md border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-gray-600 focus:outline-hidden"
                     placeholder="you@example.com"
-                    disabled={submitState === 'loading'}
+                    disabled={submitState === "loading"}
                   />
                 </div>
                 {clientError && (
@@ -368,17 +395,17 @@ export default function WordPressWaitlistModal({
                 )}
                 <button
                   type="submit"
-                  disabled={submitState === 'loading'}
+                  disabled={submitState === "loading"}
                   className="w-full rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-black hover:bg-gray-100 disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-gray-500"
                 >
-                  {submitState === 'loading' ? 'Joining…' : 'Join waitlist'}
+                  {submitState === "loading" ? "Joining…" : "Join waitlist"}
                 </button>
               </form>
             )}
           </div>
         </div>
       </div>,
-      document.body
+      document.body,
     );
 
   return (
@@ -390,7 +417,7 @@ export default function WordPressWaitlistModal({
             onClick={() => openModal()}
             className={
               triggerClassName ||
-              'inline-flex items-center justify-center rounded-md border border-gray-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-gray-600'
+              "inline-flex items-center justify-center rounded-md border border-gray-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-gray-600"
             }
           >
             {triggerLabel}

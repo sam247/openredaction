@@ -11,7 +11,7 @@ export interface ContextAnalysis {
   /** Full sentence containing detection */
   sentence: string;
   /** Inferred document type */
-  documentType: 'email' | 'document' | 'code' | 'chat' | 'unknown';
+  documentType: "email" | "document" | "code" | "chat" | "unknown";
   /** Confidence that this is actual PII (0-1) */
   confidence: number;
 }
@@ -39,7 +39,7 @@ export function extractContext(
   startPos: number,
   endPos: number,
   wordsBefore: number = 5,
-  wordsAfter: number = 5
+  wordsAfter: number = 5,
 ): {
   before: string;
   after: string;
@@ -49,15 +49,15 @@ export function extractContext(
 } {
   // Extract before context
   const beforeText = text.substring(Math.max(0, startPos - 250), startPos);
-  const beforeWordArray = beforeText.split(/\s+/).filter(w => w.length > 0);
+  const beforeWordArray = beforeText.split(/\s+/).filter((w) => w.length > 0);
   const beforeWords = beforeWordArray.slice(-wordsBefore);
-  const before = beforeWords.join(' ');
+  const before = beforeWords.join(" ");
 
   // Extract after context
   const afterText = text.substring(endPos, Math.min(text.length, endPos + 250));
-  const afterWordArray = afterText.split(/\s+/).filter(w => w.length > 0);
+  const afterWordArray = afterText.split(/\s+/).filter((w) => w.length > 0);
   const afterWords = afterWordArray.slice(0, wordsAfter);
-  const after = afterWords.join(' ');
+  const after = afterWords.join(" ");
 
   // Extract full sentence
   const sentence = extractSentence(text, startPos, endPos);
@@ -67,14 +67,18 @@ export function extractContext(
     after,
     beforeWords,
     afterWords,
-    sentence
+    sentence,
   };
 }
 
 /**
  * Extract the full sentence containing the detection
  */
-function extractSentence(text: string, startPos: number, endPos: number): string {
+function extractSentence(
+  text: string,
+  startPos: number,
+  endPos: number,
+): string {
   // Find sentence boundaries (., !, ?, or newline)
   const sentenceStart = findSentenceStart(text, startPos);
   const sentenceEnd = findSentenceEnd(text, endPos);
@@ -86,7 +90,7 @@ function findSentenceStart(text: string, pos: number): number {
   // Look backwards for sentence boundary
   for (let i = pos - 1; i >= 0; i--) {
     const char = text[i];
-    if (char === '.' || char === '!' || char === '?' || char === '\n') {
+    if (char === "." || char === "!" || char === "?" || char === "\n") {
       return i + 1;
     }
   }
@@ -97,7 +101,7 @@ function findSentenceEnd(text: string, pos: number): number {
   // Look forwards for sentence boundary
   for (let i = pos; i < text.length; i++) {
     const char = text[i];
-    if (char === '.' || char === '!' || char === '?' || char === '\n') {
+    if (char === "." || char === "!" || char === "?" || char === "\n") {
       return i + 1;
     }
   }
@@ -107,15 +111,19 @@ function findSentenceEnd(text: string, pos: number): number {
 /**
  * Infer document type from content
  */
-export function inferDocumentType(text: string): ContextAnalysis['documentType'] {
+export function inferDocumentType(
+  text: string,
+): ContextAnalysis["documentType"] {
   const sample = text.substring(0, Math.min(1000, text.length)).toLowerCase();
 
   // Email indicators
-  const emailIndicators = /\b(from|to|subject|dear|regards|sincerely|cc|bcc):/gi;
+  const emailIndicators =
+    /\b(from|to|subject|dear|regards|sincerely|cc|bcc):/gi;
   const emailScore = (sample.match(emailIndicators) || []).length;
 
   // Code indicators
-  const codeIndicators = /\b(function|const|let|var|class|import|export|return|if|else|for|while)\b/g;
+  const codeIndicators =
+    /\b(function|const|let|var|class|import|export|return|if|else|for|while)\b/g;
   const codeScore = (sample.match(codeIndicators) || []).length;
 
   // Chat indicators
@@ -123,11 +131,11 @@ export function inferDocumentType(text: string): ContextAnalysis['documentType']
   const chatScore = (sample.match(chatIndicators) || []).length;
 
   // Determine type based on scores
-  if (codeScore > 5) return 'code';
-  if (emailScore > 2) return 'email';
-  if (chatScore > 3) return 'chat';
+  if (codeScore > 5) return "code";
+  if (emailScore > 2) return "email";
+  if (chatScore > 3) return "chat";
 
-  return 'document';
+  return "document";
 }
 
 /**
@@ -137,19 +145,23 @@ export function analyzeContextFeatures(fullContext: string): ContextFeatures {
   const lower = fullContext.toLowerCase();
 
   // Technical context
-  const technicalTerms = /\b(api|sdk|cli|gui|json|xml|http|url|database|server|client|endpoint|variable|function|method|class|interface|code|debug|log)\b/g;
+  const technicalTerms =
+    /\b(api|sdk|cli|gui|json|xml|http|url|database|server|client|endpoint|variable|function|method|class|interface|code|debug|log)\b/g;
   const hasTechnicalContext = (lower.match(technicalTerms) || []).length > 0;
 
   // Business context
-  const businessTerms = /\b(company|corporation|corp|ltd|llc|inc|ceo|cto|cfo|manager|director|employee|staff|team|department|office|business)\b/g;
+  const businessTerms =
+    /\b(company|corporation|corp|ltd|llc|inc|ceo|cto|cfo|manager|director|employee|staff|team|department|office|business)\b/g;
   const hasBusinessContext = (lower.match(businessTerms) || []).length > 0;
 
   // Medical context
-  const medicalTerms = /\b(patient|doctor|physician|nurse|hospital|clinic|medical|health|diagnosis|treatment|prescription|medication|surgery|exam|test|lab|specimen)\b/g;
+  const medicalTerms =
+    /\b(patient|doctor|physician|nurse|hospital|clinic|medical|health|diagnosis|treatment|prescription|medication|surgery|exam|test|lab|specimen)\b/g;
   const hasMedicalContext = (lower.match(medicalTerms) || []).length > 0;
 
   // Financial context
-  const financialTerms = /\b(bank|account|payment|transaction|transfer|wire|credit|debit|balance|deposit|withdrawal|loan|mortgage|investment|trading|stock|bond)\b/g;
+  const financialTerms =
+    /\b(bank|account|payment|transaction|transfer|wire|credit|debit|balance|deposit|withdrawal|loan|mortgage|investment|trading|stock|bond)\b/g;
   const hasFinancialContext = (lower.match(financialTerms) || []).length > 0;
 
   // Example/test indicators - more precise detection
@@ -159,13 +171,16 @@ export function analyzeContextFeatures(fullContext: string): ContextFeatures {
     /\bfor\s+(testing|demonstration|example)\s+purposes/i,
     /\b(this|here)\s+is\s+(an?\s+)?(example|sample|test)/i,
     /\bxxx+|000+|111+|123+/i, // Obvious placeholder patterns
-    /\blorem\s+ipsum/i
+    /\blorem\s+ipsum/i,
   ];
 
   // Weak test indicators (might just be normal text mentioning "example")
-  const weakTestTerms = /\b(example|sample|test|demo|placeholder|dummy|mock)\b/g;
+  const weakTestTerms =
+    /\b(example|sample|test|demo|placeholder|dummy|mock)\b/g;
   const weakMatches = (lower.match(weakTestTerms) || []).length;
-  const strongMatch = strongTestPatterns.some(pattern => pattern.test(fullContext));
+  const strongMatch = strongTestPatterns.some((pattern) =>
+    pattern.test(fullContext),
+  );
 
   // Only flag as example context if strong indicators or multiple weak indicators
   const hasExampleContext = strongMatch || weakMatches >= 2;
@@ -176,7 +191,7 @@ export function analyzeContextFeatures(fullContext: string): ContextFeatures {
     hasMedicalContext,
     hasFinancialContext,
     hasExampleContext,
-    relativePosition: 0 // Will be set by caller
+    relativePosition: 0, // Will be set by caller
   };
 }
 
@@ -190,49 +205,95 @@ export function calculateContextConfidence(
     before: string;
     after: string;
     sentence: string;
-    documentType: ContextAnalysis['documentType'];
+    documentType: ContextAnalysis["documentType"];
     features: ContextFeatures;
-  }
+  },
 ): number {
   let confidence = 0.8; // Base confidence (increased from 0.7)
 
   // Document type adjustments
-  if (context.documentType === 'code') {
+  if (context.documentType === "code") {
     // Lower confidence for most PII in code
-    const credentialPatterns = ['API_KEY', 'JWT', 'BEARER_TOKEN', 'AWS_ACCESS_KEY', 'GITHUB_TOKEN', 'SECRET'];
-    if (!credentialPatterns.some(p => patternType.includes(p))) {
+    const credentialPatterns = [
+      "API_KEY",
+      "JWT",
+      "BEARER_TOKEN",
+      "AWS_ACCESS_KEY",
+      "GITHUB_TOKEN",
+      "SECRET",
+    ];
+    if (!credentialPatterns.some((p) => patternType.includes(p))) {
       confidence -= 0.15; // Reduced penalty from 0.2
     }
-  } else if (context.documentType === 'email') {
+  } else if (context.documentType === "email") {
     // Higher confidence for PII in emails
-    if (['EMAIL', 'PHONE', 'NAME', 'ADDRESS'].includes(patternType.split('_')[0])) {
+    if (
+      ["EMAIL", "PHONE", "NAME", "ADDRESS"].includes(patternType.split("_")[0])
+    ) {
       confidence += 0.1;
     }
   }
 
   // Feature-based adjustments: only apply example-context penalty to EMAIL
   // so dummy-domain emails don't suppress other PII (e.g. CREDIT_CARD) in same text
-  if (context.features.hasExampleContext && patternType === 'EMAIL') {
+  if (context.features.hasExampleContext && patternType === "EMAIL") {
     confidence -= 0.15;
   }
 
   // Medical context boost
-  const medicalPatterns = ['MEDICAL', 'MRN', 'PATIENT', 'NHS', 'NPI', 'DEA', 'ICD', 'CPT', 'PRESCRIPTION'];
-  if (context.features.hasMedicalContext && medicalPatterns.some(p => patternType.includes(p))) {
+  const medicalPatterns = [
+    "MEDICAL",
+    "MRN",
+    "PATIENT",
+    "NHS",
+    "NPI",
+    "DEA",
+    "ICD",
+    "CPT",
+    "PRESCRIPTION",
+  ];
+  if (
+    context.features.hasMedicalContext &&
+    medicalPatterns.some((p) => patternType.includes(p))
+  ) {
     // Boost medical patterns in medical context
     confidence += 0.15;
   }
 
   // Financial context boost
-  const financialPatterns = ['ACCOUNT', 'TRANSACTION', 'SWIFT', 'IBAN', 'BITCOIN', 'ETHEREUM', 'CRYPTO', 'PAYMENT', 'CREDIT_CARD'];
-  if (context.features.hasFinancialContext && financialPatterns.some(p => patternType.includes(p))) {
+  const financialPatterns = [
+    "ACCOUNT",
+    "TRANSACTION",
+    "SWIFT",
+    "IBAN",
+    "BITCOIN",
+    "ETHEREUM",
+    "CRYPTO",
+    "PAYMENT",
+    "CREDIT_CARD",
+  ];
+  if (
+    context.features.hasFinancialContext &&
+    financialPatterns.some((p) => patternType.includes(p))
+  ) {
     // Boost financial patterns in financial context
     confidence += 0.15;
   }
 
   // Technical context - reduce confidence for non-credentials
-  const credentialPatterns = ['API_KEY', 'TOKEN', 'SECRET', 'AWS', 'GITHUB', 'STRIPE', 'JWT'];
-  if (context.features.hasTechnicalContext && !credentialPatterns.some(p => patternType.includes(p))) {
+  const credentialPatterns = [
+    "API_KEY",
+    "TOKEN",
+    "SECRET",
+    "AWS",
+    "GITHUB",
+    "STRIPE",
+    "JWT",
+  ];
+  if (
+    context.features.hasTechnicalContext &&
+    !credentialPatterns.some((p) => patternType.includes(p))
+  ) {
     // Reduce confidence for non-credential PII in technical context (reduced from 0.1)
     confidence -= 0.05;
   }
@@ -243,17 +304,33 @@ export function calculateContextConfidence(
 
   // Positive indicators
   const positiveIndicators = [
-    { pattern: /\b(dear|hello|hi|mr|mrs|ms|dr)\s*$/i, boost: 0.2, types: ['NAME'] },
-    { pattern: /^(is|was|wrote|said|told)/i, boost: 0.15, types: ['NAME'] },
-    { pattern: /\b(call|phone|tel|mobile):\s*$/i, boost: 0.2, types: ['PHONE'] },
-    { pattern: /\b(email|e-mail|contact):\s*$/i, boost: 0.2, types: ['EMAIL'] },
-    { pattern: /\b(patient|subject|participant):\s*$/i, boost: 0.25, types: ['NAME', 'PATIENT_ID', 'MRN'] },
-    { pattern: /\b(account|acct)[\s#:]*$/i, boost: 0.2, types: ['ACCOUNT', 'BANK'] }
+    {
+      pattern: /\b(dear|hello|hi|mr|mrs|ms|dr)\s*$/i,
+      boost: 0.2,
+      types: ["NAME"],
+    },
+    { pattern: /^(is|was|wrote|said|told)/i, boost: 0.15, types: ["NAME"] },
+    {
+      pattern: /\b(call|phone|tel|mobile):\s*$/i,
+      boost: 0.2,
+      types: ["PHONE"],
+    },
+    { pattern: /\b(email|e-mail|contact):\s*$/i, boost: 0.2, types: ["EMAIL"] },
+    {
+      pattern: /\b(patient|subject|participant):\s*$/i,
+      boost: 0.25,
+      types: ["NAME", "PATIENT_ID", "MRN"],
+    },
+    {
+      pattern: /\b(account|acct)[\s#:]*$/i,
+      boost: 0.2,
+      types: ["ACCOUNT", "BANK"],
+    },
   ];
 
   for (const indicator of positiveIndicators) {
     if (indicator.pattern.test(beforeLower)) {
-      const matchesType = indicator.types.some(t => patternType.includes(t));
+      const matchesType = indicator.types.some((t) => patternType.includes(t));
       if (matchesType) {
         confidence += indicator.boost;
       }
@@ -262,14 +339,25 @@ export function calculateContextConfidence(
 
   // Negative indicators
   const negativeIndicators = [
-    { pattern: /\b(the|a|an)\s*$/i, penalty: 0.3, types: ['NAME'] },
-    { pattern: /\b(version|v|release)\s*$/i, penalty: 0.4, types: ['PHONE', 'NUMBER'] },
-    { pattern: /^\s*(street|avenue|road|drive|way)/i, penalty: 0.2, types: ['NAME'] }
+    { pattern: /\b(the|a|an)\s*$/i, penalty: 0.3, types: ["NAME"] },
+    {
+      pattern: /\b(version|v|release)\s*$/i,
+      penalty: 0.4,
+      types: ["PHONE", "NUMBER"],
+    },
+    {
+      pattern: /^\s*(street|avenue|road|drive|way)/i,
+      penalty: 0.2,
+      types: ["NAME"],
+    },
   ];
 
   for (const indicator of negativeIndicators) {
-    if (indicator.pattern.test(beforeLower) || indicator.pattern.test(afterLower)) {
-      const matchesType = indicator.types.some(t => patternType.includes(t));
+    if (
+      indicator.pattern.test(beforeLower) ||
+      indicator.pattern.test(afterLower)
+    ) {
+      const matchesType = indicator.types.some((t) => patternType.includes(t));
       if (matchesType) {
         confidence -= indicator.penalty;
       }
@@ -288,16 +376,16 @@ export function analyzeFullContext(
   value: string,
   patternType: string,
   startPos: number,
-  endPos: number
+  endPos: number,
 ): ContextAnalysis {
   const { before, after, beforeWords, afterWords, sentence } = extractContext(
     text,
     startPos,
-    endPos
+    endPos,
   );
 
   const documentType = inferDocumentType(text);
-  const fullContext = before + ' ' + value + ' ' + after;
+  const fullContext = before + " " + value + " " + after;
   const features = analyzeContextFeatures(fullContext);
   features.relativePosition = startPos / text.length;
 
@@ -306,7 +394,7 @@ export function analyzeFullContext(
     after,
     sentence,
     documentType,
-    features
+    features,
   });
 
   return {
@@ -314,6 +402,6 @@ export function analyzeFullContext(
     afterWords,
     sentence,
     documentType,
-    confidence
+    confidence,
   };
 }

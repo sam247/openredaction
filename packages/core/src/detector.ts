@@ -2,46 +2,64 @@
  * Main OpenRedaction detector implementation
  */
 
+import { InMemoryAuditLogger } from "./audit";
+import { ConfigLoader } from "./config/ConfigLoader.js";
+import { analyzeFullContext } from "./context/ContextAnalyzer.js";
 import {
-  PIIPattern,
-  PIIDetection,
-  DetectionResult,
-  OpenRedactionOptions,
-  IAuditLogger,
-  IMetricsCollector,
-  IRBACManager,
-  PresetName
-} from './types';
-import { InMemoryAuditLogger } from './audit';
-import { InMemoryMetricsCollector } from './metrics';
-import { RBACManager, getPredefinedRole } from './rbac';
-import { allPatterns, getPatternsByCategory } from './patterns';
-import { generateDeterministicId } from './utils/hash';
-import { getPreset } from './utils/presets';
-import { applyRedactionMode } from './utils/redaction-strategies';
-import { LocalLearningStore } from './learning/LocalLearningStore.js';
-import { ConfigLoader } from './config/ConfigLoader.js';
-import { analyzeFullContext } from './context/ContextAnalyzer.js';
-import { isFalsePositive } from './filters/FalsePositiveFilter.js';
-import { createSimpleMultiPass, groupPatternsByPass, mergePassDetections, type DetectionPass } from './multipass/MultiPassDetector.js';
-import { NERDetector } from './ml/NERDetector.js';
-import { ContextRulesEngine, type ContextRulesConfig } from './context/ContextRules.js';
-import { SeverityClassifier } from './severity/SeverityClassifier.js';
-import type { PIIMatch } from './types';
-import { LRUCache, hashString } from './utils/cache.js';
-import { ExplainAPI, createExplainAPI } from './explain/ExplainAPI.js';
-import { createReportGenerator, type ReportOptions } from './reports/ReportGenerator.js';
-import { PriorityOptimizer, createPriorityOptimizer, type OptimizerOptions } from './optimizer/PriorityOptimizer.js';
+  type ContextRulesConfig,
+  ContextRulesEngine,
+} from "./context/ContextRules.js";
 import {
   createLearningDisabledError,
-  createOptimizationDisabledError
-} from './errors/OpenRedactionError.js';
-import { safeExec, validatePattern, RegexTimeoutError } from './utils/safe-regex.js';
-
+  createOptimizationDisabledError,
+} from "./errors/OpenRedactionError.js";
+import { createExplainAPI, type ExplainAPI } from "./explain/ExplainAPI.js";
+import { isFalsePositive } from "./filters/FalsePositiveFilter.js";
+import { LocalLearningStore } from "./learning/LocalLearningStore.js";
+import { InMemoryMetricsCollector } from "./metrics";
+import { NERDetector } from "./ml/NERDetector.js";
+import {
+  createSimpleMultiPass,
+  type DetectionPass,
+  groupPatternsByPass,
+  mergePassDetections,
+} from "./multipass/MultiPassDetector.js";
+import {
+  createPriorityOptimizer,
+  type OptimizerOptions,
+  type PriorityOptimizer,
+} from "./optimizer/PriorityOptimizer.js";
+import { allPatterns, getPatternsByCategory } from "./patterns";
+import { getPredefinedRole, RBACManager } from "./rbac";
+import {
+  createReportGenerator,
+  type ReportOptions,
+} from "./reports/ReportGenerator.js";
+import { SeverityClassifier } from "./severity/SeverityClassifier.js";
 /**
  * Main OpenRedaction class for detecting and redacting PII
  */
-import type { RedactionMode } from './types';
+import type {
+  DetectionResult,
+  IAuditLogger,
+  IMetricsCollector,
+  IRBACManager,
+  OpenRedactionOptions,
+  PIIDetection,
+  PIIMatch,
+  PIIPattern,
+  PresetName,
+  RedactionMode,
+} from "./types";
+import { hashString, LRUCache } from "./utils/cache.js";
+import { generateDeterministicId } from "./utils/hash";
+import { getPreset } from "./utils/presets";
+import { applyRedactionMode } from "./utils/redaction-strategies";
+import {
+  RegexTimeoutError,
+  safeExec,
+  validatePattern,
+} from "./utils/safe-regex.js";
 
 export class OpenRedaction {
   private patterns: PIIPattern[];
@@ -89,18 +107,20 @@ export class OpenRedaction {
   private contextRulesEngine?: ContextRulesEngine;
   private severityClassifier: SeverityClassifier;
 
-  constructor(options: OpenRedactionOptions & {
-    configPath?: string;
-    enableLearning?: boolean;
-    learningStorePath?: string;
-    enablePriorityOptimization?: boolean;
-    optimizerOptions?: Partial<OptimizerOptions>;
-    enableNER?: boolean;
-    enableContextRules?: boolean;
-    contextRulesConfig?: ContextRulesConfig;
-    maxInputSize?: number;
-    regexTimeout?: number;
-  } = {}) {
+  constructor(
+    options: OpenRedactionOptions & {
+      configPath?: string;
+      enableLearning?: boolean;
+      learningStorePath?: string;
+      enablePriorityOptimization?: boolean;
+      optimizerOptions?: Partial<OptimizerOptions>;
+      enableNER?: boolean;
+      enableContextRules?: boolean;
+      contextRulesConfig?: ContextRulesConfig;
+      maxInputSize?: number;
+      regexTimeout?: number;
+    } = {},
+  ) {
     // Apply preset if specified
     const presetOptions = options.preset ? getPreset(options.preset) : {};
 
@@ -115,7 +135,7 @@ export class OpenRedaction {
       customPatterns: [],
       whitelist: [],
       deterministic: true,
-      redactionMode: 'placeholder' as RedactionMode, // Default: [EMAIL_1234]
+      redactionMode: "placeholder" as RedactionMode, // Default: [EMAIL_1234]
       enableContextAnalysis: true, // Enabled by default (fine-tuned)
       confidenceThreshold: 0.5, // Balanced threshold (filters <50% confidence)
       enableFalsePositiveFilter: true,
@@ -129,7 +149,7 @@ export class OpenRedaction {
       maxInputSize: 10 * 1024 * 1024, // Default: 10MB max input size
       regexTimeout: 100, // Default: 100ms regex timeout
       ...presetOptions,
-      ...options
+      ...options,
     };
 
     this.options = {
@@ -137,20 +157,23 @@ export class OpenRedaction {
       optimizerOptions: {
         learningWeight: options.optimizerOptions?.learningWeight ?? 0.3,
         minSampleSize: options.optimizerOptions?.minSampleSize ?? 10,
-        maxPriorityAdjustment: options.optimizerOptions?.maxPriorityAdjustment ?? 15
-      }
+        maxPriorityAdjustment:
+          options.optimizerOptions?.maxPriorityAdjustment ?? 15,
+      },
     };
 
     // Initialize result cache if enabled
     if (this.options.enableCache) {
-      this.resultCache = new LRUCache<string, DetectionResult>(this.options.cacheSize);
+      this.resultCache = new LRUCache<string, DetectionResult>(
+        this.options.cacheSize,
+      );
     }
 
     // Initialize multi-pass configuration if enabled
     if (this.options.enableMultiPass) {
       this.multiPassConfig = createSimpleMultiPass({
         numPasses: this.options.multiPassCount,
-        prioritizeCredentials: true
+        prioritizeCredentials: true,
       });
     }
 
@@ -159,10 +182,11 @@ export class OpenRedaction {
 
     // Initialize learning store if enabled
     if (this.enableLearning) {
-      const learningPath = options.learningStorePath || '.openredaction/learnings.json';
+      const learningPath =
+        options.learningStorePath || ".openredaction/learnings.json";
       this.learningStore = new LocalLearningStore(learningPath, {
         autoSave: true,
-        confidenceThreshold: 0.85
+        confidenceThreshold: 0.85,
       });
 
       // Merge learned whitelist with user whitelist
@@ -173,7 +197,7 @@ export class OpenRedaction {
       if (this.options.enablePriorityOptimization) {
         this.priorityOptimizer = createPriorityOptimizer(
           this.learningStore,
-          this.options.optimizerOptions
+          this.options.optimizerOptions,
         );
       }
     }
@@ -211,7 +235,8 @@ export class OpenRedaction {
 
     // Initialize metrics collection if enabled
     if (options.enableMetrics) {
-      this.metricsCollector = options.metricsCollector || new InMemoryMetricsCollector();
+      this.metricsCollector =
+        options.metricsCollector || new InMemoryMetricsCollector();
     }
 
     // Initialize RBAC if enabled
@@ -234,8 +259,10 @@ export class OpenRedaction {
     if (options.enableNER) {
       this.nerDetector = new NERDetector();
       if (!this.nerDetector.isAvailable()) {
-        console.warn('[OpenRedaction] NER enabled but compromise.js not installed. Install with: npm install compromise');
-        console.warn('[OpenRedaction] Falling back to regex-only detection.');
+        console.warn(
+          "[OpenRedaction] NER enabled but compromise.js not installed. Install with: npm install compromise",
+        );
+        console.warn("[OpenRedaction] Falling back to regex-only detection.");
         this.nerDetector = undefined;
       }
     }
@@ -243,7 +270,9 @@ export class OpenRedaction {
     // Initialize context rules engine if enabled
     if (options.enableContextRules !== false) {
       // Enabled by default for better accuracy
-      this.contextRulesEngine = new ContextRulesEngine(options.contextRulesConfig);
+      this.contextRulesEngine = new ContextRulesEngine(
+        options.contextRulesConfig,
+      );
     }
   }
 
@@ -263,7 +292,7 @@ export class OpenRedaction {
     return new OpenRedaction({
       ...resolved,
       enableLearning: true,
-      learningStorePath: config.learnedPatterns
+      learningStorePath: config.learnedPatterns,
     });
   }
 
@@ -279,8 +308,8 @@ export class OpenRedaction {
 
     // Priority 1: If specific patterns are whitelisted, use only those
     if (this.options.patterns && this.options.patterns.length > 0) {
-      patterns = allPatterns.filter(p =>
-        this.options.patterns!.includes(p.type)
+      patterns = allPatterns.filter((p) =>
+        this.options.patterns!.includes(p.type),
       );
     }
     // Priority 2: If categories are specified, use only those categories
@@ -291,22 +320,35 @@ export class OpenRedaction {
         patterns.push(...categoryPatterns);
       }
       // Remove duplicates (some patterns may be in multiple categories)
-      patterns = Array.from(new Map(patterns.map(p => [p.type, p])).values());
+      patterns = Array.from(new Map(patterns.map((p) => [p.type, p])).values());
 
       if (this.options.debug) {
-        console.log(`[OpenRedaction] Loaded ${patterns.length} patterns from categories: ${this.options.categories.join(', ')}`);
+        console.log(
+          `[OpenRedaction] Loaded ${patterns.length} patterns from categories: ${this.options.categories.join(", ")}`,
+        );
       }
     }
     // Priority 3: Use all patterns, filtered by category options
     else {
-      patterns = allPatterns.filter(pattern => {
+      patterns = allPatterns.filter((pattern) => {
         // Filter by category options
-        if (pattern.type === 'NAME' && !this.options.includeNames) return false;
-        if (pattern.type.startsWith('EMAIL') && !this.options.includeEmails) return false;
-        if (pattern.type.startsWith('PHONE') && !this.options.includePhones) return false;
-        if (pattern.type.startsWith('ADDRESS') && !this.options.includeAddresses) return false;
-        if (pattern.type.startsWith('POSTCODE') && !this.options.includeAddresses) return false;
-        if (pattern.type.startsWith('ZIP') && !this.options.includeAddresses) return false;
+        if (pattern.type === "NAME" && !this.options.includeNames) return false;
+        if (pattern.type.startsWith("EMAIL") && !this.options.includeEmails)
+          return false;
+        if (pattern.type.startsWith("PHONE") && !this.options.includePhones)
+          return false;
+        if (
+          pattern.type.startsWith("ADDRESS") &&
+          !this.options.includeAddresses
+        )
+          return false;
+        if (
+          pattern.type.startsWith("POSTCODE") &&
+          !this.options.includeAddresses
+        )
+          return false;
+        if (pattern.type.startsWith("ZIP") && !this.options.includeAddresses)
+          return false;
 
         return true;
       });
@@ -328,9 +370,14 @@ export class OpenRedaction {
   private validatePatterns(): void {
     // Only validate custom patterns (user-provided)
     // Built-in patterns are already vetted and safe
-    if (!this.options.customPatterns || this.options.customPatterns.length === 0) {
+    if (
+      !this.options.customPatterns ||
+      this.options.customPatterns.length === 0
+    ) {
       if (this.options.debug) {
-        console.log(`[OpenRedaction] No custom patterns to validate. ${this.patterns.length} built-in patterns loaded.`);
+        console.log(
+          `[OpenRedaction] No custom patterns to validate. ${this.patterns.length} built-in patterns loaded.`,
+        );
       }
       return;
     }
@@ -346,7 +393,9 @@ export class OpenRedaction {
     }
 
     if (this.options.debug) {
-      console.log(`[OpenRedaction] Validated ${this.options.customPatterns.length} custom patterns. Total patterns: ${this.patterns.length}`);
+      console.log(
+        `[OpenRedaction] Validated ${this.options.customPatterns.length} custom patterns. Total patterns: ${this.patterns.length}`,
+      );
     }
   }
 
@@ -360,13 +409,21 @@ export class OpenRedaction {
     for (const pattern of this.patterns) {
       const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
       this.compiledPatterns.set(pattern, regex);
-      if (this.options.debug && (pattern.type === 'NINTENDO_FRIEND_CODE' || pattern.type === 'TELECOMS_ACCOUNT_NUMBER')) {
-        console.log(`[OpenRedaction] Compiled pattern '${pattern.type}': ${regex}`);
+      if (
+        this.options.debug &&
+        (pattern.type === "NINTENDO_FRIEND_CODE" ||
+          pattern.type === "TELECOMS_ACCOUNT_NUMBER")
+      ) {
+        console.log(
+          `[OpenRedaction] Compiled pattern '${pattern.type}': ${regex}`,
+        );
       }
     }
 
     if (this.options.debug) {
-      console.log(`[OpenRedaction] Pre-compiled ${this.compiledPatterns.size} regex patterns`);
+      console.log(
+        `[OpenRedaction] Pre-compiled ${this.compiledPatterns.size} regex patterns`,
+      );
     }
   }
 
@@ -377,7 +434,7 @@ export class OpenRedaction {
   private processPatterns(
     text: string,
     patterns: PIIPattern[],
-    processedRanges: Array<[number, number]>
+    processedRanges: Array<[number, number]>,
   ): PIIDetection[] {
     let detections: PIIDetection[] = [];
 
@@ -387,13 +444,21 @@ export class OpenRedaction {
       const regex = this.compiledPatterns.get(pattern);
       if (!regex) {
         if (this.options.debug) {
-          console.warn(`[OpenRedaction] Pattern '${pattern.type}' not found in compiled cache, skipping`);
+          console.warn(
+            `[OpenRedaction] Pattern '${pattern.type}' not found in compiled cache, skipping`,
+          );
         }
         continue;
       }
 
-      if (this.options.debug && (pattern.type === 'NINTENDO_FRIEND_CODE' || pattern.type === 'TELECOMS_ACCOUNT_NUMBER')) {
-        console.log(`[OpenRedaction] Processing pattern '${pattern.type}' with regex: ${regex}`);
+      if (
+        this.options.debug &&
+        (pattern.type === "NINTENDO_FRIEND_CODE" ||
+          pattern.type === "TELECOMS_ACCOUNT_NUMBER")
+      ) {
+        console.log(
+          `[OpenRedaction] Processing pattern '${pattern.type}' with regex: ${regex}`,
+        );
       }
 
       let match: RegExpExecArray | null;
@@ -404,128 +469,163 @@ export class OpenRedaction {
       regex.lastIndex = 0;
 
       try {
-        while ((match = safeExec(regex, text, { timeout: this.options.regexTimeout })) !== null) {
-          if (this.options.debug && (pattern.type === 'NINTENDO_FRIEND_CODE' || pattern.type === 'TELECOMS_ACCOUNT_NUMBER')) {
-            console.log(`[OpenRedaction] Pattern '${pattern.type}' regex match found: '${match[0]}' at position ${match.index}`);
+        while (
+          // biome-ignore lint/suspicious/noAssignInExpressions: tolerable
+          (match = safeExec(regex, text, {
+            timeout: this.options.regexTimeout,
+          })) !== null
+        ) {
+          if (
+            this.options.debug &&
+            (pattern.type === "NINTENDO_FRIEND_CODE" ||
+              pattern.type === "TELECOMS_ACCOUNT_NUMBER")
+          ) {
+            console.log(
+              `[OpenRedaction] Pattern '${pattern.type}' regex match found: '${match[0]}' at position ${match.index}`,
+            );
           }
           matchCount++;
 
           // Safety check for excessive matches
           if (matchCount >= maxMatches) {
             if (this.options.debug) {
-              console.warn(`[OpenRedaction] Pattern '${pattern.type}' exceeded ${maxMatches} matches, stopping`);
+              console.warn(
+                `[OpenRedaction] Pattern '${pattern.type}' exceeded ${maxMatches} matches, stopping`,
+              );
             }
             break;
           }
-        // Use capturing group if present, otherwise use full match
-        const value = match[1] !== undefined ? match[1] : match[0];
-        const fullMatch = match[0];
+          // Use capturing group if present, otherwise use full match
+          const value = match[1] !== undefined ? match[1] : match[0];
+          const fullMatch = match[0];
 
-        // For captured groups, we need to find the actual position
-        let startPos: number;
-        let endPos: number;
+          // For captured groups, we need to find the actual position
+          let startPos: number;
+          let endPos: number;
 
-        if (match[1] !== undefined) {
-          // Find the captured group position within the full match
-          const captureIndex = fullMatch.indexOf(value);
-          startPos = match.index + captureIndex;
-          endPos = startPos + value.length;
-        } else {
-          startPos = match.index;
-          endPos = startPos + value.length;
-        }
-
-        // Skip if this range overlaps with already detected PII (higher priority wins)
-        if (this.overlapsWithExisting(startPos, endPos, processedRanges)) {
-          if (this.options.debug) {
-            console.log(`[OpenRedaction] Pattern '${pattern.type}' skipped due to overlap at ${startPos}-${endPos}`);
+          if (match[1] !== undefined) {
+            // Find the captured group position within the full match
+            const captureIndex = fullMatch.indexOf(value);
+            startPos = match.index + captureIndex;
+            endPos = startPos + value.length;
+          } else {
+            startPos = match.index;
+            endPos = startPos + value.length;
           }
-          continue;
-        }
 
-        // Get context (50 chars before and after)
-        const contextStart = Math.max(0, startPos - 50);
-        const contextEnd = Math.min(text.length, endPos + 50);
-        const context = text.substring(contextStart, contextEnd);
-
-        // Run validator if present
-        if (pattern.validator && !pattern.validator(value, context)) {
-          if (this.options.debug) {
-            console.log(`[OpenRedaction] Pattern '${pattern.type}' validation failed for value: '${value}' with context: '${context.substring(0, 100)}...'`);
-          }
-          continue;
-        }
-
-        // Check for false positives if enabled
-        if (this.options.enableFalsePositiveFilter) {
-          const fpResult = isFalsePositive(value, pattern.type, context);
-          if (fpResult.isFalsePositive && fpResult.confidence >= this.options.falsePositiveThreshold) {
-            // Skip this detection - likely a false positive
+          // Skip if this range overlaps with already detected PII (higher priority wins)
+          if (this.overlapsWithExisting(startPos, endPos, processedRanges)) {
+            if (this.options.debug) {
+              console.log(
+                `[OpenRedaction] Pattern '${pattern.type}' skipped due to overlap at ${startPos}-${endPos}`,
+              );
+            }
             continue;
           }
-        }
 
-        // Perform context analysis if enabled
-        let confidence = 1.0; // Default confidence if analysis disabled
-        if (this.options.enableContextAnalysis) {
-          const contextAnalysis = analyzeFullContext(
-            text,
-            value,
-            pattern.type,
-            startPos,
-            endPos
-          );
-          confidence = contextAnalysis.confidence;
-          if (this.options.debug && confidence < this.options.confidenceThreshold) {
-            console.log(`[OpenRedaction] Pattern '${pattern.type}' failed context analysis. Value: '${value}', Confidence: ${confidence} < ${this.options.confidenceThreshold}`);
+          // Get context (50 chars before and after)
+          const contextStart = Math.max(0, startPos - 50);
+          const contextEnd = Math.min(text.length, endPos + 50);
+          const context = text.substring(contextStart, contextEnd);
+
+          // Run validator if present
+          if (pattern.validator && !pattern.validator(value, context)) {
+            if (this.options.debug) {
+              console.log(
+                `[OpenRedaction] Pattern '${pattern.type}' validation failed for value: '${value}' with context: '${context.substring(0, 100)}...'`,
+              );
+            }
+            continue;
           }
-        }
 
-        // Apply context rules for proximity-based confidence adjustment
-        if (this.contextRulesEngine) {
-          const piiMatch: PIIMatch = {
+          // Check for false positives if enabled
+          if (this.options.enableFalsePositiveFilter) {
+            const fpResult = isFalsePositive(value, pattern.type, context);
+            if (
+              fpResult.isFalsePositive &&
+              fpResult.confidence >= this.options.falsePositiveThreshold
+            ) {
+              // Skip this detection - likely a false positive
+              continue;
+            }
+          }
+
+          // Perform context analysis if enabled
+          let confidence = 1.0; // Default confidence if analysis disabled
+          if (this.options.enableContextAnalysis) {
+            const contextAnalysis = analyzeFullContext(
+              text,
+              value,
+              pattern.type,
+              startPos,
+              endPos,
+            );
+            confidence = contextAnalysis.confidence;
+            if (
+              this.options.debug &&
+              confidence < this.options.confidenceThreshold
+            ) {
+              console.log(
+                `[OpenRedaction] Pattern '${pattern.type}' failed context analysis. Value: '${value}', Confidence: ${confidence} < ${this.options.confidenceThreshold}`,
+              );
+            }
+          }
+
+          // Apply context rules for proximity-based confidence adjustment
+          if (this.contextRulesEngine) {
+            const piiMatch: PIIMatch = {
+              type: pattern.type,
+              value,
+              start: startPos,
+              end: endPos,
+              confidence,
+              context: {
+                before: text.substring(Math.max(0, startPos - 250), startPos),
+                after: text.substring(
+                  endPos,
+                  Math.min(text.length, endPos + 250),
+                ),
+              },
+            };
+
+            const adjusted = this.contextRulesEngine.applyProximityRules(
+              piiMatch,
+              text,
+            );
+            confidence = adjusted.confidence;
+          }
+
+          // Filter low-confidence detections
+          if (confidence < this.options.confidenceThreshold) {
+            continue;
+          }
+
+          // Check whitelist
+          if (
+            this.options.whitelist.some((term) =>
+              value.toLowerCase().includes(term.toLowerCase()),
+            )
+          ) {
+            continue;
+          }
+
+          // Generate placeholder
+          const placeholder = this.generatePlaceholder(value, pattern);
+
+          // Add detection
+          if (this.options.debug) {
+            console.log(
+              `[OpenRedaction] Pattern '${pattern.type}' detected: '${value}' at position ${startPos}-${endPos}, confidence: ${confidence}`,
+            );
+          }
+          detections.push({
             type: pattern.type,
             value,
-            start: startPos,
-            end: endPos,
+            placeholder,
+            position: [startPos, endPos],
+            severity: pattern.severity || "medium",
             confidence,
-            context: {
-              before: text.substring(Math.max(0, startPos - 250), startPos),
-              after: text.substring(endPos, Math.min(text.length, endPos + 250))
-            }
-          };
-
-          const adjusted = this.contextRulesEngine.applyProximityRules(piiMatch, text);
-          confidence = adjusted.confidence;
-        }
-
-        // Filter low-confidence detections
-        if (confidence < this.options.confidenceThreshold) {
-          continue;
-        }
-
-        // Check whitelist
-        if (this.options.whitelist.some(term =>
-          value.toLowerCase().includes(term.toLowerCase())
-        )) {
-          continue;
-        }
-
-        // Generate placeholder
-        const placeholder = this.generatePlaceholder(value, pattern);
-
-        // Add detection
-        if (this.options.debug) {
-          console.log(`[OpenRedaction] Pattern '${pattern.type}' detected: '${value}' at position ${startPos}-${endPos}, confidence: ${confidence}`);
-        }
-        detections.push({
-          type: pattern.type,
-          value,
-          placeholder,
-          position: [startPos, endPos],
-          severity: pattern.severity || 'medium',
-          confidence
-        });
+          });
 
           // Mark range as processed
           processedRanges.push([startPos, endPos]);
@@ -547,34 +647,49 @@ export class OpenRedaction {
     // NER: hybrid confidence boost + merge entities only found by NER (no regex overlap)
     if (this.nerDetector && this.nerDetector.isAvailable()) {
       const nerMatches = this.nerDetector.detect(text);
-      let piiMatches: PIIMatch[] = detections.map(det => ({
+      let piiMatches: PIIMatch[] = detections.map((det) => ({
         type: det.type,
         value: det.value,
         start: det.position[0],
         end: det.position[1],
         confidence: det.confidence || 1.0,
         context: {
-          before: text.substring(Math.max(0, det.position[0] - 50), det.position[0]),
-          after: text.substring(det.position[1], Math.min(text.length, det.position[1] + 50))
-        }
+          before: text.substring(
+            Math.max(0, det.position[0] - 50),
+            det.position[0],
+          ),
+          after: text.substring(
+            det.position[1],
+            Math.min(text.length, det.position[1] + 50),
+          ),
+        },
       }));
 
       if (detections.length > 0) {
-        const hybridMatches = this.nerDetector.hybridDetection(piiMatches, text);
+        const hybridMatches = this.nerDetector.hybridDetection(
+          piiMatches,
+          text,
+        );
         detections = detections.map((det, index) => ({
           ...det,
-          confidence: hybridMatches[index].confidence
+          confidence: hybridMatches[index].confidence,
         }));
-        piiMatches = detections.map(det => ({
+        piiMatches = detections.map((det) => ({
           type: det.type,
           value: det.value,
           start: det.position[0],
           end: det.position[1],
           confidence: det.confidence || 1.0,
           context: {
-            before: text.substring(Math.max(0, det.position[0] - 50), det.position[0]),
-            after: text.substring(det.position[1], Math.min(text.length, det.position[1] + 50))
-          }
+            before: text.substring(
+              Math.max(0, det.position[0] - 50),
+              det.position[0],
+            ),
+            after: text.substring(
+              det.position[1],
+              Math.min(text.length, det.position[1] + 50),
+            ),
+          },
         }));
       }
 
@@ -585,16 +700,19 @@ export class OpenRedaction {
           regex: /.^/,
           priority: 1,
           placeholder: `[NER_${ner.type}_{n}]`,
-          severity: 'medium'
+          severity: "medium",
         };
-        const placeholder = this.generatePlaceholder(ner.text, syntheticPattern);
+        const placeholder = this.generatePlaceholder(
+          ner.text,
+          syntheticPattern,
+        );
         detections.push({
           type: syntheticPattern.type,
           value: ner.text,
           placeholder,
           position: [ner.start, ner.end],
-          severity: 'medium',
-          confidence: ner.confidence
+          severity: "medium",
+          confidence: ner.confidence,
         });
       }
     }
@@ -602,25 +720,34 @@ export class OpenRedaction {
     // Apply domain-based confidence boosting
     if (this.contextRulesEngine && detections.length > 0) {
       // Convert detections to PIIMatch format
-      const piiMatches: PIIMatch[] = detections.map(det => ({
+      const piiMatches: PIIMatch[] = detections.map((det) => ({
         type: det.type,
         value: det.value,
         start: det.position[0],
         end: det.position[1],
         confidence: det.confidence || 1.0,
         context: {
-          before: text.substring(Math.max(0, det.position[0] - 50), det.position[0]),
-          after: text.substring(det.position[1], Math.min(text.length, det.position[1] + 50))
-        }
+          before: text.substring(
+            Math.max(0, det.position[0] - 50),
+            det.position[0],
+          ),
+          after: text.substring(
+            det.position[1],
+            Math.min(text.length, det.position[1] + 50),
+          ),
+        },
       }));
 
       // Apply domain boosting
-      const boostedMatches = this.contextRulesEngine.applyDomainBoosting(piiMatches, text);
+      const boostedMatches = this.contextRulesEngine.applyDomainBoosting(
+        piiMatches,
+        text,
+      );
 
       // Update detections with domain-boosted confidence
       detections = detections.map((det, index) => ({
         ...det,
-        confidence: boostedMatches[index].confidence
+        confidence: boostedMatches[index].confidence,
       }));
     }
 
@@ -633,8 +760,13 @@ export class OpenRedaction {
    */
   async detect(text: string): Promise<DetectionResult> {
     // Check RBAC permission
-    if (this.rbacManager && !this.rbacManager.hasPermission('detection:detect')) {
-      throw new Error('[OpenRedaction] Permission denied: detection:detect required');
+    if (
+      this.rbacManager &&
+      !this.rbacManager.hasPermission("detection:detect")
+    ) {
+      throw new Error(
+        "[OpenRedaction] Permission denied: detection:detect required",
+      );
     }
 
     const startTime = performance.now();
@@ -644,22 +776,26 @@ export class OpenRedaction {
     if (textSize > this.options.maxInputSize) {
       throw new Error(
         `[OpenRedaction] Input size (${textSize} bytes) exceeds maximum allowed size (${this.options.maxInputSize} bytes). ` +
-        `Set maxInputSize option to increase limit or use streaming/batch processing for large documents.`
+          `Set maxInputSize option to increase limit or use streaming/batch processing for large documents.`,
       );
     }
 
     // Warn about large documents approaching the limit
     if (textSize > this.options.maxInputSize * 0.8 && this.options.debug) {
       console.warn(
-        `[OpenRedaction] Input size (${textSize} bytes) is approaching maximum limit (${this.options.maxInputSize} bytes)`
+        `[OpenRedaction] Input size (${textSize} bytes) is approaching maximum limit (${this.options.maxInputSize} bytes)`,
       );
     }
 
     if (this.options.debug) {
       console.log(`[OpenRedaction] Detecting PII in ${textSize} byte text`);
       console.log(`[OpenRedaction] Active patterns: ${this.patterns.length}`);
-      console.log(`[OpenRedaction] Multi-pass: ${this.options.enableMultiPass ? 'enabled' : 'disabled'}`);
-      console.log(`[OpenRedaction] Cache: ${this.options.enableCache ? 'enabled' : 'disabled'}`);
+      console.log(
+        `[OpenRedaction] Multi-pass: ${this.options.enableMultiPass ? "enabled" : "disabled"}`,
+      );
+      console.log(
+        `[OpenRedaction] Cache: ${this.options.enableCache ? "enabled" : "disabled"}`,
+      );
     }
 
     // Check cache if enabled
@@ -668,7 +804,7 @@ export class OpenRedaction {
       const cached = this.resultCache.get(cacheKey);
       if (cached) {
         if (this.options.debug) {
-          console.log('[OpenRedaction] Cache hit, returning cached result');
+          console.log("[OpenRedaction] Cache hit, returning cached result");
         }
         return cached;
       }
@@ -686,7 +822,10 @@ export class OpenRedaction {
     // Use multi-pass detection if enabled
     if (this.options.enableMultiPass && this.multiPassConfig) {
       // Group patterns by pass
-      const patternGroups = groupPatternsByPass(this.patterns, this.multiPassConfig);
+      const patternGroups = groupPatternsByPass(
+        this.patterns,
+        this.multiPassConfig,
+      );
       const passDetections = new Map<string, PIIDetection[]>();
 
       // Process each pass in order
@@ -695,7 +834,11 @@ export class OpenRedaction {
         if (passPatterns.length === 0) continue;
 
         // Process this pass
-        const currentDetections = this.processPatterns(text, passPatterns, processedRanges);
+        const currentDetections = this.processPatterns(
+          text,
+          passPatterns,
+          processedRanges,
+        );
 
         // Store detections for this pass
         passDetections.set(pass.name, currentDetections);
@@ -724,7 +867,7 @@ export class OpenRedaction {
       if (!detection.value) continue;
 
       const escapedValue = this.escapeRegex(detection.value);
-      const pattern = new RegExp(escapedValue, 'gi');
+      const pattern = new RegExp(escapedValue, "gi");
       redacted = redacted.replace(pattern, detection.placeholder);
 
       redactionMap[detection.placeholder] = detection.value;
@@ -740,12 +883,14 @@ export class OpenRedaction {
       redactionMap,
       stats: {
         processingTime,
-        piiCount: detections.length
-      }
+        piiCount: detections.length,
+      },
     };
 
     if (this.options.debug) {
-      console.log(`[OpenRedaction] Detection complete: ${detections.length} PII found in ${processingTime}ms`);
+      console.log(
+        `[OpenRedaction] Detection complete: ${detections.length} PII found in ${processingTime}ms`,
+      );
       if (detections.length > 0) {
         const typeCounts: Record<string, number> = {};
         for (const detection of detections) {
@@ -758,9 +903,9 @@ export class OpenRedaction {
     // Log audit entry if enabled
     if (this.auditLogger) {
       try {
-        const piiTypes = [...new Set(detections.map(d => d.type))];
+        const piiTypes = [...new Set(detections.map((d) => d.type))];
         this.auditLogger.log({
-          operation: 'redact',
+          operation: "redact",
           piiCount: detections.length,
           piiTypes,
           textLength: text.length,
@@ -769,12 +914,12 @@ export class OpenRedaction {
           success: true,
           user: this.auditUser,
           sessionId: this.auditSessionId,
-          metadata: this.auditMetadata
+          metadata: this.auditMetadata,
         });
       } catch (error) {
         // Don't fail the redaction if audit logging fails
         if (this.options.debug) {
-          console.error('[OpenRedaction] Audit logging failed:', error);
+          console.error("[OpenRedaction] Audit logging failed:", error);
         }
       }
     }
@@ -782,11 +927,15 @@ export class OpenRedaction {
     // Record metrics if enabled
     if (this.metricsCollector) {
       try {
-        this.metricsCollector.recordRedaction(result, processingTime, this.options.redactionMode);
+        this.metricsCollector.recordRedaction(
+          result,
+          processingTime,
+          this.options.redactionMode,
+        );
       } catch (error) {
         // Don't fail the redaction if metrics recording fails
         if (this.options.debug) {
-          console.error('[OpenRedaction] Metrics recording failed:', error);
+          console.error("[OpenRedaction] Metrics recording failed:", error);
         }
       }
     }
@@ -796,7 +945,7 @@ export class OpenRedaction {
       const cacheKey = hashString(text);
       this.resultCache.set(cacheKey, result);
       if (this.options.debug) {
-        console.log('[OpenRedaction] Result cached');
+        console.log("[OpenRedaction] Result cached");
       }
     }
 
@@ -808,15 +957,23 @@ export class OpenRedaction {
    */
   restore(redactedText: string, redactionMap: Record<string, string>): string {
     // Check RBAC permission
-    if (this.rbacManager && !this.rbacManager.hasPermission('detection:restore')) {
-      throw new Error('[OpenRedaction] Permission denied: detection:restore required');
+    if (
+      this.rbacManager &&
+      !this.rbacManager.hasPermission("detection:restore")
+    ) {
+      throw new Error(
+        "[OpenRedaction] Permission denied: detection:restore required",
+      );
     }
 
     const startTime = performance.now();
     let restored = redactedText;
 
     for (const [placeholder, value] of Object.entries(redactionMap)) {
-      restored = restored.replace(new RegExp(this.escapeRegex(placeholder), 'g'), value);
+      restored = restored.replace(
+        new RegExp(this.escapeRegex(placeholder), "g"),
+        value,
+      );
     }
 
     const endTime = performance.now();
@@ -826,7 +983,7 @@ export class OpenRedaction {
     if (this.auditLogger) {
       try {
         this.auditLogger.log({
-          operation: 'restore',
+          operation: "restore",
           piiCount: Object.keys(redactionMap).length,
           piiTypes: [], // Types not available in restore context
           textLength: redactedText.length,
@@ -834,12 +991,12 @@ export class OpenRedaction {
           success: true,
           user: this.auditUser,
           sessionId: this.auditSessionId,
-          metadata: this.auditMetadata
+          metadata: this.auditMetadata,
         });
       } catch (error) {
         // Don't fail the restore if audit logging fails
         if (this.options.debug) {
-          console.error('[OpenRedaction] Audit logging failed:', error);
+          console.error("[OpenRedaction] Audit logging failed:", error);
         }
       }
     }
@@ -859,12 +1016,12 @@ export class OpenRedaction {
     let placeholder: string;
 
     // For non-placeholder modes, use redaction strategies directly
-    if (this.options.redactionMode !== 'placeholder') {
+    if (this.options.redactionMode !== "placeholder") {
       placeholder = applyRedactionMode(
         value,
         pattern.type,
         this.options.redactionMode,
-        pattern.placeholder
+        pattern.placeholder,
       );
       // Still store mapping for consistency
       this.valueToPlaceholder.set(value, placeholder);
@@ -875,12 +1032,12 @@ export class OpenRedaction {
     if (this.options.deterministic) {
       // Generate deterministic ID based on value
       const id = generateDeterministicId(value, pattern.type);
-      placeholder = pattern.placeholder.replace('{n}', id);
+      placeholder = pattern.placeholder.replace("{n}", id);
     } else {
       // Use incrementing counter
       const count = (this.placeholderCounter.get(pattern.type) || 0) + 1;
       this.placeholderCounter.set(pattern.type, count);
-      placeholder = pattern.placeholder.replace('{n}', count.toString());
+      placeholder = pattern.placeholder.replace("{n}", count.toString());
     }
 
     // Store mapping
@@ -895,13 +1052,13 @@ export class OpenRedaction {
   private overlapsWithExisting(
     start: number,
     end: number,
-    ranges: Array<[number, number]>
+    ranges: Array<[number, number]>,
   ): boolean {
     return ranges.some(
       ([existingStart, existingEnd]) =>
         (start >= existingStart && start < existingEnd) ||
         (end > existingStart && end <= existingEnd) ||
-        (start <= existingStart && end >= existingEnd)
+        (start <= existingStart && end >= existingEnd),
     );
   }
 
@@ -909,7 +1066,7 @@ export class OpenRedaction {
    * Escape special regex characters
    */
   private escapeRegex(str: string): string {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
   /**
@@ -931,10 +1088,10 @@ export class OpenRedaction {
     const result = await this.detect(text);
 
     return {
-      high: result.detections.filter(d => d.severity === 'high'),
-      medium: result.detections.filter(d => d.severity === 'medium'),
-      low: result.detections.filter(d => d.severity === 'low'),
-      total: result.detections.length
+      high: result.detections.filter((d) => d.severity === "high"),
+      medium: result.detections.filter((d) => d.severity === "medium"),
+      low: result.detections.filter((d) => d.severity === "low"),
+      total: result.detections.length,
     };
   }
 
@@ -946,8 +1103,12 @@ export class OpenRedaction {
       throw createLearningDisabledError();
     }
 
-    const ctx = context || '';
-    this.learningStore.recordFalsePositive(detection.value, detection.type, ctx);
+    const ctx = context || "";
+    this.learningStore.recordFalsePositive(
+      detection.value,
+      detection.type,
+      ctx,
+    );
 
     // Update whitelist if confidence is high enough
     if (this.learningStore.getConfidence(detection.value) >= 0.85) {
@@ -958,12 +1119,16 @@ export class OpenRedaction {
   /**
    * Record a false negative (missed PII that should have been detected)
    */
-  recordFalseNegative(text: string, expectedType: string, context?: string): void {
+  recordFalseNegative(
+    text: string,
+    expectedType: string,
+    context?: string,
+  ): void {
     if (!this.learningStore) {
       throw createLearningDisabledError();
     }
 
-    const ctx = context || '';
+    const ctx = context || "";
     this.learningStore.recordFalseNegative(text, expectedType, ctx);
   }
 
@@ -1037,7 +1202,9 @@ export class OpenRedaction {
 
     // Update whitelist with newly learned patterns
     const learnedWhitelist = this.learningStore.getWhitelist();
-    this.options.whitelist = [...new Set([...this.options.whitelist, ...learnedWhitelist])];
+    this.options.whitelist = [
+      ...new Set([...this.options.whitelist, ...learnedWhitelist]),
+    ];
   }
 
   /**
@@ -1061,7 +1228,9 @@ export class OpenRedaction {
       this.learningStore.removeFromWhitelist(pattern);
     }
 
-    this.options.whitelist = this.options.whitelist.filter(w => w !== pattern);
+    this.options.whitelist = this.options.whitelist.filter(
+      (w) => w !== pattern,
+    );
   }
 
   /**
@@ -1126,7 +1295,7 @@ export class OpenRedaction {
     return {
       size: this.resultCache?.size || 0,
       maxSize: this.options.cacheSize,
-      enabled: this.options.enableCache
+      enabled: this.options.enableCache,
     };
   }
 
@@ -1135,8 +1304,8 @@ export class OpenRedaction {
    */
   getAuditLogger(): IAuditLogger | undefined {
     // Check RBAC permission
-    if (this.rbacManager && !this.rbacManager.hasPermission('audit:read')) {
-      throw new Error('[OpenRedaction] Permission denied: audit:read required');
+    if (this.rbacManager && !this.rbacManager.hasPermission("audit:read")) {
+      throw new Error("[OpenRedaction] Permission denied: audit:read required");
     }
 
     return this.auditLogger;
@@ -1147,8 +1316,10 @@ export class OpenRedaction {
    */
   getMetricsCollector(): IMetricsCollector | undefined {
     // Check RBAC permission
-    if (this.rbacManager && !this.rbacManager.hasPermission('metrics:read')) {
-      throw new Error('[OpenRedaction] Permission denied: metrics:read required');
+    if (this.rbacManager && !this.rbacManager.hasPermission("metrics:read")) {
+      throw new Error(
+        "[OpenRedaction] Permission denied: metrics:read required",
+      );
     }
 
     return this.metricsCollector;
@@ -1184,7 +1355,7 @@ export class OpenRedaction {
     author?: string;
     tags?: string[];
   }): string {
-    const { ConfigExporter } = require('./config/ConfigExporter.js');
+    const { ConfigExporter } = require("./config/ConfigExporter.js");
     return ConfigExporter.exportToString(this.options, metadata, true);
   }
 
@@ -1197,7 +1368,7 @@ export class OpenRedaction {
     performanceThreshold?: number;
     memoryThreshold?: number;
   }): Promise<any> {
-    const { HealthChecker } = await import('./health/HealthCheck.js');
+    const { HealthChecker } = await import("./health/HealthCheck.js");
     const checker = new HealthChecker(this);
     return checker.check(options);
   }
@@ -1205,8 +1376,11 @@ export class OpenRedaction {
   /**
    * Quick health check (minimal overhead)
    */
-  async quickHealthCheck(): Promise<{ status: 'healthy' | 'unhealthy'; message: string }> {
-    const { HealthChecker } = await import('./health/HealthCheck.js');
+  async quickHealthCheck(): Promise<{
+    status: "healthy" | "unhealthy";
+    message: string;
+  }> {
+    const { HealthChecker } = await import("./health/HealthCheck.js");
     const checker = new HealthChecker(this);
     return checker.quickCheck();
   }
@@ -1219,14 +1393,19 @@ export class OpenRedaction {
    */
   async detectDocument(
     buffer: Buffer,
-    options?: import('./document/types').DocumentOptions
-  ): Promise<import('./document/types').DocumentResult> {
+    options?: import("./document/types").DocumentOptions,
+  ): Promise<import("./document/types").DocumentResult> {
     // Check RBAC permission
-    if (this.rbacManager && !this.rbacManager.hasPermission('detection:detect')) {
-      throw new Error('[OpenRedaction] Permission denied: detection:detect required');
+    if (
+      this.rbacManager &&
+      !this.rbacManager.hasPermission("detection:detect")
+    ) {
+      throw new Error(
+        "[OpenRedaction] Permission denied: detection:detect required",
+      );
     }
 
-    const { createDocumentProcessor } = await import('./document');
+    const { createDocumentProcessor } = await import("./document");
     const processor = createDocumentProcessor();
 
     const extractionStart = performance.now();
@@ -1236,7 +1415,8 @@ export class OpenRedaction {
     const metadata = await processor.getMetadata(buffer, options);
 
     const extractionEnd = performance.now();
-    const extractionTime = Math.round((extractionEnd - extractionStart) * 100) / 100;
+    const extractionTime =
+      Math.round((extractionEnd - extractionStart) * 100) / 100;
 
     // Detect PII in extracted text
     const detection = await this.detect(text);
@@ -1246,7 +1426,7 @@ export class OpenRedaction {
       metadata,
       detection,
       fileSize: buffer.length,
-      extractionTime
+      extractionTime,
     };
   }
 
@@ -1256,14 +1436,19 @@ export class OpenRedaction {
    */
   async detectDocumentFile(
     filePath: string,
-    options?: import('./document/types').DocumentOptions
-  ): Promise<import('./document/types').DocumentResult> {
+    options?: import("./document/types").DocumentOptions,
+  ): Promise<import("./document/types").DocumentResult> {
     // Check RBAC permission
-    if (this.rbacManager && !this.rbacManager.hasPermission('detection:detect')) {
-      throw new Error('[OpenRedaction] Permission denied: detection:detect required');
+    if (
+      this.rbacManager &&
+      !this.rbacManager.hasPermission("detection:detect")
+    ) {
+      throw new Error(
+        "[OpenRedaction] Permission denied: detection:detect required",
+      );
     }
 
-    const fs = await import('fs/promises');
+    const fs = await import("fs/promises");
     const buffer = await fs.readFile(filePath);
 
     return this.detectDocument(buffer, options);
@@ -1275,23 +1460,23 @@ export class OpenRedaction {
    */
   static async detectBatch(
     texts: string[],
-    options?: OpenRedactionOptions & { numWorkers?: number }
+    options?: OpenRedactionOptions & { numWorkers?: number },
   ): Promise<DetectionResult[]> {
-    const { createWorkerPool } = await import('./workers');
+    const { createWorkerPool } = await import("./workers");
     const pool = createWorkerPool({ numWorkers: options?.numWorkers });
 
     try {
       await pool.initialize();
 
       const tasks = texts.map((text, index) => ({
-        type: 'detect' as const,
+        type: "detect" as const,
         id: `detect_${index}`,
         text,
-        options
+        options,
       }));
 
       const results = await Promise.all(
-        tasks.map(task => pool.execute<DetectionResult>(task))
+        tasks.map((task) => pool.execute<DetectionResult>(task)),
       );
 
       return results;
@@ -1306,23 +1491,25 @@ export class OpenRedaction {
    */
   static async detectDocumentsBatch(
     buffers: Buffer[],
-    options?: import('./document/types').DocumentOptions & { numWorkers?: number }
-  ): Promise<import('./document/types').DocumentResult[]> {
-    const { createWorkerPool } = await import('./workers');
+    options?: import("./document/types").DocumentOptions & {
+      numWorkers?: number;
+    },
+  ): Promise<import("./document/types").DocumentResult[]> {
+    const { createWorkerPool } = await import("./workers");
     const pool = createWorkerPool({ numWorkers: options?.numWorkers });
 
     try {
       await pool.initialize();
 
       const tasks = buffers.map((buffer, index) => ({
-        type: 'document' as const,
+        type: "document" as const,
         id: `document_${index}`,
         buffer,
-        options
+        options,
       }));
 
       const results = await Promise.all(
-        tasks.map(task => pool.execute(task))
+        tasks.map((task) => pool.execute(task)),
       );
 
       return results;

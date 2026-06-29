@@ -10,8 +10,8 @@ import WordPressWaitlistRoot from "@/components/WordPressWaitlistRoot";
 export const metadata: Metadata = {
   ...defaultMetadata,
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
 };
 

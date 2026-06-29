@@ -1,12 +1,16 @@
 {
   "name": "openredaction",
   "version": "1.1.2",
-  "publishConfig": {
-    "access": "public"
+  "homepage": "https://openredaction.com",
+  "bugs": {
+    "url": "https://github.com/sam247/openredaction/issues"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sam247/openredaction.git",
+    "directory": "packages/core"
+  },
+  "license": "MIT",
   "exports": {
     ".": {
       "import": {
@@ -39,49 +43,23 @@
       }
     }
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsdown && node scripts/dual-types.js",
-    "dev": "tsdown --watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
     "bench": "vitest bench --run",
     "bench:watch": "vitest bench",
-    "lint": "tsc --noEmit --incremental",
-    "clean": "rm -rf dist"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/sam247/openredaction.git",
-    "directory": "packages/core"
-  },
-  "bugs": {
-    "url": "https://github.com/sam247/openredaction/issues"
-  },
-  "homepage": "https://openredaction.com",
-  "peerDependencies": {
-    "mammoth": "^1.6.0",
-    "pdf-parse": "^1.1.1",
-    "react": "^18.0.0 || ^19.0.0",
-    "tesseract.js": "^5.0.0"
-  },
-  "peerDependenciesMeta": {
-    "pdf-parse": {
-      "optional": true
-    },
-    "mammoth": {
-      "optional": true
-    },
-    "tesseract.js": {
-      "optional": true
-    },
-    "react": {
-      "optional": true
-    }
+    "build": "tsdown && node scripts/dual-types.js",
+    "clean": "rm -rf dist",
+    "dev": "tsdown --watch",
+    "lint": "biome check . --diagnostic-level=error",
+    "typecheck": "tsc --noEmit --incremental",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@testing-library/react": "^16.0.1",
@@ -97,7 +75,30 @@
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
   },
+  "peerDependencies": {
+    "mammoth": "^1.6.0",
+    "pdf-parse": "^1.1.1",
+    "react": "^18.0.0 || ^19.0.0",
+    "tesseract.js": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "mammoth": {
+      "optional": true
+    },
+    "pdf-parse": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "tesseract.js": {
+      "optional": true
+    }
+  },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

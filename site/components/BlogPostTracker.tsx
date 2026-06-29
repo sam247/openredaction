@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { analytics } from '@/lib/analytics';
+import { useEffect } from "react";
+import { analytics } from "@/lib/analytics";
 
 interface BlogPostTrackerProps {
   slug: string;
@@ -15,4 +15,3 @@ export default function BlogPostTracker({ slug, title }: BlogPostTrackerProps) {
 
   return null;
 }
-

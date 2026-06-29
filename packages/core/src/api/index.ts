@@ -2,9 +2,9 @@
  * REST API Server module
  */
 
-export { APIServer, createAPIServer } from './APIServer';
 export type {
-  APIServerConfig,
   APIRequest,
-  APIResponse
-} from './APIServer';
+  APIResponse,
+  APIServerConfig,
+} from "./APIServer";
+export { APIServer, createAPIServer } from "./APIServer";

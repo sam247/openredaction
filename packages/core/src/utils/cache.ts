@@ -57,7 +57,7 @@ export function hashString(str: string): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
   return hash.toString(36);
@@ -71,10 +71,11 @@ export function memoize<T extends (...args: any[]) => any>(
   options: {
     maxSize?: number;
     keyFn?: (...args: Parameters<T>) => string;
-  } = {}
+  } = {},
 ): T {
   const cache = new LRUCache<string, ReturnType<T>>(options.maxSize || 100);
-  const keyFn = options.keyFn || ((...args: Parameters<T>) => JSON.stringify(args));
+  const keyFn =
+    options.keyFn || ((...args: Parameters<T>) => JSON.stringify(args));
 
   return ((...args: Parameters<T>) => {
     const key = keyFn(...args);

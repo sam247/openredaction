@@ -3,9 +3,9 @@
  * Allows efficient processing of documents in chunks
  */
 
-import { Readable } from 'stream';
-import { PIIDetection, DetectionResult } from '../types';
-import { OpenRedaction } from '../detector';
+import { Readable } from "stream";
+import type { OpenRedaction } from "../detector";
+import type { DetectionResult, PIIDetection } from "../types";
 
 /**
  * Chunk result for streaming detection
@@ -47,7 +47,7 @@ export class StreamingDetector {
     this.options = {
       chunkSize: options.chunkSize || 2048,
       overlap: options.overlap || 100,
-      progressiveRedaction: options.progressiveRedaction ?? true
+      progressiveRedaction: options.progressiveRedaction ?? true,
     };
   }
 
@@ -55,7 +55,9 @@ export class StreamingDetector {
    * Process a large text in chunks
    * Returns an async generator that yields chunk results
    */
-  async *processStream(text: string): AsyncGenerator<ChunkResult, void, undefined> {
+  async *processStream(
+    text: string,
+  ): AsyncGenerator<ChunkResult, void, undefined> {
     const { chunkSize, overlap } = this.options;
     const textLength = text.length;
     let position = 0;
@@ -73,52 +75,57 @@ export class StreamingDetector {
       const result = await this.detector.detect(chunk);
 
       // Filter out detections we've already processed
-      const newDetections = result.detections.filter((detection: PIIDetection) => {
-        const absoluteStart = byteOffset + detection.position[0];
-        const absoluteEnd = byteOffset + detection.position[1];
-        const rangeKey = `${absoluteStart}-${absoluteEnd}`;
+      const newDetections = result.detections.filter(
+        (detection: PIIDetection) => {
+          const absoluteStart = byteOffset + detection.position[0];
+          const absoluteEnd = byteOffset + detection.position[1];
+          const rangeKey = `${absoluteStart}-${absoluteEnd}`;
 
-        // Skip if we've already processed this exact detection
-        if (processedRanges.has(rangeKey)) {
+          // Skip if we've already processed this exact detection
+          if (processedRanges.has(rangeKey)) {
+            return false;
+          }
+
+          // For first chunk, include all detections
+          // For subsequent chunks, only include detections in the non-overlap region
+          const chunkStartInDoc = position;
+          const detectionStartInDoc = absoluteStart;
+          const isInMainRegion =
+            chunkIndex === 0 || detectionStartInDoc >= chunkStartInDoc;
+
+          if (isInMainRegion) {
+            processedRanges.add(rangeKey);
+            return true;
+          }
+
           return false;
-        }
-
-        // For first chunk, include all detections
-        // For subsequent chunks, only include detections in the non-overlap region
-        const chunkStartInDoc = position;
-        const detectionStartInDoc = absoluteStart;
-        const isInMainRegion = chunkIndex === 0 || detectionStartInDoc >= chunkStartInDoc;
-
-        if (isInMainRegion) {
-          processedRanges.add(rangeKey);
-          return true;
-        }
-
-        return false;
-      });
+        },
+      );
 
       // Adjust positions to be relative to the full document
-      const adjustedDetections = newDetections.map((detection: PIIDetection) => ({
-        ...detection,
-        position: [
-          byteOffset + detection.position[0],
-          byteOffset + detection.position[1]
-        ] as [number, number]
-      }));
+      const adjustedDetections = newDetections.map(
+        (detection: PIIDetection) => ({
+          ...detection,
+          position: [
+            byteOffset + detection.position[0],
+            byteOffset + detection.position[1],
+          ] as [number, number],
+        }),
+      );
 
       // Build redacted chunk (if progressive redaction is enabled)
       let redactedChunk = chunk;
       if (this.options.progressiveRedaction) {
         // Sort by position descending for proper replacement
         const sortedDetections = [...result.detections].sort(
-          (a, b) => b.position[0] - a.position[0]
+          (a, b) => b.position[0] - a.position[0],
         );
 
         for (const detection of sortedDetections) {
           if (!detection.value) continue;
 
           const escapedValue = this.escapeRegex(detection.value);
-          const pattern = new RegExp(escapedValue, 'gi');
+          const pattern = new RegExp(escapedValue, "gi");
           redactedChunk = redactedChunk.replace(pattern, detection.placeholder);
         }
       }
@@ -128,7 +135,7 @@ export class StreamingDetector {
         detections: adjustedDetections,
         redactedChunk,
         originalChunk: chunk,
-        byteOffset
+        byteOffset,
       };
 
       // Move to next chunk
@@ -158,7 +165,7 @@ export class StreamingDetector {
       if (!detection.value) continue;
 
       const escapedValue = this.escapeRegex(detection.value);
-      const pattern = new RegExp(escapedValue, 'gi');
+      const pattern = new RegExp(escapedValue, "gi");
       redactedText = redactedText.replace(pattern, detection.placeholder);
 
       redactionMap[detection.placeholder] = detection.value;
@@ -170,8 +177,8 @@ export class StreamingDetector {
       detections: allDetections.reverse(), // Return in original order
       redactionMap,
       stats: {
-        piiCount: allDetections.length
-      }
+        piiCount: allDetections.length,
+      },
     };
   }
 
@@ -179,13 +186,12 @@ export class StreamingDetector {
    * Process a file stream (Node.js only)
    */
   async *processFileStream(
-    readableStream: ReadableStream<Uint8Array> | NodeJS.ReadableStream
+    readableStream: ReadableStream<Uint8Array> | NodeJS.ReadableStream,
   ): AsyncGenerator<ChunkResult, void, undefined> {
     const decoder = new TextDecoder();
-    let buffer = '';
-    const reader = 'getReader' in readableStream
-      ? readableStream.getReader()
-      : null;
+    let buffer = "";
+    const reader =
+      "getReader" in readableStream ? readableStream.getReader() : null;
 
     if (reader) {
       // Web Streams API (browser/modern Node.js)
@@ -220,18 +226,22 @@ export class StreamingDetector {
     } else {
       // Node.js Readable: use async iteration when available; otherwise Readable.from()
       const nodeStream = readableStream as NodeJS.ReadableStream & {
-        [Symbol.asyncIterator]?: () => AsyncIterator<Buffer | string | Uint8Array>;
+        [Symbol.asyncIterator]?: () => AsyncIterator<
+          Buffer | string | Uint8Array
+        >;
       };
       const iterable: AsyncIterable<Buffer | string | Uint8Array> =
-        typeof nodeStream[Symbol.asyncIterator] === 'function'
+        typeof nodeStream[Symbol.asyncIterator] === "function"
           ? (nodeStream as AsyncIterable<Buffer | string | Uint8Array>)
           : Readable.from(nodeStream as Readable);
 
       for await (const chunk of iterable) {
-        if (typeof chunk === 'string') {
+        if (typeof chunk === "string") {
           buffer += chunk;
         } else {
-          const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array);
+          const buf = Buffer.isBuffer(chunk)
+            ? chunk
+            : Buffer.from(chunk as Uint8Array);
           buffer += decoder.decode(buf, { stream: true });
         }
 
@@ -272,12 +282,12 @@ export class StreamingDetector {
       numChunks,
       chunkSize: this.options.chunkSize,
       overlap: this.options.overlap,
-      estimatedMemory
+      estimatedMemory,
     };
   }
 
   private escapeRegex(str: string): string {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 }
 
@@ -286,7 +296,7 @@ export class StreamingDetector {
  */
 export function createStreamingDetector(
   detector: OpenRedaction,
-  options?: StreamingOptions
+  options?: StreamingOptions,
 ): StreamingDetector {
   return new StreamingDetector(detector, options);
 }

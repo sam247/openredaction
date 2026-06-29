@@ -1,13 +1,14 @@
-import React from 'react'
-import { DocsThemeConfig } from 'nextra-theme-docs'
-import Logo from './components/Logo'
+import React from "react";
+import type { DocsThemeConfig } from "nextra-theme-docs";
+import Logo from "./components/Logo";
 
 const config: DocsThemeConfig = {
   logo: <Logo />,
   project: {
-    link: 'https://github.com/sam247/openredaction',
+    link: "https://github.com/sam247/openredaction",
   },
-  docsRepositoryBase: 'https://github.com/sam247/openredaction-site/tree/main/docs',
+  docsRepositoryBase:
+    "https://github.com/sam247/openredaction-site/tree/main/docs",
   navbar: {
     extraContent: (
       <a
@@ -21,6 +22,6 @@ const config: DocsThemeConfig = {
   footer: {
     component: () => <span>OpenRedaction Documentation © 2025</span>,
   },
-}
+};
 
-export default config
+export default config;

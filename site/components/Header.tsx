@@ -1,11 +1,21 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown, FileText, Code, Github, BookOpen, Heart, Map } from 'lucide-react';
-import Logo from './Logo';
-import GitHubBadge from './GitHubBadge';
-import { analytics } from '@/lib/analytics';
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  FileText,
+  Code,
+  Github,
+  BookOpen,
+  Heart,
+  Map,
+} from "lucide-react";
+import Logo from "./Logo";
+import GitHubBadge from "./GitHubBadge";
+import { analytics } from "@/lib/analytics";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -34,21 +44,21 @@ export default function Header() {
 
             {/* Desktop Navigation - Left Aligned */}
             <div className="hidden md:flex items-center space-x-6">
-              <Link 
-                href="/playground" 
+              <Link
+                href="/playground"
                 className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => analytics.navClick('/playground', 'header')}
+                onClick={() => analytics.navClick("/playground", "header")}
               >
                 Playground
               </Link>
-              <Link 
-                href="/pricing" 
+              <Link
+                href="/pricing"
                 className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => analytics.navClick('/pricing', 'header')}
+                onClick={() => analytics.navClick("/pricing", "header")}
               >
                 Enterprise
               </Link>
-              
+
               {/* Resources dropdown: padding-top on the flyout bridges the gap under the label so
                   the pointer never crosses "dead air" (margin) that would fire mouseleave on the parent. */}
               <div
@@ -63,99 +73,131 @@ export default function Header() {
                   aria-haspopup="true"
                 >
                   <span>Resources</span>
-                  <ChevronDown size={16} className={resourcesOpen ? 'rotate-180 transition-transform' : 'transition-transform'} />
+                  <ChevronDown
+                    size={16}
+                    className={
+                      resourcesOpen
+                        ? "rotate-180 transition-transform"
+                        : "transition-transform"
+                    }
+                  />
                 </button>
 
                 {resourcesOpen && (
                   <div className="absolute left-0 top-full z-50 w-96 pt-2">
                     <div className="rounded-lg border border-gray-800 bg-gray-950 shadow-2xl overflow-hidden">
-                    <div className="p-1">
-                      <div className="space-y-1">
-                        <Link 
-                          href="/docs" 
-                          prefetch={false}
-                          className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
-                          onClick={() => {
-                            setResourcesOpen(false);
-                            analytics.navClick('/docs', 'header');
-                          }}
-                        >
-                          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
-                            <FileText size={20} className="text-gray-300" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-white font-medium text-sm mb-1">Documentation</div>
-                            <div className="text-gray-400 text-xs leading-relaxed">Integrate OpenRedaction into your product</div>
-                          </div>
-                        </Link>
-                        <a 
-                          href="https://github.com/sam247/openredaction" 
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
-                          onClick={() => {
-                            setResourcesOpen(false);
-                            analytics.externalLinkClick('github', 'header', 'GitHub');
-                          }}
-                        >
-                          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
-                            <Github size={20} className="text-gray-300" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-white font-medium text-sm mb-1">GitHub</div>
-                            <div className="text-gray-400 text-xs leading-relaxed">Explore OpenRedaction&apos;s open-source codebase</div>
-                          </div>
-                        </a>
-                        <Link 
-                          href="/blog" 
-                          className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
-                          onClick={() => {
-                            setResourcesOpen(false);
-                            analytics.navClick('/blog', 'header');
-                          }}
-                        >
-                          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
-                            <BookOpen size={20} className="text-gray-300" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-white font-medium text-sm mb-1">Blog</div>
-                            <div className="text-gray-400 text-xs leading-relaxed">Guides and updates on PII detection</div>
-                          </div>
-                        </Link>
-                        <Link 
-                          href="/community" 
-                          className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
-                          onClick={() => {
-                            setResourcesOpen(false);
-                            analytics.navClick('/community', 'header');
-                          }}
-                        >
-                          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
-                            <Heart size={20} className="text-red-400" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-white font-medium text-sm mb-1">Community</div>
-                            <div className="text-gray-400 text-xs leading-relaxed">Who uses Open Redaction — get listed via GitHub</div>
-                          </div>
-                        </Link>
-                        <Link 
-                          href="/roadmap" 
-                          className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
-                          onClick={() => {
-                            setResourcesOpen(false);
-                            analytics.navClick('/roadmap', 'header');
-                          }}
-                        >
-                          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
-                            <Map size={20} className="text-gray-300" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-white font-medium text-sm mb-1">Roadmap</div>
-                            <div className="text-gray-400 text-xs leading-relaxed">Direction and what shipped recently</div>
-                          </div>
-                        </Link>
+                      <div className="p-1">
+                        <div className="space-y-1">
+                          <Link
+                            href="/docs"
+                            prefetch={false}
+                            className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
+                            onClick={() => {
+                              setResourcesOpen(false);
+                              analytics.navClick("/docs", "header");
+                            }}
+                          >
+                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                              <FileText size={20} className="text-gray-300" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-white font-medium text-sm mb-1">
+                                Documentation
+                              </div>
+                              <div className="text-gray-400 text-xs leading-relaxed">
+                                Integrate OpenRedaction into your product
+                              </div>
+                            </div>
+                          </Link>
+                          <a
+                            href="https://github.com/sam247/openredaction"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
+                            onClick={() => {
+                              setResourcesOpen(false);
+                              analytics.externalLinkClick(
+                                "github",
+                                "header",
+                                "GitHub",
+                              );
+                            }}
+                          >
+                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                              <Github size={20} className="text-gray-300" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-white font-medium text-sm mb-1">
+                                GitHub
+                              </div>
+                              <div className="text-gray-400 text-xs leading-relaxed">
+                                Explore OpenRedaction&apos;s open-source
+                                codebase
+                              </div>
+                            </div>
+                          </a>
+                          <Link
+                            href="/blog"
+                            className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
+                            onClick={() => {
+                              setResourcesOpen(false);
+                              analytics.navClick("/blog", "header");
+                            }}
+                          >
+                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                              <BookOpen size={20} className="text-gray-300" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-white font-medium text-sm mb-1">
+                                Blog
+                              </div>
+                              <div className="text-gray-400 text-xs leading-relaxed">
+                                Guides and updates on PII detection
+                              </div>
+                            </div>
+                          </Link>
+                          <Link
+                            href="/community"
+                            className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
+                            onClick={() => {
+                              setResourcesOpen(false);
+                              analytics.navClick("/community", "header");
+                            }}
+                          >
+                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                              <Heart size={20} className="text-red-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-white font-medium text-sm mb-1">
+                                Community
+                              </div>
+                              <div className="text-gray-400 text-xs leading-relaxed">
+                                Who uses Open Redaction — get listed via GitHub
+                              </div>
+                            </div>
+                          </Link>
+                          <Link
+                            href="/roadmap"
+                            className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
+                            onClick={() => {
+                              setResourcesOpen(false);
+                              analytics.navClick("/roadmap", "header");
+                            }}
+                          >
+                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                              <Map size={20} className="text-gray-300" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-white font-medium text-sm mb-1">
+                                Roadmap
+                              </div>
+                              <div className="text-gray-400 text-xs leading-relaxed">
+                                Direction and what shipped recently
+                              </div>
+                            </div>
+                          </Link>
+                        </div>
                       </div>
-                    </div>
                     </div>
                   </div>
                 )}
@@ -169,7 +211,7 @@ export default function Header() {
             <Link
               href="/playground"
               className="bg-white text-black px-4 py-2 rounded-md font-medium hover:bg-gray-100 transition-colors"
-              onClick={() => analytics.ctaClick('header')}
+              onClick={() => analytics.ctaClick("header")}
             >
               Get Started
             </Link>
@@ -194,7 +236,7 @@ export default function Header() {
               className="block text-gray-300 hover:text-white transition-colors"
               onClick={() => {
                 setMobileMenuOpen(false);
-                analytics.navClick('/playground', 'mobile');
+                analytics.navClick("/playground", "mobile");
               }}
             >
               Playground
@@ -204,7 +246,7 @@ export default function Header() {
               className="block text-gray-300 hover:text-white transition-colors"
               onClick={() => {
                 setMobileMenuOpen(false);
-                analytics.navClick('/pricing', 'mobile');
+                analytics.navClick("/pricing", "mobile");
               }}
             >
               Enterprise
@@ -214,7 +256,7 @@ export default function Header() {
               className="block text-gray-300 hover:text-white transition-colors"
               onClick={() => {
                 setMobileMenuOpen(false);
-                analytics.navClick('/blog', 'mobile');
+                analytics.navClick("/blog", "mobile");
               }}
             >
               Blog
@@ -224,7 +266,7 @@ export default function Header() {
               className="block text-gray-300 hover:text-white transition-colors"
               onClick={() => {
                 setMobileMenuOpen(false);
-                analytics.navClick('/community', 'mobile');
+                analytics.navClick("/community", "mobile");
               }}
             >
               Community
@@ -234,7 +276,7 @@ export default function Header() {
               className="block text-gray-300 hover:text-white transition-colors"
               onClick={() => {
                 setMobileMenuOpen(false);
-                analytics.navClick('/roadmap', 'mobile');
+                analytics.navClick("/roadmap", "mobile");
               }}
             >
               Roadmap
@@ -246,7 +288,7 @@ export default function Header() {
               className="block text-gray-300 hover:text-white transition-colors"
               onClick={() => {
                 setMobileMenuOpen(false);
-                analytics.externalLinkClick('github', 'mobile', 'GitHub');
+                analytics.externalLinkClick("github", "mobile", "GitHub");
               }}
             >
               GitHub
@@ -256,7 +298,7 @@ export default function Header() {
               className="block bg-white text-black px-4 py-2 rounded-md font-medium text-center hover:bg-gray-100 transition-colors"
               onClick={() => {
                 setMobileMenuOpen(false);
-                analytics.ctaClick('mobile');
+                analytics.ctaClick("mobile");
               }}
             >
               Get Started

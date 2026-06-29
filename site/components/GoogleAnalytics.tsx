@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Script from 'next/script';
+import Script from "next/script";
 
-const GA_MEASUREMENT_ID = 'G-GDWTHND1FE';
+const GA_MEASUREMENT_ID = "G-GDWTHND1FE";
 
 export default function GoogleAnalytics() {
   return (
@@ -22,4 +22,3 @@ export default function GoogleAnalytics() {
     </>
   );
 }
-

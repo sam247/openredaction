@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Send, Check, ChevronDown } from 'lucide-react';
-import { analytics } from '@/lib/analytics';
+import { useState } from "react";
+import { Send, Check, ChevronDown } from "lucide-react";
+import { analytics } from "@/lib/analytics";
 
 interface ContactFormData {
   name: string;
@@ -15,12 +15,12 @@ interface ContactFormData {
 
 export default function ContactForm() {
   const [formData, setFormData] = useState<ContactFormData>({
-    name: '',
-    email: '',
-    company: '',
-    useCase: '',
-    interest: '',
-    message: '',
+    name: "",
+    email: "",
+    company: "",
+    useCase: "",
+    interest: "",
+    message: "",
   });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -30,7 +30,7 @@ export default function ContactForm() {
     setSubmitting(true);
 
     // Track form submission
-    analytics.formSubmit('contact', {
+    analytics.formSubmit("contact", {
       hasCompany: !!formData.company.trim(),
       hasUseCase: !!formData.useCase.trim(),
       interestType: formData.interest,
@@ -38,10 +38,10 @@ export default function ContactForm() {
 
     try {
       // Submit to our API route
-      const response = await fetch('/api/contact', {
-        method: 'POST',
+      const response = await fetch("/api/contact", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: formData.name,
@@ -55,33 +55,38 @@ export default function ContactForm() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to send message');
+        throw new Error(errorData.error || "Failed to send message");
       }
 
       setSubmitted(true);
       setSubmitting(false);
-      analytics.formSubmitSuccess('contact');
+      analytics.formSubmitSuccess("contact");
 
       // Reset form after 3 seconds
       setTimeout(() => {
         setSubmitted(false);
         setFormData({
-          name: '',
-          email: '',
-          company: '',
-          useCase: '',
-          interest: '',
-          message: '',
+          name: "",
+          email: "",
+          company: "",
+          useCase: "",
+          interest: "",
+          message: "",
         });
       }, 3000);
     } catch (error) {
       setSubmitting(false);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      analytics.formSubmitError('contact', errorMessage);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      analytics.formSubmitError("contact", errorMessage);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -94,7 +99,8 @@ export default function ContactForm() {
         <Check className="mx-auto mb-4 text-green-400" size={48} />
         <h3 className="text-2xl font-semibold mb-2">Thank you!</h3>
         <p className="text-gray-300">
-          We&apos;ve received your message and will get back to you within 24 hours.
+          We&apos;ve received your message and will get back to you within 24
+          hours.
         </p>
       </div>
     );
@@ -104,7 +110,10 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
             Name *
           </label>
           <input
@@ -120,7 +129,10 @@ export default function ContactForm() {
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
             Email *
           </label>
           <input
@@ -138,7 +150,10 @@ export default function ContactForm() {
 
       <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <label htmlFor="company" className="block text-sm font-medium text-gray-300 mb-2">
+          <label
+            htmlFor="company"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
             Company
           </label>
           <input
@@ -153,7 +168,10 @@ export default function ContactForm() {
         </div>
 
         <div>
-          <label htmlFor="useCase" className="block text-sm font-medium text-gray-300 mb-2">
+          <label
+            htmlFor="useCase"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
             Use Case / Industry
           </label>
           <input
@@ -169,7 +187,10 @@ export default function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="interest" className="block text-sm font-medium text-gray-300 mb-2">
+        <label
+          htmlFor="interest"
+          className="block text-sm font-medium text-gray-300 mb-2"
+        >
           Interested In *
         </label>
         <div className="relative">
@@ -188,12 +209,19 @@ export default function ContactForm() {
             <option value="disclosurely">Disclosurely.com Platform</option>
             <option value="other">Other</option>
           </select>
-          <ChevronDown size={20} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" aria-hidden />
+          <ChevronDown
+            size={20}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+            aria-hidden
+          />
         </div>
       </div>
 
       <div>
-        <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+        <label
+          htmlFor="message"
+          className="block text-sm font-medium text-gray-300 mb-2"
+        >
           Message *
         </label>
         <textarea
@@ -228,4 +256,3 @@ export default function ContactForm() {
     </form>
   );
 }
-

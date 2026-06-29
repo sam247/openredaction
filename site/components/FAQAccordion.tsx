@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 interface FAQItem {
   question: string;
@@ -13,7 +13,10 @@ interface FAQAccordionProps {
   columns?: number;
 }
 
-export default function FAQAccordion({ items, columns = 1 }: FAQAccordionProps) {
+export default function FAQAccordion({
+  items,
+  columns = 1,
+}: FAQAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggle = (index: number) => {
@@ -41,13 +44,13 @@ export default function FAQAccordion({ items, columns = 1 }: FAQAccordionProps) 
                 <ChevronDown
                   size={20}
                   className={`text-gray-400 flex-shrink-0 transition-transform ${
-                    openIndex === index ? 'rotate-180' : ''
+                    openIndex === index ? "rotate-180" : ""
                   }`}
                 />
               </button>
               {openIndex === index && (
                 <div className="px-6 pb-4 text-gray-400">
-                  {typeof item.answer === 'string' ? (
+                  {typeof item.answer === "string" ? (
                     <p>{item.answer}</p>
                   ) : (
                     item.answer
@@ -69,17 +72,19 @@ export default function FAQAccordion({ items, columns = 1 }: FAQAccordionProps) 
                   onClick={() => toggle(actualIndex)}
                   className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-800 transition-colors"
                 >
-                  <h3 className="text-xl font-semibold pr-4">{item.question}</h3>
+                  <h3 className="text-xl font-semibold pr-4">
+                    {item.question}
+                  </h3>
                   <ChevronDown
                     size={20}
                     className={`text-gray-400 flex-shrink-0 transition-transform ${
-                      openIndex === actualIndex ? 'rotate-180' : ''
+                      openIndex === actualIndex ? "rotate-180" : ""
                     }`}
                   />
                 </button>
                 {openIndex === actualIndex && (
                   <div className="px-6 pb-4 text-gray-400">
-                    {typeof item.answer === 'string' ? (
+                    {typeof item.answer === "string" ? (
                       <p>{item.answer}</p>
                     ) : (
                       item.answer
@@ -109,13 +114,13 @@ export default function FAQAccordion({ items, columns = 1 }: FAQAccordionProps) 
             <ChevronDown
               size={20}
               className={`text-gray-400 flex-shrink-0 transition-transform ${
-                openIndex === index ? 'rotate-180' : ''
+                openIndex === index ? "rotate-180" : ""
               }`}
             />
           </button>
           {openIndex === index && (
             <div className="px-6 pb-4 text-gray-400">
-              {typeof item.answer === 'string' ? (
+              {typeof item.answer === "string" ? (
                 <p>{item.answer}</p>
               ) : (
                 item.answer
@@ -127,4 +132,3 @@ export default function FAQAccordion({ items, columns = 1 }: FAQAccordionProps) 
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-import { Star } from 'lucide-react';
+import { Star } from "lucide-react";
 
 interface TestimonialCardProps {
   name: string;
@@ -24,7 +24,9 @@ export default function TestimonialCard({
           <Star
             key={i}
             size={20}
-            className={i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-700'}
+            className={
+              i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-700"
+            }
           />
         ))}
       </div>
@@ -39,7 +41,10 @@ export default function TestimonialCard({
         ) : (
           <div className="w-12 h-12 rounded-full mr-4 bg-gray-800 flex items-center justify-center">
             <span className="text-gray-400 font-semibold">
-              {name.split(' ').map(n => n[0]).join('')}
+              {name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
             </span>
           </div>
         )}
@@ -53,4 +58,3 @@ export default function TestimonialCard({
     </div>
   );
 }
-

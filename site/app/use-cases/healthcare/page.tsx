@@ -1,14 +1,16 @@
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import Link from 'next/link';
-import { generatePageMetadata } from '@/lib/metadata';
-import type { Metadata } from 'next';
-import { Shield, Heart, FileText, Lock } from 'lucide-react';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Link from "next/link";
+import { generatePageMetadata } from "@/lib/metadata";
+import type { Metadata } from "next";
+import { Shield, Heart, FileText, Lock } from "lucide-react";
 
 export const metadata: Metadata = generatePageMetadata({
-  title: 'Healthcare Use Case - PII Redaction for Medical Records | OpenRedaction',
-  description: 'Protect patient data in medical records and communications with OpenRedaction. HIPAA-compliant PII redaction for healthcare organizations.',
-  path: '/use-cases/healthcare',
+  title:
+    "Healthcare Use Case - PII Redaction for Medical Records | OpenRedaction",
+  description:
+    "Protect patient data in medical records and communications with OpenRedaction. HIPAA-compliant PII redaction for healthcare organizations.",
+  path: "/use-cases/healthcare",
 });
 
 export default function HealthcareUseCase() {
@@ -25,7 +27,9 @@ export default function HealthcareUseCase() {
             ← Back to Home
           </Link>
 
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight max-w-7xl mx-auto">Healthcare</h1>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight max-w-7xl mx-auto">
+            Healthcare
+          </h1>
           <p className="text-xl text-gray-300 mb-12">
             Protect patient data in medical records and communications
           </p>
@@ -33,11 +37,19 @@ export default function HealthcareUseCase() {
           <div className="space-y-8 mb-12">
             <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
               <div className="flex items-start">
-                <Shield className="text-white mr-4 mt-1 flex-shrink-0" size={24} />
+                <Shield
+                  className="text-white mr-4 mt-1 flex-shrink-0"
+                  size={24}
+                />
                 <div>
-                  <h2 className="text-2xl font-semibold mb-3">HIPAA Compliance</h2>
+                  <h2 className="text-2xl font-semibold mb-3">
+                    HIPAA Compliance
+                  </h2>
                   <p className="text-gray-300">
-                    OpenRedaction helps healthcare organizations meet HIPAA requirements by automatically detecting and redacting protected health information (PHI) from medical records, patient communications, and administrative documents.
+                    OpenRedaction helps healthcare organizations meet HIPAA
+                    requirements by automatically detecting and redacting
+                    protected health information (PHI) from medical records,
+                    patient communications, and administrative documents.
                   </p>
                 </div>
               </div>
@@ -45,11 +57,19 @@ export default function HealthcareUseCase() {
 
             <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
               <div className="flex items-start">
-                <Heart className="text-white mr-4 mt-1 flex-shrink-0" size={24} />
+                <Heart
+                  className="text-white mr-4 mt-1 flex-shrink-0"
+                  size={24}
+                />
                 <div>
-                  <h2 className="text-2xl font-semibold mb-3">Patient Privacy Protection</h2>
+                  <h2 className="text-2xl font-semibold mb-3">
+                    Patient Privacy Protection
+                  </h2>
                   <p className="text-gray-300">
-                    Safeguard patient names, medical record numbers, social security numbers, and other sensitive identifiers when sharing medical records for research, training, or administrative purposes.
+                    Safeguard patient names, medical record numbers, social
+                    security numbers, and other sensitive identifiers when
+                    sharing medical records for research, training, or
+                    administrative purposes.
                   </p>
                 </div>
               </div>
@@ -57,11 +77,18 @@ export default function HealthcareUseCase() {
 
             <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
               <div className="flex items-start">
-                <FileText className="text-white mr-4 mt-1 flex-shrink-0" size={24} />
+                <FileText
+                  className="text-white mr-4 mt-1 flex-shrink-0"
+                  size={24}
+                />
                 <div>
-                  <h2 className="text-2xl font-semibold mb-3">Medical Records Processing</h2>
+                  <h2 className="text-2xl font-semibold mb-3">
+                    Medical Records Processing
+                  </h2>
                   <p className="text-gray-300">
-                    Process large volumes of medical records, discharge summaries, and clinical notes while ensuring all PHI is properly redacted before sharing or archiving.
+                    Process large volumes of medical records, discharge
+                    summaries, and clinical notes while ensuring all PHI is
+                    properly redacted before sharing or archiving.
                   </p>
                 </div>
               </div>
@@ -69,11 +96,18 @@ export default function HealthcareUseCase() {
 
             <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
               <div className="flex items-start">
-                <Lock className="text-white mr-4 mt-1 flex-shrink-0" size={24} />
+                <Lock
+                  className="text-white mr-4 mt-1 flex-shrink-0"
+                  size={24}
+                />
                 <div>
-                  <h2 className="text-2xl font-semibold mb-3">Self-Hosted Security</h2>
+                  <h2 className="text-2xl font-semibold mb-3">
+                    Self-Hosted Security
+                  </h2>
                   <p className="text-gray-300">
-                    Deploy OpenRedaction on your own infrastructure for complete control over patient data. Zero data retention ensures no PHI leaves your environment.
+                    Deploy OpenRedaction on your own infrastructure for complete
+                    control over patient data. Zero data retention ensures no
+                    PHI leaves your environment.
                   </p>
                 </div>
               </div>
@@ -83,7 +117,8 @@ export default function HealthcareUseCase() {
           <div className="bg-gray-900 rounded-lg p-6 border border-gray-800 mb-8">
             <h2 className="text-2xl font-semibold mb-4">Get Started</h2>
             <p className="text-gray-300 mb-4">
-              Start protecting patient data today with OpenRedaction&apos;s open-source library.
+              Start protecting patient data today with OpenRedaction&apos;s
+              open-source library.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
@@ -107,4 +142,3 @@ export default function HealthcareUseCase() {
     </div>
   );
 }
-

@@ -1,49 +1,49 @@
-import { defineConfig } from 'tsdown';
+import { defineConfig } from "tsdown";
 
 export default defineConfig([
   // Library build: ESM (.mjs) + CJS (.js), dual types via postbuild
   {
-    entry: ['src/index.ts'],
-    format: ['esm', 'cjs'],
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
     dts: true,
     sourcemap: true,
-    outDir: 'dist',
-    external: ['react', 'express'],
+    outDir: "dist",
+    external: ["react", "express"],
     fixedExtension: false,
     outputOptions: {
       codeSplitting: false,
     },
     outExtensions({ format }) {
-      return { js: format === 'cjs' ? '.js' : '.mjs' };
+      return { js: format === "cjs" ? ".js" : ".mjs" };
     },
   },
   // CLI build
   {
-    entry: { 'index.cli': 'src/cli/index.ts' },
-    format: ['cjs'],
-    outDir: 'dist',
+    entry: { "index.cli": "src/cli/index.ts" },
+    format: ["cjs"],
+    outDir: "dist",
     dts: false,
-    banner: '#!/usr/bin/env node',
+    banner: "#!/usr/bin/env node",
     outputOptions: {
       codeSplitting: false,
     },
   },
   // Pattern testing CLI build
   {
-    entry: ['src/cli/test-pattern.ts'],
-    format: ['cjs'],
-    outDir: 'dist/cli',
+    entry: ["src/cli/test-pattern.ts"],
+    format: ["cjs"],
+    outDir: "dist/cli",
     dts: false,
-    banner: '#!/usr/bin/env node',
+    banner: "#!/usr/bin/env node",
     outputOptions: {
       codeSplitting: false,
     },
   },
   // Worker thread (WorkerPool loads dist/workers/worker.js)
   {
-    entry: ['src/workers/worker.ts'],
-    format: ['cjs'],
-    outDir: 'dist/workers',
+    entry: ["src/workers/worker.ts"],
+    format: ["cjs"],
+    outDir: "dist/workers",
     dts: false,
     outputOptions: {
       codeSplitting: false,
@@ -51,36 +51,36 @@ export default defineConfig([
   },
   // React subpath: openredaction/react (bundles core + hooks, react external)
   {
-    entry: ['src/integrations/react.ts'],
-    format: ['esm', 'cjs'],
+    entry: ["src/integrations/react.ts"],
+    format: ["esm", "cjs"],
     dts: true,
     sourcemap: true,
-    outDir: 'dist',
+    outDir: "dist",
     clean: false,
-    external: ['react'],
+    external: ["react"],
     fixedExtension: false,
     outputOptions: {
       codeSplitting: false,
     },
     outExtensions({ format }) {
-      return { js: format === 'cjs' ? '.js' : '.mjs' };
+      return { js: format === "cjs" ? ".js" : ".mjs" };
     },
   },
   // Node HTTP: APIServer + PrometheusServer (node:http) — not in main entry
   {
-    entry: ['src/server.ts'],
-    format: ['esm', 'cjs'],
+    entry: ["src/server.ts"],
+    format: ["esm", "cjs"],
     dts: true,
     sourcemap: true,
-    outDir: 'dist',
+    outDir: "dist",
     clean: false,
-    external: ['express'],
+    external: ["express"],
     fixedExtension: false,
     outputOptions: {
       codeSplitting: false,
     },
     outExtensions({ format }) {
-      return { js: format === 'cjs' ? '.js' : '.mjs' };
+      return { js: format === "cjs" ? ".js" : ".mjs" };
     },
   },
 ]);

@@ -2,12 +2,12 @@
  * Worker threads module for parallel processing
  */
 
-export { WorkerPool, createWorkerPool } from './WorkerPool';
 export type {
-  WorkerTask,
-  WorkerResult,
+  DetectTask,
+  DocumentTask,
   WorkerPoolConfig,
   WorkerPoolStats,
-  DetectTask,
-  DocumentTask
-} from './types';
+  WorkerResult,
+  WorkerTask,
+} from "./types";
+export { createWorkerPool, WorkerPool } from "./WorkerPool";

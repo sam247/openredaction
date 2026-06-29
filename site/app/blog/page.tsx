@@ -1,52 +1,55 @@
-'use client';
+"use client";
 
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import Link from 'next/link';
-import { Calendar, ArrowRight } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import { useMemo, Suspense } from 'react';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Link from "next/link";
+import { Calendar, ArrowRight } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useMemo, Suspense } from "react";
 
 // Curated posts (see app/blog/[slug]/page.tsx)
 const blogPosts = [
   {
     id: 1,
-    title: 'PII Detection for AI: How to Safely Use User Data with LLMs',
+    title: "PII Detection for AI: How to Safely Use User Data with LLMs",
     excerpt:
-      'Where PII leaks in LLM pipelines, how to architect pattern-first guardrails, and when to add separate ML detection — without sending data you cannot explain.',
-    date: '2025-12-05',
-    category: 'Guide',
-    slug: 'pii-detection-for-ai',
+      "Where PII leaks in LLM pipelines, how to architect pattern-first guardrails, and when to add separate ML detection — without sending data you cannot explain.",
+    date: "2025-12-05",
+    category: "Guide",
+    slug: "pii-detection-for-ai",
   },
   {
     id: 2,
-    title: 'How to Handle PII Safely in Support Tickets, Emails and Chat Transcripts',
+    title:
+      "How to Handle PII Safely in Support Tickets, Emails and Chat Transcripts",
     excerpt:
-      'Minimize what support channels store, redact early, and keep agents aligned — practical controls for tickets, email, and chat.',
-    date: '2025-12-11',
-    category: 'Guide',
-    slug: 'pii-in-support-tickets',
+      "Minimize what support channels store, redact early, and keep agents aligned — practical controls for tickets, email, and chat.",
+    date: "2025-12-11",
+    category: "Guide",
+    slug: "pii-in-support-tickets",
   },
   {
     id: 3,
-    title: 'Building OpenRedaction: A Regex-First Open Source Story',
+    title: "Building OpenRedaction: A Regex-First Open Source Story",
     excerpt:
-      'How a small deterministic redaction experiment became a tested open-source library—patterns, trust, and what we learned shipping for privacy-minded developers.',
-    date: '2025-12-04',
-    category: 'Guide',
-    slug: 'building-openredaction-developer-journey',
+      "How a small deterministic redaction experiment became a tested open-source library—patterns, trust, and what we learned shipping for privacy-minded developers.",
+    date: "2025-12-04",
+    category: "Guide",
+    slug: "building-openredaction-developer-journey",
   },
 ];
 
-const categories = ['Latest', 'Guide'];
+const categories = ["Latest", "Guide"];
 
 function BlogContent() {
   const searchParams = useSearchParams();
-  const selectedCategory = searchParams.get('category') || 'latest';
+  const selectedCategory = searchParams.get("category") || "latest";
 
   const filteredPosts = useMemo(() => {
-    if (selectedCategory === 'latest') {
-      return [...blogPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    if (selectedCategory === "latest") {
+      return [...blogPosts].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
     }
     return blogPosts.filter(
       (post) => post.category.toLowerCase() === selectedCategory.toLowerCase(),
@@ -60,9 +63,12 @@ function BlogContent() {
       <main className="pt-[148px] pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight max-w-7xl mx-auto">Blog</h1>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight max-w-7xl mx-auto">
+              Blog
+            </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Guides on PII detection, support workflows, and how OpenRedaction is built
+              Guides on PII detection, support workflows, and how OpenRedaction
+              is built
             </p>
           </div>
 
@@ -79,7 +85,9 @@ function BlogContent() {
                         key={category}
                         href={`/blog?category=${categoryLower}`}
                         className={`block transition-colors text-sm ${
-                          isActive ? 'text-white font-semibold' : 'text-gray-400 hover:text-white'
+                          isActive
+                            ? "text-white font-semibold"
+                            : "text-gray-400 hover:text-white"
                         }`}
                       >
                         {category}
@@ -93,7 +101,9 @@ function BlogContent() {
             <div className="flex-1">
               {filteredPosts.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-gray-400">No posts found in this category.</p>
+                  <p className="text-gray-400">
+                    No posts found in this category.
+                  </p>
                 </div>
               ) : (
                 <div className="grid md:grid-cols-2 gap-6">
@@ -110,20 +120,25 @@ function BlogContent() {
                           </span>
                           <div className="flex items-center text-gray-500 text-xs">
                             <Calendar size={14} className="mr-1" />
-                            {new Date(post.date).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
+                            {new Date(post.date).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
                             })}
                           </div>
                         </div>
                         <h2 className="text-xl font-semibold mb-3 group-hover:text-white transition-colors">
                           {post.title}
                         </h2>
-                        <p className="text-gray-400 text-sm mb-4 line-clamp-3">{post.excerpt}</p>
+                        <p className="text-gray-400 text-sm mb-4 line-clamp-3">
+                          {post.excerpt}
+                        </p>
                         <div className="flex items-center text-white text-sm font-medium">
                           Read more
-                          <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                          <ArrowRight
+                            size={16}
+                            className="ml-2 group-hover:translate-x-1 transition-transform"
+                          />
                         </div>
                       </div>
                     </Link>

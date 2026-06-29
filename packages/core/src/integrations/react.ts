@@ -6,9 +6,10 @@
  * React is a peer dependency - users must install React separately.
  */
 
-import { OpenRedaction } from '../detector';
-import type { DetectionResult, OpenRedactionOptions } from '../types';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { OpenRedaction } from "../detector";
+import type { DetectionResult, OpenRedactionOptions } from "../types";
+import { useDeepMemo } from "../utils/use-deep-memo";
 
 /**
  * Hook for PII detection in React components
@@ -32,18 +33,21 @@ export function useOpenRedaction(options?: OpenRedactionOptions) {
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
 
-  const detect = useCallback(async (text: string): Promise<DetectionResult> => {
-    setIsDetecting(true);
-    try {
-      const detection = await detector.detect(text);
-      setResult(detection);
-      setIsDetecting(false);
-      return detection;
-    } catch (error) {
-      setIsDetecting(false);
-      throw error;
-    }
-  }, [detector]);
+  const detect = useCallback(
+    async (text: string): Promise<DetectionResult> => {
+      setIsDetecting(true);
+      try {
+        const detection = await detector.detect(text);
+        setResult(detection);
+        setIsDetecting(false);
+        return detection;
+      } catch (error) {
+        setIsDetecting(false);
+        throw error;
+      }
+    },
+    [detector],
+  );
 
   const clear = useCallback(() => {
     setResult(null);
@@ -56,7 +60,7 @@ export function useOpenRedaction(options?: OpenRedactionOptions) {
     hasPII: result ? result.detections.length > 0 : false,
     count: result ? result.detections.length : 0,
     clear,
-    detector
+    detector,
   };
 }
 
@@ -80,10 +84,16 @@ export function useOpenRedaction(options?: OpenRedactionOptions) {
  */
 export function usePIIDetector(
   text: string,
-  options?: OpenRedactionOptions & { debounce?: number }
+  options?: OpenRedactionOptions & { debounce?: number },
 ) {
   const { debounce = 300, ...redactOptions } = options || {};
-  const detector = useMemo(() => new OpenRedaction(redactOptions), [redactOptions]);
+  const redactOptionsMemo = useDeepMemo(redactOptions, [redactOptions]);
+
+  const detector = useMemo(
+    () => new OpenRedaction(redactOptionsMemo),
+    [redactOptionsMemo],
+  );
+
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
 
@@ -94,12 +104,13 @@ export function usePIIDetector(
     }
 
     setIsDetecting(true);
+
     const timer = setTimeout(async () => {
       try {
         const detection = await detector.detect(text);
         setResult(detection);
         setIsDetecting(false);
-      } catch (error) {
+      } catch {
         setIsDetecting(false);
       }
     }, debounce);
@@ -115,7 +126,7 @@ export function usePIIDetector(
     isDetecting,
     hasPII: result ? result.detections.length > 0 : false,
     count: result ? result.detections.length : 0,
-    detections: result?.detections || []
+    detections: result?.detections || [],
   };
 }
 
@@ -139,60 +150,81 @@ export function usePIIDetector(
  * }
  * ```
  */
-export function useFormFieldValidator(options?: OpenRedactionOptions & {
-  failOnPII?: boolean;
-  types?: string[];
-  onPIIDetected?: (result: DetectionResult) => void;
-}) {
-  const { failOnPII = false, types = [], onPIIDetected, ...redactOptions } = options || {};
-  const detector = useMemo(() => new OpenRedaction(redactOptions), [redactOptions]);
-  const [value, setValue] = useState('');
+export function useFormFieldValidator(
+  options?: OpenRedactionOptions & {
+    failOnPII?: boolean;
+    types?: string[];
+    onPIIDetected?: (result: DetectionResult) => void;
+  },
+) {
+  const {
+    failOnPII = false,
+    types = [],
+    onPIIDetected,
+    ...redactOptions
+  } = options || {};
+  const redactOptionsMemo = useDeepMemo(redactOptions, [redactOptions]);
+
+  const detector = useMemo(
+    () => new OpenRedaction(redactOptionsMemo),
+    [redactOptionsMemo],
+  );
+  const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DetectionResult | null>(null);
 
-  const validate = useCallback(async (inputValue: string): Promise<boolean> => {
-    setValue(inputValue);
+  const validate = useCallback(
+    async (inputValue: string): Promise<boolean> => {
+      setValue(inputValue);
 
-    if (!inputValue) {
-      setError(null);
-      setResult(null);
-      return true;
-    }
-
-    try {
-      const detection = await detector.detect(inputValue);
-      setResult(detection);
-
-      // Filter by types if specified
-      const relevantDetections = types.length > 0
-        ? detection.detections.filter((d) => types.includes(d.type))
-        : detection.detections;
-
-    if (relevantDetections.length > 0) {
-      if (failOnPII) {
-        setError(`Sensitive information detected: ${relevantDetections[0].type}`);
+      if (!inputValue) {
+        setError(null);
+        setResult(null);
+        return true;
       }
 
-      if (onPIIDetected) {
-        onPIIDetected(detection);
+      try {
+        const detection = await detector.detect(inputValue);
+        setResult(detection);
+
+        // Filter by types if specified
+        const relevantDetections =
+          types.length > 0
+            ? detection.detections.filter((d) => types.includes(d.type))
+            : detection.detections;
+
+        if (relevantDetections.length > 0) {
+          if (failOnPII) {
+            setError(
+              `Sensitive information detected: ${relevantDetections[0].type}`,
+            );
+          }
+
+          if (onPIIDetected) {
+            onPIIDetected(detection);
+          }
+
+          return false;
+        }
+
+        setError(null);
+        return true;
+      } catch {
+        setError("Validation failed");
+        return false;
       }
+    },
+    [detector, failOnPII, types, onPIIDetected],
+  );
 
-      return false;
-    }
-
-    setError(null);
-    return true;
-    } catch (error) {
-      setError('Validation failed');
-      return false;
-    }
-  }, [detector, failOnPII, types, onPIIDetected]);
-
-  const getFieldProps = useCallback(() => ({
-    value,
-    'aria-invalid': error ? 'true' : 'false',
-    'aria-describedby': error ? 'pii-error' : undefined
-  }), [value, error]);
+  const getFieldProps = useCallback(
+    () => ({
+      value,
+      "aria-invalid": error ? "true" : "false",
+      "aria-describedby": error ? "pii-error" : undefined,
+    }),
+    [value, error],
+  );
 
   return {
     value,
@@ -201,7 +233,7 @@ export function useFormFieldValidator(options?: OpenRedactionOptions & {
     validate,
     getFieldProps,
     isValid: !error,
-    hasPII: result ? result.detections.length > 0 : false
+    hasPII: result ? result.detections.length > 0 : false,
   };
 }
 
@@ -221,31 +253,35 @@ export function useFormFieldValidator(options?: OpenRedactionOptions & {
  * ```
  */
 export function useBatchDetector(options?: OpenRedactionOptions) {
-  const detector = useMemo(() => new OpenRedaction(options), [options]);
+  const optionsMemo = useDeepMemo(options, [options]);
+  const detector = useMemo(() => new OpenRedaction(optionsMemo), [optionsMemo]);
   const [results, setResults] = useState<DetectionResult[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const processAll = useCallback(async (texts: string[]) => {
-    setIsProcessing(true);
-    setProgress(0);
-    const detections: DetectionResult[] = [];
+  const processAll = useCallback(
+    async (texts: string[]) => {
+      setIsProcessing(true);
+      setProgress(0);
+      const detections: DetectionResult[] = [];
 
-    for (let i = 0; i < texts.length; i++) {
-      const result = await detector.detect(texts[i]);
-      detections.push(result);
-      setProgress(((i + 1) / texts.length) * 100);
+      for (let i = 0; i < texts.length; i++) {
+        const result = await detector.detect(texts[i]);
+        detections.push(result);
+        setProgress(((i + 1) / texts.length) * 100);
 
-      // Allow UI to update
-      await new Promise(resolve => setTimeout(resolve, 0));
-    }
+        // Allow UI to update
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
 
-    setResults(detections);
-    setIsProcessing(false);
-    setProgress(100);
+      setResults(detections);
+      setIsProcessing(false);
+      setProgress(100);
 
-    return detections;
-  }, [detector]);
+      return detections;
+    },
+    [detector],
+  );
 
   const clear = useCallback(() => {
     setResults([]);
@@ -253,8 +289,12 @@ export function useBatchDetector(options?: OpenRedactionOptions) {
   }, []);
 
   const totalDetections = useMemo(
-    () => results.reduce((sum: number, r: DetectionResult) => sum + r.detections.length, 0),
-    [results]
+    () =>
+      results.reduce(
+        (sum: number, r: DetectionResult) => sum + r.detections.length,
+        0,
+      ),
+    [results],
   );
 
   return {
@@ -263,7 +303,7 @@ export function useBatchDetector(options?: OpenRedactionOptions) {
     isProcessing,
     progress,
     totalDetections,
-    clear
+    clear,
   };
 }
 
@@ -284,10 +324,18 @@ export function useBatchDetector(options?: OpenRedactionOptions) {
  * }
  * ```
  */
-export function useAutoRedact(options?: OpenRedactionOptions & { debounce?: number }) {
+export function useAutoRedact(
+  options?: OpenRedactionOptions & { debounce?: number },
+) {
   const { debounce = 300, ...redactOptions } = options || {};
-  const detector = useMemo(() => new OpenRedaction(redactOptions), [redactOptions]);
-  const [text, setText] = useState('');
+  const redactOptionsMemo = useDeepMemo(redactOptions, [redactOptions]);
+
+  const detector = useMemo(
+    () => new OpenRedaction(redactOptionsMemo),
+    [redactOptionsMemo],
+  );
+
+  const [text, setText] = useState("");
   const [result, setResult] = useState<DetectionResult | null>(null);
 
   useEffect(() => {
@@ -300,7 +348,7 @@ export function useAutoRedact(options?: OpenRedactionOptions & { debounce?: numb
       try {
         const detection = await detector.detect(text);
         setResult(detection);
-      } catch (error) {
+      } catch {
         // Silently fail
       }
     }, debounce);
@@ -315,6 +363,6 @@ export function useAutoRedact(options?: OpenRedactionOptions & { debounce?: numb
     redactedText: result?.redacted || text,
     hasPII: result ? result.detections.length > 0 : false,
     detections: result?.detections || [],
-    count: result ? result.detections.length : 0
+    count: result ? result.detections.length : 0,
   };
 }

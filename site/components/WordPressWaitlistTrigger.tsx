@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
 import {
   WP_WAITLIST_OPEN_EVENT,
   type WordPressWaitlistSource,
-} from '@/components/WordPressWaitlistModal';
+} from "@/components/WordPressWaitlistModal";
 
 export default function WordPressWaitlistTrigger({
   source,
   triggerLabel,
-  className = '',
-  triggerClassName = '',
+  className = "",
+  triggerClassName = "",
 }: {
   source: WordPressWaitlistSource;
   triggerLabel: string;
@@ -22,12 +22,12 @@ export default function WordPressWaitlistTrigger({
         type="button"
         onClick={() =>
           window.dispatchEvent(
-            new CustomEvent(WP_WAITLIST_OPEN_EVENT, { detail: { source } })
+            new CustomEvent(WP_WAITLIST_OPEN_EVENT, { detail: { source } }),
           )
         }
         className={
           triggerClassName ||
-          'inline-flex items-center justify-center rounded-md border border-gray-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-gray-600'
+          "inline-flex items-center justify-center rounded-md border border-gray-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-gray-600"
         }
       >
         {triggerLabel}

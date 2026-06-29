@@ -7,7 +7,8 @@
     "build": "npm run copy-openredaction && npm run docs:export && next build --turbopack",
     "copy-openredaction": "mkdir -p public/lib && cp ../packages/core/dist/index.js public/lib/openredaction.js",
     "start": "next start",
-    "lint": "eslint .",
+    "lint": "biome check .",
+    "typecheck": "tsc --noEmit --incremental",
     "docs:export": "cd docs && npm ci && npm run build && rm -rf ../public/docs && mkdir -p ../public && cp -R out ../public/docs"
   },
   "dependencies": {
@@ -28,8 +29,6 @@
     "@types/nodemailer": "^8.0.1",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.9",
     "postcss": "^8.4.33",
     "tailwindcss": "^4.1.11",
     "tsx": "^4.21.0",

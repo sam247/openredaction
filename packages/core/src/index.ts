@@ -7,382 +7,348 @@
  * @packageDocumentation
  */
 
-export { OpenRedaction } from './detector';
-
-export type {
-  PIIPattern,
-  PIIDetection,
-  PIIMatch,
-  DetectionResult,
-  OpenRedactionOptions,
-  PresetName,
-  RedactionMode,
-  Validator,
-  IAuditLogger,
-  AuditLogEntry,
-  AuditStats,
-  IMetricsCollector,
-  IMetricsExporter,
-  RedactionMetrics,
-  IRBACManager,
-  Role,
-  Permission,
-  RoleName
-} from './types';
-
-// Audit logging
-export {
-  InMemoryAuditLogger,
-  ConsoleAuditLogger,
-  PersistentAuditLogger,
-  createPersistentAuditLogger
-} from './audit';
 export type {
   AuditBackend,
   AuditDatabaseConfig,
-  RetentionPolicy,
-  PersistentAuditLoggerOptions,
+  AuditQueryFilter,
   HashedAuditLogEntry,
   IAuditDatabaseAdapter,
-  AuditQueryFilter
-} from './audit';
-
-// Metrics collection (in-memory only on this entry; HTTP metrics server → `openredaction/server`)
-export { InMemoryMetricsCollector } from './metrics';
-
-// RBAC (Role-Based Access Control)
+  PersistentAuditLoggerOptions,
+  RetentionPolicy,
+} from "./audit";
+// Audit logging
 export {
-  RBACManager,
-  createRBACManager,
-  ADMIN_ROLE,
-  ANALYST_ROLE,
-  OPERATOR_ROLE,
-  VIEWER_ROLE,
-  ALL_PERMISSIONS,
-  getPredefinedRole,
-  createCustomRole
-} from './rbac';
-
-// Document processing (optional - requires peer dependencies)
-export {
-  DocumentProcessor,
-  createDocumentProcessor,
-  OCRProcessor,
-  createOCRProcessor,
-  JsonProcessor,
-  createJsonProcessor,
-  CsvProcessor,
-  createCsvProcessor,
-  XlsxProcessor,
-  createXlsxProcessor
-} from './document';
+  ConsoleAuditLogger,
+  createPersistentAuditLogger,
+  InMemoryAuditLogger,
+  PersistentAuditLogger,
+} from "./audit";
 export type {
-  DocumentFormat,
-  DocumentOptions,
-  DocumentResult,
-  DocumentMetadata,
-  IDocumentProcessor,
-  ImageFormat,
-  OCRLanguage,
-  OCROptions,
-  IOCRProcessor,
-  OCRResult,
-  JsonProcessorOptions,
-  JsonDetectionResult,
-  CsvProcessorOptions,
-  CsvDetectionResult,
-  ColumnStats,
-  CellMatch,
-  XlsxProcessorOptions,
-  XlsxDetectionResult,
-  SheetDetectionResult
-} from './document';
-
+  BatchOptions,
+  BatchResult,
+} from "./batch/BatchProcessor";
+// Batch processing
 export {
-  allPatterns,
-  personalPatterns,
-  financialPatterns,
-  governmentPatterns,
-  contactPatterns,
-  networkPatterns,
-  getPatternsByCategory
-} from './patterns';
-
-export {
-  validateLuhn,
-  validateIBAN,
-  validateNINO,
-  validateNHS,
-  validateUKPassport,
-  validateSSN,
-  validateSortCode,
-  validateRoutingNumber,
-  validateSWIFTBIC,
-  validateCanadianSIN,
-  validateAustralianTFN,
-  validateName,
-  validateEmail
-} from './validators';
-
-export {
-  gdprPreset,
-  hipaaPreset,
-  ccpaPreset,
-  healthcarePreset,
-  healthcareResearchPreset,
-  financePreset,
-  educationPreset,
-  transportLogisticsPreset,
-  pciDssPreset,
-  soc2Preset,
-  getPreset
-} from './utils/presets';
-
-// Local learning system
-export { LocalLearningStore } from './learning/LocalLearningStore';
-export type {
-  WhitelistEntry,
-  PatternAdjustment,
-  LearningStats,
-  LearningData
-} from './learning/LocalLearningStore';
-
+  BatchProcessor,
+  createBatchProcessor,
+} from "./batch/BatchProcessor";
+export type { OpenRedactionConfig } from "./config/ConfigLoader";
 // Config system
-export { ConfigLoader } from './config/ConfigLoader';
-export type { OpenRedactionConfig } from './config/ConfigLoader';
-
-// Context analysis system
-export {
-  extractContext,
-  inferDocumentType,
-  analyzeContextFeatures,
-  calculateContextConfidence,
-  analyzeFullContext
-} from './context/ContextAnalyzer';
+export { ConfigLoader } from "./config/ConfigLoader";
 export type {
   ContextAnalysis,
-  ContextFeatures
-} from './context/ContextAnalyzer';
-
+  ContextFeatures,
+} from "./context/ContextAnalyzer";
+// Context analysis system
+export {
+  analyzeContextFeatures,
+  analyzeFullContext,
+  calculateContextConfidence,
+  extractContext,
+  inferDocumentType,
+} from "./context/ContextAnalyzer";
+export type {
+  ContextRulesConfig,
+  DomainVocabulary,
+  ProximityRule,
+} from "./context/ContextRules";
 // Context rules engine (Phase 2)
 export {
   ContextRulesEngine,
   createContextRulesEngine,
+  DEFAULT_DOMAIN_VOCABULARIES,
   DEFAULT_PROXIMITY_RULES,
-  DEFAULT_DOMAIN_VOCABULARIES
-} from './context/ContextRules';
+} from "./context/ContextRules";
+export { OpenRedaction } from "./detector";
 export type {
-  ProximityRule,
-  DomainVocabulary,
-  ContextRulesConfig
-} from './context/ContextRules';
-
-// NER detection (Phase 2 - requires compromise.js peer dependency)
+  CellMatch,
+  ColumnStats,
+  CsvDetectionResult,
+  CsvProcessorOptions,
+  DocumentFormat,
+  DocumentMetadata,
+  DocumentOptions,
+  DocumentResult,
+  IDocumentProcessor,
+  ImageFormat,
+  IOCRProcessor,
+  JsonDetectionResult,
+  JsonProcessorOptions,
+  OCRLanguage,
+  OCROptions,
+  OCRResult,
+  SheetDetectionResult,
+  XlsxDetectionResult,
+  XlsxProcessorOptions,
+} from "./document";
+// Document processing (optional - requires peer dependencies)
 export {
-  NERDetector,
-  createNERDetector
-} from './ml/NERDetector';
+  CsvProcessor,
+  createCsvProcessor,
+  createDocumentProcessor,
+  createJsonProcessor,
+  createOCRProcessor,
+  createXlsxProcessor,
+  DocumentProcessor,
+  JsonProcessor,
+  OCRProcessor,
+  XlsxProcessor,
+} from "./document";
 export type {
-  NEREntityType,
-  NERMatch,
-  HybridMatch
-} from './ml/NERDetector';
-
-// Severity classification (Phase 2)
+  PatternMatchResult,
+  TextExplanation,
+} from "./explain/ExplainAPI";
+// Explain API
 export {
-  SeverityClassifier,
-  createSeverityClassifier,
-  getSeverity,
-  calculateRisk,
-  DEFAULT_SEVERITY_MAP,
-  SEVERITY_SCORES
-} from './severity/SeverityClassifier';
-export type {
-  SeverityLevel,
-  SeverityClassification,
-  RiskScore
-} from './severity/SeverityClassifier';
-
+  createExplainAPI,
+  ExplainAPI,
+} from "./explain/ExplainAPI";
+export type { FalsePositiveRule } from "./filters/FalsePositiveFilter";
 // False positive filtering
 export {
-  isFalsePositive,
+  commonFalsePositives,
   filterFalsePositives,
-  commonFalsePositives
-} from './filters/FalsePositiveFilter';
+  isFalsePositive,
+} from "./filters/FalsePositiveFilter";
 export type {
-  FalsePositiveRule
-} from './filters/FalsePositiveFilter';
+  OpenRedactionMiddlewareOptions,
+  OpenRedactionRequest,
+} from "./integrations/express";
+// Express integration
+export {
+  detectPII,
+  generateReport,
+  openredactionMiddleware,
+} from "./integrations/express";
+export type {
+  LearningData,
+  LearningStats,
+  PatternAdjustment,
+  WhitelistEntry,
+} from "./learning/LocalLearningStore";
+// Local learning system
+export { LocalLearningStore } from "./learning/LocalLearningStore";
+// Metrics collection (in-memory only on this entry; HTTP metrics server → `openredaction/server`)
+export { InMemoryMetricsCollector } from "./metrics";
+export type {
+  HybridMatch,
+  NEREntityType,
+  NERMatch,
+} from "./ml/NERDetector";
+// NER detection (Phase 2 - requires compromise.js peer dependency)
+export {
+  createNERDetector,
+  NERDetector,
+} from "./ml/NERDetector";
+export type {
+  DetectionPass,
+  MultiPassStats,
+} from "./multipass/MultiPassDetector";
 
 // Multi-pass detection
 export {
+  createSimpleMultiPass,
+  defaultPasses,
   groupPatternsByPass,
   mergePassDetections,
-  createSimpleMultiPass,
-  defaultPasses
-} from './multipass/MultiPassDetector';
+} from "./multipass/MultiPassDetector";
 export type {
-  DetectionPass,
-  MultiPassStats
-} from './multipass/MultiPassDetector';
+  OptimizerOptions,
+  PatternStats,
+} from "./optimizer/PriorityOptimizer";
 
 // Priority optimization
 export {
+  createPriorityOptimizer,
   PriorityOptimizer,
-  createPriorityOptimizer
-} from './optimizer/PriorityOptimizer';
-export type {
-  PatternStats,
-  OptimizerOptions
-} from './optimizer/PriorityOptimizer';
-
-// Streaming API
+} from "./optimizer/PriorityOptimizer";
 export {
-  StreamingDetector,
-  createStreamingDetector
-} from './streaming/StreamingDetector';
-export type {
-  ChunkResult,
-  StreamingOptions
-} from './streaming/StreamingDetector';
-
-// Worker threads (parallel processing)
+  allPatterns,
+  contactPatterns,
+  financialPatterns,
+  getPatternsByCategory,
+  governmentPatterns,
+  networkPatterns,
+  personalPatterns,
+} from "./patterns";
+// RBAC (Role-Based Access Control)
 export {
-  WorkerPool,
-  createWorkerPool
-} from './workers';
+  ADMIN_ROLE,
+  ALL_PERMISSIONS,
+  ANALYST_ROLE,
+  createCustomRole,
+  createRBACManager,
+  getPredefinedRole,
+  OPERATOR_ROLE,
+  RBACManager,
+  VIEWER_ROLE,
+} from "./rbac";
 export type {
-  WorkerTask,
-  WorkerResult,
-  WorkerPoolConfig,
-  WorkerPoolStats,
-  DetectTask,
-  DocumentTask
-} from './workers';
-
-// Batch processing
-export {
-  BatchProcessor,
-  createBatchProcessor
-} from './batch/BatchProcessor';
-export type {
-  BatchOptions,
-  BatchResult
-} from './batch/BatchProcessor';
-
-// Explain API
-export {
-  ExplainAPI,
-  createExplainAPI
-} from './explain/ExplainAPI';
-export type {
-  PatternMatchResult,
-  TextExplanation
-} from './explain/ExplainAPI';
-
+  ReportFormat,
+  ReportOptions,
+  ReportType,
+} from "./reports/ReportGenerator";
 // Report generation
 export {
+  createReportGenerator,
   ReportGenerator,
-  createReportGenerator
-} from './reports/ReportGenerator';
+} from "./reports/ReportGenerator";
 export type {
-  ReportOptions,
-  ReportFormat,
-  ReportType
-} from './reports/ReportGenerator';
-
-// Express integration
+  RiskScore,
+  SeverityClassification,
+  SeverityLevel,
+} from "./severity/SeverityClassifier";
+// Severity classification (Phase 2)
 export {
-  openredactionMiddleware,
-  detectPII,
-  generateReport
-} from './integrations/express';
+  calculateRisk,
+  createSeverityClassifier,
+  DEFAULT_SEVERITY_MAP,
+  getSeverity,
+  SEVERITY_SCORES,
+  SeverityClassifier,
+} from "./severity/SeverityClassifier";
 export type {
-  OpenRedactionMiddlewareOptions,
-  OpenRedactionRequest
-} from './integrations/express';
+  ChunkResult,
+  StreamingOptions,
+} from "./streaming/StreamingDetector";
+// Streaming API
+export {
+  createStreamingDetector,
+  StreamingDetector,
+} from "./streaming/StreamingDetector";
+export type {
+  AuditLogEntry,
+  AuditStats,
+  DetectionResult,
+  IAuditLogger,
+  IMetricsCollector,
+  IMetricsExporter,
+  IRBACManager,
+  OpenRedactionOptions,
+  Permission,
+  PIIDetection,
+  PIIMatch,
+  PIIPattern,
+  PresetName,
+  RedactionMetrics,
+  RedactionMode,
+  Role,
+  RoleName,
+  Validator,
+} from "./types";
+export {
+  ccpaPreset,
+  educationPreset,
+  financePreset,
+  gdprPreset,
+  getPreset,
+  healthcarePreset,
+  healthcareResearchPreset,
+  hipaaPreset,
+  pciDssPreset,
+  soc2Preset,
+  transportLogisticsPreset,
+} from "./utils/presets";
+export {
+  validateAustralianTFN,
+  validateCanadianSIN,
+  validateEmail,
+  validateIBAN,
+  validateLuhn,
+  validateName,
+  validateNHS,
+  validateNINO,
+  validateRoutingNumber,
+  validateSortCode,
+  validateSSN,
+  validateSWIFTBIC,
+  validateUKPassport,
+} from "./validators";
+export type {
+  DetectTask,
+  DocumentTask,
+  WorkerPoolConfig,
+  WorkerPoolStats,
+  WorkerResult,
+  WorkerTask,
+} from "./workers";
+// Worker threads (parallel processing)
+export {
+  createWorkerPool,
+  WorkerPool,
+} from "./workers";
 
 // React integration is available via subpath: import from 'openredaction/react'
 
+export type { ErrorSuggestion } from "./errors/OpenRedactionError";
 // Error handling
 export {
-  OpenRedactionError,
-  createInvalidPatternError,
-  createValidationError,
+  createCacheDisabledError,
   createConfigLoadError,
+  createInvalidPatternError,
   createLearningDisabledError,
-  createOptimizationDisabledError,
   createMultiPassDisabledError,
-  createCacheDisabledError
-} from './errors/OpenRedactionError';
-export type {
-  ErrorSuggestion
-} from './errors/OpenRedactionError';
-
-// Multi-tenancy (Phase 3)
-export {
-  TenantManager,
-  createTenantManager,
-  TenantQuotaExceededError,
-  TenantNotFoundError,
-  TenantSuspendedError,
-  DEFAULT_TIER_QUOTAS
-} from './tenancy';
+  createOptimizationDisabledError,
+  createValidationError,
+  OpenRedactionError,
+} from "./errors/OpenRedactionError";
 export type {
   TenantConfig,
   TenantQuotas,
-  TenantUsage
-} from './tenancy';
-
+  TenantUsage,
+} from "./tenancy";
+// Multi-tenancy (Phase 3)
+export {
+  createTenantManager,
+  DEFAULT_TIER_QUOTAS,
+  TenantManager,
+  TenantNotFoundError,
+  TenantQuotaExceededError,
+  TenantSuspendedError,
+} from "./tenancy";
+export type {
+  WebhookConfig,
+  WebhookDelivery,
+  WebhookDeliveryStatus,
+  WebhookEvent,
+  WebhookEventType,
+  WebhookStats,
+} from "./webhooks";
 // Webhooks and alerts (Phase 3)
 export {
-  WebhookManager,
   createWebhookManager,
-  verifyWebhookSignature
-} from './webhooks';
-export type {
-  WebhookEventType,
-  WebhookEvent,
-  WebhookConfig,
-  WebhookDeliveryStatus,
-  WebhookDelivery,
-  WebhookStats
-} from './webhooks';
+  verifyWebhookSignature,
+  WebhookManager,
+} from "./webhooks";
 
 // REST API server → import from `openredaction/server` (keeps `node:http` off the default bundle)
 
+export type { ExportedConfig } from "./config/ConfigExporter";
 // Configuration Import/Export (Phase 3)
 export {
   ConfigExporter,
   createConfigPreset,
-  exportForVersionControl
-} from './config/ConfigExporter';
+  exportForVersionControl,
+} from "./config/ConfigExporter";
 export type {
-  ExportedConfig
-} from './config/ConfigExporter';
-
-// Health Check API (Phase 3)
-export {
-  HealthChecker,
-  createHealthChecker,
-  healthCheckMiddleware
-} from './health/HealthCheck';
-export type {
+  HealthCheckOptions,
   HealthCheckResult,
   HealthCheckStatus,
-  HealthCheckOptions
-} from './health/HealthCheck';
-
+} from "./health/HealthCheck";
+// Health Check API (Phase 3)
+export {
+  createHealthChecker,
+  HealthChecker,
+  healthCheckMiddleware,
+} from "./health/HealthCheck";
+export type { SafeRegexOptions } from "./utils/safe-regex";
 // Safe Regex Utilities (Security)
 export {
+  compileSafeRegex,
+  isUnsafePattern,
+  RegexMaxMatchesError,
+  RegexTimeoutError,
   safeExec,
   safeExecAll,
   validatePattern,
-  isUnsafePattern,
-  compileSafeRegex,
-  RegexTimeoutError,
-  RegexMaxMatchesError
-} from './utils/safe-regex';
-export type {
-  SafeRegexOptions
-} from './utils/safe-regex';
-
+} from "./utils/safe-regex";

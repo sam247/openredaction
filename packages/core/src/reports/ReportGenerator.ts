@@ -3,18 +3,18 @@
  * Generates static HTML and Markdown reports - 100% offline, zero dependencies
  */
 
-import { DetectionResult } from '../types';
-import { OpenRedaction } from '../detector';
+import type { OpenRedaction } from "../detector";
+import type { DetectionResult } from "../types";
 
 /**
  * Report format options
  */
-export type ReportFormat = 'html' | 'markdown';
+export type ReportFormat = "html" | "markdown";
 
 /**
  * Report type options
  */
-export type ReportType = 'summary' | 'detailed' | 'compliance';
+export type ReportType = "summary" | "detailed" | "compliance";
 
 /**
  * Report generation options
@@ -56,18 +56,18 @@ export class ReportGenerator {
   generate(result: DetectionResult, options: ReportOptions): string {
     const opts: Required<ReportOptions> = {
       format: options.format,
-      type: options.type || 'summary',
-      title: options.title || 'PII Detection Report',
+      type: options.type || "summary",
+      title: options.title || "PII Detection Report",
       includeOriginalText: options.includeOriginalText ?? false,
       includeRedactedText: options.includeRedactedText ?? true,
       includeDetectionDetails: options.includeDetectionDetails ?? true,
       includeStatistics: options.includeStatistics ?? true,
       includeExplanation: options.includeExplanation ?? false,
-      organizationName: options.organizationName || 'Organization',
-      metadata: options.metadata || {}
+      organizationName: options.organizationName || "Organization",
+      metadata: options.metadata || {},
     };
 
-    if (opts.format === 'html') {
+    if (opts.format === "html") {
       return this.generateHTML(result, opts);
     } else {
       return this.generateMarkdown(result, opts);
@@ -77,7 +77,10 @@ export class ReportGenerator {
   /**
    * Generate HTML report
    */
-  private generateHTML(result: DetectionResult, options: Required<ReportOptions>): string {
+  private generateHTML(
+    result: DetectionResult,
+    options: Required<ReportOptions>,
+  ): string {
     const timestamp = new Date().toISOString();
     const stats = this.calculateStatistics(result);
 
@@ -263,7 +266,7 @@ export class ReportGenerator {
       html += `
     <h2>Summary Statistics</h2>
     <div class="stats">
-      <div class="stat-card ${stats.totalDetections > 0 ? 'warning' : 'success'}">
+      <div class="stat-card ${stats.totalDetections > 0 ? "warning" : "success"}">
         <div class="stat-value">${stats.totalDetections}</div>
         <div class="stat-label">PII Detected</div>
       </div>
@@ -275,11 +278,15 @@ export class ReportGenerator {
         <div class="stat-value">${stats.highSeverity}</div>
         <div class="stat-label">High Severity</div>
       </div>
-      ${result.stats?.processingTime ? `
+      ${
+        result.stats?.processingTime
+          ? `
       <div class="stat-card success">
         <div class="stat-value">${result.stats.processingTime}ms</div>
         <div class="stat-label">Processing Time</div>
-      </div>` : ''}
+      </div>`
+          : ""
+      }
     </div>
 `;
 
@@ -321,20 +328,24 @@ export class ReportGenerator {
           <th>Value</th>
           <th>Position</th>
           <th>Severity</th>
-          ${result.detections[0].confidence !== undefined ? '<th>Confidence</th>' : ''}
+          ${result.detections[0].confidence !== undefined ? "<th>Confidence</th>" : ""}
         </tr>
       </thead>
       <tbody>
 `;
       for (const detection of result.detections) {
-        const severityClass = detection.severity === 'high' ? 'badge-high' :
-                             detection.severity === 'medium' ? 'badge-medium' : 'badge-low';
+        const severityClass =
+          detection.severity === "high"
+            ? "badge-high"
+            : detection.severity === "medium"
+              ? "badge-medium"
+              : "badge-low";
         html += `        <tr>
           <td>${this.escapeHtml(detection.type)}</td>
           <td><code>${this.escapeHtml(detection.value)}</code></td>
           <td>${detection.position[0]}-${detection.position[1]}</td>
           <td><span class="badge ${severityClass}">${detection.severity.toUpperCase()}</span></td>
-          ${detection.confidence !== undefined ? `<td>${(detection.confidence * 100).toFixed(1)}%</td>` : ''}
+          ${detection.confidence !== undefined ? `<td>${(detection.confidence * 100).toFixed(1)}%</td>` : ""}
         </tr>
 `;
       }
@@ -375,7 +386,10 @@ export class ReportGenerator {
   /**
    * Generate Markdown report
    */
-  private generateMarkdown(result: DetectionResult, options: Required<ReportOptions>): string {
+  private generateMarkdown(
+    result: DetectionResult,
+    options: Required<ReportOptions>,
+  ): string {
     const timestamp = new Date().toISOString();
     const stats = this.calculateStatistics(result);
 
@@ -417,8 +431,8 @@ export class ReportGenerator {
     // Detection details
     if (options.includeDetectionDetails && result.detections.length > 0) {
       md += `## Detection Details\n\n`;
-      md += `| Type | Value | Position | Severity |${result.detections[0].confidence !== undefined ? ' Confidence |' : ''}\n`;
-      md += `|------|-------|----------|----------|${result.detections[0].confidence !== undefined ? '------------|' : ''}\n`;
+      md += `| Type | Value | Position | Severity |${result.detections[0].confidence !== undefined ? " Confidence |" : ""}\n`;
+      md += `|------|-------|----------|----------|${result.detections[0].confidence !== undefined ? "------------|" : ""}\n`;
       for (const detection of result.detections) {
         md += `| ${detection.type} | \`${detection.value}\` | ${detection.position[0]}-${detection.position[1]} | ${detection.severity.toUpperCase()} |`;
         if (detection.confidence !== undefined) {
@@ -464,7 +478,7 @@ export class ReportGenerator {
 
     for (const detection of result.detections) {
       typeBreakdown[detection.type] = (typeBreakdown[detection.type] || 0) + 1;
-      if (detection.severity === 'high') {
+      if (detection.severity === "high") {
         highSeverity++;
       }
     }
@@ -473,7 +487,7 @@ export class ReportGenerator {
       totalDetections: result.detections.length,
       uniqueTypes: Object.keys(typeBreakdown).length,
       highSeverity,
-      typeBreakdown
+      typeBreakdown,
     };
   }
 
@@ -482,19 +496,21 @@ export class ReportGenerator {
    */
   private escapeHtml(text: string): string {
     const map: Record<string, string> = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;'
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;",
     };
-    return text.replace(/[&<>"']/g, m => map[m]);
+    return text.replace(/[&<>"']/g, (m) => map[m]);
   }
 }
 
 /**
  * Helper to create report generator
  */
-export function createReportGenerator(detector: OpenRedaction): ReportGenerator {
+export function createReportGenerator(
+  detector: OpenRedaction,
+): ReportGenerator {
   return new ReportGenerator(detector);
 }

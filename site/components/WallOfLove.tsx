@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Heart, ExternalLink } from 'lucide-react';
-import { analytics } from '@/lib/analytics';
+import Link from "next/link";
+import { Heart, ExternalLink } from "lucide-react";
+import { analytics } from "@/lib/analytics";
 import {
   WALL_OF_LOVE_ENTRIES,
   WALL_OF_LOVE_SUBMIT_URL,
   type WallOfLoveEntry,
-} from '@/lib/wall-of-love';
+} from "@/lib/wall-of-love";
 
 function WallCard({ entry }: { entry: WallOfLoveEntry }) {
   const title = entry.url ? (
@@ -18,7 +18,11 @@ function WallCard({ entry }: { entry: WallOfLoveEntry }) {
       className="text-white font-semibold hover:text-gray-200 inline-flex items-center gap-1.5 group"
     >
       {entry.name}
-      <ExternalLink size={14} className="text-gray-500 group-hover:text-gray-400 shrink-0" aria-hidden />
+      <ExternalLink
+        size={14}
+        className="text-gray-500 group-hover:text-gray-400 shrink-0"
+        aria-hidden
+      />
     </a>
   ) : (
     <span className="text-white font-semibold">{entry.name}</span>
@@ -47,9 +51,13 @@ function WallCard({ entry }: { entry: WallOfLoveEntry }) {
         <div className="min-w-0 flex-1">{title}</div>
       </div>
       {entry.quote ? (
-        <p className="text-gray-300 text-sm leading-relaxed flex-grow">&ldquo;{entry.quote}&rdquo;</p>
+        <p className="text-gray-300 text-sm leading-relaxed flex-grow">
+          &ldquo;{entry.quote}&rdquo;
+        </p>
       ) : (
-        <p className="text-gray-500 text-sm flex-grow">Using Open Redaction in production.</p>
+        <p className="text-gray-500 text-sm flex-grow">
+          Using Open Redaction in production.
+        </p>
       )}
       {entry.discussionUrl ? (
         <a
@@ -67,14 +75,17 @@ function WallCard({ entry }: { entry: WallOfLoveEntry }) {
 }
 
 type WallOfLoveProps = {
-  variant?: 'homepage' | 'full';
+  variant?: "homepage" | "full";
   id?: string;
 };
 
-export default function WallOfLove({ variant = 'full', id = 'wall-of-love' }: WallOfLoveProps) {
-  const limit = variant === 'homepage' ? 6 : WALL_OF_LOVE_ENTRIES.length;
+export default function WallOfLove({
+  variant = "full",
+  id = "wall-of-love",
+}: WallOfLoveProps) {
+  const limit = variant === "homepage" ? 6 : WALL_OF_LOVE_ENTRIES.length;
   const entries = WALL_OF_LOVE_ENTRIES.slice(0, limit);
-  const hasMore = variant === 'homepage' && WALL_OF_LOVE_ENTRIES.length > limit;
+  const hasMore = variant === "homepage" && WALL_OF_LOVE_ENTRIES.length > limit;
 
   return (
     <section id={id} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -82,15 +93,18 @@ export default function WallOfLove({ variant = 'full', id = 'wall-of-love' }: Wa
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-900 border border-gray-800 mb-6">
           <Heart className="text-red-400" size={22} aria-hidden />
         </div>
-        <h2 className="text-4xl md:text-5xl font-bold mb-4">Who&rsquo;s using Open Redaction?</h2>
+        <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          Who&rsquo;s using Open Redaction?
+        </h2>
         <p className="text-xl text-gray-300">
-          Teams and projects that agreed to be listed. Submissions are curated from{' '}
+          Teams and projects that agreed to be listed. Submissions are curated
+          from{" "}
           <a
             href={WALL_OF_LOVE_SUBMIT_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="text-white underline hover:text-gray-200"
-            onClick={() => analytics.wallOfLoveClick('inline_discussions')}
+            onClick={() => analytics.wallOfLoveClick("inline_discussions")}
           >
             GitHub Discussions
           </a>
@@ -101,15 +115,16 @@ export default function WallOfLove({ variant = 'full', id = 'wall-of-love' }: Wa
       {entries.length === 0 ? (
         <div className="rounded-xl border border-dashed border-gray-700 bg-gray-950/50 p-10 text-center max-w-2xl mx-auto">
           <p className="text-gray-300 mb-6">
-            No public listings yet. If you use Open Redaction, tell us how — we&rsquo;ll add you here after you
-            confirm you&rsquo;re happy to be on the site.
+            No public listings yet. If you use Open Redaction, tell us how —
+            we&rsquo;ll add you here after you confirm you&rsquo;re happy to be
+            on the site.
           </p>
           <a
             href={WALL_OF_LOVE_SUBMIT_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center bg-white text-black px-6 py-3 rounded-md font-semibold hover:bg-gray-100 transition-colors"
-            onClick={() => analytics.wallOfLoveClick('submit_discussion')}
+            onClick={() => analytics.wallOfLoveClick("submit_discussion")}
           >
             Share on GitHub Discussions
           </a>
@@ -126,7 +141,7 @@ export default function WallOfLove({ variant = 'full', id = 'wall-of-love' }: Wa
               <Link
                 href="/community"
                 className="text-white font-medium hover:text-gray-300 underline underline-offset-4"
-                onClick={() => analytics.wallOfLoveClick('view_all')}
+                onClick={() => analytics.wallOfLoveClick("view_all")}
               >
                 View all {WALL_OF_LOVE_ENTRIES.length} listings →
               </Link>
@@ -142,7 +157,7 @@ export default function WallOfLove({ variant = 'full', id = 'wall-of-love' }: Wa
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-gray-500 hover:text-gray-400"
-            onClick={() => analytics.wallOfLoveClick('get_listed')}
+            onClick={() => analytics.wallOfLoveClick("get_listed")}
           >
             Using Open Redaction? Get listed →
           </a>

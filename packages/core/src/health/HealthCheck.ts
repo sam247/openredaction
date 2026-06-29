@@ -3,10 +3,10 @@
  * Verify detector is working correctly and get system status
  */
 
-import type { OpenRedaction } from '../detector';
+import type { OpenRedaction } from "../detector";
 
 export interface HealthCheckResult {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: "healthy" | "degraded" | "unhealthy";
   timestamp: string;
   checks: {
     detector: HealthCheckStatus;
@@ -26,7 +26,7 @@ export interface HealthCheckResult {
 }
 
 export interface HealthCheckStatus {
-  status: 'pass' | 'warn' | 'fail';
+  status: "pass" | "warn" | "fail";
   message: string;
   value?: any;
   threshold?: any;
@@ -53,22 +53,22 @@ export class HealthChecker {
    */
   async check(options: HealthCheckOptions = {}): Promise<HealthCheckResult> {
     const result: HealthCheckResult = {
-      status: 'healthy',
+      status: "healthy",
       timestamp: new Date().toISOString(),
       checks: {
-        detector: { status: 'pass', message: 'Detector initialized' },
-        patterns: { status: 'pass', message: 'Patterns loaded' },
-        performance: { status: 'pass', message: 'Performance acceptable' },
-        memory: { status: 'pass', message: 'Memory usage normal' }
+        detector: { status: "pass", message: "Detector initialized" },
+        patterns: { status: "pass", message: "Patterns loaded" },
+        performance: { status: "pass", message: "Performance acceptable" },
+        memory: { status: "pass", message: "Memory usage normal" },
       },
       metrics: {
         totalPatterns: 0,
         compiledPatterns: 0,
         cacheEnabled: false,
-        uptime: Date.now() - this.initTime
+        uptime: Date.now() - this.initTime,
       },
       errors: [],
-      warnings: []
+      warnings: [],
     };
 
     try {
@@ -81,7 +81,7 @@ export class HealthChecker {
       // Check 3: Performance
       if (options.checkPerformance !== false) {
         result.checks.performance = await this.checkPerformance(
-          options.performanceThreshold
+          options.performanceThreshold,
         );
       }
 
@@ -96,14 +96,14 @@ export class HealthChecker {
 
       // Collect errors and warnings
       for (const check of Object.values(result.checks)) {
-        if (check.status === 'fail') {
+        if (check.status === "fail") {
           result.errors.push(check.message);
-        } else if (check.status === 'warn') {
+        } else if (check.status === "warn") {
           result.warnings.push(check.message);
         }
       }
     } catch (error) {
-      result.status = 'unhealthy';
+      result.status = "unhealthy";
       result.errors.push(`Health check failed: ${(error as Error).message}`);
     }
 
@@ -113,37 +113,39 @@ export class HealthChecker {
   /**
    * Check detector functionality
    */
-  private async checkDetector(options: HealthCheckOptions): Promise<HealthCheckStatus> {
+  private async checkDetector(
+    options: HealthCheckOptions,
+  ): Promise<HealthCheckStatus> {
     try {
       // Run test detection if enabled
       if (options.testDetection !== false) {
-        const testText = 'Test email: test@example.com';
+        const testText = "Test email: test@example.com";
         const result = await this.detector.detect(testText);
 
         if (!result || !result.detections) {
           return {
-            status: 'fail',
-            message: 'Detector returned invalid result'
+            status: "fail",
+            message: "Detector returned invalid result",
           };
         }
 
         // Verify detection worked
         if (result.detections.length === 0) {
           return {
-            status: 'warn',
-            message: 'Test detection found no PII (expected at least 1)'
+            status: "warn",
+            message: "Test detection found no PII (expected at least 1)",
           };
         }
       }
 
       return {
-        status: 'pass',
-        message: 'Detector functioning correctly'
+        status: "pass",
+        message: "Detector functioning correctly",
       };
     } catch (error) {
       return {
-        status: 'fail',
-        message: `Detector check failed: ${(error as Error).message}`
+        status: "fail",
+        message: `Detector check failed: ${(error as Error).message}`,
       };
     }
   }
@@ -157,31 +159,31 @@ export class HealthChecker {
 
       if (!patterns || patterns.length === 0) {
         return {
-          status: 'fail',
-          message: 'No patterns loaded',
+          status: "fail",
+          message: "No patterns loaded",
           value: 0,
-          threshold: 1
+          threshold: 1,
         };
       }
 
       if (patterns.length < 10) {
         return {
-          status: 'warn',
-          message: 'Very few patterns loaded (expected more)',
+          status: "warn",
+          message: "Very few patterns loaded (expected more)",
           value: patterns.length,
-          threshold: 10
+          threshold: 10,
         };
       }
 
       return {
-        status: 'pass',
+        status: "pass",
         message: `${patterns.length} patterns loaded`,
-        value: patterns.length
+        value: patterns.length,
       };
     } catch (error) {
       return {
-        status: 'fail',
-        message: `Pattern check failed: ${(error as Error).message}`
+        status: "fail",
+        message: `Pattern check failed: ${(error as Error).message}`,
       };
     }
   }
@@ -190,42 +192,43 @@ export class HealthChecker {
    * Check performance
    */
   private async checkPerformance(
-    threshold: number = 100
+    threshold: number = 100,
   ): Promise<HealthCheckStatus> {
     try {
-      const testText = 'Test: john@example.com, phone: 555-123-4567, IP: 192.168.1.1';
+      const testText =
+        "Test: john@example.com, phone: 555-123-4567, IP: 192.168.1.1";
       const start = performance.now();
       await this.detector.detect(testText);
       const duration = performance.now() - start;
 
       if (duration > threshold * 2) {
         return {
-          status: 'fail',
+          status: "fail",
           message: `Performance degraded: ${duration.toFixed(2)}ms`,
           value: duration,
-          threshold
+          threshold,
         };
       }
 
       if (duration > threshold) {
         return {
-          status: 'warn',
+          status: "warn",
           message: `Performance slower than expected: ${duration.toFixed(2)}ms`,
           value: duration,
-          threshold
+          threshold,
         };
       }
 
       return {
-        status: 'pass',
+        status: "pass",
         message: `Performance good: ${duration.toFixed(2)}ms`,
         value: duration,
-        threshold
+        threshold,
       };
     } catch (error) {
       return {
-        status: 'fail',
-        message: `Performance check failed: ${(error as Error).message}`
+        status: "fail",
+        message: `Performance check failed: ${(error as Error).message}`,
       };
     }
   }
@@ -233,12 +236,14 @@ export class HealthChecker {
   /**
    * Check memory usage
    */
-  private async checkMemory(threshold: number = 100): Promise<HealthCheckStatus> {
+  private async checkMemory(
+    threshold: number = 100,
+  ): Promise<HealthCheckStatus> {
     try {
-      if (typeof process === 'undefined' || !process.memoryUsage) {
+      if (typeof process === "undefined" || !process.memoryUsage) {
         return {
-          status: 'pass',
-          message: 'Memory check skipped (not in Node.js)'
+          status: "pass",
+          message: "Memory check skipped (not in Node.js)",
         };
       }
 
@@ -247,32 +252,32 @@ export class HealthChecker {
 
       if (heapUsedMB > threshold * 2) {
         return {
-          status: 'fail',
+          status: "fail",
           message: `High memory usage: ${heapUsedMB.toFixed(2)}MB`,
           value: heapUsedMB,
-          threshold
+          threshold,
         };
       }
 
       if (heapUsedMB > threshold) {
         return {
-          status: 'warn',
+          status: "warn",
           message: `Elevated memory usage: ${heapUsedMB.toFixed(2)}MB`,
           value: heapUsedMB,
-          threshold
+          threshold,
         };
       }
 
       return {
-        status: 'pass',
+        status: "pass",
         message: `Memory usage normal: ${heapUsedMB.toFixed(2)}MB`,
         value: heapUsedMB,
-        threshold
+        threshold,
       };
     } catch (error) {
       return {
-        status: 'warn',
-        message: `Memory check skipped: ${(error as Error).message}`
+        status: "warn",
+        message: `Memory check skipped: ${(error as Error).message}`,
       };
     }
   }
@@ -289,43 +294,48 @@ export class HealthChecker {
       compiledPatterns: patterns.length, // All patterns are pre-compiled
       cacheSize: cacheStats.size,
       cacheEnabled: cacheStats.enabled,
-      uptime: Date.now() - this.initTime
+      uptime: Date.now() - this.initTime,
     };
   }
 
   /**
    * Determine overall status
    */
-  private determineOverallStatus(checks: HealthCheckResult['checks']): 'healthy' | 'degraded' | 'unhealthy' {
-    const statuses = Object.values(checks).map(c => c.status);
+  private determineOverallStatus(
+    checks: HealthCheckResult["checks"],
+  ): "healthy" | "degraded" | "unhealthy" {
+    const statuses = Object.values(checks).map((c) => c.status);
 
-    if (statuses.includes('fail')) {
-      return 'unhealthy';
+    if (statuses.includes("fail")) {
+      return "unhealthy";
     }
 
-    if (statuses.includes('warn')) {
-      return 'degraded';
+    if (statuses.includes("warn")) {
+      return "degraded";
     }
 
-    return 'healthy';
+    return "healthy";
   }
 
   /**
    * Quick health check (minimal overhead)
    */
-  async quickCheck(): Promise<{ status: 'healthy' | 'unhealthy'; message: string }> {
+  async quickCheck(): Promise<{
+    status: "healthy" | "unhealthy";
+    message: string;
+  }> {
     try {
       // Just verify basic functionality
       const patterns = this.detector.getPatterns();
       if (patterns.length === 0) {
-        return { status: 'unhealthy', message: 'No patterns loaded' };
+        return { status: "unhealthy", message: "No patterns loaded" };
       }
 
-      return { status: 'healthy', message: 'OK' };
+      return { status: "healthy", message: "OK" };
     } catch (error) {
       return {
-        status: 'unhealthy',
-        message: `Error: ${(error as Error).message}`
+        status: "unhealthy",
+        message: `Error: ${(error as Error).message}`,
       };
     }
   }
@@ -338,18 +348,18 @@ export class HealthChecker {
     const cacheStats = this.detector.getCacheStats();
 
     return {
-      version: '1.0.0', // Should come from package.json
+      version: "1.0.0", // Should come from package.json
       patterns: {
         total: patterns.length,
-        types: [...new Set(patterns.map(p => p.type.split('_')[0]))].length
+        types: [...new Set(patterns.map((p) => p.type.split("_")[0]))].length,
       },
       cache: {
         enabled: cacheStats.enabled,
         size: cacheStats.size,
-        maxSize: cacheStats.maxSize
+        maxSize: cacheStats.maxSize,
       },
       uptime: Date.now() - this.initTime,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }
@@ -373,18 +383,22 @@ export function healthCheckMiddleware(detector: OpenRedaction) {
         testDetection: true,
         checkPerformance: true,
         performanceThreshold: 100,
-        memoryThreshold: 100
+        memoryThreshold: 100,
       });
 
-      const statusCode = result.status === 'healthy' ? 200 :
-                         result.status === 'degraded' ? 200 : 503;
+      const statusCode =
+        result.status === "healthy"
+          ? 200
+          : result.status === "degraded"
+            ? 200
+            : 503;
 
       res.status(statusCode).json(result);
     } catch (error) {
       res.status(503).json({
-        status: 'unhealthy',
+        status: "unhealthy",
         timestamp: new Date().toISOString(),
-        error: (error as Error).message
+        error: (error as Error).message,
       });
     }
   };

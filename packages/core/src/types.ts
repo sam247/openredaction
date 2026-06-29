@@ -19,7 +19,7 @@ export interface PIIPattern {
   /** Optional description */
   description?: string;
   /** Severity level */
-  severity?: 'critical' | 'high' | 'medium' | 'low';
+  severity?: "critical" | "high" | "medium" | "low";
 }
 
 /**
@@ -35,7 +35,7 @@ export interface PIIDetection {
   /** Position in text [start, end] */
   position: [number, number];
   /** Severity level */
-  severity: 'critical' | 'high' | 'medium' | 'low';
+  severity: "critical" | "high" | "medium" | "low";
   /** Confidence score (0-1) based on context analysis */
   confidence?: number;
 }
@@ -86,30 +86,30 @@ export interface DetectionResult {
  * Redaction mode - controls how PII is replaced
  */
 export type RedactionMode =
-  | 'placeholder'        // Default: [EMAIL_1234]
-  | 'mask-middle'        // Partial: j***@example.com, 555-**-1234
-  | 'mask-all'           // Full: ***************
-  | 'format-preserving'  // Keep structure: XXX-XX-XXXX
-  | 'token-replace';     // Fake data: john.doe@example.com
+  | "placeholder" // Default: [EMAIL_1234]
+  | "mask-middle" // Partial: j***@example.com, 555-**-1234
+  | "mask-all" // Full: ***************
+  | "format-preserving" // Keep structure: XXX-XX-XXXX
+  | "token-replace"; // Fake data: john.doe@example.com
 
 /**
  * Configuration options for OpenRedaction
  */
 export type PresetName =
-  | 'gdpr'
-  | 'hipaa'
-  | 'ccpa'
-  | 'healthcare'
-  | 'healthcare-provider'
-  | 'healthcare-research'
-  | 'finance'
-  | 'financial-services'
-  | 'education'
-  | 'transport-logistics'
-  | 'transportation'
-  | 'logistics'
-  | 'pci-dss'
-  | 'soc2';
+  | "gdpr"
+  | "hipaa"
+  | "ccpa"
+  | "healthcare"
+  | "healthcare-provider"
+  | "healthcare-research"
+  | "finance"
+  | "financial-services"
+  | "education"
+  | "transport-logistics"
+  | "transportation"
+  | "logistics"
+  | "pci-dss"
+  | "soc2";
 
 export interface OpenRedactionOptions {
   /** Include name detection (default: true) */
@@ -188,7 +188,7 @@ export interface AuditLogEntry {
   /** Timestamp of the operation (ISO 8601) */
   timestamp: string;
   /** Operation type */
-  operation: 'redact' | 'detect' | 'restore';
+  operation: "redact" | "detect" | "restore";
   /** Number of PII items found/processed */
   piiCount: number;
   /** Types of PII detected (e.g., ["EMAIL", "SSN", "PHONE"]) */
@@ -216,11 +216,11 @@ export interface AuditLogEntry {
  */
 export interface IAuditLogger {
   /** Log an audit entry */
-  log(entry: Omit<AuditLogEntry, 'id' | 'timestamp'>): void;
+  log(entry: Omit<AuditLogEntry, "id" | "timestamp">): void;
   /** Get all audit logs */
   getLogs(): AuditLogEntry[];
   /** Get audit logs filtered by operation type */
-  getLogsByOperation(operation: AuditLogEntry['operation']): AuditLogEntry[];
+  getLogsByOperation(operation: AuditLogEntry["operation"]): AuditLogEntry[];
   /** Get audit logs filtered by date range */
   getLogsByDateRange(startDate: Date, endDate: Date): AuditLogEntry[];
   /** Export audit logs as JSON */
@@ -294,7 +294,11 @@ export interface IMetricsExporter {
  */
 export interface IMetricsCollector {
   /** Record a redaction operation */
-  recordRedaction(result: DetectionResult, processingTimeMs: number, redactionMode: RedactionMode): void;
+  recordRedaction(
+    result: DetectionResult,
+    processingTimeMs: number,
+    redactionMode: RedactionMode,
+  ): void;
   /** Record an error */
   recordError(): void;
   /** Get metrics exporter */
@@ -306,24 +310,24 @@ export interface IMetricsCollector {
  */
 export type Permission =
   // Pattern management
-  | 'pattern:read'
-  | 'pattern:write'
-  | 'pattern:delete'
+  | "pattern:read"
+  | "pattern:write"
+  | "pattern:delete"
   // Detection operations
-  | 'detection:detect'
-  | 'detection:redact'
-  | 'detection:restore'
+  | "detection:detect"
+  | "detection:redact"
+  | "detection:restore"
   // Audit log access
-  | 'audit:read'
-  | 'audit:export'
-  | 'audit:delete'
+  | "audit:read"
+  | "audit:export"
+  | "audit:delete"
   // Metrics access
-  | 'metrics:read'
-  | 'metrics:export'
-  | 'metrics:reset'
+  | "metrics:read"
+  | "metrics:export"
+  | "metrics:reset"
   // Configuration
-  | 'config:read'
-  | 'config:write';
+  | "config:read"
+  | "config:write";
 
 /**
  * RBAC Role - collection of permissions
@@ -340,7 +344,7 @@ export interface Role {
 /**
  * Predefined role names
  */
-export type RoleName = 'admin' | 'analyst' | 'operator' | 'viewer' | 'custom';
+export type RoleName = "admin" | "analyst" | "operator" | "viewer" | "custom";
 
 /**
  * RBAC manager interface for access control

@@ -3,7 +3,7 @@
  * Exposes /metrics endpoint for Prometheus scraping
  */
 
-import type { IMetricsCollector } from '../types';
+import type { IMetricsCollector } from "../types";
 
 /**
  * Prometheus server options
@@ -34,22 +34,28 @@ export interface PrometheusServerOptions {
 export class PrometheusServer {
   private server?: any;
   private metricsCollector: IMetricsCollector;
-  private options: Required<Omit<PrometheusServerOptions, 'username' | 'password'>> & Pick<PrometheusServerOptions, 'username' | 'password'>;
+  private options: Required<
+    Omit<PrometheusServerOptions, "username" | "password">
+  > &
+    Pick<PrometheusServerOptions, "username" | "password">;
   private isRunning: boolean = false;
   private requestCount: number = 0;
   private lastScrapeTime?: Date;
 
-  constructor(metricsCollector: IMetricsCollector, options?: PrometheusServerOptions) {
+  constructor(
+    metricsCollector: IMetricsCollector,
+    options?: PrometheusServerOptions,
+  ) {
     this.metricsCollector = metricsCollector;
     this.options = {
       port: options?.port ?? 9090,
-      host: options?.host ?? '0.0.0.0',
-      metricsPath: options?.metricsPath ?? '/metrics',
-      prefix: options?.prefix ?? 'openredaction',
-      healthPath: options?.healthPath ?? '/health',
+      host: options?.host ?? "0.0.0.0",
+      metricsPath: options?.metricsPath ?? "/metrics",
+      prefix: options?.prefix ?? "openredaction",
+      healthPath: options?.healthPath ?? "/health",
       enableCors: options?.enableCors ?? false,
       username: options?.username,
-      password: options?.password
+      password: options?.password,
     };
   }
 
@@ -58,13 +64,13 @@ export class PrometheusServer {
    */
   async start(): Promise<void> {
     if (this.isRunning) {
-      throw new Error('[PrometheusServer] Server is already running');
+      throw new Error("[PrometheusServer] Server is already running");
     }
 
     try {
       // Try to use native http module
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const http = require('http');
+      const http = require("http");
 
       this.server = http.createServer(this.handleRequest.bind(this));
 
@@ -72,17 +78,23 @@ export class PrometheusServer {
         this.server.listen(this.options.port, this.options.host, () => {
           this.isRunning = true;
           console.log(
-            `[PrometheusServer] Metrics server started on http://${this.options.host}:${this.options.port}${this.options.metricsPath}`
+            `[PrometheusServer] Metrics server started on http://${this.options.host}:${this.options.port}${this.options.metricsPath}`,
           );
           resolve();
         });
 
-        this.server.on('error', (error: any) => {
-          reject(new Error(`[PrometheusServer] Failed to start server: ${error.message}`));
+        this.server.on("error", (error: any) => {
+          reject(
+            new Error(
+              `[PrometheusServer] Failed to start server: ${error.message}`,
+            ),
+          );
         });
       });
     } catch (error: any) {
-      throw new Error(`[PrometheusServer] Failed to initialize HTTP server: ${error.message}`);
+      throw new Error(
+        `[PrometheusServer] Failed to initialize HTTP server: ${error.message}`,
+      );
     }
   }
 
@@ -97,10 +109,14 @@ export class PrometheusServer {
     return new Promise<void>((resolve, reject) => {
       this.server.close((error: any) => {
         if (error) {
-          reject(new Error(`[PrometheusServer] Failed to stop server: ${error.message}`));
+          reject(
+            new Error(
+              `[PrometheusServer] Failed to stop server: ${error.message}`,
+            ),
+          );
         } else {
           this.isRunning = false;
-          console.log('[PrometheusServer] Server stopped');
+          console.log("[PrometheusServer] Server stopped");
           resolve();
         }
       });
@@ -115,11 +131,14 @@ export class PrometheusServer {
 
     // CORS headers
     if (this.options.enableCors) {
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+      res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization",
+      );
 
-      if (req.method === 'OPTIONS') {
+      if (req.method === "OPTIONS") {
         res.writeHead(204);
         res.end();
         return;
@@ -127,9 +146,9 @@ export class PrometheusServer {
     }
 
     // Only allow GET requests
-    if (req.method !== 'GET') {
-      res.writeHead(405, { 'Content-Type': 'text/plain' });
-      res.end('Method Not Allowed');
+    if (req.method !== "GET") {
+      res.writeHead(405, { "Content-Type": "text/plain" });
+      res.end("Method Not Allowed");
       return;
     }
 
@@ -139,10 +158,10 @@ export class PrometheusServer {
 
       if (!authHeader || !this.validateAuth(authHeader)) {
         res.writeHead(401, {
-          'Content-Type': 'text/plain',
-          'WWW-Authenticate': 'Basic realm="Prometheus Metrics"'
+          "Content-Type": "text/plain",
+          "WWW-Authenticate": 'Basic realm="Prometheus Metrics"',
         });
-        res.end('Unauthorized');
+        res.end("Unauthorized");
         return;
       }
     }
@@ -154,11 +173,11 @@ export class PrometheusServer {
       this.handleMetrics(req, res);
     } else if (url === this.options.healthPath) {
       this.handleHealth(req, res);
-    } else if (url === '/') {
+    } else if (url === "/") {
       this.handleRoot(req, res);
     } else {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('Not Found');
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.end("Not Found");
     }
   }
 
@@ -171,18 +190,21 @@ export class PrometheusServer {
 
       const exporter = this.metricsCollector.getExporter();
       const metrics = exporter.getMetrics();
-      const prometheusFormat = exporter.exportPrometheus(metrics, this.options.prefix);
+      const prometheusFormat = exporter.exportPrometheus(
+        metrics,
+        this.options.prefix,
+      );
 
       // Add server-specific metrics
       const serverMetrics = this.getServerMetrics();
-      const fullMetrics = prometheusFormat + '\n' + serverMetrics;
+      const fullMetrics = prometheusFormat + "\n" + serverMetrics;
 
-      res.writeHead(200, { 'Content-Type': 'text/plain; version=0.0.4' });
+      res.writeHead(200, { "Content-Type": "text/plain; version=0.0.4" });
       res.end(fullMetrics);
     } catch (error: any) {
-      console.error('[PrometheusServer] Error exporting metrics:', error);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end('Internal Server Error');
+      console.error("[PrometheusServer] Error exporting metrics:", error);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Internal Server Error");
     }
   }
 
@@ -191,16 +213,16 @@ export class PrometheusServer {
    */
   private handleHealth(_req: any, res: any): void {
     const health = {
-      status: 'healthy',
+      status: "healthy",
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
       metrics: {
         requestCount: this.requestCount,
-        lastScrapeTime: this.lastScrapeTime?.toISOString()
-      }
+        lastScrapeTime: this.lastScrapeTime?.toISOString(),
+      },
     };
 
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(health, null, 2));
   }
 
@@ -240,7 +262,7 @@ export class PrometheusServer {
     <li>Port: ${this.options.port}</li>
     <li>Metrics Prefix: ${this.options.prefix}</li>
     <li>CORS Enabled: ${this.options.enableCors}</li>
-    <li>Authentication: ${this.options.username ? 'Enabled' : 'Disabled'}</li>
+    <li>Authentication: ${this.options.username ? "Enabled" : "Disabled"}</li>
   </ul>
 
   <h2>Prometheus Configuration</h2>
@@ -251,15 +273,19 @@ scrape_configs:
     static_configs:
       - targets: ['${this.options.host}:${this.options.port}']
     metrics_path: '${this.options.metricsPath}'
-${this.options.username ? `    basic_auth:
+${
+  this.options.username
+    ? `    basic_auth:
       username: '${this.options.username}'
-      password: '${this.options.password}'` : ''}
+      password: '${this.options.password}'`
+    : ""
+}
   </pre>
 </body>
 </html>
     `.trim();
 
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.writeHead(200, { "Content-Type": "text/html" });
     res.end(html);
   }
 
@@ -268,11 +294,15 @@ ${this.options.username ? `    basic_auth:
    */
   private validateAuth(authHeader: string): boolean {
     try {
-      const base64Credentials = authHeader.split(' ')[1];
-      const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
-      const [username, password] = credentials.split(':');
+      const base64Credentials = authHeader.split(" ")[1];
+      const credentials = Buffer.from(base64Credentials, "base64").toString(
+        "utf-8",
+      );
+      const [username, password] = credentials.split(":");
 
-      return username === this.options.username && password === this.options.password;
+      return (
+        username === this.options.username && password === this.options.password
+      );
     } catch {
       return false;
     }
@@ -287,37 +317,61 @@ ${this.options.username ? `    basic_auth:
     const lines: string[] = [];
 
     // Server uptime
-    lines.push(`# HELP ${prefix}_server_uptime_seconds Server uptime in seconds`);
+    lines.push(
+      `# HELP ${prefix}_server_uptime_seconds Server uptime in seconds`,
+    );
     lines.push(`# TYPE ${prefix}_server_uptime_seconds counter`);
-    lines.push(`${prefix}_server_uptime_seconds ${process.uptime().toFixed(2)} ${timestamp}`);
-    lines.push('');
+    lines.push(
+      `${prefix}_server_uptime_seconds ${process.uptime().toFixed(2)} ${timestamp}`,
+    );
+    lines.push("");
 
     // Request count
-    lines.push(`# HELP ${prefix}_server_requests_total Total number of requests to metrics server`);
+    lines.push(
+      `# HELP ${prefix}_server_requests_total Total number of requests to metrics server`,
+    );
     lines.push(`# TYPE ${prefix}_server_requests_total counter`);
-    lines.push(`${prefix}_server_requests_total ${this.requestCount} ${timestamp}`);
-    lines.push('');
+    lines.push(
+      `${prefix}_server_requests_total ${this.requestCount} ${timestamp}`,
+    );
+    lines.push("");
 
     // Last scrape time
     if (this.lastScrapeTime) {
-      const lastScrapeSeconds = Math.floor((Date.now() - this.lastScrapeTime.getTime()) / 1000);
-      lines.push(`# HELP ${prefix}_server_last_scrape_seconds Seconds since last metrics scrape`);
+      const lastScrapeSeconds = Math.floor(
+        (Date.now() - this.lastScrapeTime.getTime()) / 1000,
+      );
+      lines.push(
+        `# HELP ${prefix}_server_last_scrape_seconds Seconds since last metrics scrape`,
+      );
       lines.push(`# TYPE ${prefix}_server_last_scrape_seconds gauge`);
-      lines.push(`${prefix}_server_last_scrape_seconds ${lastScrapeSeconds} ${timestamp}`);
-      lines.push('');
+      lines.push(
+        `${prefix}_server_last_scrape_seconds ${lastScrapeSeconds} ${timestamp}`,
+      );
+      lines.push("");
     }
 
     // Memory usage
     const mem = process.memoryUsage();
-    lines.push(`# HELP ${prefix}_server_memory_bytes Server memory usage in bytes`);
+    lines.push(
+      `# HELP ${prefix}_server_memory_bytes Server memory usage in bytes`,
+    );
     lines.push(`# TYPE ${prefix}_server_memory_bytes gauge`);
-    lines.push(`${prefix}_server_memory_bytes{type="rss"} ${mem.rss} ${timestamp}`);
-    lines.push(`${prefix}_server_memory_bytes{type="heapTotal"} ${mem.heapTotal} ${timestamp}`);
-    lines.push(`${prefix}_server_memory_bytes{type="heapUsed"} ${mem.heapUsed} ${timestamp}`);
-    lines.push(`${prefix}_server_memory_bytes{type="external"} ${mem.external} ${timestamp}`);
-    lines.push('');
+    lines.push(
+      `${prefix}_server_memory_bytes{type="rss"} ${mem.rss} ${timestamp}`,
+    );
+    lines.push(
+      `${prefix}_server_memory_bytes{type="heapTotal"} ${mem.heapTotal} ${timestamp}`,
+    );
+    lines.push(
+      `${prefix}_server_memory_bytes{type="heapUsed"} ${mem.heapUsed} ${timestamp}`,
+    );
+    lines.push(
+      `${prefix}_server_memory_bytes{type="external"} ${mem.external} ${timestamp}`,
+    );
+    lines.push("");
 
-    return lines.join('\n');
+    return lines.join("\n");
   }
 
   /**
@@ -339,7 +393,7 @@ ${this.options.username ? `    basic_auth:
       uptime: process.uptime(),
       host: this.options.host,
       port: this.options.port,
-      metricsPath: this.options.metricsPath
+      metricsPath: this.options.metricsPath,
     };
   }
 }
@@ -349,7 +403,7 @@ ${this.options.username ? `    basic_auth:
  */
 export function createPrometheusServer(
   metricsCollector: IMetricsCollector,
-  options?: PrometheusServerOptions
+  options?: PrometheusServerOptions,
 ): PrometheusServer {
   return new PrometheusServer(metricsCollector, options);
 }

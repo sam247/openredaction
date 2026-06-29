@@ -2,22 +2,40 @@
  * Document processing types
  */
 
-import type { DetectionResult } from '../types';
+import type { DetectionResult } from "../types";
 
 /**
  * Supported document formats
  */
-export type DocumentFormat = 'pdf' | 'docx' | 'txt' | 'image' | 'json' | 'csv' | 'xlsx';
+export type DocumentFormat =
+  | "pdf"
+  | "docx"
+  | "txt"
+  | "image"
+  | "json"
+  | "csv"
+  | "xlsx";
 
 /**
  * Supported image formats for OCR
  */
-export type ImageFormat = 'png' | 'jpg' | 'jpeg' | 'tiff' | 'bmp' | 'webp';
+export type ImageFormat = "png" | "jpg" | "jpeg" | "tiff" | "bmp" | "webp";
 
 /**
  * OCR language codes (Tesseract format)
  */
-export type OCRLanguage = 'eng' | 'spa' | 'fra' | 'deu' | 'por' | 'ita' | 'rus' | 'chi_sim' | 'chi_tra' | 'jpn' | 'kor';
+export type OCRLanguage =
+  | "eng"
+  | "spa"
+  | "fra"
+  | "deu"
+  | "por"
+  | "ita"
+  | "rus"
+  | "chi_sim"
+  | "chi_tra"
+  | "jpn"
+  | "kor";
 
 /**
  * OCR options
@@ -118,7 +136,10 @@ export interface IDocumentProcessor {
   /** Extract text from document buffer */
   extractText(buffer: Buffer, options?: DocumentOptions): Promise<string>;
   /** Get document metadata */
-  getMetadata(buffer: Buffer, options?: DocumentOptions): Promise<DocumentMetadata>;
+  getMetadata(
+    buffer: Buffer,
+    options?: DocumentOptions,
+  ): Promise<DocumentMetadata>;
   /** Detect supported format from buffer */
   detectFormat(buffer: Buffer): DocumentFormat | null;
   /** Check if format is supported */

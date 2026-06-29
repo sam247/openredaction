@@ -2,18 +2,18 @@
  * Audit logging module
  */
 
-export { InMemoryAuditLogger, ConsoleAuditLogger } from './AuditLogger';
-export {
-  PersistentAuditLogger,
-  createPersistentAuditLogger
-} from './PersistentAuditLogger';
-export type { IAuditLogger, AuditLogEntry, AuditStats } from '../types';
+export type { AuditLogEntry, AuditStats, IAuditLogger } from "../types";
+export { ConsoleAuditLogger, InMemoryAuditLogger } from "./AuditLogger";
 export type {
   AuditBackend,
   AuditDatabaseConfig,
-  RetentionPolicy,
-  PersistentAuditLoggerOptions,
+  AuditQueryFilter,
   HashedAuditLogEntry,
   IAuditDatabaseAdapter,
-  AuditQueryFilter
-} from './PersistentAuditLogger';
+  PersistentAuditLoggerOptions,
+  RetentionPolicy,
+} from "./PersistentAuditLogger";
+export {
+  createPersistentAuditLogger,
+  PersistentAuditLogger,
+} from "./PersistentAuditLogger";

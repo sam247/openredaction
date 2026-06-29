@@ -3,13 +3,13 @@
  * Provides tenant isolation, quotas, and per-tenant configuration
  */
 
+import { OpenRedaction } from "../detector";
 import type {
+  IAuditLogger,
+  IMetricsCollector,
   OpenRedactionOptions,
   PIIPattern,
-  IAuditLogger,
-  IMetricsCollector
-} from '../types';
-import { OpenRedaction } from '../detector';
+} from "../types";
 
 /**
  * Tenant configuration
@@ -32,7 +32,7 @@ export interface TenantConfig {
   /** Tenant metadata */
   metadata?: Record<string, unknown>;
   /** Tenant status */
-  status: 'active' | 'suspended' | 'trial';
+  status: "active" | "suspended" | "trial";
   /** Trial expiry date (for trial tenants) */
   trialExpiresAt?: Date;
   /** Created timestamp */
@@ -83,10 +83,10 @@ export class TenantQuotaExceededError extends Error {
     public tenantId: string,
     public quota: string,
     public limit: number,
-    public current: number
+    public current: number,
   ) {
     super(`Tenant ${tenantId} exceeded ${quota} quota: ${current}/${limit}`);
-    this.name = 'TenantQuotaExceededError';
+    this.name = "TenantQuotaExceededError";
   }
 }
 
@@ -96,7 +96,7 @@ export class TenantQuotaExceededError extends Error {
 export class TenantNotFoundError extends Error {
   constructor(public tenantId: string) {
     super(`Tenant not found: ${tenantId}`);
-    this.name = 'TenantNotFoundError';
+    this.name = "TenantNotFoundError";
   }
 }
 
@@ -106,7 +106,7 @@ export class TenantNotFoundError extends Error {
 export class TenantSuspendedError extends Error {
   constructor(public tenantId: string) {
     super(`Tenant is suspended: ${tenantId}`);
-    this.name = 'TenantSuspendedError';
+    this.name = "TenantSuspendedError";
   }
 }
 
@@ -124,7 +124,9 @@ export class TenantManager {
   /**
    * Register a new tenant
    */
-  registerTenant(config: Omit<TenantConfig, 'createdAt' | 'updatedAt'>): TenantConfig {
+  registerTenant(
+    config: Omit<TenantConfig, "createdAt" | "updatedAt">,
+  ): TenantConfig {
     if (this.tenants.has(config.tenantId)) {
       throw new Error(`Tenant already exists: ${config.tenantId}`);
     }
@@ -132,7 +134,7 @@ export class TenantManager {
     const fullConfig: TenantConfig = {
       ...config,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.tenants.set(config.tenantId, fullConfig);
@@ -143,7 +145,7 @@ export class TenantManager {
       requestsThisMonth: 0,
       textProcessedThisMonth: 0,
       piiDetectedThisMonth: 0,
-      monthlyResetDate: this.getNextMonthlyResetDate()
+      monthlyResetDate: this.getNextMonthlyResetDate(),
     });
 
     // Initialize rate limit tracking
@@ -155,13 +157,16 @@ export class TenantManager {
   /**
    * Update tenant configuration
    */
-  updateTenant(tenantId: string, updates: Partial<Omit<TenantConfig, 'tenantId' | 'createdAt'>>): TenantConfig {
+  updateTenant(
+    tenantId: string,
+    updates: Partial<Omit<TenantConfig, "tenantId" | "createdAt">>,
+  ): TenantConfig {
     const config = this.getTenantConfig(tenantId);
 
     const updated: TenantConfig = {
       ...config,
       ...updates,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.tenants.set(tenantId, updated);
@@ -205,8 +210,8 @@ export class TenantManager {
       auditUser: config.tenantId,
       auditMetadata: {
         tenantId: config.tenantId,
-        tenantName: config.name
-      }
+        tenantName: config.name,
+      },
     };
 
     const detector = new OpenRedaction(options);
@@ -247,12 +252,12 @@ export class TenantManager {
     const config = this.getTenantConfig(tenantId);
 
     // Check if suspended
-    if (config.status === 'suspended') {
+    if (config.status === "suspended") {
       throw new TenantSuspendedError(tenantId);
     }
 
     // Check trial expiry
-    if (config.status === 'trial' && config.trialExpiresAt) {
+    if (config.status === "trial" && config.trialExpiresAt) {
       if (new Date() > config.trialExpiresAt) {
         throw new TenantSuspendedError(tenantId);
       }
@@ -281,9 +286,9 @@ export class TenantManager {
       if (usage.requestsThisMonth >= quotas.maxRequestsPerMonth) {
         throw new TenantQuotaExceededError(
           tenantId,
-          'maxRequestsPerMonth',
+          "maxRequestsPerMonth",
           quotas.maxRequestsPerMonth,
-          usage.requestsThisMonth
+          usage.requestsThisMonth,
         );
       }
     }
@@ -293,9 +298,9 @@ export class TenantManager {
       if (text.length > quotas.maxTextLength) {
         throw new TenantQuotaExceededError(
           tenantId,
-          'maxTextLength',
+          "maxTextLength",
           quotas.maxTextLength,
-          text.length
+          text.length,
         );
       }
     }
@@ -306,9 +311,9 @@ export class TenantManager {
       if (requestsInLastMinute >= quotas.rateLimit) {
         throw new TenantQuotaExceededError(
           tenantId,
-          'rateLimit',
+          "rateLimit",
           quotas.rateLimit,
-          requestsInLastMinute
+          requestsInLastMinute,
         );
       }
     }
@@ -319,9 +324,9 @@ export class TenantManager {
       if (patternCount > quotas.maxPatterns) {
         throw new TenantQuotaExceededError(
           tenantId,
-          'maxPatterns',
+          "maxPatterns",
           quotas.maxPatterns,
-          patternCount
+          patternCount,
         );
       }
     }
@@ -343,7 +348,7 @@ export class TenantManager {
 
     // Keep only last 60 seconds of timestamps
     const oneMinuteAgo = Date.now() - 60 * 1000;
-    const recentTimestamps = timestamps.filter(ts => ts > oneMinuteAgo);
+    const recentTimestamps = timestamps.filter((ts) => ts > oneMinuteAgo);
     this.rateLimitTracking.set(tenantId, recentTimestamps);
   }
 
@@ -353,7 +358,7 @@ export class TenantManager {
   private getRequestsInLastMinute(tenantId: string): number {
     const timestamps = this.rateLimitTracking.get(tenantId) || [];
     const oneMinuteAgo = Date.now() - 60 * 1000;
-    return timestamps.filter(ts => ts > oneMinuteAgo).length;
+    return timestamps.filter((ts) => ts > oneMinuteAgo).length;
   }
 
   /**
@@ -404,8 +409,8 @@ export class TenantManager {
   /**
    * Get tenants by status
    */
-  getTenantsByStatus(status: TenantConfig['status']): TenantConfig[] {
-    return Array.from(this.tenants.values()).filter(t => t.status === status);
+  getTenantsByStatus(status: TenantConfig["status"]): TenantConfig[] {
+    return Array.from(this.tenants.values()).filter((t) => t.status === status);
   }
 
   /**
@@ -424,14 +429,14 @@ export class TenantManager {
    * Suspend a tenant
    */
   suspendTenant(tenantId: string): void {
-    this.updateTenant(tenantId, { status: 'suspended' });
+    this.updateTenant(tenantId, { status: "suspended" });
   }
 
   /**
    * Activate a tenant
    */
   activateTenant(tenantId: string): void {
-    this.updateTenant(tenantId, { status: 'active' });
+    this.updateTenant(tenantId, { status: "active" });
   }
 
   /**
@@ -495,12 +500,21 @@ export class TenantManager {
 
     return {
       totalTenants: tenants.length,
-      activeTenants: tenants.filter(t => t.status === 'active').length,
-      trialTenants: tenants.filter(t => t.status === 'trial').length,
-      suspendedTenants: tenants.filter(t => t.status === 'suspended').length,
-      totalRequestsThisMonth: usages.reduce((sum, u) => sum + u.requestsThisMonth, 0),
-      totalTextProcessedThisMonth: usages.reduce((sum, u) => sum + u.textProcessedThisMonth, 0),
-      totalPiiDetectedThisMonth: usages.reduce((sum, u) => sum + u.piiDetectedThisMonth, 0)
+      activeTenants: tenants.filter((t) => t.status === "active").length,
+      trialTenants: tenants.filter((t) => t.status === "trial").length,
+      suspendedTenants: tenants.filter((t) => t.status === "suspended").length,
+      totalRequestsThisMonth: usages.reduce(
+        (sum, u) => sum + u.requestsThisMonth,
+        0,
+      ),
+      totalTextProcessedThisMonth: usages.reduce(
+        (sum, u) => sum + u.textProcessedThisMonth,
+        0,
+      ),
+      totalPiiDetectedThisMonth: usages.reduce(
+        (sum, u) => sum + u.piiDetectedThisMonth,
+        0,
+      ),
     };
   }
 
@@ -529,7 +543,7 @@ export class TenantManager {
 
     // Validate required fields
     if (!config.tenantId || !config.name || !config.status) {
-      throw new Error('Invalid tenant configuration: missing required fields');
+      throw new Error("Invalid tenant configuration: missing required fields");
     }
 
     // Register or update tenant
@@ -557,21 +571,21 @@ export const DEFAULT_TIER_QUOTAS = {
     maxTextLength: 10000,
     maxPatterns: 10,
     maxAuditLogs: 100,
-    rateLimit: 10 // per minute
+    rateLimit: 10, // per minute
   },
   starter: {
     maxRequestsPerMonth: 10000,
     maxTextLength: 50000,
     maxPatterns: 50,
     maxAuditLogs: 1000,
-    rateLimit: 50
+    rateLimit: 50,
   },
   professional: {
     maxRequestsPerMonth: 100000,
     maxTextLength: 100000,
     maxPatterns: 200,
     maxAuditLogs: 10000,
-    rateLimit: 200
+    rateLimit: 200,
   },
   enterprise: {
     // No limits for enterprise
@@ -579,6 +593,6 @@ export const DEFAULT_TIER_QUOTAS = {
     maxTextLength: undefined,
     maxPatterns: undefined,
     maxAuditLogs: undefined,
-    rateLimit: undefined
-  }
+    rateLimit: undefined,
+  },
 } as const;

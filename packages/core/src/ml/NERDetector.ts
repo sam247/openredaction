@@ -3,12 +3,20 @@
  * Provides semantic detection to complement regex-based pattern matching
  */
 
-import type { PIIMatch } from '../types';
+import type { PIIMatch } from "../types";
 
 /**
  * NER entity types supported
  */
-export type NEREntityType = 'PERSON' | 'ORGANIZATION' | 'PLACE' | 'DATE' | 'MONEY' | 'PHONE' | 'EMAIL' | 'URL';
+export type NEREntityType =
+  | "PERSON"
+  | "ORGANIZATION"
+  | "PLACE"
+  | "DATE"
+  | "MONEY"
+  | "PHONE"
+  | "EMAIL"
+  | "URL";
 
 /**
  * NER detection result
@@ -53,7 +61,7 @@ export class NERDetector {
     // Try to load compromise.js (optional peer dependency)
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      this.nlp = require('compromise');
+      this.nlp = require("compromise");
       this.available = true;
     } catch {
       // compromise not installed - NER features disabled
@@ -89,15 +97,15 @@ export class NERDetector {
 
         if (offset !== -1) {
           matches.push({
-            type: 'PERSON',
+            type: "PERSON",
             text: personText,
             start: offset,
             end: offset + personText.length,
             confidence: 0.85, // Base confidence for NER detection
             context: {
               sentence: this.getSentence(text, offset),
-              tags: person.tags()
-            }
+              tags: person.tags(),
+            },
           });
         }
       });
@@ -110,15 +118,15 @@ export class NERDetector {
 
         if (offset !== -1) {
           matches.push({
-            type: 'ORGANIZATION',
+            type: "ORGANIZATION",
             text: orgText,
             start: offset,
             end: offset + orgText.length,
-            confidence: 0.80,
+            confidence: 0.8,
             context: {
               sentence: this.getSentence(text, offset),
-              tags: org.tags()
-            }
+              tags: org.tags(),
+            },
           });
         }
       });
@@ -131,15 +139,15 @@ export class NERDetector {
 
         if (offset !== -1) {
           matches.push({
-            type: 'PLACE',
+            type: "PLACE",
             text: placeText,
             start: offset,
             end: offset + placeText.length,
             confidence: 0.75,
             context: {
               sentence: this.getSentence(text, offset),
-              tags: place.tags()
-            }
+              tags: place.tags(),
+            },
           });
         }
       });
@@ -152,15 +160,15 @@ export class NERDetector {
 
         if (offset !== -1) {
           matches.push({
-            type: 'DATE',
+            type: "DATE",
             text: dateText,
             start: offset,
             end: offset + dateText.length,
-            confidence: 0.90,
+            confidence: 0.9,
             context: {
               sentence: this.getSentence(text, offset),
-              tags: date.tags()
-            }
+              tags: date.tags(),
+            },
           });
         }
       });
@@ -173,81 +181,81 @@ export class NERDetector {
 
         if (offset !== -1) {
           matches.push({
-            type: 'MONEY',
+            type: "MONEY",
             text: moneyText,
             start: offset,
             end: offset + moneyText.length,
             confidence: 0.85,
             context: {
               sentence: this.getSentence(text, offset),
-              tags: m.tags()
-            }
+              tags: m.tags(),
+            },
           });
         }
       });
 
       // Extract emails (compromise.js supports this)
-      const emails = doc.match('#Email');
+      const emails = doc.match("#Email");
       emails.forEach((email: any) => {
         const emailText = email.text();
         const offset = text.indexOf(emailText);
 
         if (offset !== -1) {
           matches.push({
-            type: 'EMAIL',
+            type: "EMAIL",
             text: emailText,
             start: offset,
             end: offset + emailText.length,
             confidence: 0.95,
             context: {
-              sentence: this.getSentence(text, offset)
-            }
+              sentence: this.getSentence(text, offset),
+            },
           });
         }
       });
 
       // Extract phone numbers (compromise.js supports this)
-      const phones = doc.match('#PhoneNumber');
+      const phones = doc.match("#PhoneNumber");
       phones.forEach((phone: any) => {
         const phoneText = phone.text();
         const offset = text.indexOf(phoneText);
 
         if (offset !== -1) {
           matches.push({
-            type: 'PHONE',
+            type: "PHONE",
             text: phoneText,
             start: offset,
             end: offset + phoneText.length,
             confidence: 0.85,
             context: {
-              sentence: this.getSentence(text, offset)
-            }
+              sentence: this.getSentence(text, offset),
+            },
           });
         }
       });
 
       // Extract URLs (compromise.js supports this)
-      const urls = doc.match('#Url');
+      const urls = doc.match("#Url");
       urls.forEach((url: any) => {
         const urlText = url.text();
         const offset = text.indexOf(urlText);
 
         if (offset !== -1) {
           matches.push({
-            type: 'URL',
+            type: "URL",
             text: urlText,
             start: offset,
             end: offset + urlText.length,
-            confidence: 0.90,
+            confidence: 0.9,
             context: {
-              sentence: this.getSentence(text, offset)
-            }
+              sentence: this.getSentence(text, offset),
+            },
           });
         }
       });
     } catch (error) {
       // NER detection failed, return empty array
-      console.warn('[NERDetector] Detection failed:', error);
+      console.warn("[NERDetector] Detection failed:", error);
       return [];
     }
 
@@ -260,7 +268,7 @@ export class NERDetector {
    */
   isConfirmedByNER(
     regexMatch: PIIMatch,
-    nerMatches: NERMatch[]
+    nerMatches: NERMatch[],
   ): { confirmed: boolean; confidence?: number } {
     // Check if any NER match overlaps with regex match
     for (const nerMatch of nerMatches) {
@@ -268,14 +276,14 @@ export class NERDetector {
         regexMatch.start,
         regexMatch.end,
         nerMatch.start,
-        nerMatch.end
+        nerMatch.end,
       );
 
       // Consider confirmed if overlap > 50%
       if (overlap > 0.5) {
         return {
           confirmed: true,
-          confidence: nerMatch.confidence
+          confidence: nerMatch.confidence,
         };
       }
     }
@@ -286,15 +294,12 @@ export class NERDetector {
   /**
    * Boost confidence of regex matches that are confirmed by NER
    */
-  hybridDetection(
-    regexMatches: PIIMatch[],
-    text: string
-  ): HybridMatch[] {
+  hybridDetection(regexMatches: PIIMatch[], text: string): HybridMatch[] {
     if (!this.available) {
       // NER not available, return regex matches as-is with nerConfirmed: false
-      return regexMatches.map(match => ({
+      return regexMatches.map((match) => ({
         ...match,
-        nerConfirmed: false
+        nerConfirmed: false,
       }));
     }
 
@@ -302,8 +307,11 @@ export class NERDetector {
     const nerMatches = this.detect(text);
 
     // Check each regex match against NER
-    return regexMatches.map(match => {
-      const { confirmed, confidence: nerConfidence } = this.isConfirmedByNER(match, nerMatches);
+    return regexMatches.map((match) => {
+      const { confirmed, confidence: nerConfidence } = this.isConfirmedByNER(
+        match,
+        nerMatches,
+      );
 
       if (confirmed && nerConfidence) {
         // Boost confidence for NER-confirmed matches
@@ -313,13 +321,13 @@ export class NERDetector {
           ...match,
           confidence: boostedConfidence,
           nerConfirmed: true,
-          nerConfidence
+          nerConfidence,
         };
       }
 
       return {
         ...match,
-        nerConfirmed: false
+        nerConfirmed: false,
       };
     });
   }
@@ -331,7 +339,7 @@ export class NERDetector {
     start1: number,
     end1: number,
     start2: number,
-    end2: number
+    end2: number,
   ): number {
     const overlapStart = Math.max(start1, start2);
     const overlapEnd = Math.min(end1, end2);
@@ -382,7 +390,7 @@ export class NERDetector {
   private findSentenceStart(text: string, pos: number): number {
     for (let i = pos - 1; i >= 0; i--) {
       const char = text[i];
-      if (char === '.' || char === '!' || char === '?' || char === '\n') {
+      if (char === "." || char === "!" || char === "?" || char === "\n") {
         return i + 1;
       }
     }
@@ -395,7 +403,7 @@ export class NERDetector {
   private findSentenceEnd(text: string, pos: number): number {
     for (let i = pos; i < text.length; i++) {
       const char = text[i];
-      if (char === '.' || char === '!' || char === '?' || char === '\n') {
+      if (char === "." || char === "!" || char === "?" || char === "\n") {
         return i + 1;
       }
     }
@@ -405,20 +413,17 @@ export class NERDetector {
   /**
    * Extract additional NER-only detections (entities not caught by regex)
    */
-  extractNEROnly(
-    nerMatches: NERMatch[],
-    regexMatches: PIIMatch[]
-  ): NERMatch[] {
+  extractNEROnly(nerMatches: NERMatch[], regexMatches: PIIMatch[]): NERMatch[] {
     const nerOnly: NERMatch[] = [];
 
     for (const nerMatch of nerMatches) {
       // Check if this NER match overlaps with any regex match
-      const hasOverlap = regexMatches.some(regexMatch => {
+      const hasOverlap = regexMatches.some((regexMatch) => {
         const overlap = this.calculateOverlap(
           regexMatch.start,
           regexMatch.end,
           nerMatch.start,
-          nerMatch.end
+          nerMatch.end,
         );
         return overlap > 0.3; // Consider overlap if > 30%
       });

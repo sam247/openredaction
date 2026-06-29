@@ -3,7 +3,7 @@
  * Comprehensive coverage for Gulf Cooperation Council (GCC) and regional countries
  */
 
-import { PIIPattern } from '../../types';
+import type { PIIPattern } from "../../types";
 
 /**
  * UAE Emirates ID
@@ -11,23 +11,25 @@ import { PIIPattern } from '../../types';
  * Example: 784-1990-1234567-1
  */
 export const UAE_EMIRATES_ID: PIIPattern = {
-  type: 'UAE_EMIRATES_ID',
-  regex: /\b(784[\-\s]?\d{4}[\-\s]?\d{7}[\-\s]?\d)\b/g,
-  placeholder: '[UAE_ID_{n}]',
+  type: "UAE_EMIRATES_ID",
+  regex: /\b(784[-\s]?\d{4}[-\s]?\d{7}[-\s]?\d)\b/g,
+  placeholder: "[UAE_ID_{n}]",
   priority: 95,
-  severity: 'high',
-  description: 'UAE Emirates ID (15 digits starting with 784)',
+  severity: "high",
+  description: "UAE Emirates ID (15 digits starting with 784)",
   validator: (value: string, context: string) => {
-    const digits = value.replace(/\D/g, '');
+    const digits = value.replace(/\D/g, "");
 
     // Must be exactly 15 digits and start with 784
-    if (digits.length !== 15 || !digits.startsWith('784')) {
+    if (digits.length !== 15 || !digits.startsWith("784")) {
       return false;
     }
 
     // Context validation for better accuracy
-    return /uae|emirates|dubai|abu[- ]?dhabi|national[- ]?id|emirates[- ]?id/i.test(context);
-  }
+    return /uae|emirates|dubai|abu[- ]?dhabi|national[- ]?id|emirates[- ]?id/i.test(
+      context,
+    );
+  },
 };
 
 /**
@@ -37,12 +39,12 @@ export const UAE_EMIRATES_ID: PIIPattern = {
  * Example: 1234567890
  */
 export const SAUDI_NATIONAL_ID: PIIPattern = {
-  type: 'SAUDI_NATIONAL_ID',
+  type: "SAUDI_NATIONAL_ID",
   regex: /\b([12]\d{9})\b/g,
-  placeholder: '[SA_ID_{n}]',
+  placeholder: "[SA_ID_{n}]",
   priority: 95,
-  severity: 'high',
-  description: 'Saudi Arabia National ID or Iqama (10 digits)',
+  severity: "high",
+  description: "Saudi Arabia National ID or Iqama (10 digits)",
   validator: (value: string, context: string) => {
     // Must be 10 digits starting with 1 or 2
     if (value.length !== 10) return false;
@@ -50,7 +52,7 @@ export const SAUDI_NATIONAL_ID: PIIPattern = {
 
     // Context validation
     return /saudi|ksa|kingdom|iqama|national[- ]?id|muqeem/i.test(context);
-  }
+  },
 };
 
 /**
@@ -59,18 +61,18 @@ export const SAUDI_NATIONAL_ID: PIIPattern = {
  * Example: 123456782
  */
 export const ISRAEL_ID: PIIPattern = {
-  type: 'ISRAEL_ID',
+  type: "ISRAEL_ID",
   regex: /\b(\d{9})\b/g,
-  placeholder: '[IL_ID_{n}]',
+  placeholder: "[IL_ID_{n}]",
   priority: 95,
-  severity: 'high',
-  description: 'Israel Teudat Zehut ID number (9 digits with checksum)',
+  severity: "high",
+  description: "Israel Teudat Zehut ID number (9 digits with checksum)",
   validator: (value: string, context: string) => {
     if (value.length !== 9) return false;
 
     // Context validation for better accuracy
     return /israel|teudat|zehut|israeli|national[- ]?id/i.test(context);
-  }
+  },
 };
 
 /**
@@ -80,19 +82,19 @@ export const ISRAEL_ID: PIIPattern = {
  * Example: 12345678901
  */
 export const TURKEY_ID: PIIPattern = {
-  type: 'TURKEY_ID',
+  type: "TURKEY_ID",
   regex: /\b([1-9]\d{10})\b/g,
-  placeholder: '[TR_ID_{n}]',
+  placeholder: "[TR_ID_{n}]",
   priority: 95,
-  severity: 'high',
-  description: 'Turkey TC Kimlik No (11 digits with checksum)',
+  severity: "high",
+  description: "Turkey TC Kimlik No (11 digits with checksum)",
   validator: (value: string, context: string) => {
     if (value.length !== 11) return false;
-    if (value[0] === '0') return false;
+    if (value[0] === "0") return false;
 
     // Context validation for better accuracy
     return /turkey|turkish|tc|kimlik|national[- ]?id/i.test(context);
-  }
+  },
 };
 
 /**
@@ -101,18 +103,18 @@ export const TURKEY_ID: PIIPattern = {
  * Example: 12345678901
  */
 export const QATAR_ID: PIIPattern = {
-  type: 'QATAR_ID',
+  type: "QATAR_ID",
   regex: /\b(\d{11})\b/g,
-  placeholder: '[QA_ID_{n}]',
+  placeholder: "[QA_ID_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Qatar ID (QID) - 11 digits',
+  severity: "high",
+  description: "Qatar ID (QID) - 11 digits",
   validator: (value: string, context: string) => {
     if (value.length !== 11) return false;
 
     // Context validation required to avoid false positives
     return /qatar|qid|doha|national[- ]?id|resident[- ]?permit/i.test(context);
-  }
+  },
 };
 
 /**
@@ -122,12 +124,12 @@ export const QATAR_ID: PIIPattern = {
  * Example: 290010112345
  */
 export const KUWAIT_CIVIL_ID: PIIPattern = {
-  type: 'KUWAIT_CIVIL_ID',
+  type: "KUWAIT_CIVIL_ID",
   regex: /\b(\d{12})\b/g,
-  placeholder: '[KW_ID_{n}]',
+  placeholder: "[KW_ID_{n}]",
   priority: 90,
-  severity: 'high',
-  description: 'Kuwait Civil ID (12 digits)',
+  severity: "high",
+  description: "Kuwait Civil ID (12 digits)",
   validator: (value: string, context: string) => {
     if (value.length !== 12) return false;
 
@@ -144,7 +146,7 @@ export const KUWAIT_CIVIL_ID: PIIPattern = {
     if (day < 1 || day > 31) return false;
 
     return true;
-  }
+  },
 };
 
 /**
@@ -154,12 +156,12 @@ export const KUWAIT_CIVIL_ID: PIIPattern = {
  * Example: 850101123
  */
 export const BAHRAIN_CPR: PIIPattern = {
-  type: 'BAHRAIN_CPR',
+  type: "BAHRAIN_CPR",
   regex: /\b(\d{9})\b/g,
-  placeholder: '[BH_CPR_{n}]',
+  placeholder: "[BH_CPR_{n}]",
   priority: 85,
-  severity: 'high',
-  description: 'Bahrain CPR (Central Population Register) - 9 digits',
+  severity: "high",
+  description: "Bahrain CPR (Central Population Register) - 9 digits",
   validator: (value: string, context: string) => {
     if (value.length !== 9) return false;
 
@@ -176,7 +178,7 @@ export const BAHRAIN_CPR: PIIPattern = {
     if (day < 1 || day > 31) return false;
 
     return true;
-  }
+  },
 };
 
 /**
@@ -185,18 +187,18 @@ export const BAHRAIN_CPR: PIIPattern = {
  * Example: 12345678
  */
 export const OMAN_CIVIL_ID: PIIPattern = {
-  type: 'OMAN_CIVIL_ID',
+  type: "OMAN_CIVIL_ID",
   regex: /\b(\d{8})\b/g,
-  placeholder: '[OM_ID_{n}]',
+  placeholder: "[OM_ID_{n}]",
   priority: 85,
-  severity: 'high',
-  description: 'Oman Civil ID (8 digits)',
+  severity: "high",
+  description: "Oman Civil ID (8 digits)",
   validator: (value: string, context: string) => {
     if (value.length !== 8) return false;
 
     // Context validation required for 8-digit number
     return /oman|muscat|civil[- ]?id|national[- ]?id/i.test(context);
-  }
+  },
 };
 
 /**
@@ -205,18 +207,18 @@ export const OMAN_CIVIL_ID: PIIPattern = {
  * Example: 1234567890
  */
 export const JORDAN_NATIONAL_ID: PIIPattern = {
-  type: 'JORDAN_NATIONAL_ID',
+  type: "JORDAN_NATIONAL_ID",
   regex: /\b(\d{10})\b/g,
-  placeholder: '[JO_ID_{n}]',
+  placeholder: "[JO_ID_{n}]",
   priority: 85,
-  severity: 'high',
-  description: 'Jordan National ID (10 digits)',
+  severity: "high",
+  description: "Jordan National ID (10 digits)",
   validator: (value: string, context: string) => {
     if (value.length !== 10) return false;
 
     // Context validation required
     return /jordan|amman|national[- ]?id|jordanian/i.test(context);
-  }
+  },
 };
 
 /**
@@ -225,19 +227,19 @@ export const JORDAN_NATIONAL_ID: PIIPattern = {
  * Example: 1234567
  */
 export const LEBANON_NATIONAL_ID: PIIPattern = {
-  type: 'LEBANON_NATIONAL_ID',
+  type: "LEBANON_NATIONAL_ID",
   regex: /\b(\d{7,8})\b/g,
-  placeholder: '[LB_ID_{n}]',
+  placeholder: "[LB_ID_{n}]",
   priority: 85,
-  severity: 'high',
-  description: 'Lebanon National ID (7-8 digits)',
+  severity: "high",
+  description: "Lebanon National ID (7-8 digits)",
   validator: (value: string, context: string) => {
     const length = value.length;
     if (length !== 7 && length !== 8) return false;
 
     // Context validation required
     return /lebanon|lebanese|beirut|national[- ]?id/i.test(context);
-  }
+  },
 };
 
 // Export all Middle East patterns
@@ -251,5 +253,5 @@ export const middleEastPatterns: PIIPattern[] = [
   BAHRAIN_CPR,
   OMAN_CIVIL_ID,
   JORDAN_NATIONAL_ID,
-  LEBANON_NATIONAL_ID
+  LEBANON_NATIONAL_ID,
 ];

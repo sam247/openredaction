@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
-import { analytics } from '@/lib/analytics';
-import { gtagEvent } from '@/lib/gtag';
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { analytics } from "@/lib/analytics";
+import { gtagEvent } from "@/lib/gtag";
 
 export default function PageViewTracker() {
   const pathname = usePathname();
@@ -11,10 +11,9 @@ export default function PageViewTracker() {
   useEffect(() => {
     if (pathname) {
       analytics.pageView(pathname);
-      gtagEvent('page_view', { page_path: pathname });
+      gtagEvent("page_view", { page_path: pathname });
     }
   }, [pathname]);
 
   return null;
 }
-

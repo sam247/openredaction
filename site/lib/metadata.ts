@@ -1,8 +1,9 @@
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://openredaction.com';
-const siteName = 'OpenRedaction';
-const siteDescription = 'Regex-first PII redaction. Open-source library with 500+ tested patterns. Runs locally in your app for privacy and control.';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://openredaction.com";
+const siteName = "OpenRedaction";
+const siteDescription =
+  "Regex-first PII redaction. Open-source library with 500+ tested patterns. Runs locally in your app for privacy and control.";
 
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -12,35 +13,35 @@ export const defaultMetadata: Metadata = {
   },
   description: siteDescription,
   keywords: [
-    'PII detection',
-    'PII redaction',
-    'privacy compliance',
-    'GDPR',
-    'HIPAA',
-    'CCPA',
-    'data privacy',
-    'open source',
-    'regex patterns',
-    'pattern matching',
-    'deterministic redaction',
-    'personally identifiable information',
-    'data protection',
-    'npm package',
-    'open-source library',
-    'self-hosted redaction',
-    'Node.js library',
+    "PII detection",
+    "PII redaction",
+    "privacy compliance",
+    "GDPR",
+    "HIPAA",
+    "CCPA",
+    "data privacy",
+    "open source",
+    "regex patterns",
+    "pattern matching",
+    "deterministic redaction",
+    "personally identifiable information",
+    "data protection",
+    "npm package",
+    "open-source library",
+    "self-hosted redaction",
+    "Node.js library",
   ],
-  authors: [{ name: 'OpenRedaction' }],
-  creator: 'OpenRedaction',
-  publisher: 'OpenRedaction',
+  authors: [{ name: "OpenRedaction" }],
+  creator: "OpenRedaction",
+  publisher: "OpenRedaction",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
+    type: "website",
+    locale: "en_US",
     url: siteUrl,
     siteName,
     title: `${siteName} - Open Source PII Detection & Redaction`,
@@ -55,11 +56,11 @@ export const defaultMetadata: Metadata = {
     ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: `${siteName} - Open Source PII Detection & Redaction`,
     description: siteDescription,
     images: [`${siteUrl}/og-image.png`],
-    creator: '@openredaction',
+    creator: "@openredaction",
   },
   robots: {
     index: true,
@@ -67,16 +68,16 @@ export const defaultMetadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
-  manifest: '/site.webmanifest',
+  manifest: "/site.webmanifest",
   alternates: {
     canonical: siteUrl,
   },
@@ -85,7 +86,7 @@ export const defaultMetadata: Metadata = {
 export function generatePageMetadata({
   title,
   description,
-  path = '',
+  path = "",
   noIndex = false,
   image,
 }: {
@@ -99,21 +100,21 @@ export function generatePageMetadata({
   const ogImage = image || `${siteUrl}/og-image.png`;
 
   // Ensure description is within SEO limits (155-160 chars recommended)
-  const truncatedDescription = description.length > 160 
-    ? description.substring(0, 157) + '...' 
-    : description;
+  const truncatedDescription =
+    description.length > 160
+      ? description.substring(0, 157) + "..."
+      : description;
 
   // Ensure title is within SEO limits (50-60 chars recommended)
-  const truncatedTitle = title.length > 60 
-    ? title.substring(0, 57) + '...' 
-    : title;
+  const truncatedTitle =
+    title.length > 60 ? title.substring(0, 57) + "..." : title;
 
   return {
     title: truncatedTitle,
     description: truncatedDescription,
     openGraph: {
-      type: 'website',
-      locale: 'en_US',
+      type: "website",
+      locale: "en_US",
       url,
       siteName,
       title: truncatedTitle,
@@ -128,11 +129,11 @@ export function generatePageMetadata({
       ],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: truncatedTitle,
       description: truncatedDescription,
       images: [ogImage],
-      creator: '@openredaction',
+      creator: "@openredaction",
     },
     alternates: {
       canonical: url,
@@ -145,4 +146,3 @@ export function generatePageMetadata({
       : defaultMetadata.robots,
   };
 }
-

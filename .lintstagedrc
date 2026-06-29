@@ -1,3 +1,3 @@
 {
-  "site/**/*.{ts,tsx}": "eslint --fix --config site/eslint.config.mjs"
+  "**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts}": "biome check --write"
 }
