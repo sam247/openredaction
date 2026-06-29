@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { analytics } from '@/lib/analytics';
@@ -88,16 +88,16 @@ export default function WordPressWaitlistModal({
   const lastFocusRef = useRef<HTMLElement | null>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   /** Avoid SSR / hydration mismatch; portal only attaches after mount. */
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   /** DOM timers are numeric IDs in the browser (Node typings use `Timeout`). */
   const autoOpenTimerRef = useRef<number | null>(null);
 
   /** Same key everywhere: closing the waitlist on any page suppresses timed auto-open for 48h. */
   const storageKey = dismissalStorageKey ?? DEFAULT_DISMISSAL_STORAGE_KEY;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const clearAutoOpenTimer = useCallback(() => {
     if (autoOpenTimerRef.current != null && typeof window !== 'undefined') {

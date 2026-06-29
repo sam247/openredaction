@@ -13,9 +13,12 @@
     "dev": "turbo run dev",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "husky": "9.1.7",
+    "lint-staged": "17.0.8",
     "tsx": "^4.22.4",
     "turbo": "^2.10.0",
     "typescript": "^5.3.3"
