@@ -10,10 +10,10 @@ updates:
     commit-message:
       prefix: 'ci(deps)'
     labels:
-        - dependencies
-        - github-actions
+      - dependencies
+      - github-actions
 
-  - package-ecosystem: npm
+  - package-ecosystem: bun
     directories:
       - packages/core/
       - site/
@@ -22,5 +22,5 @@ updates:
     commit-message:
       prefix: 'deps'
     labels:
-        - dependencies
-        - npm
+      - dependencies
+      - bun
