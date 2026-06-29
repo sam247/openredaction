@@ -203,7 +203,13 @@ export function generateReport(options: OpenRedactionOptions = {}) {
 
   return async (req: Request, res: Response): Promise<void> => {
     const text = req.body?.text;
-    const format = (req.body?.format || req.query.format || "json") as string;
+    const rawFormat = req.body?.format ?? req.query.format ?? "json";
+    const format = typeof rawFormat === "string" ? rawFormat : "json";
+
+    const title =
+      typeof req.body?.title === "string"
+        ? req.body.title
+        : "PII Detection Report";
 
     if (!text) {
       res.status(400).json({
@@ -218,14 +224,14 @@ export function generateReport(options: OpenRedactionOptions = {}) {
       if (format === "html") {
         const html = detector.generateReport(result, {
           format: "html",
-          title: req.body?.title || "PII Detection Report",
+          title,
         });
         res.setHeader("Content-Type", "text/html");
         res.send(html);
       } else if (format === "markdown") {
         const md = detector.generateReport(result, {
           format: "markdown",
-          title: req.body?.title || "PII Detection Report",
+          title,
         });
         res.setHeader("Content-Type", "text/markdown");
         res.send(md);
