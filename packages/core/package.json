@@ -94,7 +94,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tsdown": "^0.22.3",
-    "typescript": "^5.3.3",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.9"
   },
   "engines": {
