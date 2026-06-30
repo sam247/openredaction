@@ -1,21 +1,21 @@
 "use client";
 
-import Link from "next/link";
-import { useState, useEffect } from "react";
 import {
+  BookOpen,
+  ChevronDown,
+  Code,
+  FileText,
+  Github,
+  Heart,
+  Map as MapIcon,
   Menu,
   X,
-  ChevronDown,
-  FileText,
-  Code,
-  Github,
-  BookOpen,
-  Heart,
-  Map,
 } from "lucide-react";
-import Logo from "./Logo";
-import GitHubBadge from "./GitHubBadge";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { analytics } from "@/lib/analytics";
+import GitHubBadge from "./GitHubBadge";
+import Logo from "./Logo";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -61,7 +61,9 @@ export default function Header() {
 
               {/* Resources dropdown: padding-top on the flyout bridges the gap under the label so
                   the pointer never crosses "dead air" (margin) that would fire mouseleave on the parent. */}
+              {/* biome-ignore lint/a11y/noStaticElementInteractions: presentational wrapper captures hover to keep dropdown open while cursor crosses whitespace gap; the interactive button is the child */}
               <div
+                role="presentation"
                 className="relative"
                 onMouseEnter={() => setResourcesOpen(true)}
                 onMouseLeave={() => setResourcesOpen(false)}
@@ -185,7 +187,7 @@ export default function Header() {
                             }}
                           >
                             <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
-                              <Map size={20} className="text-gray-300" />
+                              <MapIcon size={20} className="text-gray-300" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="text-white font-medium text-sm mb-1">

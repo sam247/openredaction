@@ -29,7 +29,8 @@ import { useDeepMemo } from "../utils/use-deep-memo";
  * ```
  */
 export function useOpenRedaction(options?: OpenRedactionOptions) {
-  const detector = useMemo(() => new OpenRedaction(options), [options]);
+  const optionsMemo = useDeepMemo(options, [options]);
+  const detector = useMemo(() => new OpenRedaction(optionsMemo), [optionsMemo]);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
 

@@ -73,16 +73,19 @@ export function StructuredData() {
     <>
       <script
         type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: standard Next.js pattern for JSON-LD structured data; JSON.stringify produces safe JSON, not user-controlled HTML
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
       <script
         type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: standard Next.js pattern for JSON-LD structured data; JSON.stringify produces safe JSON, not user-controlled HTML
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(softwareApplicationSchema),
         }}
       />
       <script
         type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: standard Next.js pattern for JSON-LD structured data; JSON.stringify produces safe JSON, not user-controlled HTML
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
     </>

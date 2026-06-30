@@ -1,11 +1,11 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import Link from "next/link";
-import { Calendar, ArrowLeft } from "lucide-react";
-import { notFound } from "next/navigation";
-import { generatePageMetadata } from "@/lib/metadata";
+import { ArrowLeft, Calendar } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import BlogPostTracker from "@/components/BlogPostTracker";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { generatePageMetadata } from "@/lib/metadata";
 
 // Blog posts data
 const blogPosts: { [key: string]: any } = {
@@ -578,9 +578,11 @@ export default async function BlogPost(props: {
                 prose-li:text-gray-300 prose-li:my-1 prose-li:leading-7 prose-li:text-base
                 prose-hr:border-gray-800 prose-hr:my-10 prose-hr:border-t
                 prose-blockquote:border-l-gray-800 prose-blockquote:text-gray-400"
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: blog content is sanitized server-side before rendering
               dangerouslySetInnerHTML={{ __html: processedContent }}
             />
             <style
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: inline styles injected as static string literal with no user input
               dangerouslySetInnerHTML={{
                 __html: `
               .blog-content p {

@@ -102,12 +102,12 @@ export function generatePageMetadata({
   // Ensure description is within SEO limits (155-160 chars recommended)
   const truncatedDescription =
     description.length > 160
-      ? description.substring(0, 157) + "..."
+      ? `${description.substring(0, 157)}...`
       : description;
 
   // Ensure title is within SEO limits (50-60 chars recommended)
   const truncatedTitle =
-    title.length > 60 ? title.substring(0, 57) + "..." : title;
+    title.length > 60 ? `${title.substring(0, 57)}...` : title;
 
   return {
     title: truncatedTitle,

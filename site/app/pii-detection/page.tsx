@@ -1,9 +1,9 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import Link from "next/link";
-import { generatePageMetadata } from "@/lib/metadata";
+import { AlertCircle, CheckCircle2, Eye, Search, Shield } from "lucide-react";
 import type { Metadata } from "next";
-import { Search, Eye, Shield, CheckCircle2, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { generatePageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generatePageMetadata({
   title:

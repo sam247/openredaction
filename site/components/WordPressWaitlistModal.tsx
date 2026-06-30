@@ -1,5 +1,6 @@
 "use client";
 
+import { X } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -9,7 +10,6 @@ import {
   useSyncExternalStore,
 } from "react";
 import { createPortal } from "react-dom";
-import { X } from "lucide-react";
 import { analytics } from "@/lib/analytics";
 
 const FORTY_EIGHT_HOURS_MS = 48 * 60 * 60 * 1000;
@@ -295,6 +295,7 @@ export default function WordPressWaitlistModal({
     mounted &&
     open &&
     createPortal(
+      // biome-ignore lint/a11y/noStaticElementInteractions: backdrop click-to-close; accessible dialog is the child element with role="dialog"
       <div
         className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/70"
         role="presentation"

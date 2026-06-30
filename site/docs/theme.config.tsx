@@ -1,4 +1,3 @@
-import React from "react";
 import type { DocsThemeConfig } from "nextra-theme-docs";
 import Logo from "./components/Logo";
 

@@ -7,7 +7,7 @@
     "build": "npm run copy-openredaction && npm run docs:export && next build --turbopack",
     "copy-openredaction": "mkdir -p public/lib && cp ../packages/core/dist/index.js public/lib/openredaction.js",
     "start": "next start",
-    "lint": "biome check .",
+    "lint": "biome check . --diagnostic-level=error",
     "typecheck": "tsc --noEmit --incremental",
     "docs:export": "cd docs && npm ci && npm run build && rm -rf ../public/docs && mkdir -p ../public && cp -R out ../public/docs"
   },

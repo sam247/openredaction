@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { ArrowRight, Check, ChevronDown, Copy, Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import WordPressWaitlistTrigger from "@/components/WordPressWaitlistTrigger";
 import Link from "next/link";
-import { Loader2, Copy, Check, ArrowRight, ChevronDown } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import WordPressWaitlistTrigger from "@/components/WordPressWaitlistTrigger";
 import { analytics } from "@/lib/analytics";
 
 interface Detection {
@@ -152,7 +152,7 @@ export default function Playground() {
       };
       updateDetector();
     }
-  }, [selectedPreset]);
+  }, [selectedPreset, libraryLoaded]);
 
   // API presets: gdpr, hipaa, ccpa, finance, education, transportation
   const apiPresets = {

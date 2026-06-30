@@ -1,10 +1,10 @@
 "use client";
 
+import { Github, Instagram, Twitter } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Github, Twitter, Instagram } from "lucide-react";
-import Logo from "./Logo";
 import { analytics } from "@/lib/analytics";
+import Logo from "./Logo";
 
 export default function Footer() {
   const [email, setEmail] = useState("");

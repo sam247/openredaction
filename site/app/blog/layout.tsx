@@ -1,5 +1,5 @@
-import { generatePageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
+import { generatePageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Blog - OpenRedaction Guides & Updates",

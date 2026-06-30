@@ -143,11 +143,31 @@ describe("React hooks integration", () => {
   });
 
   describe("hook stability", () => {
-    it("useOpenRedaction respects stable options memo", async () => {
-      const { result } = renderHook(() => {
-        const options = useMemo(() => ({ ...demoOptions }), []);
-        return useOpenRedaction(options);
-      });
+    it("useOpenRedaction does not recreate the detector when a new but deeply-equal options object is passed", () => {
+      const { result, rerender } = renderHook(
+        ({ opts }) => useOpenRedaction(opts),
+        { initialProps: { opts: { ...demoOptions } } },
+      );
+
+      const firstDetector = result.current.detector;
+      // Pass a new object reference with identical values — should return the same detector
+      rerender({ opts: { ...demoOptions } });
+      expect(result.current.detector).toBe(firstDetector);
+    });
+
+    it("useOpenRedaction recreates the detector when options values genuinely change", () => {
+      const { result, rerender } = renderHook(
+        ({ opts }) => useOpenRedaction(opts),
+        { initialProps: { opts: { ...demoOptions } } },
+      );
+
+      const firstDetector = result.current.detector;
+      rerender({ opts: { ...demoOptions, enableCache: true } });
+      expect(result.current.detector).not.toBe(firstDetector);
+    });
+
+    it("useOpenRedaction works without options", async () => {
+      const { result } = renderHook(() => useOpenRedaction(demoOptions));
 
       await act(async () => {
         await result.current.detect("t@t.com");
