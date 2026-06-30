@@ -1,11 +1,11 @@
 "use client";
 
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { ArrowRight, Calendar } from "lucide-react";
 import Link from "next/link";
-import { Calendar, ArrowRight } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useMemo, Suspense } from "react";
+import { Suspense, useMemo } from "react";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 
 // Curated posts (see app/blog/[slug]/page.tsx)
 const blogPosts = [

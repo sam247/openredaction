@@ -1,10 +1,10 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import WordPressWaitlistTrigger from "@/components/WordPressWaitlistTrigger";
-import Link from "next/link";
 import { Check } from "lucide-react";
-import { generatePageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
+import Link from "next/link";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import WordPressWaitlistTrigger from "@/components/WordPressWaitlistTrigger";
+import { generatePageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Enterprise Support - OpenRedaction",

@@ -1,7 +1,7 @@
 "use client";
 
+import { ExternalLink, Heart } from "lucide-react";
 import Link from "next/link";
-import { Heart, ExternalLink } from "lucide-react";
 import { analytics } from "@/lib/analytics";
 import {
   WALL_OF_LOVE_ENTRIES,

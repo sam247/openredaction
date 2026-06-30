@@ -1,8 +1,8 @@
-import Header from "@/components/Header";
+import type { Metadata } from "next";
 import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import WallOfLove from "@/components/WallOfLove";
 import { generatePageMetadata } from "@/lib/metadata";
-import type { Metadata } from "next";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Community & Wall of Love | OpenRedaction",

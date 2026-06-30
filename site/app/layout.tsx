@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { defaultMetadata } from "@/lib/metadata";
-import { StructuredData } from "@/components/StructuredData";
-import PageViewTracker from "@/components/PageViewTracker";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { BotIdClient } from "botid/client";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+import PageViewTracker from "@/components/PageViewTracker";
+import { StructuredData } from "@/components/StructuredData";
 import WordPressWaitlistRoot from "@/components/WordPressWaitlistRoot";
+import { defaultMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   ...defaultMetadata,

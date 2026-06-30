@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  WP_WAITLIST_OPEN_EVENT,
   type WordPressWaitlistSource,
+  WP_WAITLIST_OPEN_EVENT,
 } from "@/components/WordPressWaitlistModal";
 
 export default function WordPressWaitlistTrigger({

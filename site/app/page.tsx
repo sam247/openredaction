@@ -1,20 +1,20 @@
-import Link from "next/link";
-import type { Metadata } from "next";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { generatePageMetadata } from "@/lib/metadata";
 import {
   ArrowRight,
   Check,
-  Shield,
-  Zap,
   Code2,
-  Lock,
-  Sparkles,
-  ScanSearch,
-  TerminalSquare,
   FileStack,
+  Lock,
+  ScanSearch,
+  Shield,
+  Sparkles,
+  TerminalSquare,
+  Zap,
 } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { generatePageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "OpenRedaction | Open-source PII redaction for Node.js",

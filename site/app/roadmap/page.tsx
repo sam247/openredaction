@@ -1,5 +1,7 @@
-import Header from "@/components/Header";
+import type { Metadata } from "next";
+import Link from "next/link";
 import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import RoadmapViewTracker from "@/components/RoadmapViewTracker";
 import WordPressWaitlistTrigger from "@/components/WordPressWaitlistTrigger";
 import { generatePageMetadata } from "@/lib/metadata";
@@ -8,8 +10,6 @@ import {
   roadmapPlanned,
   roadmapRecentlyShipped,
 } from "@/lib/roadmap-data";
-import type { Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Roadmap | OpenRedaction",

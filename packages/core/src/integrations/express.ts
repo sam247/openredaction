@@ -166,7 +166,13 @@ export function detectPII(options: OpenRedactionOptions = {}) {
   const detector = new OpenRedaction(options);
 
   return async (req: Request, res: Response): Promise<void> => {
-    const text = req.body?.text || (req.query.text as string);
+    const rawText = req.body?.text ?? req.query.text;
+    const text =
+      typeof rawText === "string"
+        ? rawText
+        : Array.isArray(rawText)
+          ? rawText[0]
+          : undefined;
 
     if (!text) {
       res.status(400).json({

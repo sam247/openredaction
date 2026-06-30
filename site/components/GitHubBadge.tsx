@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Github } from "lucide-react";
+import { useEffect, useState } from "react";
 import { analytics } from "@/lib/analytics";
 
 interface GitHubBadgeProps {

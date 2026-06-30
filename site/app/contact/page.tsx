@@ -1,9 +1,9 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import ContactForm from "@/components/ContactForm";
-import Link from "next/link";
-import { generatePageMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
+import Link from "next/link";
+import ContactForm from "@/components/ContactForm";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { generatePageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Get Support for Self-Hosted Deployments",

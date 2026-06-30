@@ -1,6 +1,6 @@
+import { checkBotId } from "botid/server";
 import { type NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
-import { checkBotId } from "botid/server";
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const TO_EMAIL = "sampettiford@googlemail.com";

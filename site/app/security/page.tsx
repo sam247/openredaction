@@ -1,9 +1,9 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import Link from "next/link";
-import { generatePageMetadata } from "@/lib/metadata";
+import { Eye, Key, Lock, Shield } from "lucide-react";
 import type { Metadata } from "next";
-import { Shield, Lock, Eye, Key } from "lucide-react";
+import Link from "next/link";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { generatePageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Security - OpenRedaction Security Practices | OpenRedaction",

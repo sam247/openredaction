@@ -1,5 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server";
 import { checkBotId } from "botid/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { addResendAudienceContact } from "@/lib/waitlist/add-resend-audience-contact";
 
 const resendApiKey = process.env.RESEND_API_KEY;

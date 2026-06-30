@@ -1,16 +1,16 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import Link from "next/link";
-import { generatePageMetadata } from "@/lib/metadata";
-import type { Metadata } from "next";
 import {
-  Shield,
-  Heart,
-  FileText,
-  Lock,
   CheckCircle2,
+  FileText,
+  Heart,
+  Lock,
+  Shield,
   Stethoscope,
 } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { generatePageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generatePageMetadata({
   title:
