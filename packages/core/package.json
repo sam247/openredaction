@@ -21,6 +21,16 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./lite": {
+      "import": {
+        "types": "./dist/lite.d.mts",
+        "default": "./dist/lite.mjs"
+      },
+      "require": {
+        "types": "./dist/lite.d.ts",
+        "default": "./dist/lite.js"
+      }
     }
   },
   "main": "./dist/index.js",

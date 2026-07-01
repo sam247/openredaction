@@ -3,16 +3,13 @@ import { defineConfig } from "tsdown";
 export default defineConfig([
   // Library build: ESM (.mjs) + CJS (.js), dual types via outExtensions
   {
-    entry: ["src/index.ts"],
+    entry: ["src/index.ts", "src/lite.ts"],
     format: ["esm", "cjs"],
     dts: true,
     sourcemap: true,
     outDir: "dist",
     external: [],
     fixedExtension: false,
-    outputOptions: {
-      codeSplitting: false,
-    },
     outExtensions({ format }) {
       return {
         js: format === "cjs" ? ".js" : ".mjs",
