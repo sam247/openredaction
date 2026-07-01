@@ -1,5 +1,5 @@
 {
-  "name": "openredaction",
+  "name": "@openredaction/core",
   "version": "1.1.2",
   "homepage": "https://openredaction.com",
   "bugs": {
@@ -22,24 +22,14 @@
         "default": "./dist/index.js"
       }
     },
-    "./react": {
+    "./lite": {
       "import": {
-        "types": "./dist/react.d.mts",
-        "default": "./dist/react.mjs"
+        "types": "./dist/lite.d.mts",
+        "default": "./dist/lite.mjs"
       },
       "require": {
-        "types": "./dist/react.d.ts",
-        "default": "./dist/react.js"
-      }
-    },
-    "./server": {
-      "import": {
-        "types": "./dist/server.d.mts",
-        "default": "./dist/server.mjs"
-      },
-      "require": {
-        "types": "./dist/server.d.ts",
-        "default": "./dist/server.js"
+        "types": "./dist/lite.d.ts",
+        "default": "./dist/lite.js"
       }
     }
   },
@@ -50,8 +40,10 @@
     "dist"
   ],
   "scripts": {
-    "bench": "vitest bench --run",
-    "bench:watch": "vitest bench",
+    "bench": "bun run bench:node && bun run bench:bun",
+    "bench:node": "tsx tests/performance.bench.ts && tsx tests/cache-performance.bench.ts",
+    "bench:bun": "bun -b tests/performance.bench.ts && bun -b tests/cache-performance.bench.ts",
+    "bench:bun:smol": "bun -b tests/performance.bench.ts --smol && bun -b tests/cache-performance.bench.ts --smol",
     "build": "tsdown",
     "clean": "rm -rf dist",
     "dev": "tsdown --watch",
@@ -59,26 +51,18 @@
     "typecheck": "tsc --noEmit --incremental",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest"
+    "test:watch": "vitest watch"
   },
   "devDependencies": {
-    "@testing-library/react": "^16.0.1",
-    "@types/express": "^5.0.6",
     "@types/node": "^26.0.1",
-    "@types/react": "^19.2.6",
-    "@vitest/coverage-v8": "^4.1.9",
-    "express": "^5.2.1",
-    "happy-dom": "^20.10.6",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "mitata": "latest",
     "tsdown": "^0.22.3",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "tsx": "4.22.4",
+    "typescript": "^6.0.3"
   },
   "peerDependencies": {
     "mammoth": "^1.6.0",
     "pdf-parse": "^1.1.1",
-    "react": "^18.0.0 || ^19.0.0",
     "tesseract.js": "^5.0.0"
   },
   "peerDependenciesMeta": {
@@ -86,9 +70,6 @@
       "optional": true
     },
     "pdf-parse": {
-      "optional": true
-    },
-    "react": {
       "optional": true
     },
     "tesseract.js": {

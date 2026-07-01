@@ -3,43 +3,18 @@ import { defineConfig } from "tsdown";
 export default defineConfig([
   // Library build: ESM (.mjs) + CJS (.js), dual types via outExtensions
   {
-    entry: ["src/index.ts"],
+    entry: ["src/index.ts", "src/lite.ts"],
     format: ["esm", "cjs"],
     dts: true,
     sourcemap: true,
     outDir: "dist",
-    external: ["react", "express"],
+    external: [],
     fixedExtension: false,
-    outputOptions: {
-      codeSplitting: false,
-    },
     outExtensions({ format }) {
       return {
         js: format === "cjs" ? ".js" : ".mjs",
         dts: format === "cjs" ? ".d.ts" : ".d.mts",
       };
-    },
-  },
-  // CLI build
-  {
-    entry: { "index.cli": "src/cli/index.ts" },
-    format: ["cjs"],
-    outDir: "dist",
-    dts: false,
-    banner: "#!/usr/bin/env node",
-    outputOptions: {
-      codeSplitting: false,
-    },
-  },
-  // Pattern testing CLI build
-  {
-    entry: ["src/cli/test-pattern.ts"],
-    format: ["cjs"],
-    outDir: "dist/cli",
-    dts: false,
-    banner: "#!/usr/bin/env node",
-    outputOptions: {
-      codeSplitting: false,
     },
   },
   // Worker thread (WorkerPool loads dist/workers/worker.js)
@@ -50,46 +25,6 @@ export default defineConfig([
     dts: false,
     outputOptions: {
       codeSplitting: false,
-    },
-  },
-  // React subpath: openredaction/react (bundles core + hooks, react external)
-  {
-    entry: ["src/integrations/react.ts"],
-    format: ["esm", "cjs"],
-    dts: true,
-    sourcemap: true,
-    outDir: "dist",
-    clean: false,
-    external: ["react"],
-    fixedExtension: false,
-    outputOptions: {
-      codeSplitting: false,
-    },
-    outExtensions({ format }) {
-      return {
-        js: format === "cjs" ? ".js" : ".mjs",
-        dts: format === "cjs" ? ".d.ts" : ".d.mts",
-      };
-    },
-  },
-  // Node HTTP: APIServer + PrometheusServer (node:http) — not in main entry
-  {
-    entry: ["src/server.ts"],
-    format: ["esm", "cjs"],
-    dts: true,
-    sourcemap: true,
-    outDir: "dist",
-    clean: false,
-    external: ["express"],
-    fixedExtension: false,
-    outputOptions: {
-      codeSplitting: false,
-    },
-    outExtensions({ format }) {
-      return {
-        js: format === "cjs" ? ".js" : ".mjs",
-        dts: format === "cjs" ? ".d.ts" : ".d.mts",
-      };
     },
   },
 ]);

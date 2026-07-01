@@ -8,7 +8,7 @@ const {
   OpenRedaction,
   createBatchProcessor,
   createStreamingDetector,
-} = require("openredaction");
+} = require("@openredaction/core");
 
 async function main() {
   const detector = new OpenRedaction({
