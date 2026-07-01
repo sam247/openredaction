@@ -2,7 +2,7 @@
  * Tests for Middle East ID patterns
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { OpenRedaction } from "../src/detector";
 
 describe("Middle East National ID Detection", () => {

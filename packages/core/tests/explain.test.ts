@@ -2,7 +2,7 @@
  * Tests for Explain API
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { OpenRedaction } from "../src/detector";
 import { createExplainAPI } from "../src/explain/ExplainAPI";
 

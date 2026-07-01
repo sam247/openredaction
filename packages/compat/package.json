@@ -55,8 +55,8 @@
     "dev": "tsdown --watch",
     "lint": "biome check . --diagnostic-level=error",
     "typecheck": "tsc --noEmit --incremental",
-    "test": "bun test || true",
-    "test:watch": "bun test --watch"
+    "test": "vitest run --passWithNoTests || true",
+    "test:watch": "vitest watch --passWithNoTests"
   },
   "dependencies": {
     "@openredaction/core": "workspace:*",

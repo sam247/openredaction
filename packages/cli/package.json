@@ -41,9 +41,9 @@
     "cli:test": "bun src/test-pattern.ts",
     "lint": "biome check . --diagnostic-level=error",
     "typecheck": "tsc --noEmit --incremental",
-    "test": "bun test || true",
-    "test:coverage": "bun test --coverage",
-    "test:watch": "bun test --watch"
+    "test": "vitest run --passWithNoTests || true",
+    "test:coverage": "vitest run --coverage --passWithNoTests",
+    "test:watch": "vitest watch --passWithNoTests"
   },
   "dependencies": {
     "@openredaction/core": "workspace:*"

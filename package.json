@@ -28,7 +28,9 @@
     "husky": "9.1.7",
     "lint-staged": "17.0.8",
     "turbo": "2.10.2",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.4",
+    "@vitejs/plugin-react": "^4.3.4"
   },
   "engines": {
     "node": ">=20.0.0"

@@ -2,7 +2,7 @@
  * Tests for Report Generation
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { OpenRedaction } from "../src/detector";
 import { createReportGenerator } from "../src/reports/ReportGenerator";
 

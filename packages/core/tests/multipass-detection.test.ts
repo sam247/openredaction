@@ -2,7 +2,7 @@
  * Tests for Multi-pass Detection System
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { OpenRedaction } from "../src/detector";
 import {
   createSimpleMultiPass,

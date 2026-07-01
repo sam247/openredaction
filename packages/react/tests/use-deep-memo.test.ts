@@ -1,5 +1,5 @@
-import { describe, expect, it, mock } from "bun:test";
 import { renderHook } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { useDeepMemo } from "../src/use-deep-memo";
 
 describe("useDeepMemo", () => {
@@ -93,7 +93,7 @@ describe("useDeepMemo", () => {
     });
 
     it("computes value eagerly on first render (no lazy initializer needed)", () => {
-      const factory = mock(() => ({ computed: true }));
+      const factory = vi.fn(() => ({ computed: true }));
       const { result, rerender } = renderHook(() =>
         useDeepMemo(factory(), [{ key: "stable" }]),
       );
