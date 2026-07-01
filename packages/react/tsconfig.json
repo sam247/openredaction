@@ -1,26 +1,11 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "lib": ["ES2020", "DOM"],
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "jsx": "react-jsx",
-    "allowJs": false,
-    "checkJs": false,
     "outDir": "./dist",
     "rootDir": "./src",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "lib": ["ES2020", "DOM"],
+    "jsx": "react-jsx",
+    "types": ["node", "react"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tests"]
