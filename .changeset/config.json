@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": ["@changesets/changelog-github", { "repo": "sam247/openredaction" }],
+  "commit": true,
+  "fixed": [
+    [
+      "@openredaction/core",
+      "@openredaction/cli",
+      "@openredaction/server",
+      "@openredaction/express",
+      "@openredaction/react",
+      "openredaction"
+    ]
+  ],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": ["openredaction-site"],
+  "privatePackages": false
+}
