@@ -2,7 +2,7 @@
  * Tests for result caching
  */
 
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "bun:test";
 import { OpenRedaction } from "../src/detector";
 
 describe("Result Caching", () => {

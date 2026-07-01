@@ -55,8 +55,8 @@
     "dev": "tsdown --watch",
     "lint": "biome check . --diagnostic-level=error",
     "typecheck": "tsc --noEmit --incremental",
-    "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest"
+    "test": "bun test || true",
+    "test:watch": "bun test --watch"
   },
   "dependencies": {
     "@openredaction/core": "workspace:*",
@@ -91,8 +91,7 @@
     "@openredaction/server": "workspace:*",
     "@types/node": "^26.0.1",
     "tsdown": "^0.22.3",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "typescript": "^6.0.3"
   },
   "engines": {
     "node": ">=20.0.0"

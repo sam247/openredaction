@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { OpenRedaction } from "../src/detector";
 import { CsvProcessor } from "../src/document/CsvProcessor";
 import { JsonProcessor } from "../src/document/JsonProcessor";

@@ -1,7 +1,7 @@
+import { afterEach, describe, expect, it } from "bun:test";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import express from "express";
-import { afterEach, describe, expect, it } from "vitest";
 import { detectPII, openredactionMiddleware } from "../src/index";
 
 function listen(

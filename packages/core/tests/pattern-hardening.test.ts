@@ -4,7 +4,7 @@
  */
 /** biome-ignore-all lint/suspicious/noExportsInTest: <explanation> */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { OpenRedaction } from "../src/detector";
 import {
   enhanceValidator,

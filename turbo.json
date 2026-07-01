@@ -7,7 +7,7 @@
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "test": {
-      "outputs": ["coverage/**"]
+      "outputs": []
     },
     "lint": {
       "outputs": []

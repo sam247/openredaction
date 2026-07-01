@@ -35,9 +35,9 @@
     "dev": "tsdown --watch",
     "lint": "biome check . --diagnostic-level=error",
     "typecheck": "tsc --noEmit --incremental",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest"
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:watch": "bun test --watch"
   },
   "dependencies": {
     "@openredaction/core": "workspace:*"
@@ -51,13 +51,12 @@
     "@types/node": "^26.0.1",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.0.4",
-    "@vitest/coverage-v8": "^4.1.9",
+    "@happy-dom/global-registrator": "^20.10.6",
     "happy-dom": "^20.10.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tsdown": "^0.22.3",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "typescript": "^6.0.3"
   },
   "engines": {
     "node": ">=20.0.0"

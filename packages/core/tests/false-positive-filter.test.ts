@@ -2,7 +2,7 @@
  * Tests for False Positive Filtering
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { OpenRedaction } from "../src/detector";
 import { isFalsePositive } from "../src/filters/FalsePositiveFilter";
 

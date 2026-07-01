@@ -2,7 +2,7 @@
  * Tests for Context Analysis functionality
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import {
   analyzeContextFeatures,
   analyzeFullContext,

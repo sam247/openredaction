@@ -1,11 +1,8 @@
-// @vitest-environment happy-dom
-
-import { act, renderHook, waitFor } from "@testing-library/react";
-import { useMemo } from "react";
 /**
  * MVP React integration tests for @openredaction/react hooks (jsdom + RTL).
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import {
   useAutoRedact,
   useBatchDetector,

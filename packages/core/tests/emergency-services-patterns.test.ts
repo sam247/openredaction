@@ -2,7 +2,7 @@
  * Tests for Emergency Services patterns
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { OpenRedaction } from "../src/detector";
 
 describe("Emergency Services Pattern Detection", () => {

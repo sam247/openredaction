@@ -1,9 +1,9 @@
 /**
  * Performance benchmarks for OpenRedaction
- * Run with: npm run bench
+ * Run with: bun run bench
  */
 
-import { bench, describe } from "vitest";
+import { bench, run, summary } from "mitata";
 import { OpenRedaction } from "../src/detector";
 
 // Test data of various sizes
@@ -174,160 +174,164 @@ Jane Manager:
 - Review access logs for suspicious activity
 `;
 
-describe("Performance Benchmarks", () => {
-  describe("Small text (< 100 chars)", () => {
-    bench("default configuration", () => {
-      const redactor = new OpenRedaction();
-      redactor.detect(smallText);
-    });
-
-    bench("with context analysis", () => {
-      const redactor = new OpenRedaction({
-        enableContextAnalysis: true,
-      });
-      redactor.detect(smallText);
-    });
-
-    bench("with multi-pass (3 passes)", () => {
-      const redactor = new OpenRedaction({
-        enableMultiPass: true,
-        multiPassCount: 3,
-      });
-      redactor.detect(smallText);
-    });
-
-    bench("all features enabled", () => {
-      const redactor = new OpenRedaction({
-        enableContextAnalysis: true,
-        enableFalsePositiveFilter: true,
-        enableMultiPass: true,
-      });
-      redactor.detect(smallText);
-    });
+summary(() => {
+  bench("default configuration", () => {
+    const redactor = new OpenRedaction();
+    redactor.detect(smallText);
   });
 
-  describe("Medium text (~500 chars)", () => {
-    bench("default configuration", () => {
-      const redactor = new OpenRedaction();
-      redactor.detect(mediumText);
+  bench("with context analysis", () => {
+    const redactor = new OpenRedaction({
+      enableContextAnalysis: true,
     });
-
-    bench("with context analysis", () => {
-      const redactor = new OpenRedaction({
-        enableContextAnalysis: true,
-      });
-      redactor.detect(mediumText);
-    });
-
-    bench("with multi-pass (3 passes)", () => {
-      const redactor = new OpenRedaction({
-        enableMultiPass: true,
-        multiPassCount: 3,
-      });
-      redactor.detect(mediumText);
-    });
-
-    bench("all features enabled", () => {
-      const redactor = new OpenRedaction({
-        enableContextAnalysis: true,
-        enableFalsePositiveFilter: true,
-        enableMultiPass: true,
-      });
-      redactor.detect(mediumText);
-    });
+    redactor.detect(smallText);
   });
 
-  describe("Target: 2KB text (production benchmark)", () => {
-    bench("default configuration (target: <10ms)", () => {
-      const redactor = new OpenRedaction();
-      redactor.detect(twoKbText);
+  bench("with multi-pass (3 passes)", () => {
+    const redactor = new OpenRedaction({
+      enableMultiPass: true,
+      multiPassCount: 3,
     });
-
-    bench("with context analysis", () => {
-      const redactor = new OpenRedaction({
-        enableContextAnalysis: true,
-      });
-      redactor.detect(twoKbText);
-    });
-
-    bench("with multi-pass (3 passes)", () => {
-      const redactor = new OpenRedaction({
-        enableMultiPass: true,
-        multiPassCount: 3,
-      });
-      redactor.detect(twoKbText);
-    });
-
-    bench("all features enabled", () => {
-      const redactor = new OpenRedaction({
-        enableContextAnalysis: true,
-        enableFalsePositiveFilter: true,
-        enableMultiPass: true,
-      });
-      redactor.detect(twoKbText);
-    });
+    redactor.detect(smallText);
   });
 
-  describe("Large text (>2KB)", () => {
-    bench("default configuration", () => {
-      const redactor = new OpenRedaction();
-      redactor.detect(largeText);
+  bench("all features enabled", () => {
+    const redactor = new OpenRedaction({
+      enableContextAnalysis: true,
+      enableFalsePositiveFilter: true,
+      enableMultiPass: true,
     });
-
-    bench("with context analysis", () => {
-      const redactor = new OpenRedaction({
-        enableContextAnalysis: true,
-      });
-      redactor.detect(largeText);
-    });
-
-    bench("with multi-pass (3 passes)", () => {
-      const redactor = new OpenRedaction({
-        enableMultiPass: true,
-        multiPassCount: 3,
-      });
-      redactor.detect(largeText);
-    });
-
-    bench("all features enabled", () => {
-      const redactor = new OpenRedaction({
-        enableContextAnalysis: true,
-        enableFalsePositiveFilter: true,
-        enableMultiPass: true,
-      });
-      redactor.detect(largeText);
-    });
-  });
-
-  describe("Batch processing simulation", () => {
-    const documents = [smallText, mediumText, twoKbText];
-
-    bench("sequential processing (3 documents)", () => {
-      const redactor = new OpenRedaction();
-      for (const doc of documents) {
-        redactor.detect(doc);
-      }
-    });
-
-    bench("with reused instance", () => {
-      const redactor = new OpenRedaction({
-        enableContextAnalysis: true,
-      });
-      for (const doc of documents) {
-        redactor.detect(doc);
-      }
-    });
-  });
-
-  describe("Pattern compilation overhead", () => {
-    bench("new instance per detection (worst case)", () => {
-      const redactor = new OpenRedaction();
-      redactor.detect(smallText);
-    });
-
-    bench("reused instance (best case)", () => {
-      const redactor = new OpenRedaction();
-      redactor.detect(smallText);
-    });
+    redactor.detect(smallText);
   });
 });
+
+summary(() => {
+  bench("default configuration", () => {
+    const redactor = new OpenRedaction();
+    redactor.detect(mediumText);
+  });
+
+  bench("with context analysis", () => {
+    const redactor = new OpenRedaction({
+      enableContextAnalysis: true,
+    });
+    redactor.detect(mediumText);
+  });
+
+  bench("with multi-pass (3 passes)", () => {
+    const redactor = new OpenRedaction({
+      enableMultiPass: true,
+      multiPassCount: 3,
+    });
+    redactor.detect(mediumText);
+  });
+
+  bench("all features enabled", () => {
+    const redactor = new OpenRedaction({
+      enableContextAnalysis: true,
+      enableFalsePositiveFilter: true,
+      enableMultiPass: true,
+    });
+    redactor.detect(mediumText);
+  });
+});
+
+summary(() => {
+  bench("default configuration (target: <10ms)", () => {
+    const redactor = new OpenRedaction();
+    redactor.detect(twoKbText);
+  });
+
+  bench("with context analysis", () => {
+    const redactor = new OpenRedaction({
+      enableContextAnalysis: true,
+    });
+    redactor.detect(twoKbText);
+  });
+
+  bench("with multi-pass (3 passes)", () => {
+    const redactor = new OpenRedaction({
+      enableMultiPass: true,
+      multiPassCount: 3,
+    });
+    redactor.detect(twoKbText);
+  });
+
+  bench("all features enabled", () => {
+    const redactor = new OpenRedaction({
+      enableContextAnalysis: true,
+      enableFalsePositiveFilter: true,
+      enableMultiPass: true,
+    });
+    redactor.detect(twoKbText);
+  });
+});
+
+summary(() => {
+  bench("default configuration", () => {
+    const redactor = new OpenRedaction();
+    redactor.detect(largeText);
+  });
+
+  bench("with context analysis", () => {
+    const redactor = new OpenRedaction({
+      enableContextAnalysis: true,
+    });
+    redactor.detect(largeText);
+  });
+
+  bench("with multi-pass (3 passes)", () => {
+    const redactor = new OpenRedaction({
+      enableMultiPass: true,
+      multiPassCount: 3,
+    });
+    redactor.detect(largeText);
+  });
+
+  bench("all features enabled", () => {
+    const redactor = new OpenRedaction({
+      enableContextAnalysis: true,
+      enableFalsePositiveFilter: true,
+      enableMultiPass: true,
+    });
+    redactor.detect(largeText);
+  });
+});
+
+summary(() => {
+  const documents = [smallText, mediumText, twoKbText];
+
+  bench("sequential processing (3 documents)", () => {
+    const redactor = new OpenRedaction();
+    for (const doc of documents) {
+      redactor.detect(doc);
+    }
+  });
+
+  bench("with reused instance", () => {
+    const redactor = new OpenRedaction({
+      enableContextAnalysis: true,
+    });
+    for (const doc of documents) {
+      redactor.detect(doc);
+    }
+  });
+});
+
+summary(() => {
+  bench("new instance per detection (worst case)", () => {
+    const redactor = new OpenRedaction();
+    redactor.detect(smallText);
+  });
+
+  bench("reused instance (best case)", () => {
+    const redactor = new OpenRedaction();
+    redactor.detect(smallText);
+  });
+});
+
+void (async () => {
+  await run({
+    format: process.env.CI ? "markdown" : "mitata",
+  });
+})();
