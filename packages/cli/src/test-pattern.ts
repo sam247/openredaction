@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Pattern Testing CLI Tool
  * Test custom patterns before deployment

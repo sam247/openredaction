@@ -37,6 +37,8 @@
     "build": "tsdown",
     "clean": "rm -rf dist",
     "dev": "tsdown --watch",
+    "cli": "bun src/cli.ts",
+    "cli:test": "bun src/test-pattern.ts",
     "lint": "biome check . --diagnostic-level=error",
     "typecheck": "tsc --noEmit --incremental",
     "test": "vitest run --passWithNoTests",
