@@ -52,7 +52,7 @@
   "scripts": {
     "bench": "vitest bench --run",
     "bench:watch": "vitest bench",
-    "build": "tsdown && node scripts/dual-types.js",
+    "build": "tsdown",
     "clean": "rm -rf dist",
     "dev": "tsdown --watch",
     "lint": "biome check . --diagnostic-level=error",
