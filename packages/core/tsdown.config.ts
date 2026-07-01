@@ -1,7 +1,7 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig([
-  // Library build: ESM (.mjs) + CJS (.js), dual types via postbuild
+  // Library build: ESM (.mjs) + CJS (.js), dual types via outExtensions
   {
     entry: ["src/index.ts"],
     format: ["esm", "cjs"],
@@ -14,7 +14,10 @@ export default defineConfig([
       codeSplitting: false,
     },
     outExtensions({ format }) {
-      return { js: format === "cjs" ? ".js" : ".mjs" };
+      return {
+        js: format === "cjs" ? ".js" : ".mjs",
+        dts: format === "cjs" ? ".d.ts" : ".d.mts",
+      };
     },
   },
   // CLI build
@@ -63,7 +66,10 @@ export default defineConfig([
       codeSplitting: false,
     },
     outExtensions({ format }) {
-      return { js: format === "cjs" ? ".js" : ".mjs" };
+      return {
+        js: format === "cjs" ? ".js" : ".mjs",
+        dts: format === "cjs" ? ".d.ts" : ".d.mts",
+      };
     },
   },
   // Node HTTP: APIServer + PrometheusServer (node:http) — not in main entry
@@ -80,7 +86,10 @@ export default defineConfig([
       codeSplitting: false,
     },
     outExtensions({ format }) {
-      return { js: format === "cjs" ? ".js" : ".mjs" };
+      return {
+        js: format === "cjs" ? ".js" : ".mjs",
+        dts: format === "cjs" ? ".d.ts" : ".d.mts",
+      };
     },
   },
 ]);
