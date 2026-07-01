@@ -3,7 +3,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { useMemo } from "react";
 /**
- * MVP React integration tests for openredaction/react hooks (jsdom + RTL).
+ * MVP React integration tests for @openredaction/react hooks (jsdom + RTL).
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -12,7 +12,7 @@ import {
   useFormFieldValidator,
   useOpenRedaction,
   usePIIDetector,
-} from "../src/integrations/react";
+} from "../src/index";
 
 /** Deterministic hook tests: skip FP filter + context scoring. Use non–test-domain emails (see EMAIL validator in personal patterns). */
 const demoOptions = {

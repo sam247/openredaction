@@ -32,6 +32,13 @@ export {
   BatchProcessor,
   createBatchProcessor,
 } from "./batch/BatchProcessor";
+export type { ExportedConfig } from "./config/ConfigExporter";
+// Configuration Import/Export (Phase 3)
+export {
+  ConfigExporter,
+  createConfigPreset,
+  exportForVersionControl,
+} from "./config/ConfigExporter";
 export type { OpenRedactionConfig } from "./config/ConfigLoader";
 // Config system
 export { ConfigLoader } from "./config/ConfigLoader";
@@ -94,6 +101,18 @@ export {
   OCRProcessor,
   XlsxProcessor,
 } from "./document";
+export type { ErrorSuggestion } from "./errors/OpenRedactionError";
+// Error handling
+export {
+  createCacheDisabledError,
+  createConfigLoadError,
+  createInvalidPatternError,
+  createLearningDisabledError,
+  createMultiPassDisabledError,
+  createOptimizationDisabledError,
+  createValidationError,
+  OpenRedactionError,
+} from "./errors/OpenRedactionError";
 export type {
   PatternMatchResult,
   TextExplanation,
@@ -111,15 +130,16 @@ export {
   isFalsePositive,
 } from "./filters/FalsePositiveFilter";
 export type {
-  OpenRedactionMiddlewareOptions,
-  OpenRedactionRequest,
-} from "./integrations/express";
-// Express integration
+  HealthCheckOptions,
+  HealthCheckResult,
+  HealthCheckStatus,
+} from "./health/HealthCheck";
+// Health Check API (Phase 3)
 export {
-  detectPII,
-  generateReport,
-  openredactionMiddleware,
-} from "./integrations/express";
+  createHealthChecker,
+  HealthChecker,
+  healthCheckMiddleware,
+} from "./health/HealthCheck";
 export type {
   LearningData,
   LearningStats,
@@ -144,7 +164,6 @@ export type {
   DetectionPass,
   MultiPassStats,
 } from "./multipass/MultiPassDetector";
-
 // Multi-pass detection
 export {
   createSimpleMultiPass,
@@ -156,7 +175,6 @@ export type {
   OptimizerOptions,
   PatternStats,
 } from "./optimizer/PriorityOptimizer";
-
 // Priority optimization
 export {
   createPriorityOptimizer,
@@ -217,6 +235,20 @@ export {
   StreamingDetector,
 } from "./streaming/StreamingDetector";
 export type {
+  TenantConfig,
+  TenantQuotas,
+  TenantUsage,
+} from "./tenancy";
+// Multi-tenancy (Phase 3)
+export {
+  createTenantManager,
+  DEFAULT_TIER_QUOTAS,
+  TenantManager,
+  TenantNotFoundError,
+  TenantQuotaExceededError,
+  TenantSuspendedError,
+} from "./tenancy";
+export type {
   AuditLogEntry,
   AuditStats,
   DetectionResult,
@@ -236,6 +268,7 @@ export type {
   RoleName,
   Validator,
 } from "./types";
+export { dequal } from "./utils/dequal";
 export {
   ccpaPreset,
   educationPreset,
@@ -249,6 +282,17 @@ export {
   soc2Preset,
   transportLogisticsPreset,
 } from "./utils/presets";
+export type { SafeRegexOptions } from "./utils/safe-regex";
+// Safe Regex Utilities (Security)
+export {
+  compileSafeRegex,
+  isUnsafePattern,
+  RegexMaxMatchesError,
+  RegexTimeoutError,
+  safeExec,
+  safeExecAll,
+  validatePattern,
+} from "./utils/safe-regex";
 export {
   validateAustralianTFN,
   validateCanadianSIN,
@@ -265,48 +309,6 @@ export {
   validateUKPassport,
 } from "./validators";
 export type {
-  DetectTask,
-  DocumentTask,
-  WorkerPoolConfig,
-  WorkerPoolStats,
-  WorkerResult,
-  WorkerTask,
-} from "./workers";
-// Worker threads (parallel processing)
-export {
-  createWorkerPool,
-  WorkerPool,
-} from "./workers";
-
-// React integration is available via subpath: import from 'openredaction/react'
-
-export type { ErrorSuggestion } from "./errors/OpenRedactionError";
-// Error handling
-export {
-  createCacheDisabledError,
-  createConfigLoadError,
-  createInvalidPatternError,
-  createLearningDisabledError,
-  createMultiPassDisabledError,
-  createOptimizationDisabledError,
-  createValidationError,
-  OpenRedactionError,
-} from "./errors/OpenRedactionError";
-export type {
-  TenantConfig,
-  TenantQuotas,
-  TenantUsage,
-} from "./tenancy";
-// Multi-tenancy (Phase 3)
-export {
-  createTenantManager,
-  DEFAULT_TIER_QUOTAS,
-  TenantManager,
-  TenantNotFoundError,
-  TenantQuotaExceededError,
-  TenantSuspendedError,
-} from "./tenancy";
-export type {
   WebhookConfig,
   WebhookDelivery,
   WebhookDeliveryStatus,
@@ -320,35 +322,16 @@ export {
   verifyWebhookSignature,
   WebhookManager,
 } from "./webhooks";
-
-// REST API server → import from `openredaction/server` (keeps `node:http` off the default bundle)
-
-export type { ExportedConfig } from "./config/ConfigExporter";
-// Configuration Import/Export (Phase 3)
-export {
-  ConfigExporter,
-  createConfigPreset,
-  exportForVersionControl,
-} from "./config/ConfigExporter";
 export type {
-  HealthCheckOptions,
-  HealthCheckResult,
-  HealthCheckStatus,
-} from "./health/HealthCheck";
-// Health Check API (Phase 3)
+  DetectTask,
+  DocumentTask,
+  WorkerPoolConfig,
+  WorkerPoolStats,
+  WorkerResult,
+  WorkerTask,
+} from "./workers";
+// Worker threads (parallel processing)
 export {
-  createHealthChecker,
-  HealthChecker,
-  healthCheckMiddleware,
-} from "./health/HealthCheck";
-export type { SafeRegexOptions } from "./utils/safe-regex";
-// Safe Regex Utilities (Security)
-export {
-  compileSafeRegex,
-  isUnsafePattern,
-  RegexMaxMatchesError,
-  RegexTimeoutError,
-  safeExec,
-  safeExecAll,
-  validatePattern,
-} from "./utils/safe-regex";
+  createWorkerPool,
+  WorkerPool,
+} from "./workers";

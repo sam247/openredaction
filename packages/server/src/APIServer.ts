@@ -3,11 +3,14 @@
  * Provides HTTP/REST endpoints for PII detection and redaction
  */
 
-import type { PersistentAuditLogger } from "../audit/PersistentAuditLogger";
-import { OpenRedaction } from "../detector";
-import type { TenantManager } from "../tenancy/TenantManager";
-import type { DetectionResult, OpenRedactionOptions } from "../types";
-import type { WebhookManager } from "../webhooks/WebhookManager";
+import type {
+  DetectionResult,
+  OpenRedactionOptions,
+  PersistentAuditLogger,
+  TenantManager,
+  WebhookManager,
+} from "@openredaction/core";
+import { OpenRedaction } from "@openredaction/core";
 
 /**
  * API Server configuration

@@ -1,6 +1,5 @@
+import { ConfigLoader, OpenRedaction } from "@openredaction/core";
 import * as fs from "fs";
-import { ConfigLoader } from "../config/ConfigLoader";
-import { OpenRedaction } from "../detector";
 
 const args = process.argv.slice(2);
 

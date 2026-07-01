@@ -1,5 +1,5 @@
+import { dequal } from "@openredaction/core";
 import { useRef } from "react";
-import { dequal } from "./dequal";
 
 function depsDeepEqual(
   prev: React.DependencyList,

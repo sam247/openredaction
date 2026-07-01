@@ -4,7 +4,7 @@
  * Test custom patterns before deployment
  */
 
-import { isUnsafePattern, validatePattern } from "../utils/safe-regex.js";
+import { isUnsafePattern, validatePattern } from "@openredaction/core";
 
 const args = process.argv.slice(2);
 

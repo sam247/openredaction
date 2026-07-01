@@ -6,10 +6,13 @@
  * React is a peer dependency - users must install React separately.
  */
 
+import type {
+  DetectionResult,
+  OpenRedactionOptions,
+} from "@openredaction/core";
+import { OpenRedaction } from "@openredaction/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { OpenRedaction } from "../detector";
-import type { DetectionResult, OpenRedactionOptions } from "../types";
-import { useDeepMemo } from "../utils/use-deep-memo";
+import { useDeepMemo } from "./use-deep-memo";
 
 /**
  * Hook for PII detection in React components

@@ -9,7 +9,7 @@ import {
   useFormFieldValidator,
   useOpenRedaction,
   usePIIDetector,
-} from "openredaction/react";
+} from "@openredaction/react";
 import type React from "react";
 import { useState } from "react";
 

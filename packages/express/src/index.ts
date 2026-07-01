@@ -3,9 +3,12 @@
  * Local-first server-side PII detection and redaction
  */
 
+import type {
+  DetectionResult,
+  OpenRedactionOptions,
+} from "@openredaction/core";
+import { OpenRedaction } from "@openredaction/core";
 import type { NextFunction, Request, Response } from "express";
-import { OpenRedaction } from "../detector";
-import type { DetectionResult, OpenRedactionOptions } from "../types";
 
 /**
  * Middleware options

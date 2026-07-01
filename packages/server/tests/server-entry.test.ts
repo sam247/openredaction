@@ -4,9 +4,9 @@ import {
   createAPIServer,
   createPrometheusServer,
   PrometheusServer,
-} from "../src/server";
+} from "../src/index";
 
-describe("openredaction/server entry", () => {
+describe("@openredaction/server entry", () => {
   it("exports HTTP server constructors", () => {
     expect(typeof APIServer).toBe("function");
     expect(typeof createAPIServer).toBe("function");

@@ -2,7 +2,7 @@
 
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { useDeepMemo } from "../src/utils/use-deep-memo";
+import { useDeepMemo } from "../src/use-deep-memo";
 
 describe("useDeepMemo", () => {
   describe("value stability", () => {

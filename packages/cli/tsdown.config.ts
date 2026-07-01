@@ -1,14 +1,14 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig([
-  // Library build: ESM (.mjs) + CJS (.js), dual types via outExtensions
+  // Library entry (exports)
   {
     entry: ["src/index.ts"],
     format: ["esm", "cjs"],
     dts: true,
     sourcemap: true,
     outDir: "dist",
-    external: [],
+    external: ["@openredaction/core"],
     fixedExtension: false,
     outputOptions: {
       codeSplitting: false,
@@ -20,12 +20,26 @@ export default defineConfig([
       };
     },
   },
-  // Worker thread (WorkerPool loads dist/workers/worker.js)
+  // CLI binary
   {
-    entry: ["src/workers/worker.ts"],
+    entry: { "index.cli": "src/cli.ts" },
     format: ["cjs"],
-    outDir: "dist/workers",
+    outDir: "dist",
     dts: false,
+    banner: "#!/usr/bin/env node",
+    external: ["@openredaction/core"],
+    outputOptions: {
+      codeSplitting: false,
+    },
+  },
+  // Pattern testing CLI binary
+  {
+    entry: ["src/test-pattern.ts"],
+    format: ["cjs"],
+    outDir: "dist",
+    dts: false,
+    banner: "#!/usr/bin/env node",
+    external: ["@openredaction/core"],
     outputOptions: {
       codeSplitting: false,
     },

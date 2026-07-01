@@ -1,5 +1,5 @@
 {
-  "name": "@openredaction/core",
+  "name": "openredaction",
   "version": "1.1.2",
   "homepage": "https://openredaction.com",
   "bugs": {
@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/sam247/openredaction.git",
-    "directory": "packages/core"
+    "directory": "packages/compat"
   },
   "license": "MIT",
   "exports": {
@@ -21,6 +21,26 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/react.d.mts",
+        "default": "./dist/react.mjs"
+      },
+      "require": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.js"
+      }
+    },
+    "./server": {
+      "import": {
+        "types": "./dist/server.d.mts",
+        "default": "./dist/server.mjs"
+      },
+      "require": {
+        "types": "./dist/server.d.ts",
+        "default": "./dist/server.js"
+      }
     }
   },
   "main": "./dist/index.js",
@@ -30,27 +50,24 @@
     "dist"
   ],
   "scripts": {
-    "bench": "vitest bench --run",
-    "bench:watch": "vitest bench",
     "build": "tsdown",
     "clean": "rm -rf dist",
     "dev": "tsdown --watch",
     "lint": "biome check . --diagnostic-level=error",
     "typecheck": "tsc --noEmit --incremental",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"
   },
-  "devDependencies": {
-    "@types/node": "^26.0.1",
-    "@vitest/coverage-v8": "^4.1.9",
-    "tsdown": "^0.22.3",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+  "dependencies": {
+    "@openredaction/core": "workspace:*",
+    "@openredaction/express": "workspace:*",
+    "@openredaction/react": "workspace:*",
+    "@openredaction/server": "workspace:*"
   },
   "peerDependencies": {
     "mammoth": "^1.6.0",
     "pdf-parse": "^1.1.1",
+    "react": "^18.0.0 || ^19.0.0",
     "tesseract.js": "^5.0.0"
   },
   "peerDependenciesMeta": {
@@ -60,9 +77,22 @@
     "pdf-parse": {
       "optional": true
     },
+    "react": {
+      "optional": true
+    },
     "tesseract.js": {
       "optional": true
     }
+  },
+  "devDependencies": {
+    "@openredaction/core": "workspace:*",
+    "@openredaction/express": "workspace:*",
+    "@openredaction/react": "workspace:*",
+    "@openredaction/server": "workspace:*",
+    "@types/node": "^26.0.1",
+    "tsdown": "^0.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   },
   "engines": {
     "node": ">=20.0.0"
