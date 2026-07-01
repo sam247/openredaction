@@ -5,5 +5,10 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "happy-dom",
+    coverage: {
+      provider: "v8",
+      clean: true,
+      reporter: ["text", "cobertura"],
+    },
   },
 });
