@@ -58,7 +58,8 @@
     "mitata": "latest",
     "tsdown": "^0.22.3",
     "tsx": "4.22.4",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "unrun": "0.3.1"
   },
   "peerDependencies": {
     "mammoth": "^1.6.0",
