@@ -106,6 +106,23 @@
         "express": "^4.18.0 || ^5.0.0",
       },
     },
+    "packages/hono": {
+      "name": "@openredaction/hono",
+      "version": "1.1.2",
+      "dependencies": {
+        "@openredaction/core": "workspace:*",
+      },
+      "devDependencies": {
+        "@openredaction/core": "workspace:*",
+        "@types/node": "^26.0.1",
+        "hono": "^4.12.27",
+        "tsdown": "^0.22.3",
+        "typescript": "^6.0.3",
+      },
+      "peerDependencies": {
+        "hono": "^4.0.0",
+      },
+    },
     "packages/react": {
       "name": "@openredaction/react",
       "version": "1.1.2",
@@ -425,6 +442,8 @@
     "@openredaction/core": ["@openredaction/core@workspace:packages/core"],
 
     "@openredaction/express": ["@openredaction/express@workspace:packages/express"],
+
+    "@openredaction/hono": ["@openredaction/hono@workspace:packages/hono"],
 
     "@openredaction/react": ["@openredaction/react@workspace:packages/react"],
 
@@ -834,6 +853,8 @@
 
     "hasown": ["hasown@2.0.4", "", { "dependencies": { "function-bind": "^1.1.2" } }, "sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A=="],
 
+    "hono": ["hono@4.12.27", "", {}, "sha512-1yrb/+w6HWQJrUCLkJ2IF5jNIPvvFkblV5RNOYl6bV+OA6p9GLcMpHFFGTosSvHvcAUibuUukRqhlYI4z32C7Q=="],
+
     "hookable": ["hookable@6.1.1", "", {}, "sha512-U9LYDy1CwhMCnprUfeAZWZGByVbhd54hwepegYTK7Pi5NvqEj63ifz5z+xukznehT7i6NIZRu89Ay1AZmRsLEQ=="],
 
     "html-escaper": ["html-escaper@2.0.2", "", {}, "sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg=="],
@@ -1225,6 +1246,8 @@
     "@openredaction/core/typescript": ["typescript@6.0.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
     "@openredaction/express/typescript": ["typescript@6.0.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
+
+    "@openredaction/hono/typescript": ["typescript@6.0.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
     "@openredaction/react/typescript": ["typescript@6.0.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
