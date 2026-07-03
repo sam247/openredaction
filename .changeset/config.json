@@ -9,9 +9,6 @@
     [
       "@openredaction/core",
       "@openredaction/cli",
-      "@openredaction/server",
-      "@openredaction/express",
-      "@openredaction/react",
       "openredaction"
     ]
   ],
