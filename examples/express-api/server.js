@@ -4,13 +4,12 @@
  */
 
 const express = require("express");
+const { OpenRedaction, createBatchProcessor } = require("@openredaction/core");
 const {
-  OpenRedaction,
   openredactionMiddleware,
   detectPII,
   generateReport,
-  createBatchProcessor,
-} = require("openredaction");
+} = require("@openredaction/express");
 
 const app = express();
 app.use(express.json());
@@ -154,7 +153,7 @@ app.get("/api/health", async (req, res) => {
     status: "healthy",
     piiDetection: "operational",
     patterns: detector.getPatterns().length,
-    version: require("../../packages/core/package.json").version,
+    version: require("@openredaction/core/package.json").version,
   });
 });
 

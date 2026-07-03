@@ -31,6 +31,20 @@ npm run test
 npm run lint
 ```
 
+## Changesets
+
+If your PR changes package behavior (bug fixes, features, breaking changes), include a changeset:
+
+```bash
+bunx changeset
+```
+
+This prompts you to select affected packages, choose a bump type (patch/minor/major), and write a changelog summary. Commit the generated `.changeset/*.md` file with your PR.
+
+When your PR is merged, a bot opens a "Version Packages" PR that bumps versions and updates changelogs. Merging that PR publishes to npm.
+
+See [docs/PUBLISHING.md](docs/PUBLISHING.md) for the full release flow.
+
 ## Coding standards
 
 - The project is written in **TypeScript**; keep types up to date and prefer explicit types for public APIs.

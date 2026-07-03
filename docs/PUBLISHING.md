@@ -1,18 +1,28 @@
 # Publishing to npm
 
-The package is published as **openredaction** (unscoped). The GitHub Action publishes on every tag `v*.*.*` (e.g. `v1.1.2`) and opens a matching **GitHub Release**.
+All 6 packages are published to npm using [Changesets](https://github.com/changesets/changesets):
+
+- `@openredaction/core`
+- `@openredaction/cli`
+- `@openredaction/compat` (published as `openredaction` — the umbrella package)
+- `@openredaction/server`
+- `@openredaction/express`
+- `@openredaction/react`
+
+All packages share a single version (fixed mode). The `openredaction-site` package is private and never published.
 
 ## One-time setup
 
 ### 1. Create an npm account (if needed)
 
 - Sign up at [npmjs.com](https://www.npmjs.com/signup).
+
 ### 2. Create an Automation token
 
 - **npm requires 2FA** (or a granular token with "bypass 2FA") to publish. Enable 2FA first: npm → Profile → Account → Two-factor authentication.
 - Log in at [npmjs.com](https://www.npmjs.com/).
-- Profile (top right) → **Access Tokens** → **Generate New Token** → **Automation** (or **Classic** → “Automation”).
-- Copy the token (starts with `npm_`). You won’t see it again.
+- Profile (top right) → **Access Tokens** → **Generate New Token** → **Automation** (or **Classic** → "Automation").
+- Copy the token (starts with `npm_`). You won't see it again.
 
 ### 3. Add the token to GitHub
 
@@ -24,18 +34,35 @@ The package is published as **openredaction** (unscoped). The GitHub Action publ
 
 ## Releasing a new version
 
-1. Bump version in `packages/core/package.json` (e.g. `1.1.2`).
-2. Commit and push to `main`.
-3. Create and push a tag:
-   ```bash
-   git tag -a v1.1.2 -m "Release 1.1.2"
-   git push origin v1.1.2
-   ```
-4. The **Publish to npm** workflow runs, publishes **openredaction@1.1.2** to npm, and creates a GitHub Release for that tag.
+### Step 1: Add a changeset to your PR
 
-**Note:** npm never allows republishing the same version. If CI fails with “cannot publish over previously published versions”, bump the version and use a **new** tag (do not reuse an already-published semver).
+Before opening a PR that changes package behavior, run:
 
-**npm package page README:** Comes from `packages/core/README.md` in the published tarball. To refresh npmjs.com text, change that file and publish a new version (npm does not allow in-place README edits).
+```bash
+bunx changeset
+```
+
+This prompts you to:
+
+1. **Select packages** affected by your change
+2. **Choose bump type** — patch (bug fix), minor (feature), or major (breaking change)
+3. **Write a summary** — a human-readable description that will appear in the changelog
+
+Commit the generated `.changeset/*.md` file alongside your code changes.
+
+### Step 2: Merge your PR
+
+When your PR is merged to `main`, the **Release** workflow runs automatically. If there are pending changesets, it creates (or updates) a **"Version Packages" PR** that:
+
+- Bumps versions in all `package.json` files (all packages share one version)
+- Updates `CHANGELOG.md` in each package
+- Consumes (deletes) the pending changeset files
+
+### Step 3: Merge the Version Packages PR
+
+Review the version bump and changelog entries, then merge the Version Packages PR. This triggers the Release workflow again — this time it publishes all 6 packages to npm and creates a git tag `v{version}`.
+
+**Note:** npm never allows republishing the same version. If publish fails with "cannot publish over previously published versions", add a new changeset with a bump and go through the flow again.
 
 ## Install for users
 
@@ -45,4 +72,10 @@ npm install openredaction
 
 ```ts
 import { OpenRedaction } from 'openredaction';
+```
+
+Or install individual packages:
+
+```bash
+npm install @openredaction/core @openredaction/react
 ```

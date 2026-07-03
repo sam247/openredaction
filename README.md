@@ -5,18 +5,26 @@
 [![Tests](https://img.shields.io/badge/tests-471%20passing-brightgreen.svg)](https://github.com/sam247/openredaction)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
 
-OpenRedaction is an open-source JavaScript/TypeScript library for detecting and redacting PII with a regex-first approach. It runs locally by default and can be combined with an optional hosted API for AI-assisted detection.
+OpenRedaction is an open-source JavaScript/TypeScript library for detecting and
+redacting PII with a regex-first approach. It runs locally by default and can be
+combined with an optional hosted API for AI-assisted detection.
 
 ## What is OpenRedaction?
 
-OpenRedaction is a production-ready library that helps you keep sensitive data out of logs, prompts, and analytics pipelines. It combines 570+ curated regex patterns with advanced context-aware validation, checksum verification, and multiple redaction modes.
+OpenRedaction is a production-ready library that helps you keep sensitive data
+out of logs, prompts, and analytics pipelines. It combines 570+ curated regex
+patterns with advanced context-aware validation, checksum verification, and
+multiple redaction modes.
 
 **Key principles:**
+
 - **Regex-first**: Pattern-based detection runs locally, fast, and private
 - **Fully open source**: MIT licensed, no vendor lock-in
 - **Privacy-first**: All detection happens locally by default
-- **Production-ready**: Large automated test suite covering detection, redaction, and integrations
-- **Hardened patterns**: Advanced validation with checksums and context filtering
+- **Production-ready**: Large automated test suite covering detection,
+  redaction, and integrations
+- **Hardened patterns**: Advanced validation with checksums and context
+  filtering
 
 ## Installation
 
@@ -26,16 +34,19 @@ npm install openredaction
 
 ## Basic Usage (Regex-Only)
 
-The library works entirely with regex patterns by default. All detection happens locally in your application.
+The library works entirely with regex patterns by default. All detection happens
+locally in your application.
 
 ```typescript
-import { OpenRedaction } from 'openredaction';
+import { OpenRedaction } from "openredaction";
 
 const redactor = new OpenRedaction({
-  redactionMode: 'placeholder'
+  redactionMode: "placeholder",
 });
 
-const result = await redactor.detect('My name is John Smith and my email is john@example.com');
+const result = await redactor.detect(
+  "My name is John Smith and my email is john@example.com",
+);
 
 console.log(result.redacted);
 // "My name is [NAME_XXXX] and my email is [EMAIL_XXXX]"
@@ -47,16 +58,17 @@ console.log(result.detections);
 ### Simple Redaction Example
 
 ```typescript
-import { OpenRedaction } from 'openredaction';
+import { OpenRedaction } from "openredaction";
 
 const redactor = new OpenRedaction({
   includeNames: true,
   includeEmails: true,
   includePhones: true,
-  redactionMode: 'mask-middle'
+  redactionMode: "mask-middle",
 });
 
-const input = "Contact Sarah Jones at sarah@example.com or call +1 202-555-0110";
+const input =
+  "Contact Sarah Jones at sarah@example.com or call +1 202-555-0110";
 const { redacted } = await redactor.detect(input);
 
 console.log(redacted);
@@ -66,20 +78,20 @@ console.log(redacted);
 ### Pre-processing for LLM Pipelines
 
 ```typescript
-import { OpenRedaction } from 'openredaction';
+import { OpenRedaction } from "openredaction";
 
 const redactor = new OpenRedaction({
-  preset: 'gdpr',
-  redactionMode: 'token-replace',
-  deterministic: true
+  preset: "gdpr",
+  redactionMode: "token-replace",
+  deterministic: true,
 });
 
 async function sanitizeForLLM(text: string) {
   const { redacted, redactionMap } = await redactor.detect(text);
-  
+
   // Safe to send to LLM
   const response = await sendToLLM(redacted);
-  
+
   // Optionally restore for trusted destinations
   const restored = redactor.restore(response, redactionMap);
   return { redacted, restored, redactionMap };
@@ -91,6 +103,7 @@ async function sanitizeForLLM(text: string) {
 OpenRedaction detects 570+ PII patterns across multiple categories:
 
 ### Personal Information
+
 - Email addresses
 - Phone numbers (US, UK, International)
 - Names (with context-aware validation)
@@ -98,29 +111,34 @@ OpenRedaction detects 570+ PII patterns across multiple categories:
 - Passports, Driver's Licenses
 
 ### Financial (13+ patterns)
+
 - Credit Cards (with Luhn validation)
 - IBANs, Bank Accounts
 - Swift Codes, Routing Numbers
 - Cryptocurrency addresses
 
 ### Government IDs (50+ countries)
+
 - SSN, NINO, NHS Numbers
 - Tax IDs, VAT Numbers
 - Company Registration Numbers
 - ITIN, SIN, and more
 
 ### Healthcare
+
 - Medical Record Numbers
 - NHS Numbers, CHI, EHIC
 - Health Insurance IDs
 - Prescription Numbers, DEA Numbers
 
 ### Digital Identity
+
 - API Keys, OAuth Tokens
 - JWT, Bearer Tokens
 - Social Media IDs
 
 ### Industries (25+)
+
 - Retail, Legal, Real Estate
 - Logistics, Insurance, Healthcare
 - Emergency Response, Hospitality
@@ -128,7 +146,8 @@ OpenRedaction detects 570+ PII patterns across multiple categories:
 
 ## Advanced Configuration
 
-OpenRedaction is highly configurable. Pass options to the constructor to tailor detection and redaction:
+OpenRedaction is highly configurable. Pass options to the constructor to tailor
+detection and redaction:
 
 ```typescript
 const redactor = new OpenRedaction({
@@ -136,34 +155,34 @@ const redactor = new OpenRedaction({
   includeNames: true,
   includeAddresses: false,
   includeEmails: true,
-  
+
   // Filter by category or specific patterns
-  categories: ['financial'],
-  patterns: ['EMAIL', 'SSN'],
-  
+  categories: ["financial"],
+  patterns: ["EMAIL", "SSN"],
+
   // Add custom patterns
   customPatterns: [
     {
-      type: 'EMPLOYEE_ID',
+      type: "EMPLOYEE_ID",
       regex: /EMP-\d{4}/g,
       priority: 10,
-      placeholder: '[EMPLOYEE_ID_{n}]',
-      severity: 'medium',
+      placeholder: "[EMPLOYEE_ID_{n}]",
+      severity: "medium",
     },
   ],
-  
+
   // Whitelist approved terms
-  whitelist: ['ACME Corp'],
-  
+  whitelist: ["ACME Corp"],
+
   // Redaction modes
-  redactionMode: 'mask-all', // placeholder | mask-middle | mask-all | format-preserving | token-replace
-  
+  redactionMode: "mask-all", // placeholder | mask-middle | mask-all | format-preserving | token-replace
+
   // Compliance presets
-  preset: 'hipaa', // gdpr | hipaa | ccpa | pci-dss | soc2 | finance | education | transportation
-  
+  preset: "hipaa", // gdpr | hipaa | ccpa | pci-dss | soc2 | finance | education | transportation
+
   // Advanced options
-  deterministic: true,           // Stable placeholders for same value
-  enableContextAnalysis: true,   // Context-aware filtering
+  deterministic: true, // Stable placeholders for same value
+  enableContextAnalysis: true, // Context-aware filtering
   confidenceThreshold: 0.5,
   enableCache: true,
 });
@@ -179,24 +198,33 @@ const redactor = new OpenRedaction({
 
 ## Ecosystem
 
-- **[openredaction](https://www.npmjs.com/package/openredaction)** (this package) — Core library for local, regex-based PII detection and redaction
-- **[Website & playground](https://openredaction.com)** — Try the library in the browser
-- **Source & issues**: [github.com/sam247/openredaction](https://github.com/sam247/openredaction)
+- **[openredaction](https://www.npmjs.com/package/openredaction)** (this
+  package) — Core library for local, regex-based PII detection and redaction
+- **[Website & playground](https://openredaction.com)** — Try the library in the
+  browser
+- **Source & issues**:
+  [github.com/sam247/openredaction](https://github.com/sam247/openredaction)
 
 ## Limitations & Disclaimers
 
-- **Best-effort detection**: Regex-based detection is best-effort and may miss edge cases or context-dependent PII
-- **Pattern coverage**: While we maintain 570+ patterns, the set is not exhaustive and may not cover all PII types
-- **Manual review recommended**: For highly sensitive use cases, manually review redacted output
-- **No guarantees**: This library is provided as-is without warranties. Use at your own risk
+- **Best-effort detection**: Regex-based detection is best-effort and may miss
+  edge cases or context-dependent PII
+- **Pattern coverage**: While we maintain 570+ patterns, the set is not
+  exhaustive and may not cover all PII types
+- **Manual review recommended**: For highly sensitive use cases, manually review
+  redacted output
+- **No guarantees**: This library is provided as-is without warranties. Use at
+  your own risk
 
 ## Contributing
 
-We welcome contributions! OpenRedaction is fully open source and community-driven.
+We welcome contributions! OpenRedaction is fully open source and
+community-driven.
 
 ### Contribution Areas
 
-- **Pattern improvements**: We maintain a regex hardening plan and welcome contributions to improve or extend patterns
+- **Pattern improvements**: We maintain a regex hardening plan and welcome
+  contributions to improve or extend patterns
 - **Bug fixes**: Report issues and submit fixes
 - **Documentation**: Help improve docs and examples
 - **Tests**: Add test cases for edge cases
@@ -209,11 +237,14 @@ We welcome contributions! OpenRedaction is fully open source and community-drive
 4. Add tests (if applicable)
 5. Submit a pull request
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for our workflow, coding standards, and testing steps.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for our workflow, coding standards, and
+testing steps.
 
 ### Hardening & Pattern Development
 
-We continuously improve our regex patterns and detection accuracy. Recent improvements include:
+We continuously improve our regex patterns and detection accuracy. Recent
+improvements include:
+
 - Enhanced checksum validation for financial patterns
 - Context-aware false positive filtering
 - Separator normalization for international formats
@@ -221,9 +252,14 @@ We continuously improve our regex patterns and detection accuracy. Recent improv
 
 ## Community & Support
 
-- **Report bugs or request features**: Open a [GitHub issue](https://github.com/sam247/openredaction/issues) with details and reproduction steps
-- **Questions or discussions**: Use [GitHub Discussions](https://github.com/sam247/openredaction/discussions) or issues to talk through ideas
-- **Attribution**: Mention "OpenRedaction" and link to this repository in research or production use
+- **Report bugs or request features**: Open a
+  [GitHub issue](https://github.com/sam247/openredaction/issues) with details
+  and reproduction steps
+- **Questions or discussions**: Use
+  [GitHub Discussions](https://github.com/sam247/openredaction/discussions) or
+  issues to talk through ideas
+- **Attribution**: Mention "OpenRedaction" and link to this repository in
+  research or production use
 
 ## License
 

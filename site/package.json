@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "npm run copy-openredaction && npm run docs:export && next build --turbopack",
-    "copy-openredaction": "mkdir -p public/lib && cp ../packages/core/dist/index.js public/lib/openredaction.js",
+    "copy-openredaction": "mkdir -p public/lib && cp ../packages/compat/dist/index.js public/lib/openredaction.js",
     "start": "next start",
     "lint": "biome check . --diagnostic-level=error",
     "typecheck": "tsc --noEmit --incremental",

@@ -1,10 +1,12 @@
 # OpenRedaction Examples
 
-Practical examples demonstrating how to integrate OpenRedaction into your applications.
+Practical examples demonstrating how to integrate OpenRedaction into your
+applications.
 
 ## 📁 Examples
 
 ### 1. Basic Node.js (`nodejs-basic/`)
+
 **Pure Node.js implementation** showing core detection features.
 
 ```bash
@@ -13,6 +15,7 @@ node example.js
 ```
 
 **Demonstrates:**
+
 - Simple PII detection
 - Batch processing
 - Streaming large documents
@@ -20,6 +23,7 @@ node example.js
 - Debug with explain() API
 
 ### 2. Express API (`express-api/`)
+
 **RESTful API** with middleware and route handlers.
 
 ```bash
@@ -29,6 +33,7 @@ node server.js
 ```
 
 **Demonstrates:**
+
 - Auto-redaction middleware
 - Strict PII rejection
 - Detection endpoints
@@ -37,6 +42,7 @@ node server.js
 - Custom analysis logic
 
 **API Endpoints:**
+
 - `POST /api/secure/submit` - Auto-redact PII
 - `POST /api/strict/comment` - Reject if PII found
 - `POST /api/detect` - Detect PII in text
@@ -45,6 +51,7 @@ node server.js
 - `POST /api/batch` - Batch processing
 
 ### 3. React Form (`react-form/`)
+
 **React application** with real-time PII detection hooks.
 
 ```bash
@@ -54,6 +61,7 @@ npm run dev
 ```
 
 **Demonstrates:**
+
 - Basic detection with manual control
 - Real-time detection with debouncing
 - Form field validation with PII blocking
@@ -61,6 +69,7 @@ npm run dev
 - Auto-redaction with live preview
 
 **Five React Hooks:**
+
 - `useOpenRedaction()` - Manual detection
 - `usePIIDetector()` - Real-time detection
 - `useFormFieldValidator()` - Form validation
@@ -74,11 +83,11 @@ npm install openredaction
 ```
 
 ```javascript
-const { OpenRedaction } = require('openredaction');
+const { OpenRedaction } = require("openredaction");
 
 async function main() {
   const detector = new OpenRedaction();
-  const result = await detector.detect('Contact john@example.com');
+  const result = await detector.detect("Contact john@example.com");
 
   console.log(result.redacted);
   console.log(result.detections);
@@ -104,6 +113,7 @@ These examples cover common use cases:
 ## 🔒 Privacy First
 
 Examples run **locally** in your runtime:
+
 - No vendor API is required for core detection
 - No data leaves your application unless you add integrations
 - Works offline for library-only usage

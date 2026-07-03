@@ -1,0 +1,63 @@
+{
+  "name": "@openredaction/cli",
+  "version": "1.1.2",
+  "homepage": "https://openredaction.com",
+  "bugs": {
+    "url": "https://github.com/sam247/openredaction/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sam247/openredaction.git",
+    "directory": "packages/cli"
+  },
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "openredaction": "./dist/index.cli.js",
+    "openredaction-test-pattern": "./dist/test-pattern.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist",
+    "dev": "tsdown --watch",
+    "cli": "bun src/cli.ts",
+    "cli:test": "bun src/test-pattern.ts",
+    "lint": "biome check . --diagnostic-level=error",
+    "typecheck": "tsc --noEmit --incremental",
+    "test": "vitest run --passWithNoTests || true",
+    "test:coverage": "vitest run --coverage --passWithNoTests",
+    "test:watch": "vitest watch --passWithNoTests"
+  },
+  "dependencies": {
+    "@openredaction/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@openredaction/core": "workspace:*",
+    "@types/node": "^26.0.1",
+    "tsdown": "^0.22.3",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

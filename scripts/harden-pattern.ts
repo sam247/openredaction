@@ -1,4 +1,4 @@
-#!/usr/bin/env tsx
+#!/usr/bin/env bun
 
 /**
  * Pattern Hardening Script
@@ -14,9 +14,9 @@
  *   --batch: Process multiple patterns from a file
  */
 
-import { execSync } from "child_process";
-import { existsSync, readFileSync, writeFileSync } from "fs";
-import { join } from "path";
+import { execSync } from "node:child_process";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
 interface PatternChange {
   patternType: string;
@@ -63,6 +63,7 @@ function backupFile(filePath: string): string {
   }
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+
   const backupPath = join(
     BACKUP_DIR,
     `${filePath.replace(/\//g, "_")}.${timestamp}.bak`,
@@ -132,7 +133,10 @@ function findPattern(
 
   for (const file of files) {
     const filePath = join(patternsDir, file);
-    if (!existsSync(filePath)) continue;
+
+    if (!existsSync(filePath)) {
+      continue;
+    }
 
     const content = readFileSync(filePath, "utf-8");
     const lines = content.split("\n");
@@ -195,9 +199,6 @@ function updateValidatorForSeparators(validatorCode: string): string {
     return validatorCode; // Already normalized
   }
 
-  // Add normalization at the start of validator
-  const normalized = `const cleaned = value.replace(/[\\s\\u00A0.-]/g, '');\n      `;
-
   // Replace value with cleaned in the validator logic
   if (validatorCode.includes("value.replace")) {
     // Already has some normalization, enhance it
@@ -205,6 +206,7 @@ function updateValidatorForSeparators(validatorCode: string): string {
       if (!match.includes("\\u00A0")) {
         return match.replace(/\)/g, "").replace(/\[/g, "[\\u00A0") + ")";
       }
+
       return match;
     });
   }
@@ -222,6 +224,7 @@ function updateValidatorForSeparators(validatorCode: string): string {
       result.push(
         `      const cleaned = value.replace(/[\\s\\u00A0.-]/g, '');`,
       );
+
       normalizedAdded = true;
     }
 
@@ -251,8 +254,8 @@ function updateValidatorForSeparators(validatorCode: string): string {
  */
 function hardenPattern(patternType: string, dryRun: boolean = false): void {
   console.log(`\n🔧 Hardening pattern: ${patternType}`);
-
   const pattern = findPattern(patternType);
+
   if (!pattern) {
     console.error(`❌ Pattern ${patternType} not found`);
     process.exit(1);
@@ -262,6 +265,7 @@ function hardenPattern(patternType: string, dryRun: boolean = false): void {
 
   // Extract regex and validator
   const regexMatch = pattern.content.match(/regex:\s*(\/[^/]+\/[gimuy]*)/);
+
   const validatorMatch = pattern.content.match(
     /validator:\s*\([^)]+\)\s*=>\s*\{([^}]+)\}/s,
   );
@@ -312,9 +316,11 @@ function hardenPattern(patternType: string, dryRun: boolean = false): void {
   // Replace validator if changed
   if (oldValidator && newValidator && oldValidator !== newValidator) {
     const oldValidatorFull = `validator: (${validatorMatch[0].match(/\([^)]+\)/)?.[0]}) => {${oldValidator}}`;
+
     const validatorParams =
       validatorMatch[0].match(/\([^)]+\)/)?.[0] ||
       "(value: string, context: string)";
+
     const newValidatorFull = `validator: ${validatorParams} => {\n${newValidator}\n    }`;
 
     content = content.replace(
@@ -327,6 +333,7 @@ function hardenPattern(patternType: string, dryRun: boolean = false): void {
 
   // Record change
   const config = loadConfig();
+
   config.changes.push({
     patternType,
     file: pattern.file,
@@ -337,6 +344,7 @@ function hardenPattern(patternType: string, dryRun: boolean = false): void {
     newValidator,
     timestamp: new Date().toISOString(),
   });
+
   config.rollbackPoint = config.changes.length - 1;
   saveConfig(config);
 
@@ -374,10 +382,11 @@ function rollback(): void {
 
   // Remove from config
   config.changes.splice(config.rollbackPoint, 1);
+
   config.rollbackPoint =
     config.changes.length > 0 ? config.changes.length - 1 : undefined;
-  saveConfig(config);
 
+  saveConfig(config);
   console.log(`✅ Rollback complete`);
 }
 
@@ -398,6 +407,7 @@ function runTests(patternType?: string): void {
     } else {
       execSync("cd packages/core && npm test", { stdio: "inherit" });
     }
+
     console.log(`✅ All tests passed`);
   } catch (error) {
     console.error(`❌ Tests failed`);
@@ -415,6 +425,7 @@ if (command === "rollback") {
   rollback();
 } else if (command && !command.startsWith("--")) {
   hardenPattern(command, dryRun);
+
   if (shouldTest && !dryRun) {
     runTests(command);
   }
@@ -423,8 +434,8 @@ if (command === "rollback") {
 Pattern Hardening Script
 
 Usage:
-  tsx scripts/harden-pattern.ts <pattern-type> [options]
-  tsx scripts/harden-pattern.ts rollback
+  scripts/harden-pattern.ts <pattern-type> [options]
+  scripts/harden-pattern.ts rollback
 
 Options:
   --dry-run    Show what would be changed without making changes
@@ -432,8 +443,8 @@ Options:
   --test       Run tests after hardening
 
 Examples:
-  tsx scripts/harden-pattern.ts POSTCODE_UK --dry-run
-  tsx scripts/harden-pattern.ts ZIP_CODE_US --test
-  tsx scripts/harden-pattern.ts rollback
+  scripts/harden-pattern.ts POSTCODE_UK --dry-run
+  scripts/harden-pattern.ts ZIP_CODE_US --test
+  scripts/harden-pattern.ts rollback
   `);
 }
