@@ -39,3 +39,4 @@ ENV/
 .claude
 .agents
 *.tsbuildinfo
+skills-lock.json
