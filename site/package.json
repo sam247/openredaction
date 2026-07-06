@@ -15,7 +15,7 @@
     "botid": "^1.5.10",
     "clsx": "^2.1.0",
     "lucide-react": "^0.344.0",
-    "next": "16.2.9",
+    "next": "16.2.10",
     "nodemailer": "^9.0.1",
     "openredaction": "workspace:*",
     "react": "^19.0.0",
