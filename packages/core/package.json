@@ -54,7 +54,7 @@
     "test:watch": "vitest watch"
   },
   "devDependencies": {
-    "@types/node": "^26.0.1",
+    "@types/node": "^26.1.0",
     "mitata": "latest",
     "tsdown": "^0.22.3",
     "tsx": "4.22.4",
