@@ -9,7 +9,14 @@
     [
       "@openredaction/core",
       "@openredaction/cli",
+      "@openredaction/react",
+      "@openredaction/server",
+      "@openredaction/express",
       "openredaction"
+    ],
+    [
+      "@openredaction/hono",
+      "@openredaction/elysia"
     ]
   ],
   "linked": [],
