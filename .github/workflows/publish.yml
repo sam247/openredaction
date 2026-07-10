@@ -13,7 +13,10 @@ jobs:
     name: Publish to npm
     runs-on: ubuntu-latest
     environment: npm-publish
-    if: contains(github.event.head_commit.message, 'chore: version packages')
+    # Match direct version commits and merge commits that bring them onto main.
+    if: |
+      contains(github.event.head_commit.message, 'chore: version packages') ||
+      contains(toJSON(github.event.commits), 'chore: version packages')
     permissions:
       contents: write
       id-token: write
