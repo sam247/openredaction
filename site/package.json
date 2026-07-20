@@ -20,7 +20,7 @@
     "openredaction": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "resend": "^6.4.2",
+    "resend": "^6.17.2",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
