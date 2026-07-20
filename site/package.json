@@ -29,7 +29,7 @@
     "@types/nodemailer": "^8.0.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "postcss": "^8.4.33",
+    "postcss": "^8.5.20",
     "tailwindcss": "^4.1.11",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
