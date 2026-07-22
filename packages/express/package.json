@@ -49,9 +49,7 @@
     "@openredaction/core": "workspace:*",
     "@types/express": "^5.0.6",
     "@types/node": "^26.0.1",
-    "express": "^5.2.1",
-    "tsdown": "^0.22.3",
-    "typescript": "^6.0.3"
+    "express": "^5.2.1"
   },
   "engines": {
     "node": ">=20.0.0"

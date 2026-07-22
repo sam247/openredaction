@@ -89,9 +89,7 @@
     "@openredaction/express": "workspace:*",
     "@openredaction/react": "workspace:*",
     "@openredaction/server": "workspace:*",
-    "@types/node": "^26.0.1",
-    "tsdown": "^0.22.3",
-    "typescript": "^6.0.3"
+    "@types/node": "^26.0.1"
   },
   "engines": {
     "node": ">=20.0.0"
