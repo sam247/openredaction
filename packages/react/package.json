@@ -53,9 +53,7 @@
     "@types/react-dom": "^19.0.4",
     "happy-dom": "^20.10.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "tsdown": "^0.22.3",
-    "typescript": "^6.0.3"
+    "react-dom": "^19.0.0"
   },
   "engines": {
     "node": ">=20.0.0"
