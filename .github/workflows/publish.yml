@@ -3,20 +3,110 @@ name: Publish
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Why run a manual OIDC publish? (for audit trail)
+        required: true
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
+  # Lightweight gate: do not use the npm-publish environment here, so routine
+  # main pushes never request an approval. Publish only when a Version Packages
+  # merge actually bumped packages/*/package.json, or on manual dispatch.
+  decide:
+    name: Detect publishable version bumps
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.check.outputs.publish }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Decide whether to publish
+        id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          DISPATCH_REASON: ${{ github.event.inputs.reason }}
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "Manual dispatch — will publish after npm-publish approval."
+            echo "Reason: ${DISPATCH_REASON}"
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "No meaningful before SHA — skipping publish."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          publish=false
+
+          while IFS= read -r file; do
+            case "$file" in
+              packages/*/package.json)
+                old_version="$(
+                  git show "$BEFORE:$file" 2>/dev/null | node -e '
+                    let d = "";
+                    process.stdin.on("data", (c) => { d += c; });
+                    process.stdin.on("end", () => {
+                      try {
+                        process.stdout.write(JSON.parse(d).version || "");
+                      } catch {
+                        process.stdout.write("");
+                      }
+                    });
+                  ' || true
+                )"
+                new_version="$(
+                  git show "$AFTER:$file" | node -e '
+                    let d = "";
+                    process.stdin.on("data", (c) => { d += c; });
+                    process.stdin.on("end", () => {
+                      try {
+                        process.stdout.write(JSON.parse(d).version || "");
+                      } catch {
+                        process.stdout.write("");
+                      }
+                    });
+                  '
+                )"
+
+                if [ -n "$new_version" ] && [ "$old_version" != "$new_version" ]; then
+                  echo "Version bump detected: $file ${old_version:-<new>} -> $new_version"
+                  publish=true
+                fi
+                ;;
+            esac
+          done < <(git diff --name-only "$BEFORE" "$AFTER")
+
+          if [ "$publish" = true ]; then
+            echo "Publishable version bumps found."
+          else
+            echo "No packages/*/package.json version bumps in this push — skipping publish."
+          fi
+
+          echo "publish=${publish}" >> "$GITHUB_OUTPUT"
+
   publish:
     name: Publish to npm
+    needs: decide
+    if: needs.decide.outputs.publish == 'true'
     runs-on: ubuntu-latest
     environment: npm-publish
-    # Match direct version commits and merge commits that bring them onto main.
-    if: |
-      contains(github.event.head_commit.message, 'chore: version packages') ||
-      contains(toJSON(github.event.commits), 'chore: version packages')
     permissions:
       contents: write
       id-token: write
