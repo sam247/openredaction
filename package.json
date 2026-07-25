@@ -3,43 +3,6 @@
   "version": "0.1.1",
   "private": true,
   "description": "Production-ready PII detection and redaction library",
-  "packageManager": "bun@1.3.14",
-  "workspaces": [
-    "packages/*",
-    "site"
-  ],
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "test": "turbo run test",
-    "typecheck": "turbo run typecheck",
-    "lint": "turbo run lint",
-    "changeset": "changeset",
-    "clean": "turbo run clean",
-    "prepare": "husky",
-    "release": "turbo run build --filter=./packages/* && changeset publish",
-    "version-packages": "changeset version"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.5.1",
-    "@changesets/changelog-github": "^0.7.0",
-    "@changesets/cli": "^2.31.0",
-    "bun-types": "1.3.14",
-    "husky": "9.1.7",
-    "lint-staged": "17.0.8",
-    "turbo": "2.10.2",
-    "typescript": "~5.9.3",
-    "@vitest/coverage-v8": "^4.1.9",
-    "vitest": "^4.1.9",
-    "@vitejs/plugin-react": "^4.3.4"
-  },
-  "engines": {
-    "node": ">=20.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/sam247/redactit.git"
-  },
   "keywords": [
     "pii",
     "redaction",
@@ -52,5 +15,47 @@
     "sensitive-data",
     "anonymization"
   ],
-  "license": "MIT"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sam247/redactit.git"
+  },
+  "license": "MIT",
+  "workspaces": [
+    "packages/*",
+    "site"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "changeset": "changeset",
+    "clean": "turbo run clean",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "prepare": "husky",
+    "release": "turbo run build --filter=./packages/* && changeset publish",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "version-packages": "changeset version"
+  },
+  "resolutions": {
+    "postcss": ">=8.5.10",
+    "sharp": ">=0.35.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.5",
+    "@changesets/changelog-github": "^0.7.0",
+    "@changesets/cli": "^2.31.1",
+    "@vitejs/plugin-react": "^5.2.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "bun-types": "1.3.14",
+    "husky": "9.1.7",
+    "lint-staged": "17.1.1",
+    "tsdown": "0.22.13",
+    "turbo": "2.10.6",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
+  },
+  "packageManager": "bun@1.3.14",
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }
