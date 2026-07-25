@@ -132,6 +132,10 @@ const featureItems = [
   },
 ] as const;
 
+// Placeholder logos — keep data ready, hide until real customer marks land.
+const SHOW_ECOSYSTEM_LOGO_CAROUSEL = false;
+const SHOW_TRUST_CARD_LOGOS = false;
+
 type EcosystemCarouselItem = {
   name: string;
   iconSrc: string;
@@ -349,33 +353,35 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-20 overflow-hidden border-t border-gray-900 pt-8">
-            <div className="trust-strip-continuous flex w-max items-center gap-5 whitespace-nowrap">
-              {Array.from({ length: 3 }).flatMap((_, index) =>
-                ecosystemCarouselItems.map((logo) => (
-                  <div
-                    key={`${logo.name}-${index}`}
-                    aria-label={logo.name}
-                    className="flex items-center justify-center px-6 py-3.5"
-                  >
-                    {logo.wordmarkSrc ? (
-                      <img
-                        src={logo.wordmarkSrc}
-                        alt={`${logo.name} logo`}
-                        className="h-[20px] w-auto max-w-[110px] object-contain opacity-70 grayscale-[20%] brightness-90"
-                      />
-                    ) : (
-                      <img
-                        src={logo.iconSrc}
-                        alt={`${logo.name} icon`}
-                        className="h-5 w-5 object-contain opacity-70 grayscale-[20%] brightness-90"
-                      />
-                    )}
-                  </div>
-                )),
-              )}
+          {SHOW_ECOSYSTEM_LOGO_CAROUSEL ? (
+            <div className="mt-20 overflow-hidden border-t border-gray-900 pt-8">
+              <div className="trust-strip-continuous flex w-max items-center gap-5 whitespace-nowrap">
+                {Array.from({ length: 3 }).flatMap((_, index) =>
+                  ecosystemCarouselItems.map((logo) => (
+                    <div
+                      key={`${logo.name}-${index}`}
+                      aria-label={logo.name}
+                      className="flex items-center justify-center px-6 py-3.5"
+                    >
+                      {logo.wordmarkSrc ? (
+                        <img
+                          src={logo.wordmarkSrc}
+                          alt={`${logo.name} logo`}
+                          className="h-[20px] w-auto max-w-[110px] object-contain opacity-70 grayscale-[20%] brightness-90"
+                        />
+                      ) : (
+                        <img
+                          src={logo.iconSrc}
+                          alt={`${logo.name} icon`}
+                          className="h-5 w-5 object-contain opacity-70 grayscale-[20%] brightness-90"
+                        />
+                      )}
+                    </div>
+                  )),
+                )}
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <section className="mt-16 border-t border-gray-900 pt-12">
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -461,11 +467,13 @@ console.log(redactedText);`}
                         {item.name}
                       </p>
                       <div className="mt-1 flex items-center gap-1.5">
-                        <img
-                          src={trustCardLogos[itemIndex]}
-                          alt={`${item.company} logo icon`}
-                          className="h-3.5 w-3.5 object-contain opacity-90"
-                        />
+                        {SHOW_TRUST_CARD_LOGOS ? (
+                          <img
+                            src={trustCardLogos[itemIndex]}
+                            alt={`${item.company} logo icon`}
+                            className="h-3.5 w-3.5 object-contain opacity-90"
+                          />
+                        ) : null}
                         <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
                           {item.company}
                         </p>
