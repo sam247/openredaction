@@ -3,6 +3,7 @@ name: Release
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,6 +23,9 @@ jobs:
 
       - uses: ./.github/actions/setup-bun
 
+      # Version commits are created by Changesets with skipCI disabled in
+      # .changeset/config.json so merging the Version Packages PR can run CI
+      # and trigger publish.yml (which keys off packages/*/package.json bumps).
       - name: Create Release Pull Request
         id: changesets
         uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
