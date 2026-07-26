@@ -19,7 +19,7 @@ const config: DocsThemeConfig = {
     ),
   },
   footer: {
-    component: () => <span>OpenRedaction Documentation © 2025</span>,
+    component: () => <span>OpenRedaction Documentation © 2026</span>,
   },
 };
 

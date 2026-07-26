@@ -274,7 +274,7 @@ export default function Footer() {
                 </div>
               </div>
               <span className="text-gray-400 text-sm">
-                © 2025 OpenRedaction. All rights reserved.
+                © 2026 OpenRedaction. All rights reserved.
               </span>
             </div>
           </div>
