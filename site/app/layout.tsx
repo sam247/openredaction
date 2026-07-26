@@ -9,10 +9,6 @@ import { defaultMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-  },
 };
 
 export default function RootLayout({
