@@ -256,6 +256,7 @@ export type {
   AuditStats,
   DetectionResult,
   IAuditLogger,
+  IDetector,
   IMetricsCollector,
   IMetricsExporter,
   IRBACManager,

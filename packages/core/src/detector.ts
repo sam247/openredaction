@@ -29,6 +29,7 @@ import { SeverityClassifier } from "./severity/SeverityClassifier.js";
 import type {
   DetectionResult,
   IAuditLogger,
+  IDetector,
   IMetricsCollector,
   IRBACManager,
   OpenRedactionOptions,
@@ -38,7 +39,7 @@ import type {
 import { getPreset } from "./utils/presets";
 import { createWorkerPool } from "./workers";
 
-export class OpenRedaction {
+export class OpenRedaction implements IDetector {
   options: DetectorOptions;
   private patternManager: PatternManager;
   private placeholderGenerator: PlaceholderGenerator;

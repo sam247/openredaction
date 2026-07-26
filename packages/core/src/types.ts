@@ -83,6 +83,22 @@ export interface DetectionResult {
 }
 
 /**
+ * Core detection contract implemented by OpenRedaction and LiteOpenRedaction.
+ * Subsystems (batch, streaming, documents, health, explain, reports) depend on
+ * this interface rather than a concrete class.
+ */
+export interface IDetector {
+  /** Detect and redact PII in text */
+  detect(text: string): Promise<DetectionResult>;
+  /** Restore redacted text using a redaction map */
+  restore(redactedText: string, redactionMap: Record<string, string>): string;
+  /** Currently active patterns */
+  getPatterns(): PIIPattern[];
+  /** Detection cache statistics */
+  getCacheStats(): { size: number; maxSize: number; enabled: boolean };
+}
+
+/**
  * Redaction mode - controls how PII is replaced
  */
 export type RedactionMode =

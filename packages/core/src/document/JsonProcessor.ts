@@ -2,8 +2,7 @@
  * JSON document processor for PII detection and redaction in structured data
  */
 
-import type { OpenRedaction } from "../detector";
-import type { DetectionResult, PIIDetection } from "../types";
+import type { DetectionResult, IDetector, PIIDetection } from "../types";
 
 /**
  * JSON processing options
@@ -110,7 +109,7 @@ export class JsonProcessor {
    */
   async detect(
     data: any,
-    detector: OpenRedaction,
+    detector: IDetector,
     options?: JsonProcessorOptions,
   ): Promise<JsonDetectionResult> {
     const opts = { ...this.defaultOptions, ...options };
@@ -479,7 +478,7 @@ export class JsonProcessor {
    */
   async detectJsonLines(
     input: Buffer | string,
-    detector: OpenRedaction,
+    detector: IDetector,
     options?: JsonProcessorOptions,
   ): Promise<JsonDetectionResult[]> {
     const documents = this.parseJsonLines(input);

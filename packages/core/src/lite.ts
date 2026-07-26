@@ -20,6 +20,7 @@ import {
 import { SeverityClassifier } from "./severity/SeverityClassifier.js";
 import type {
   DetectionResult,
+  IDetector,
   OpenRedactionOptions,
   PIIDetection,
   PIIPattern,
@@ -31,7 +32,7 @@ export interface LiteOptions extends OpenRedactionOptions {
   regexTimeout?: number;
 }
 
-export class LiteOpenRedaction {
+export class LiteOpenRedaction implements IDetector {
   options: DetectorOptions;
   private patternManager: PatternManager;
   private placeholderGenerator: PlaceholderGenerator;
@@ -123,6 +124,7 @@ export class LiteOpenRedaction {
 
 export type {
   DetectionResult,
+  IDetector,
   OpenRedactionOptions,
   PIIDetection,
   PIIPattern,

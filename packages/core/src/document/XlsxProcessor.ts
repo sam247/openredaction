@@ -2,8 +2,7 @@
  * XLSX/Excel document processor for PII detection and redaction in spreadsheets
  */
 
-import type { OpenRedaction } from "../detector";
-import type { DetectionResult, PIIDetection } from "../types";
+import type { DetectionResult, IDetector, PIIDetection } from "../types";
 import {
   errorMessage,
   isModuleAvailable,
@@ -248,7 +247,7 @@ export class XlsxProcessor {
    */
   async detect(
     buffer: Buffer,
-    detector: OpenRedaction,
+    detector: IDetector,
     options?: XlsxProcessorOptions,
   ): Promise<XlsxDetectionResult> {
     this.loadXlsx();
@@ -327,7 +326,7 @@ export class XlsxProcessor {
     sheet: WorkSheet,
     sheetName: string,
     sheetIndex: number,
-    detector: OpenRedaction,
+    detector: IDetector,
     options: Required<
       Omit<
         XlsxProcessorOptions,
