@@ -89,8 +89,16 @@ export function mergeOptions(
     features: _features,
     learningStorePath: _learningStorePath,
     contextRulesConfig: _contextRulesConfig,
-    ...detectionOptions
+    ...rawDetectionOptions
   } = options;
+
+  // Explicit `undefined` values must not clobber defaults (e.g. a caller
+  // spreading `whitelist: maybeUndefined` would otherwise break iteration)
+  const detectionOptions = Object.fromEntries(
+    Object.entries(rawDetectionOptions).filter(
+      ([, value]) => value !== undefined,
+    ),
+  );
 
   const merged = {
     includeNames: true,
