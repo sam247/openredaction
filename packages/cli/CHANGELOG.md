@@ -1,5 +1,14 @@
 # @openredaction/cli
 
+## 1.1.5
+
+### Patch Changes
+
+- [#109](https://github.com/sam247/openredaction/pull/109) [`d4a761d`](https://github.com/sam247/openredaction/commit/d4a761d4752a74969dab0ccacec0570202942277) Thanks [@sam247](https://github.com/sam247)! - Fix CLI bin paths to match emitted `.cjs` files so `npx openredaction` works after install. Refresh the `openredaction` npm README so the package page leads with a working first example instead of migration-only copy.
+
+- Updated dependencies []:
+  - @openredaction/core@1.1.5
+
 ## 1.1.4
 
 ### Patch Changes
