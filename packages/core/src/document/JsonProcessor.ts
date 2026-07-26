@@ -3,7 +3,7 @@
  */
 
 import type { DetectionResult, IDetector, PIIDetection } from "../types";
-import { errorMessage } from "../utils/optional-require";
+import { errorMessage } from "../utils/errors";
 
 /**
  * JSON processing options

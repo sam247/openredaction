@@ -2,8 +2,8 @@
  * Document text extraction with optional peer dependencies
  */
 
+import { errorMessage } from "../utils/errors";
 import {
-  errorMessage,
   isModuleAvailable,
   loadOptionalModule,
 } from "../utils/optional-require";

@@ -5,7 +5,8 @@
 
 import { createHash } from "crypto";
 import type { AuditLogEntry, AuditStats, IAuditLogger } from "../types";
-import { errorMessage, loadOptionalModule } from "../utils/optional-require";
+import { errorMessage } from "../utils/errors";
+import { loadOptionalModule } from "../utils/optional-require";
 
 /**
  * Minimal better-sqlite3 surface used by the SQLite adapter — typed locally to

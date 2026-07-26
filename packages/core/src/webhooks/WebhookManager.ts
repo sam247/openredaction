@@ -5,7 +5,7 @@
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import type { DetectionResult } from "../types";
-import { errorMessage } from "../utils/optional-require";
+import { errorMessage } from "../utils/errors";
 
 /** Delivery errors carry the HTTP status via Object.assign in makeHttpRequest */
 function deliveryStatusCode(error: unknown): number | undefined {

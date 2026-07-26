@@ -25,6 +25,4 @@ export function isModuleAvailable(specifier: string): boolean {
   }
 }
 
-export function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
+export { errorMessage } from "./errors";

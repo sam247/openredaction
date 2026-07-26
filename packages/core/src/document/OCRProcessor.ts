@@ -3,8 +3,8 @@
  */
 
 import type { PSM, Scheduler } from "tesseract.js";
+import { errorMessage } from "../utils/errors";
 import {
-  errorMessage,
   isModuleAvailable,
   loadOptionalModule,
 } from "../utils/optional-require";

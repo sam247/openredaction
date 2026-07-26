@@ -3,8 +3,8 @@
  */
 
 import type { DetectionResult, IDetector, PIIDetection } from "../types";
+import { errorMessage } from "../utils/errors";
 import {
-  errorMessage,
   isModuleAvailable,
   loadOptionalModule,
 } from "../utils/optional-require";

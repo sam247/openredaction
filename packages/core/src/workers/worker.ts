@@ -7,7 +7,7 @@ import { OpenRedaction } from "../detector";
 import { detectDocument } from "../document/detectDocument";
 import type { DocumentResult } from "../document/types";
 import type { DetectionResult } from "../types";
-import { errorMessage } from "../utils/optional-require";
+import { errorMessage } from "../utils/errors";
 import type { WorkerResult, WorkerTask } from "./types";
 
 // Initialize OpenRedaction instance
