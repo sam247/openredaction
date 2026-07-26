@@ -120,7 +120,7 @@ const blogPosts: { [key: string]: any } = {
     `,
   },
   "pii-detection-for-ai": {
-    title: "PII Detection for AI: How to Safely Use User Data with LLMs",
+    title: "Detect & Redact PII in LLM Prompts and Outputs",
     date: "2025-12-05",
     category: "Guide",
     authorName: "Sam Pettiford",
@@ -129,7 +129,7 @@ const blogPosts: { [key: string]: any } = {
     authorBio:
       "Founder of OpenRedaction, focused on privacy-safe LLM pipelines and production-grade data redaction patterns for modern teams.",
     excerpt:
-      "How to detect and redact PII across LLM pipelines with pattern-first controls, optional NER, and infrastructure-level privacy safeguards.",
+      "How to detect and redact PII in LLM prompts, outputs, and RAG before it hits logs or vendors — local, deterministic controls for AI pipelines.",
     content: `
       <p>Large Language Models (LLMs) are extraordinary at handling messy, unstructured text. They effortlessly parse incomplete sentences, analyze context, and synthesize fluent replies—but that same flexibility makes them eager to absorb anything passed their way: names, email addresses, national IDs, financial details, or confidential documents.</p>
       <p>Without strict boundaries, your AI system can unintentionally become a privacy sink—logging sensitive content across model pipelines, traces, or fine-tuning datasets. The solution is not blind trust, it is visibility and repeatable redaction layers built directly into every boundary of your data flow.</p>
@@ -300,8 +300,7 @@ async function safeCompletion(prompt) {
     `,
   },
   "pii-in-support-tickets": {
-    title:
-      "How to Handle PII Safely in Support Tickets, Emails and Chat Transcripts",
+    title: "Handle PII in Support Tickets, Email & Chat",
     date: "2025-12-11",
     category: "Guide",
     authorName: "Sam Pettiford",
@@ -310,7 +309,7 @@ async function safeCompletion(prompt) {
     authorBio:
       "Founder of OpenRedaction, writing about practical controls for handling sensitive data in real-world support and product workflows.",
     excerpt:
-      "Minimize what support channels store, redact early, and keep agents aligned — practical controls for tickets, email, and chat.",
+      "Stop passwords, card numbers, and IDs landing in Zendesk or Intercom. Practical redaction, retention, and agent workflows for support PII.",
     content: `
       <p>Customer support is a paradoxical frontline in data security: it is where users come seeking help and often hand over their most private information in the process. Between urgent troubleshooting and unscripted human dialogue, sensitive identifiers appear freely in emails, ticket comments, and live chat. Passwords, card numbers, tax IDs, and even medical context routinely find their way into support threads, creating high exposure risk across systems never designed for long-term storage of personal data.</p>
       <p>To handle Personally Identifiable Information (PII) safely, assume every inbound support channel will receive sensitive data. Then design for least collection, early redaction, and short retention, a data minimization triad that should shape every interaction, policy, and pipeline across your helpdesk stack.</p>
@@ -468,6 +467,113 @@ export default async function BlogPost(props: {
     notFound();
   }
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://openredaction.com";
+  const pageUrl = `${siteUrl}/blog/${params.slug}`;
+  const plainExcerpt =
+    post.excerpt ||
+    post.content?.replace(/<[^>]*>/g, "").substring(0, 160) ||
+    "";
+
+  const blogPostingSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: plainExcerpt,
+    datePublished: post.date,
+    author: {
+      "@type": "Person",
+      name: post.authorName || "OpenRedaction",
+      ...(post.authorLinkedIn ? { sameAs: [post.authorLinkedIn] } : {}),
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "OpenRedaction",
+      url: siteUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": pageUrl,
+    },
+    url: pageUrl,
+  };
+
+  const aiFaqSchema =
+    params.slug === "pii-detection-for-ai"
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "How do you detect and redact PII from LLM inputs before they reach the model?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Redact at the first hop — typically your API gateway or Express middleware — with local pattern-based detection before prompts leave your network. Optionally add NER inside a private VPC for unstructured names and entities, then merge spans in a single pass.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "How do you detect PII in LLM outputs?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Scan generated replies on the response path before storage or display. Models can echo user inputs or retrieved snippets; suppression filters prevent identifiers from resurfacing in completions, logs, or caches.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Should PII redaction for AI use regex or machine learning?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Use pattern-first regex for structured identifiers (emails, phones, cards, IDs) because it is fast, local, and auditable. Add ML/NER only where narrative text needs it, preferably self-hosted, so detection does not create a new data residency risk.",
+              },
+            },
+          ],
+        }
+      : null;
+
+  // Question-form GSC queries for this URL had impressions with near-zero CTR;
+  // FAQ rich results improve snippet eligibility without changing page intent.
+  const supportFaqSchema =
+    params.slug === "pii-in-support-tickets"
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "How do you handle PII in customer support tickets?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Assume every inbound channel will receive sensitive data. Collect the minimum needed to resolve the ticket, redact at ingest before indexing, mask identifiers in agent views, and keep short retention on unredacted transcripts.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "What PII commonly appears in support emails and chat?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Support threads often include names, emails, phones, account references, government or financial IDs, passwords and OTPs pasted to debug, and sometimes health or regulated context in attachments and screenshots.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "How should agents respond when a customer pastes a card number or password?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Redact immediately (for cards, keep only the last four digits if needed), remove the value from searchable ticket history, log a brief remediation note, and route the user to a secure upload or verification path instead of asking for secrets in free text.",
+              },
+            },
+          ],
+        }
+      : null;
+
+  const pageFaqSchema = supportFaqSchema || aiFaqSchema;
+
   // Process content - ensure links have proper styling
   const processedContent = post.content
     .replace(/<a href="([^"]+)">/g, (_match: string, href: string) => {
@@ -485,6 +591,22 @@ export default async function BlogPost(props: {
     <div className="min-h-screen bg-black text-white">
       <Header />
       <BlogPostTracker slug={params.slug} title={post.title} />
+      <script
+        type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD from static post metadata
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(blogPostingSchema),
+        }}
+      />
+      {pageFaqSchema ? (
+        <script
+          type="application/ld+json"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: FAQ JSON-LD from static answers grounded in page content
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(pageFaqSchema),
+          }}
+        />
+      ) : null}
 
       <main className="pt-[148px] pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -1,4 +1,5 @@
 import type { DocsThemeConfig } from "nextra-theme-docs";
+import { useConfig } from "nextra-theme-docs";
 import Logo from "./components/Logo";
 
 const config: DocsThemeConfig = {
@@ -8,6 +9,27 @@ const config: DocsThemeConfig = {
   },
   docsRepositoryBase:
     "https://github.com/sam247/openredaction-site/tree/main/docs",
+  // Override default head that appends "– Nextra" (visible in SERPs, hurts CTR).
+  head: function useHead() {
+    const { frontMatter, title: pageTitle } = useConfig();
+    const title = `${pageTitle} | OpenRedaction`;
+    const { description, canonical, image } = frontMatter;
+
+    return (
+      <>
+        <title>{title}</title>
+        <meta property="og:title" content={title} />
+        {description ? (
+          <>
+            <meta name="description" content={description} />
+            <meta property="og:description" content={description} />
+          </>
+        ) : null}
+        {canonical ? <link rel="canonical" href={canonical} /> : null}
+        {image ? <meta name="og:image" content={image} /> : null}
+      </>
+    );
+  },
   navbar: {
     extraContent: (
       <a

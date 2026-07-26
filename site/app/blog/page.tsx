@@ -11,19 +11,18 @@ import Header from "@/components/Header";
 const blogPosts = [
   {
     id: 1,
-    title: "PII Detection for AI: How to Safely Use User Data with LLMs",
+    title: "Detect & Redact PII in LLM Prompts and Outputs",
     excerpt:
-      "Where PII leaks in LLM pipelines, how to architect pattern-first guardrails, and when to add separate ML detection — without sending data you cannot explain.",
+      "How to detect and redact PII in LLM prompts, outputs, and RAG before it hits logs or vendors — local, deterministic controls for AI pipelines.",
     date: "2025-12-05",
     category: "Guide",
     slug: "pii-detection-for-ai",
   },
   {
     id: 2,
-    title:
-      "How to Handle PII Safely in Support Tickets, Emails and Chat Transcripts",
+    title: "Handle PII in Support Tickets, Email & Chat",
     excerpt:
-      "Minimize what support channels store, redact early, and keep agents aligned — practical controls for tickets, email, and chat.",
+      "Stop passwords, card numbers, and IDs landing in Zendesk or Intercom. Practical redaction, retention, and agent workflows for support PII.",
     date: "2025-12-11",
     category: "Guide",
     slug: "pii-in-support-tickets",

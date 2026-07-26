@@ -396,12 +396,12 @@ export default function Playground() {
       <main className="pt-24">
         <div className="border-b border-gray-800 bg-gray-900">
           <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-            <p className="text-sm font-medium text-white">
-              Runs entirely in your browser. Your text never leaves your device.
-            </p>
+            <h1 className="text-lg font-semibold text-white sm:text-xl">
+              Try PII Redaction Free in Your Browser
+            </h1>
             <p className="mt-1 text-sm text-gray-400">
-              Try OpenRedaction before you install — same open-source regex
-              engine, in the browser.
+              Runs entirely in your browser. Your text never leaves your device.
+              Same open-source regex engine — try it before you install.
             </p>
             <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
               <li>Browser-only</li>
