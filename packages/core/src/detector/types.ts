@@ -1,6 +1,43 @@
 import type { ContextRulesConfig } from "../context/ContextRules.js";
 import type { OptimizerOptions } from "../optimizer/PriorityOptimizer.js";
-import type { OpenRedactionOptions, PresetName, RedactionMode } from "../types";
+import type {
+  AuditLogEntry,
+  DetectionResult,
+  IAuditLogger,
+  IMetricsCollector,
+  IRBACManager,
+  OpenRedactionOptions,
+  Permission,
+  PresetName,
+  RedactionMode,
+} from "../types";
+import type { DetectorFeatures, DetectorProfile } from "./features";
+
+/**
+ * Audit/metrics/RBAC surface the detection engine depends on.
+ * AuditManager implements this; lite builds use a noop facade.
+ */
+export interface IAuditFacade {
+  checkPermission(permission: Permission): boolean;
+  logAudit(
+    operation: AuditLogEntry["operation"],
+    piiCount: number,
+    piiTypes: string[],
+    textLength: number,
+    processingTimeMs: number,
+    redactionMode: RedactionMode,
+    debug: boolean,
+  ): void;
+  recordMetrics(
+    result: DetectionResult,
+    processingTime: number,
+    redactionMode: RedactionMode,
+    debug: boolean,
+  ): void;
+  getAuditLogger(): IAuditLogger | undefined;
+  getMetricsCollector(): IMetricsCollector | undefined;
+  getRBACManager(): IRBACManager | undefined;
+}
 
 export interface DetectorOptions {
   includeNames: boolean;
@@ -31,12 +68,12 @@ export interface DetectorOptions {
 
 export type OpenRedactionConstructorOptions = OpenRedactionOptions & {
   configPath?: string;
-  enableLearning?: boolean;
+  /** Optional-subsystem baseline (default: "standard") */
+  profile?: DetectorProfile;
+  /** Per-feature overrides applied on top of the profile */
+  features?: Partial<DetectorFeatures>;
   learningStorePath?: string;
-  enablePriorityOptimization?: boolean;
   optimizerOptions?: Partial<OptimizerOptions>;
-  enableNER?: boolean;
-  enableContextRules?: boolean;
   contextRulesConfig?: ContextRulesConfig;
   maxInputSize?: number;
   regexTimeout?: number;
@@ -46,6 +83,15 @@ export function mergeOptions(
   options: OpenRedactionConstructorOptions,
   presetOptions: Partial<DetectorOptions>,
 ): DetectorOptions {
+  const {
+    configPath: _configPath,
+    profile: _profile,
+    features: _features,
+    learningStorePath: _learningStorePath,
+    contextRulesConfig: _contextRulesConfig,
+    ...detectionOptions
+  } = options;
+
   const merged = {
     includeNames: true,
     includeAddresses: true,
@@ -70,7 +116,7 @@ export function mergeOptions(
     maxInputSize: 10 * 1024 * 1024,
     regexTimeout: 100,
     ...presetOptions,
-    ...options,
+    ...detectionOptions,
   };
 
   return {

@@ -68,6 +68,14 @@ export {
 } from "./context/ContextRules";
 export { OpenRedaction } from "./detector";
 export type {
+  DetectorFeatures,
+  DetectorProfile,
+} from "./detector/features";
+export type {
+  IAuditFacade,
+  OpenRedactionConstructorOptions,
+} from "./detector/types";
+export type {
   CellMatch,
   ColumnStats,
   CsvDetectionResult,

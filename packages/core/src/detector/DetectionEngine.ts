@@ -18,12 +18,11 @@ import type {
   PIIPattern,
 } from "../types";
 import { RegexTimeoutError, safeExec } from "../utils/safe-regex.js";
-import type { AuditManager } from "./AuditManager";
 import type { CacheManager } from "./CacheManager";
 import { PatternManager } from "./PatternManager";
 import type { PlaceholderGenerator } from "./PlaceholderGenerator";
 import { escapeRegex } from "./RedactionUtils";
-import type { DetectorOptions } from "./types";
+import type { DetectorOptions, IAuditFacade } from "./types";
 
 export class DetectionEngine {
   private multiPassConfig?: DetectionPass[];
@@ -35,7 +34,7 @@ export class DetectionEngine {
     private patternManager: PatternManager,
     private placeholderGenerator: PlaceholderGenerator,
     private cacheManager: CacheManager,
-    private auditManager: AuditManager,
+    private auditManager: IAuditFacade,
   ) {
     if (options.enableMultiPass) {
       this.multiPassConfig = createSimpleMultiPass({

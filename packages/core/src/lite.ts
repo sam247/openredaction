@@ -2,22 +2,21 @@
  * Lite OpenRedaction — core detection only, no optional subsystems
  *
  * This entry point excludes: learning, NER, optimizer, audit, metrics,
- * RBAC, multipass, reports, explain, document, batch, health.
+ * RBAC, reports, explain, document, batch, health. Construction is shared
+ * with OpenRedaction via createDetectionCore; only subsystem wiring differs.
  *
  * @packageDocumentation
  */
 
-import { CacheManager } from "./detector/CacheManager";
-import { DetectionEngine } from "./detector/DetectionEngine";
-import { PatternManager } from "./detector/PatternManager";
-import { PlaceholderGenerator } from "./detector/PlaceholderGenerator";
-import { restoreRedacted } from "./detector/RedactionUtils";
+import type { CacheManager } from "./detector/CacheManager";
 import {
-  type DetectorOptions,
-  mergeOptions,
-  type OpenRedactionConstructorOptions,
-} from "./detector/types";
-import { SeverityClassifier } from "./severity/SeverityClassifier.js";
+  createDetectionCore,
+  resolveOptions,
+} from "./detector/createDetectionCore";
+import type { DetectionEngine } from "./detector/DetectionEngine";
+import type { PatternManager } from "./detector/PatternManager";
+import { restoreRedacted } from "./detector/RedactionUtils";
+import type { DetectorOptions } from "./detector/types";
 import type {
   DetectionResult,
   IDetector,
@@ -25,7 +24,6 @@ import type {
   PIIDetection,
   PIIPattern,
 } from "./types";
-import { getPreset } from "./utils/presets";
 
 export interface LiteOptions extends OpenRedactionOptions {
   maxInputSize?: number;
@@ -35,54 +33,17 @@ export interface LiteOptions extends OpenRedactionOptions {
 export class LiteOpenRedaction implements IDetector {
   options: DetectorOptions;
   private patternManager: PatternManager;
-  private placeholderGenerator: PlaceholderGenerator;
   private cacheManager: CacheManager;
   private detectionEngine: DetectionEngine;
-  private severityClassifier: SeverityClassifier;
 
   constructor(options: LiteOptions = {}) {
-    const constructorOptions: OpenRedactionConstructorOptions = {
-      ...options,
-      enableLearning: false,
-      enablePriorityOptimization: false,
-      enableNER: false,
-      enableContextRules: false,
-      enableAuditLog: false,
-      enableMetrics: false,
-      enableRBAC: false,
-    };
+    this.options = resolveOptions(options);
 
-    const presetOptions = options.preset
-      ? getPreset(options.preset)
-      : ({} as Partial<DetectorOptions>);
+    const core = createDetectionCore(this.options);
 
-    this.options = mergeOptions(constructorOptions, presetOptions);
-
-    this.cacheManager = new CacheManager(this.options);
-    this.placeholderGenerator = new PlaceholderGenerator(this.options);
-
-    let patterns = PatternManager.buildPatternList(this.options);
-
-    this.severityClassifier = new SeverityClassifier();
-    patterns = this.severityClassifier.ensureAllSeverity(patterns);
-    patterns.sort((a, b) => b.priority - a.priority);
-
-    this.patternManager = new PatternManager(this.options, patterns);
-
-    this.detectionEngine = new DetectionEngine(
-      this.options,
-      this.patternManager,
-      this.placeholderGenerator,
-      this.cacheManager,
-      {
-        checkPermission: () => true,
-        logAudit: () => {},
-        recordMetrics: () => {},
-        getAuditLogger: () => undefined,
-        getMetricsCollector: () => undefined,
-        getRBACManager: () => undefined,
-      },
-    );
+    this.cacheManager = core.cacheManager;
+    this.patternManager = core.patternManager;
+    this.detectionEngine = core.detectionEngine;
   }
 
   async detect(text: string): Promise<DetectionResult> {

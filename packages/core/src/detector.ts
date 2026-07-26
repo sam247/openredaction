@@ -5,17 +5,20 @@
 import { ConfigExporter } from "./config/ConfigExporter.js";
 import { ConfigLoader } from "./config/ConfigLoader.js";
 import { AuditManager } from "./detector/AuditManager";
-import { CacheManager } from "./detector/CacheManager";
-import { DetectionEngine } from "./detector/DetectionEngine";
+import type { CacheManager } from "./detector/CacheManager";
+import {
+  createDetectionCore,
+  resolveOptions,
+} from "./detector/createDetectionCore";
+import type { DetectionEngine } from "./detector/DetectionEngine";
+import { type DetectorFeatures, resolveFeatures } from "./detector/features";
 import { LearningManager } from "./detector/LearningManager";
 import { OptimizerManager } from "./detector/OptimizerManager";
-import { PatternManager } from "./detector/PatternManager";
-import { PlaceholderGenerator } from "./detector/PlaceholderGenerator";
+import type { PatternManager } from "./detector/PatternManager";
 import { restoreRedacted } from "./detector/RedactionUtils";
-import {
-  type DetectorOptions,
-  mergeOptions,
-  type OpenRedactionConstructorOptions,
+import type {
+  DetectorOptions,
+  OpenRedactionConstructorOptions,
 } from "./detector/types";
 import { createDocumentProcessor } from "./document";
 import type { DocumentOptions, DocumentResult } from "./document/types";
@@ -25,7 +28,6 @@ import {
   createReportGenerator,
   type ReportOptions,
 } from "./reports/ReportGenerator.js";
-import { SeverityClassifier } from "./severity/SeverityClassifier.js";
 import type {
   DetectionResult,
   IAuditLogger,
@@ -36,82 +38,70 @@ import type {
   PIIDetection,
   PIIPattern,
 } from "./types";
-import { getPreset } from "./utils/presets";
 import { createWorkerPool } from "./workers";
 
 export class OpenRedaction implements IDetector {
   options: DetectorOptions;
+  private features: DetectorFeatures;
   private patternManager: PatternManager;
-  private placeholderGenerator: PlaceholderGenerator;
   private cacheManager: CacheManager;
   private auditManager: AuditManager;
   private learningManager: LearningManager;
   private optimizerManager: OptimizerManager;
   private detectionEngine: DetectionEngine;
-  private severityClassifier: SeverityClassifier;
 
   constructor(options: OpenRedactionConstructorOptions = {}) {
-    const presetOptions = options.preset
-      ? getPreset(options.preset)
-      : ({} as Partial<DetectorOptions>);
+    this.features = resolveFeatures(options.profile, options.features);
+    this.options = resolveOptions(options);
 
-    this.options = mergeOptions(options, presetOptions);
-
-    this.cacheManager = new CacheManager(this.options);
-    this.placeholderGenerator = new PlaceholderGenerator(this.options);
-
-    const enableLearning = options.enableLearning ?? true;
     this.learningManager = new LearningManager(
       this.options,
-      enableLearning,
+      this.features.learning,
       options.learningStorePath,
     );
 
     this.optimizerManager = OptimizerManager.create(
-      this.options.enablePriorityOptimization,
+      this.features.priorityOptimization,
       this.learningManager.getStore(),
       this.options.optimizerOptions,
     );
 
-    let patterns = PatternManager.buildPatternList(this.options);
-
-    const optimizer = this.optimizerManager.getOptimizer();
-    if (optimizer) {
-      patterns = optimizer.optimizePatterns(patterns);
-    }
-
-    this.severityClassifier = new SeverityClassifier();
-    patterns = this.severityClassifier.ensureAllSeverity(patterns);
-    patterns.sort((a, b) => b.priority - a.priority);
-
-    this.patternManager = new PatternManager(this.options, patterns);
-
+    // Providing a collaborator implies enabling its subsystem
     this.auditManager = new AuditManager({
-      enableAuditLog: options.enableAuditLog,
+      enableAuditLog:
+        this.features.auditLog || options.auditLogger !== undefined,
       auditLogger: options.auditLogger,
       auditUser: options.auditUser,
       auditSessionId: options.auditSessionId,
       auditMetadata: options.auditMetadata,
-      enableMetrics: options.enableMetrics,
+      enableMetrics:
+        this.features.metrics || options.metricsCollector !== undefined,
       metricsCollector: options.metricsCollector,
-      enableRBAC: options.enableRBAC,
+      enableRBAC:
+        this.features.rbac ||
+        options.rbacManager !== undefined ||
+        options.role !== undefined,
       rbacManager: options.rbacManager,
       role: options.role,
     });
 
-    this.detectionEngine = new DetectionEngine(
-      this.options,
-      this.patternManager,
-      this.placeholderGenerator,
-      this.cacheManager,
-      this.auditManager,
-    );
+    const optimizer = this.optimizerManager.getOptimizer();
+    const core = createDetectionCore(this.options, {
+      audit: this.auditManager,
+      transformPatterns: optimizer
+        ? (patterns) => optimizer.optimizePatterns(patterns)
+        : undefined,
+    });
 
-    if (options.enableNER) {
+    this.cacheManager = core.cacheManager;
+    this.patternManager = core.patternManager;
+    this.detectionEngine = core.detectionEngine;
+
+    if (this.features.ner) {
       this.detectionEngine.initNER();
     }
 
-    if (options.enableContextRules !== false) {
+    if (this.features.contextRules) {
       this.detectionEngine.initContextRules(options.contextRulesConfig);
     }
   }
@@ -128,7 +118,7 @@ export class OpenRedaction implements IDetector {
 
     return new OpenRedaction({
       ...resolved,
-      enableLearning: true,
+      features: { learning: true },
       learningStorePath: config.learnedPatterns,
     });
   }
