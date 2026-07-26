@@ -8,6 +8,7 @@ import type {
   OpenRedactionOptions,
 } from "@openredaction/core";
 import { OpenRedaction } from "@openredaction/core";
+import { createReportGenerator } from "@openredaction/core/reports";
 import type { Context } from "hono";
 import { createMiddleware } from "hono/factory";
 
@@ -267,7 +268,7 @@ export function generateReport(options: OpenRedactionOptions = {}) {
       const result = await detector.detect(text);
 
       if (format === "html") {
-        const html = detector.generateReport(result, {
+        const html = createReportGenerator(detector).generate(result, {
           format: "html",
           title,
         });
@@ -275,7 +276,7 @@ export function generateReport(options: OpenRedactionOptions = {}) {
       }
 
       if (format === "markdown") {
-        const md = detector.generateReport(result, {
+        const md = createReportGenerator(detector).generate(result, {
           format: "markdown",
           title,
         });

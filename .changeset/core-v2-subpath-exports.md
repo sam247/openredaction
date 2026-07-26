@@ -45,3 +45,22 @@ new OpenRedaction({ patterns: allPatterns.map((p) => p.type) });
 ```
 
 `allPatterns` still exports the complete set; `defaultPatterns` exports the new default.
+
+**Subsystem methods moved off `OpenRedaction`.** The facade no longer imports document/report/health/worker modules, so root-entry bundles now exclude them:
+
+```ts
+// before                                    // after
+detector.detectDocument(buf, opts);          import { detectDocument } from "@openredaction/core/documents";
+                                             detectDocument(detector, buf, opts);
+detector.detectDocumentFile(path);           detectDocumentFile(detector, path);
+detector.generateReport(result, opts);       import { createReportGenerator } from "@openredaction/core/reports";
+                                             createReportGenerator().generate(result, opts);
+detector.healthCheck(opts);                  import { createHealthChecker } from "@openredaction/core/health";
+detector.quickHealthCheck();                 createHealthChecker(detector).check(opts) / .quickCheck();
+OpenRedaction.detectBatch(texts, opts);      import { detectBatch, detectDocumentsBatch } from "@openredaction/core/workers";
+OpenRedaction.detectDocumentsBatch(bufs);    detectBatch(texts, opts) / detectDocumentsBatch(bufs, opts);
+```
+
+`explain()` and `exportConfig()` remain on the class.
+
+**Fixed:** `WorkerPool` resolved its worker script with `__dirname` (crashed in ESM) against a filename (`worker.js`) that the build never produced (`worker.cjs`) — worker pools now function from both ESM and CJS entries.

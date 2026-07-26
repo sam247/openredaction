@@ -13,7 +13,7 @@ describe("Report Generation", () => {
       const text = "Contact: admin@business.co.uk, Phone: 07700900123";
       const result = await detector.detect(text);
 
-      const html = detector.generateReport(result, {
+      const html = createReportGenerator(detector).generate(result, {
         format: "html",
         title: "Test Report",
       });
@@ -30,7 +30,7 @@ describe("Report Generation", () => {
       const text = "Contact: admin@business.co.uk, Phone: 07700900123";
       const result = await detector.detect(text);
 
-      const md = detector.generateReport(result, {
+      const md = createReportGenerator(detector).generate(result, {
         format: "markdown",
         title: "Test Report",
       });
@@ -63,7 +63,7 @@ describe("Report Generation", () => {
         "Email: user@business.co.uk, Phone: 07700900123, Card: 4532015112830366";
       const result = await detector.detect(text);
 
-      const html = detector.generateReport(result, {
+      const html = createReportGenerator(detector).generate(result, {
         format: "html",
         includeStatistics: true,
       });
@@ -78,7 +78,7 @@ describe("Report Generation", () => {
       const text = "Contact: admin@business.co.uk";
       const result = await detector.detect(text);
 
-      const html = detector.generateReport(result, {
+      const html = createReportGenerator(detector).generate(result, {
         format: "html",
         includeDetectionDetails: true,
       });
@@ -93,7 +93,7 @@ describe("Report Generation", () => {
       const text = "Contact: admin@business.co.uk";
       const result = await detector.detect(text);
 
-      const html = detector.generateReport(result, {
+      const html = createReportGenerator(detector).generate(result, {
         format: "html",
         includeRedactedText: true,
       });
@@ -107,7 +107,7 @@ describe("Report Generation", () => {
       const text = "Contact: admin@business.co.uk";
       const result = await detector.detect(text);
 
-      const html = detector.generateReport(result, {
+      const html = createReportGenerator(detector).generate(result, {
         format: "html",
         includeOriginalText: true,
       });
@@ -121,7 +121,7 @@ describe("Report Generation", () => {
       const text = "Secret: admin@business.co.uk";
       const result = await detector.detect(text);
 
-      const html = detector.generateReport(result, {
+      const html = createReportGenerator(detector).generate(result, {
         format: "html",
       });
 
@@ -134,7 +134,7 @@ describe("Report Generation", () => {
       const text = "Email: test@business.co.uk";
       const result = await detector.detect(text);
 
-      const html = detector.generateReport(result, {
+      const html = createReportGenerator(detector).generate(result, {
         format: "html",
         organizationName: "Acme Corp",
         metadata: {
@@ -153,7 +153,7 @@ describe("Report Generation", () => {
       const text = 'Email: <script>alert("xss")</script>@business.co.uk';
       const result = await detector.detect(text);
 
-      const html = detector.generateReport(result, {
+      const html = createReportGenerator(detector).generate(result, {
         format: "html",
         title: '<script>alert("xss")</script>',
       });
@@ -170,7 +170,7 @@ describe("Report Generation", () => {
       const text = "Email: user@business.co.uk, Phone: 07700900123";
       const result = await detector.detect(text);
 
-      const md = detector.generateReport(result, {
+      const md = createReportGenerator(detector).generate(result, {
         format: "markdown",
         includeStatistics: true,
       });
@@ -185,7 +185,7 @@ describe("Report Generation", () => {
       const text = "Email: user@business.co.uk, Phone: 07700900123";
       const result = await detector.detect(text);
 
-      const md = detector.generateReport(result, {
+      const md = createReportGenerator(detector).generate(result, {
         format: "markdown",
       });
 
@@ -198,7 +198,7 @@ describe("Report Generation", () => {
       const text = "Contact: admin@business.co.uk";
       const result = await detector.detect(text);
 
-      const md = detector.generateReport(result, {
+      const md = createReportGenerator(detector).generate(result, {
         format: "markdown",
         includeRedactedText: true,
       });
@@ -213,7 +213,7 @@ describe("Report Generation", () => {
       const text = "Secret: admin@business.co.uk";
       const result = await detector.detect(text);
 
-      const md = detector.generateReport(result, {
+      const md = createReportGenerator(detector).generate(result, {
         format: "markdown",
         includeOriginalText: true,
       });
@@ -227,7 +227,7 @@ describe("Report Generation", () => {
       const text = "Email: test@business.co.uk";
       const result = await detector.detect(text);
 
-      const md = detector.generateReport(result, {
+      const md = createReportGenerator(detector).generate(result, {
         format: "markdown",
         organizationName: "Test Org",
         metadata: {
@@ -249,7 +249,7 @@ describe("Report Generation", () => {
       const text = "Email: user@business.co.uk";
       const result = await detector.detect(text);
 
-      const report = detector.generateReport(result, {
+      const report = createReportGenerator(detector).generate(result, {
         format: "markdown",
         type: "summary",
       });
@@ -262,7 +262,7 @@ describe("Report Generation", () => {
       const text = "Email: user@business.co.uk";
       const result = await detector.detect(text);
 
-      const report = detector.generateReport(result, {
+      const report = createReportGenerator(detector).generate(result, {
         format: "markdown",
         type: "detailed",
       });
@@ -275,7 +275,7 @@ describe("Report Generation", () => {
       const text = "Email: user@business.co.uk";
       const result = await detector.detect(text);
 
-      const report = detector.generateReport(result, {
+      const report = createReportGenerator(detector).generate(result, {
         format: "markdown",
         type: "compliance",
         organizationName: "Compliance Corp",
@@ -297,7 +297,7 @@ describe("Report Generation", () => {
       `;
       const result = await detector.detect(text);
 
-      const html = detector.generateReport(result, {
+      const html = createReportGenerator(detector).generate(result, {
         format: "html",
         includeStatistics: true,
       });
@@ -317,7 +317,7 @@ describe("Report Generation", () => {
       `;
       const result = await detector.detect(text);
 
-      const md = detector.generateReport(result, {
+      const md = createReportGenerator(detector).generate(result, {
         format: "markdown",
       });
 
@@ -333,7 +333,7 @@ describe("Report Generation", () => {
       const text = "This text has no PII";
       const result = await detector.detect(text);
 
-      const html = detector.generateReport(result, {
+      const html = createReportGenerator(detector).generate(result, {
         format: "html",
       });
 
@@ -347,7 +347,7 @@ describe("Report Generation", () => {
         "a".repeat(10000) + " Email: test@business.co.uk " + "b".repeat(10000);
       const result = await detector.detect(longText);
 
-      const report = detector.generateReport(result, {
+      const report = createReportGenerator(detector).generate(result, {
         format: "markdown",
         includeRedactedText: true,
       });
@@ -361,7 +361,7 @@ describe("Report Generation", () => {
       const text = "Email: test@business.co.uk";
       const result = await detector.detect(text);
 
-      const html = detector.generateReport(result, {
+      const html = createReportGenerator(detector).generate(result, {
         format: "html",
         metadata: {
           "Test & Special": 'Value <with> "quotes"',
@@ -390,7 +390,7 @@ describe("Report Generation", () => {
 
       const result = await detector.detect(text);
 
-      const report = detector.generateReport(result, {
+      const report = createReportGenerator(detector).generate(result, {
         format: "html",
         type: "compliance",
         title: "GDPR Compliance Audit",
@@ -419,7 +419,7 @@ describe("Report Generation", () => {
       const text = "Dev test: test@example.com, Real: admin@business.co.uk";
       const result = await detector.detect(text);
 
-      const report = detector.generateReport(result, {
+      const report = createReportGenerator(detector).generate(result, {
         format: "markdown",
         type: "detailed",
         title: "Development Debug Report",

@@ -20,30 +20,21 @@ import type {
   DetectorOptions,
   OpenRedactionConstructorOptions,
 } from "./detector/types";
-import { createDocumentProcessor } from "./document";
-import type { DocumentOptions, DocumentResult } from "./document/types";
 import { createExplainAPI, type ExplainAPI } from "./explain/ExplainAPI.js";
-import { HealthChecker, type HealthCheckResult } from "./health/HealthCheck.js";
 import type {
   LearningData,
   LocalLearningStore,
 } from "./learning/LocalLearningStore.js";
 import type { PriorityOptimizer } from "./optimizer/PriorityOptimizer.js";
-import {
-  createReportGenerator,
-  type ReportOptions,
-} from "./reports/ReportGenerator.js";
 import type {
   DetectionResult,
   IAuditLogger,
   IDetector,
   IMetricsCollector,
   IRBACManager,
-  OpenRedactionOptions,
   PIIDetection,
   PIIPattern,
 } from "./types";
-import { createWorkerPool } from "./workers";
 
 export class OpenRedaction implements IDetector {
   options: DetectorOptions;
@@ -276,136 +267,11 @@ export class OpenRedaction implements IDetector {
     return createExplainAPI(this);
   }
 
-  generateReport(result: DetectionResult, options: ReportOptions): string {
-    const generator = createReportGenerator(this);
-    return generator.generate(result, options);
-  }
-
   exportConfig(metadata?: {
     description?: string;
     author?: string;
     tags?: string[];
   }): string {
     return ConfigExporter.exportToString(this.options, metadata, true);
-  }
-
-  async healthCheck(options?: {
-    testDetection?: boolean;
-    checkPerformance?: boolean;
-    performanceThreshold?: number;
-    memoryThreshold?: number;
-  }): Promise<HealthCheckResult> {
-    const checker = new HealthChecker(this);
-    return checker.check(options);
-  }
-
-  async quickHealthCheck(): Promise<{
-    status: "healthy" | "unhealthy";
-    message: string;
-  }> {
-    const checker = new HealthChecker(this);
-    return checker.quickCheck();
-  }
-
-  async detectDocument(
-    buffer: Buffer,
-    options?: DocumentOptions,
-  ): Promise<DocumentResult> {
-    if (!this.auditManager.checkPermission("detection:detect")) {
-      throw new Error(
-        "[OpenRedaction] Permission denied: detection:detect required",
-      );
-    }
-
-    const processor = createDocumentProcessor();
-
-    const extractionStart = performance.now();
-
-    const text = await processor.extractText(buffer, options);
-    const metadata = await processor.getMetadata(buffer, options);
-
-    const extractionEnd = performance.now();
-    const extractionTime =
-      Math.round((extractionEnd - extractionStart) * 100) / 100;
-
-    const detection = await this.detect(text);
-
-    return {
-      text,
-      metadata,
-      detection,
-      fileSize: buffer.length,
-      extractionTime,
-    };
-  }
-
-  async detectDocumentFile(
-    filePath: string,
-    options?: DocumentOptions,
-  ): Promise<DocumentResult> {
-    if (!this.auditManager.checkPermission("detection:detect")) {
-      throw new Error(
-        "[OpenRedaction] Permission denied: detection:detect required",
-      );
-    }
-
-    const fs = await import("fs/promises");
-    const buffer = await fs.readFile(filePath);
-
-    return this.detectDocument(buffer, options);
-  }
-
-  static async detectBatch(
-    texts: string[],
-    options?: OpenRedactionOptions & { numWorkers?: number },
-  ): Promise<DetectionResult[]> {
-    const pool = createWorkerPool({ numWorkers: options?.numWorkers });
-
-    try {
-      await pool.initialize();
-
-      const tasks = texts.map((text, index) => ({
-        type: "detect" as const,
-        id: `detect_${index}`,
-        text,
-        options,
-      }));
-
-      const results = await Promise.all(
-        tasks.map((task) => pool.execute<DetectionResult>(task)),
-      );
-
-      return results;
-    } finally {
-      await pool.terminate();
-    }
-  }
-
-  static async detectDocumentsBatch(
-    buffers: Buffer[],
-    options?: DocumentOptions & {
-      numWorkers?: number;
-    },
-  ): Promise<DocumentResult[]> {
-    const pool = createWorkerPool({ numWorkers: options?.numWorkers });
-
-    try {
-      await pool.initialize();
-
-      const tasks = buffers.map((buffer, index) => ({
-        type: "document" as const,
-        id: `document_${index}`,
-        buffer,
-        options,
-      }));
-
-      const results = await Promise.all(
-        tasks.map((task) => pool.execute(task)),
-      );
-
-      return results;
-    } finally {
-      await pool.terminate();
-    }
   }
 }

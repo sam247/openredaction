@@ -45,7 +45,7 @@ export interface ReportOptions {
  * Report generator for PII detection results
  */
 export class ReportGenerator {
-  constructor(_detector: IDetector) {
+  constructor(_detector?: IDetector) {
     // Detector not currently used, reserved for future features
   }
 
@@ -508,6 +508,6 @@ export class ReportGenerator {
 /**
  * Helper to create report generator
  */
-export function createReportGenerator(detector: IDetector): ReportGenerator {
+export function createReportGenerator(detector?: IDetector): ReportGenerator {
   return new ReportGenerator(detector);
 }

@@ -13,6 +13,10 @@ export {
   createDocumentProcessor,
   DocumentProcessor,
 } from "./DocumentProcessor";
+export {
+  detectDocument,
+  detectDocumentFile,
+} from "./detectDocument";
 export type {
   JsonDetectionResult,
   JsonProcessorOptions,

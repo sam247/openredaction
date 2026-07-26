@@ -2,8 +2,10 @@
  * Worker thread pool for parallel processing
  */
 
+import { existsSync } from "node:fs";
 import { cpus } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Worker } from "node:worker_threads";
 import type {
   WorkerPoolConfig,
@@ -44,8 +46,16 @@ export class WorkerPool {
       avgProcessingTime: 0,
     };
 
-    // Worker script path (will be in dist after build)
-    this.workerPath = join(__dirname, "worker.js");
+    // The compiled worker lives at dist/workers/worker.js; this module lands
+    // either in a chunk at dist/ or inside dist/workers/ depending on build
+    const moduleDir = dirname(fileURLToPath(import.meta.url));
+    const candidates = [
+      join(moduleDir, "workers", "worker.cjs"),
+      join(moduleDir, "workers", "worker.js"),
+      join(moduleDir, "worker.cjs"),
+      join(moduleDir, "worker.js"),
+    ];
+    this.workerPath = candidates.find((p) => existsSync(p)) ?? candidates[0];
   }
 
   /**
