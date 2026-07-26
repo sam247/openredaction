@@ -20,6 +20,7 @@ export {
 export type {
   JsonDetectionResult,
   JsonProcessorOptions,
+  JsonValue,
 } from "./JsonProcessor";
 export { createJsonProcessor, JsonProcessor } from "./JsonProcessor";
 export { createOCRProcessor, OCRProcessor } from "./OCRProcessor";

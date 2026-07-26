@@ -525,13 +525,18 @@ export class DocumentProcessor implements IDocumentProcessor {
     try {
       const data = this.jsonProcessor.parse(buffer);
       const isArray = Array.isArray(data);
+      const itemCount = isArray
+        ? data.length
+        : data !== null && typeof data === "object"
+          ? Object.keys(data).length
+          : 0;
 
       return {
         format: "json",
         pages: undefined,
         custom: {
           isArray,
-          itemCount: isArray ? data.length : Object.keys(data).length,
+          itemCount,
         },
       };
     } catch {
