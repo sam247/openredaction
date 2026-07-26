@@ -27,8 +27,8 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "openredaction": "./dist/index.cli.js",
-    "openredaction-test-pattern": "./dist/test-pattern.js"
+    "openredaction": "./dist/index.cli.cjs",
+    "openredaction-test-pattern": "./dist/test-pattern.cjs"
   },
   "files": [
     "dist"

@@ -96,5 +96,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "description": "Production-ready PII detection and redaction for JavaScript/TypeScript. Regex-first, local-by-default, 570+ patterns."
 }
