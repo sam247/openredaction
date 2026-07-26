@@ -185,9 +185,12 @@ export {
   contactPatterns,
   financialPatterns,
   getPatternsByCategory,
+  getRegisteredCategories,
   governmentPatterns,
   networkPatterns,
+  type PatternSource,
   personalPatterns,
+  registerPatternCategory,
 } from "./patterns";
 // RBAC (Role-Based Access Control)
 export {
