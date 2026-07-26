@@ -55,15 +55,29 @@
   },
   "devDependencies": {
     "@types/node": "^26.0.1",
+    "@types/pdf-parse": "^1.1.5",
+    "compromise": "^14.16.0",
+    "mammoth": "^1.11.0",
     "mitata": "latest",
-    "unrun": "0.3.1"
+    "tesseract.js": "^7.0.0",
+    "unrun": "0.3.1",
+    "xlsx": "^0.18.5"
   },
   "peerDependencies": {
+    "better-sqlite3": ">=11.0.0",
+    "compromise": "^14.0.0",
     "mammoth": "^1.6.0",
     "pdf-parse": "^1.1.1",
-    "tesseract.js": "^5.0.0"
+    "tesseract.js": "^5.0.0 || ^6.0.0 || ^7.0.0",
+    "xlsx": "^0.18.0"
   },
   "peerDependenciesMeta": {
+    "better-sqlite3": {
+      "optional": true
+    },
+    "compromise": {
+      "optional": true
+    },
     "mammoth": {
       "optional": true
     },
@@ -71,6 +85,9 @@
       "optional": true
     },
     "tesseract.js": {
+      "optional": true
+    },
+    "xlsx": {
       "optional": true
     }
   },

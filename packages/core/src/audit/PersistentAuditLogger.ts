@@ -5,6 +5,48 @@
 
 import { createHash } from "crypto";
 import type { AuditLogEntry, AuditStats, IAuditLogger } from "../types";
+import { errorMessage, loadOptionalModule } from "../utils/optional-require";
+
+/**
+ * Minimal better-sqlite3 surface used by the SQLite adapter — typed locally to
+ * avoid a devDependency on the native module.
+ */
+interface SqliteStatement<Row = unknown> {
+  run(...params: unknown[]): { changes: number };
+  get(...params: unknown[]): Row | undefined;
+  all(...params: unknown[]): Row[];
+}
+
+interface SqliteDatabase {
+  pragma(source: string): unknown;
+  exec(source: string): unknown;
+  prepare<Row = unknown>(source: string): SqliteStatement<Row>;
+  transaction<A extends unknown[]>(
+    fn: (...args: A) => void,
+  ): (...args: A) => void;
+  close(): void;
+}
+
+type SqliteConstructor = (filePath: string) => SqliteDatabase;
+
+interface AuditRow {
+  sequence: number;
+  id: string;
+  timestamp: string;
+  operation: AuditLogEntry["operation"];
+  piiCount: number;
+  piiTypes: string;
+  textLength: number;
+  processingTimeMs: number;
+  redactionMode: AuditLogEntry["redactionMode"] | null;
+  success: number;
+  error: string | null;
+  user: string | null;
+  sessionId: string | null;
+  metadata: string | null;
+  hash: string;
+  previousHash: string | null;
+}
 
 /**
  * Supported database backends
@@ -654,7 +696,7 @@ export class PersistentAuditLogger implements IAuditLogger {
  * SQLite adapter implementation
  */
 class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
-  private db?: any;
+  private db?: SqliteDatabase;
   private config: AuditDatabaseConfig;
   private options: Required<Omit<PersistentAuditLoggerOptions, "secretKey">> &
     Pick<PersistentAuditLoggerOptions, "secretKey">;
@@ -668,10 +710,22 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
     this.options = options;
   }
 
+  private getDb(): SqliteDatabase {
+    if (!this.db) {
+      throw new Error(
+        "[SQLiteAuditAdapter] Not initialized. Call initialize() first.",
+      );
+    }
+    return this.db;
+  }
+
   async initialize(): Promise<void> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const sqlite3 = require("better-sqlite3");
+      const sqlite3 = loadOptionalModule<SqliteConstructor>("better-sqlite3");
+      if (!sqlite3) {
+        throw new Error("better-sqlite3 is not installed");
+      }
+
       const filePath = this.config.filePath || "./audit-logs.db";
 
       this.db = sqlite3(filePath);
@@ -713,16 +767,16 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
         CREATE INDEX IF NOT EXISTS idx_${tableName}_sessionId ON ${tableName}(sessionId);
         CREATE INDEX IF NOT EXISTS idx_${tableName}_sequence ON ${tableName}(sequence);
       `);
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(
-        `[SQLiteAuditAdapter] Failed to initialize: ${error.message}. Install with: npm install better-sqlite3`,
+        `[SQLiteAuditAdapter] Failed to initialize: ${errorMessage(error)}. Install with: npm install better-sqlite3`,
       );
     }
   }
 
   async insert(entry: HashedAuditLogEntry): Promise<void> {
     const tableName = this.config.tableName || "audit_logs";
-    const stmt = this.db.prepare(`
+    const stmt = this.getDb().prepare(`
       INSERT INTO ${tableName} (
         sequence, id, timestamp, operation, piiCount, piiTypes, textLength,
         processingTimeMs, redactionMode, success, error, user, sessionId,
@@ -752,7 +806,7 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
 
   async batchInsert(entries: HashedAuditLogEntry[]): Promise<void> {
     const tableName = this.config.tableName || "audit_logs";
-    const stmt = this.db.prepare(`
+    const stmt = this.getDb().prepare(`
       INSERT INTO ${tableName} (
         sequence, id, timestamp, operation, piiCount, piiTypes, textLength,
         processingTimeMs, redactionMode, success, error, user, sessionId,
@@ -760,7 +814,7 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    const transaction = this.db.transaction(
+    const transaction = this.getDb().transaction(
       (entries: HashedAuditLogEntry[]) => {
         for (const entry of entries) {
           stmt.run(
@@ -791,7 +845,7 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
   async query(filter: AuditQueryFilter): Promise<HashedAuditLogEntry[]> {
     const tableName = this.config.tableName || "audit_logs";
     const conditions: string[] = [];
-    const params: any[] = [];
+    const params: unknown[] = [];
 
     if (filter.operation) {
       conditions.push("operation = ?");
@@ -836,15 +890,17 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
       ${limit} ${offset}
     `;
 
-    const rows = this.db.prepare(query).all(...params);
+    const rows = this.getDb()
+      .prepare<AuditRow>(query)
+      .all(...params);
 
-    return rows.map((row: any) => this.rowToEntry(row));
+    return rows.map((row) => this.rowToEntry(row));
   }
 
   async count(filter?: Partial<AuditQueryFilter>): Promise<number> {
     const tableName = this.config.tableName || "audit_logs";
     const conditions: string[] = [];
-    const params: any[] = [];
+    const params: unknown[] = [];
 
     if (filter?.operation) {
       conditions.push("operation = ?");
@@ -865,13 +921,15 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
       conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
     const query = `SELECT COUNT(*) as count FROM ${tableName} ${whereClause}`;
 
-    const result = this.db.prepare(query).get(...params);
-    return result.count;
+    const result = this.getDb()
+      .prepare<{ count: number }>(query)
+      .get(...params);
+    return result?.count ?? 0;
   }
 
   async deleteOlderThan(date: Date): Promise<number> {
     const tableName = this.config.tableName || "audit_logs";
-    const result = this.db
+    const result = this.getDb()
       .prepare(`
       DELETE FROM ${tableName} WHERE timestamp < ?
     `)
@@ -882,8 +940,8 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
 
   async getLastEntry(): Promise<HashedAuditLogEntry | null> {
     const tableName = this.config.tableName || "audit_logs";
-    const row = this.db
-      .prepare(`
+    const row = this.getDb()
+      .prepare<AuditRow>(`
       SELECT * FROM ${tableName} ORDER BY sequence DESC LIMIT 1
     `)
       .get();
@@ -899,8 +957,8 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
     const start = startSequence || 1;
     const end = endSequence || (await this.count());
 
-    const rows = this.db
-      .prepare(`
+    const rows = this.getDb()
+      .prepare<AuditRow>(`
       SELECT * FROM ${tableName} WHERE sequence >= ? AND sequence <= ? ORDER BY sequence ASC
     `)
       .all(start, end);
@@ -926,7 +984,7 @@ class SQLiteAuditAdapter implements IAuditDatabaseAdapter {
     }
   }
 
-  private rowToEntry(row: any): HashedAuditLogEntry {
+  private rowToEntry(row: AuditRow): HashedAuditLogEntry {
     return {
       id: row.id,
       timestamp: row.timestamp,

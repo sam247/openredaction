@@ -3,7 +3,18 @@
  * Supports HTTP webhooks with retry logic, circuit breaker, and event filtering
  */
 
+import { createHmac, timingSafeEqual } from "node:crypto";
 import type { DetectionResult } from "../types";
+import { errorMessage } from "../utils/optional-require";
+
+/** Delivery errors carry the HTTP status via Object.assign in makeHttpRequest */
+function deliveryStatusCode(error: unknown): number | undefined {
+  if (error instanceof Error && "statusCode" in error) {
+    const code = (error as Error & { statusCode?: unknown }).statusCode;
+    return typeof code === "number" ? code : undefined;
+  }
+  return undefined;
+}
 
 /**
  * Webhook event types
@@ -454,7 +465,7 @@ export class WebhookManager {
         circuitState.state = "closed";
         circuitState.failureCount = 0;
       }
-    } catch (error: any) {
+    } catch (error) {
       const durationMs = Date.now() - startTime;
 
       // Record failed delivery
@@ -463,10 +474,10 @@ export class WebhookManager {
         webhookId: webhook.id,
         event,
         status: "failed",
-        statusCode: error.statusCode,
+        statusCode: deliveryStatusCode(error),
         timestamp: new Date(),
         attempt,
-        error: error.message,
+        error: errorMessage(error),
         durationMs,
       });
 
@@ -515,12 +526,7 @@ export class WebhookManager {
     event: WebhookEvent,
   ): Promise<{ statusCode: number; body: string }> {
     try {
-      // Try to use fetch (Node 18+) or https module
-      let fetch: any;
-      try {
-        fetch = globalThis.fetch;
-      } catch {
-        // Fetch not available, use https module (implementation stub)
+      if (typeof globalThis.fetch !== "function") {
         throw new Error(
           "[WebhookManager] HTTP client not available. Requires Node 18+ with fetch support.",
         );
@@ -572,15 +578,15 @@ export class WebhookManager {
           statusCode: response.status,
           body,
         };
-      } catch (error: any) {
+      } catch (error) {
         clearTimeout(timeoutId);
         throw error;
       }
-    } catch (error: any) {
+    } catch (error) {
       throw Object.assign(
-        new Error(`Webhook delivery failed: ${error.message}`),
+        new Error(`Webhook delivery failed: ${errorMessage(error)}`),
         {
-          statusCode: error.statusCode || 0,
+          statusCode: deliveryStatusCode(error) ?? 0,
         },
       );
     }
@@ -590,16 +596,8 @@ export class WebhookManager {
    * Calculate HMAC signature for webhook verification
    */
   private calculateHmacSignature(event: WebhookEvent, secret: string): string {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const crypto = require("crypto");
-      const payload = JSON.stringify(event);
-      return crypto.createHmac("sha256", secret).update(payload).digest("hex");
-    } catch {
-      throw new Error(
-        "[WebhookManager] Crypto module not available for HMAC signatures",
-      );
-    }
+    const payload = JSON.stringify(event);
+    return createHmac("sha256", secret).update(payload).digest("hex");
   }
 
   /**
@@ -744,14 +742,12 @@ export function verifyWebhookSignature(
   algorithm: "sha256" | "sha512" = "sha256",
 ): boolean {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const crypto = require("crypto");
-    const expectedSignature = crypto
-      .createHmac(algorithm, secret)
+    const expectedSignature = createHmac(algorithm, secret)
       .update(payload)
       .digest("hex");
 
-    return crypto.timingSafeEqual(
+    // timingSafeEqual throws on length mismatch — treat as invalid signature
+    return timingSafeEqual(
       Buffer.from(signature),
       Buffer.from(expectedSignature),
     );

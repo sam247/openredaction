@@ -2,6 +2,11 @@
  * Document text extraction with optional peer dependencies
  */
 
+import {
+  errorMessage,
+  isModuleAvailable,
+  loadOptionalModule,
+} from "../utils/optional-require";
 import { CsvProcessor } from "./CsvProcessor";
 import { JsonProcessor } from "./JsonProcessor";
 import { OCRProcessor } from "./OCRProcessor";
@@ -13,41 +18,57 @@ import type {
 } from "./types";
 import { XlsxProcessor } from "./XlsxProcessor";
 
+type PdfParseModule = typeof import("pdf-parse");
+type MammothModule = typeof import("mammoth");
+
+/** @types/pdf-parse omits `password`, which pdf-parse forwards to pdf.js getDocument */
+type PdfParseOptions = NonNullable<Parameters<PdfParseModule>[1]> & {
+  password?: string;
+};
+
+const PDF_INSTALL_HINT =
+  "[DocumentProcessor] PDF support requires pdf-parse. Install with: npm install pdf-parse";
+const DOCX_INSTALL_HINT =
+  "[DocumentProcessor] DOCX support requires mammoth. Install with: npm install mammoth";
+
 /**
  * Document processor with optional PDF, DOCX, OCR, JSON, CSV, and XLSX support
- * Requires peer dependencies:
+ * Requires peer dependencies (loaded lazily on first use):
  * - pdf-parse (for PDF)
  * - mammoth (for DOCX)
  * - tesseract.js (for OCR/images)
  * - xlsx (for Excel/XLSX)
  */
 export class DocumentProcessor implements IDocumentProcessor {
-  private pdfParse?: any;
-  private mammoth?: any;
-  private ocrProcessor: OCRProcessor;
-  private jsonProcessor: JsonProcessor;
-  private csvProcessor: CsvProcessor;
-  private xlsxProcessor: XlsxProcessor;
+  private pdfParse?: PdfParseModule | null;
+  private mammoth?: MammothModule | null;
+  private ocrProcessor = new OCRProcessor();
+  private jsonProcessor = new JsonProcessor();
+  private csvProcessor = new CsvProcessor();
+  private xlsxProcessor = new XlsxProcessor();
 
-  constructor() {
-    // Try to load optional dependencies
-    try {
-      this.pdfParse = require("pdf-parse");
-    } catch {
-      // pdf-parse not installed
+  private loadPdfParse(): PdfParseModule {
+    if (this.pdfParse === undefined) {
+      this.pdfParse = loadOptionalModule<PdfParseModule>("pdf-parse") ?? null;
     }
 
-    try {
-      this.mammoth = require("mammoth");
-    } catch {
-      // mammoth not installed
+    if (!this.pdfParse) {
+      throw new Error(PDF_INSTALL_HINT);
     }
 
-    // Initialize processors
-    this.ocrProcessor = new OCRProcessor();
-    this.jsonProcessor = new JsonProcessor();
-    this.csvProcessor = new CsvProcessor();
-    this.xlsxProcessor = new XlsxProcessor();
+    return this.pdfParse;
+  }
+
+  private loadMammoth(): MammothModule {
+    if (this.mammoth === undefined) {
+      this.mammoth = loadOptionalModule<MammothModule>("mammoth") ?? null;
+    }
+
+    if (!this.mammoth) {
+      throw new Error(DOCX_INSTALL_HINT);
+    }
+
+    return this.mammoth;
   }
 
   /**
@@ -258,9 +279,9 @@ export class DocumentProcessor implements IDocumentProcessor {
   isFormatSupported(format: DocumentFormat): boolean {
     switch (format) {
       case "pdf":
-        return !!this.pdfParse;
+        return isModuleAvailable("pdf-parse");
       case "docx":
-        return !!this.mammoth;
+        return isModuleAvailable("mammoth");
       case "txt":
         return true;
       case "image":
@@ -283,17 +304,14 @@ export class DocumentProcessor implements IDocumentProcessor {
     buffer: Buffer,
     options?: DocumentOptions,
   ): Promise<string> {
-    if (!this.pdfParse) {
-      throw new Error(
-        "[DocumentProcessor] PDF support requires pdf-parse. Install with: npm install pdf-parse",
-      );
-    }
+    const pdfParse = this.loadPdfParse();
 
     try {
-      const data = await this.pdfParse(buffer, {
+      const parseOptions: PdfParseOptions = {
         password: options?.password,
         max: options?.pages ? Math.max(...options.pages) : undefined,
-      });
+      };
+      const data = await pdfParse(buffer, parseOptions);
 
       // If specific pages requested, filter them
       if (options?.pages) {
@@ -303,9 +321,9 @@ export class DocumentProcessor implements IDocumentProcessor {
       }
 
       return data.text || "";
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(
-        `[DocumentProcessor] PDF extraction failed: ${error.message}`,
+        `[DocumentProcessor] PDF extraction failed: ${errorMessage(error)}`,
       );
     }
   }
@@ -317,18 +335,14 @@ export class DocumentProcessor implements IDocumentProcessor {
     buffer: Buffer,
     _options?: DocumentOptions,
   ): Promise<string> {
-    if (!this.mammoth) {
-      throw new Error(
-        "[DocumentProcessor] DOCX support requires mammoth. Install with: npm install mammoth",
-      );
-    }
+    const mammoth = this.loadMammoth();
 
     try {
-      const result = await this.mammoth.extractRawText({ buffer });
+      const result = await mammoth.extractRawText({ buffer });
       return result.value || "";
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(
-        `[DocumentProcessor] DOCX extraction failed: ${error.message}`,
+        `[DocumentProcessor] DOCX extraction failed: ${errorMessage(error)}`,
       );
     }
   }
@@ -340,16 +354,13 @@ export class DocumentProcessor implements IDocumentProcessor {
     buffer: Buffer,
     _options?: DocumentOptions,
   ): Promise<DocumentMetadata> {
-    if (!this.pdfParse) {
-      throw new Error(
-        "[DocumentProcessor] PDF support requires pdf-parse. Install with: npm install pdf-parse",
-      );
-    }
+    const pdfParse = this.loadPdfParse();
 
     try {
-      const data = await this.pdfParse(buffer, {
+      const parseOptions: PdfParseOptions = {
         password: _options?.password,
-      });
+      };
+      const data = await pdfParse(buffer, parseOptions);
 
       return {
         format: "pdf",
@@ -364,9 +375,9 @@ export class DocumentProcessor implements IDocumentProcessor {
           : undefined,
         custom: data.info,
       };
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(
-        `[DocumentProcessor] PDF metadata extraction failed: ${error.message}`,
+        `[DocumentProcessor] PDF metadata extraction failed: ${errorMessage(error)}`,
       );
     }
   }
@@ -405,9 +416,9 @@ export class DocumentProcessor implements IDocumentProcessor {
         options?.ocrOptions,
       );
       return result.text;
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(
-        `[DocumentProcessor] Image text extraction failed: ${error.message}`,
+        `[DocumentProcessor] Image text extraction failed: ${errorMessage(error)}`,
       );
     }
   }
@@ -459,9 +470,9 @@ export class DocumentProcessor implements IDocumentProcessor {
   ): Promise<string> {
     try {
       return this.jsonProcessor.extractText(buffer);
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(
-        `[DocumentProcessor] JSON extraction failed: ${error.message}`,
+        `[DocumentProcessor] JSON extraction failed: ${errorMessage(error)}`,
       );
     }
   }
@@ -475,9 +486,9 @@ export class DocumentProcessor implements IDocumentProcessor {
   ): Promise<string> {
     try {
       return this.csvProcessor.extractText(buffer);
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(
-        `[DocumentProcessor] CSV extraction failed: ${error.message}`,
+        `[DocumentProcessor] CSV extraction failed: ${errorMessage(error)}`,
       );
     }
   }
@@ -497,9 +508,9 @@ export class DocumentProcessor implements IDocumentProcessor {
 
     try {
       return this.xlsxProcessor.extractText(buffer);
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(
-        `[DocumentProcessor] XLSX extraction failed: ${error.message}`,
+        `[DocumentProcessor] XLSX extraction failed: ${errorMessage(error)}`,
       );
     }
   }

@@ -4,6 +4,20 @@
 
 import type { OpenRedaction } from "../detector";
 import type { DetectionResult, PIIDetection } from "../types";
+import {
+  errorMessage,
+  isModuleAvailable,
+  loadOptionalModule,
+} from "../utils/optional-require";
+
+type XlsxModule = typeof import("xlsx");
+type WorkBook = import("xlsx").WorkBook;
+type WorkSheet = import("xlsx").WorkSheet;
+type XlsxRange = import("xlsx").Range;
+type CellObject = import("xlsx").CellObject;
+
+const INSTALL_HINT =
+  "[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx";
 
 /**
  * XLSX processing options
@@ -105,7 +119,7 @@ export interface CellMatch {
  * XLSX processor for spreadsheet data
  */
 export class XlsxProcessor {
-  private xlsx?: any;
+  private xlsxModule?: XlsxModule | null;
 
   private readonly defaultOptions: Required<
     Omit<
@@ -186,40 +200,46 @@ export class XlsxProcessor {
     preserveFormulas: true,
   };
 
-  constructor() {
-    // Try to load xlsx dependency
-    try {
-      this.xlsx = require("xlsx");
-    } catch {
-      // xlsx not installed
+  /** WorkSheet's index signature is effectively `any` in xlsx's typings — narrow once here */
+  private getCell(sheet: WorkSheet, ref: string): CellObject | undefined {
+    return sheet[ref] as CellObject | undefined;
+  }
+
+  private loadXlsx(): XlsxModule {
+    if (this.xlsxModule === undefined) {
+      this.xlsxModule = loadOptionalModule<XlsxModule>("xlsx") ?? null;
     }
+
+    if (!this.xlsxModule) {
+      throw new Error(INSTALL_HINT);
+    }
+
+    return this.xlsxModule;
   }
 
   /**
    * Check if XLSX support is available
    */
   isAvailable(): boolean {
-    return !!this.xlsx;
+    return isModuleAvailable("xlsx");
   }
 
   /**
    * Parse XLSX from buffer
    */
-  parse(buffer: Buffer): any {
-    if (!this.xlsx) {
-      throw new Error(
-        "[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx",
-      );
-    }
+  parse(buffer: Buffer): WorkBook {
+    const xlsx = this.loadXlsx();
 
     try {
-      return this.xlsx.read(buffer, {
+      return xlsx.read(buffer, {
         type: "buffer",
         cellFormula: true,
         cellStyles: true,
       });
-    } catch (error: any) {
-      throw new Error(`[XlsxProcessor] Failed to parse XLSX: ${error.message}`);
+    } catch (error) {
+      throw new Error(
+        `[XlsxProcessor] Failed to parse XLSX: ${errorMessage(error)}`,
+      );
     }
   }
 
@@ -231,11 +251,7 @@ export class XlsxProcessor {
     detector: OpenRedaction,
     options?: XlsxProcessorOptions,
   ): Promise<XlsxDetectionResult> {
-    if (!this.xlsx) {
-      throw new Error(
-        "[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx",
-      );
-    }
+    this.loadXlsx();
 
     const opts = { ...this.defaultOptions, ...options };
     const workbook = this.parse(buffer);
@@ -281,7 +297,7 @@ export class XlsxProcessor {
         stats: { piiCount: allDetections.length },
         sheetResults,
         sheetCount: sheetResults.length,
-      } as XlsxDetectionResult,
+      },
       options,
     );
     const redacted = this.extractText(redactedBuffer, options);
@@ -308,7 +324,7 @@ export class XlsxProcessor {
    * Detect PII in a single sheet
    */
   private async detectSheet(
-    sheet: any,
+    sheet: WorkSheet,
     sheetName: string,
     sheetIndex: number,
     detector: OpenRedaction,
@@ -337,8 +353,8 @@ export class XlsxProcessor {
         >
       >,
   ): Promise<SheetDetectionResult> {
-    // Get sheet range
-    const range = this.xlsx.utils.decode_range(sheet["!ref"] || "A1");
+    const xlsx = this.loadXlsx();
+    const range = xlsx.utils.decode_range(sheet["!ref"] || "A1");
     const startRow = range.s.r;
     const endRow =
       options.maxRows !== undefined
@@ -410,8 +426,8 @@ export class XlsxProcessor {
           continue;
         }
 
-        const cellRef = this.xlsx.utils.encode_cell({ r: row, c: col });
-        const cell = sheet[cellRef];
+        const cellRef = xlsx.utils.encode_cell({ r: row, c: col });
+        const cell = this.getCell(sheet, cellRef);
 
         if (!cell) continue;
 
@@ -509,12 +525,7 @@ export class XlsxProcessor {
     detectionResult: XlsxDetectionResult,
     options?: XlsxProcessorOptions,
   ): Buffer {
-    if (!this.xlsx) {
-      throw new Error(
-        "[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx",
-      );
-    }
-
+    const xlsx = this.loadXlsx();
     const opts = { ...this.defaultOptions, ...options };
     const workbook = this.parse(buffer);
 
@@ -523,8 +534,7 @@ export class XlsxProcessor {
       const sheet = workbook.Sheets[sheetResult.sheetName];
 
       for (const cellMatch of sheetResult.matchesByCell) {
-        const cellRef = cellMatch.cell;
-        const cell = sheet[cellRef];
+        const cell = this.getCell(sheet, cellMatch.cell);
 
         if (!cell) continue;
 
@@ -542,14 +552,14 @@ export class XlsxProcessor {
       }
     }
 
-    // Write back to buffer
-    return this.xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
+    // xlsx types write() as `any`; with type: "buffer" it returns a Buffer
+    return xlsx.write(workbook, { type: "buffer", bookType: "xlsx" }) as Buffer;
   }
 
   /**
    * Get cell value as string
    */
-  private getCellValue(cell: any): string {
+  private getCellValue(cell: CellObject | undefined): string {
     if (!cell) return "";
 
     // Try formatted value first
@@ -569,16 +579,17 @@ export class XlsxProcessor {
    * Get row values
    */
   private getRowValues(
-    sheet: any,
+    sheet: WorkSheet,
     row: number,
     startCol: number,
     endCol: number,
   ): (string | undefined)[] {
+    const xlsx = this.loadXlsx();
     const values: (string | undefined)[] = [];
 
     for (let col = startCol; col <= endCol; col++) {
-      const cellRef = this.xlsx.utils.encode_cell({ r: row, c: col });
-      const cell = sheet[cellRef];
+      const cellRef = xlsx.utils.encode_cell({ r: row, c: col });
+      const cell = this.getCell(sheet, cellRef);
       values.push(cell ? this.getCellValue(cell) : undefined);
     }
 
@@ -588,7 +599,7 @@ export class XlsxProcessor {
   /**
    * Detect if first row is likely a header
    */
-  private detectHeader(sheet: any, range: any): boolean {
+  private detectHeader(sheet: WorkSheet, range: XlsxRange): boolean {
     const firstRow = this.getRowValues(sheet, range.s.r, range.s.c, range.e.c);
     const secondRow =
       range.s.r + 1 <= range.e.r
@@ -598,10 +609,10 @@ export class XlsxProcessor {
     if (!secondRow) return false;
 
     // Check if first row values are shorter and more text-like
-    const firstRowValues = firstRow.filter((v) => v !== undefined) as string[];
+    const firstRowValues = firstRow.filter((v): v is string => v !== undefined);
     const secondRowValues = secondRow.filter(
-      (v) => v !== undefined,
-    ) as string[];
+      (v): v is string => v !== undefined,
+    );
 
     if (firstRowValues.length === 0 || secondRowValues.length === 0) {
       return false;
@@ -644,7 +655,7 @@ export class XlsxProcessor {
    * Get sheet names to process based on options
    */
   private getSheetNamesToProcess(
-    workbook: any,
+    workbook: WorkBook,
     options: Partial<XlsxProcessorOptions>,
   ): string[] {
     const allSheetNames = workbook.SheetNames;
@@ -693,12 +704,7 @@ export class XlsxProcessor {
    * Extract all cell values as text
    */
   extractText(buffer: Buffer, options?: XlsxProcessorOptions): string {
-    if (!this.xlsx) {
-      throw new Error(
-        "[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx",
-      );
-    }
-
+    const xlsx = this.loadXlsx();
     const workbook = this.parse(buffer);
     const opts = { ...this.defaultOptions, ...options };
     const sheetNames = this.getSheetNamesToProcess(workbook, opts);
@@ -707,12 +713,12 @@ export class XlsxProcessor {
 
     for (const sheetName of sheetNames) {
       const sheet = workbook.Sheets[sheetName];
-      const range = this.xlsx.utils.decode_range(sheet["!ref"] || "A1");
+      const range = xlsx.utils.decode_range(sheet["!ref"] || "A1");
 
       for (let row = range.s.r; row <= range.e.r; row++) {
         for (let col = range.s.c; col <= range.e.c; col++) {
-          const cellRef = this.xlsx.utils.encode_cell({ r: row, c: col });
-          const cell = sheet[cellRef];
+          const cellRef = xlsx.utils.encode_cell({ r: row, c: col });
+          const cell = this.getCell(sheet, cellRef);
 
           if (cell) {
             const value = this.getCellValue(cell);
@@ -734,12 +740,6 @@ export class XlsxProcessor {
     sheetNames: string[];
     sheetCount: number;
   } {
-    if (!this.xlsx) {
-      throw new Error(
-        "[XlsxProcessor] XLSX support requires xlsx package. Install with: npm install xlsx",
-      );
-    }
-
     const workbook = this.parse(buffer);
 
     return {

@@ -3,6 +3,12 @@
  * Exposes /metrics endpoint for Prometheus scraping
  */
 
+import {
+  createServer,
+  type IncomingMessage,
+  type Server,
+  type ServerResponse,
+} from "node:http";
 import type { IMetricsCollector } from "../types";
 
 /**
@@ -32,7 +38,7 @@ export interface PrometheusServerOptions {
  * Provides a lightweight HTTP server for exposing metrics to Prometheus
  */
 export class PrometheusServer {
-  private server?: any;
+  private server?: Server;
   private metricsCollector: IMetricsCollector;
   private options: Required<
     Omit<PrometheusServerOptions, "username" | "password">
@@ -67,35 +73,26 @@ export class PrometheusServer {
       throw new Error("[PrometheusServer] Server is already running");
     }
 
-    try {
-      // Try to use native http module
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const http = require("http");
+    const server = createServer(this.handleRequest.bind(this));
+    this.server = server;
 
-      this.server = http.createServer(this.handleRequest.bind(this));
-
-      return new Promise<void>((resolve, reject) => {
-        this.server.listen(this.options.port, this.options.host, () => {
-          this.isRunning = true;
-          console.log(
-            `[PrometheusServer] Metrics server started on http://${this.options.host}:${this.options.port}${this.options.metricsPath}`,
-          );
-          resolve();
-        });
-
-        this.server.on("error", (error: any) => {
-          reject(
-            new Error(
-              `[PrometheusServer] Failed to start server: ${error.message}`,
-            ),
-          );
-        });
+    return new Promise<void>((resolve, reject) => {
+      server.listen(this.options.port, this.options.host, () => {
+        this.isRunning = true;
+        console.log(
+          `[PrometheusServer] Metrics server started on http://${this.options.host}:${this.options.port}${this.options.metricsPath}`,
+        );
+        resolve();
       });
-    } catch (error: any) {
-      throw new Error(
-        `[PrometheusServer] Failed to initialize HTTP server: ${error.message}`,
-      );
-    }
+
+      server.on("error", (error) => {
+        reject(
+          new Error(
+            `[PrometheusServer] Failed to start server: ${error.message}`,
+          ),
+        );
+      });
+    });
   }
 
   /**
@@ -106,8 +103,10 @@ export class PrometheusServer {
       return;
     }
 
+    const server = this.server;
+
     return new Promise<void>((resolve, reject) => {
-      this.server.close((error: any) => {
+      server.close((error) => {
         if (error) {
           reject(
             new Error(
@@ -126,7 +125,7 @@ export class PrometheusServer {
   /**
    * Handle incoming HTTP requests
    */
-  private handleRequest(req: any, res: any): void {
+  private handleRequest(req: IncomingMessage, res: ServerResponse): void {
     this.requestCount++;
 
     // CORS headers
@@ -184,7 +183,7 @@ export class PrometheusServer {
   /**
    * Handle /metrics endpoint
    */
-  private handleMetrics(_req: any, res: any): void {
+  private handleMetrics(_req: IncomingMessage, res: ServerResponse): void {
     try {
       this.lastScrapeTime = new Date();
 
@@ -201,7 +200,7 @@ export class PrometheusServer {
 
       res.writeHead(200, { "Content-Type": "text/plain; version=0.0.4" });
       res.end(fullMetrics);
-    } catch (error: any) {
+    } catch (error) {
       console.error("[PrometheusServer] Error exporting metrics:", error);
       res.writeHead(500, { "Content-Type": "text/plain" });
       res.end("Internal Server Error");
@@ -211,7 +210,7 @@ export class PrometheusServer {
   /**
    * Handle /health endpoint
    */
-  private handleHealth(_req: any, res: any): void {
+  private handleHealth(_req: IncomingMessage, res: ServerResponse): void {
     const health = {
       status: "healthy",
       uptime: process.uptime(),
@@ -229,7 +228,7 @@ export class PrometheusServer {
   /**
    * Handle / root endpoint
    */
-  private handleRoot(_req: any, res: any): void {
+  private handleRoot(_req: IncomingMessage, res: ServerResponse): void {
     const html = `
 <!DOCTYPE html>
 <html>
