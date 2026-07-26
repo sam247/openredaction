@@ -1,9 +1,9 @@
 "use client";
 
+import type { LiteOpenRedaction, PresetName } from "@openredaction/core/lite";
 import { ArrowRight, Check, ChevronDown, Copy, Loader2 } from "lucide-react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import WordPressWaitlistTrigger from "@/components/WordPressWaitlistTrigger";
@@ -25,7 +25,7 @@ interface RedactResponse {
 const MAX_INPUT_REGEX = 500; // 500 characters for regex-only demo limit
 
 /** Presets exposed in the playground UI (must match OpenRedaction `PresetName` where applicable). */
-const PLAYGROUND_PRESET_IDS = new Set([
+const PLAYGROUND_PRESET_IDS = new Set<string>([
   "gdpr",
   "hipaa",
   "ccpa",
@@ -34,8 +34,10 @@ const PLAYGROUND_PRESET_IDS = new Set([
   "transportation",
 ]);
 
-function playgroundPreset(selected: string): string {
-  return PLAYGROUND_PRESET_IDS.has(selected) ? selected : "gdpr";
+function playgroundPreset(selected: string): PresetName {
+  return (
+    PLAYGROUND_PRESET_IDS.has(selected) ? selected : "gdpr"
+  ) as PresetName;
 }
 
 /**
@@ -47,7 +49,7 @@ function playgroundDetectorOptions(preset: string) {
   return {
     preset: playgroundPreset(preset),
     redactionMode: "placeholder" as const,
-    customPatterns: [] as const,
+    customPatterns: [] as [],
     enableFalsePositiveFilter: false,
   };
 }
@@ -62,7 +64,7 @@ export default function Playground() {
   );
   const [copied, setCopied] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<string>("gdpr");
-  const detectorRef = useRef<any>(null);
+  const detectorRef = useRef<LiteOpenRedaction | null>(null);
   const [libraryLoaded, setLibraryLoaded] = useState(false);
   const pageViewTracked = useRef(false);
 
@@ -74,85 +76,53 @@ export default function Playground() {
     }
   }, []);
 
-  // Lazy load OpenRedaction library only on client side
+  // Browser ESM bundle of @openredaction/core/lite (built into public/lib at site build time).
+  // Do not use packages/compat dist — that is a Node re-export shim.
   useEffect(() => {
-    if (typeof window !== "undefined" && !libraryLoaded) {
-      const loadLibrary = async () => {
-        try {
-          // Load the CommonJS build from public folder at runtime (version query busts cache)
-          const version =
-            typeof process.env.NEXT_PUBLIC_OPENREDACTION_VERSION !== "undefined"
-              ? process.env.NEXT_PUBLIC_OPENREDACTION_VERSION
-              : "0";
-          const response = await fetch(`/lib/openredaction.js?v=${version}`);
-          const code = await response.text();
-
-          // Create a module-like environment
-          const moduleObj = { exports: {} };
-          const exports = moduleObj.exports;
-
-          // Wrap the code in a function that provides module/exports
-          const fn = new Function("module", "exports", "require", code);
-          fn(moduleObj, exports, () => {});
-
-          // Get OpenRedaction from the loaded module
-          const { OpenRedaction } = moduleObj.exports as any;
-          console.log("OpenRedaction loaded:", !!OpenRedaction);
-
-          detectorRef.current = new OpenRedaction(
-            playgroundDetectorOptions(selectedPreset) as any,
-          );
-          console.log(
-            "Detector created with config:",
-            playgroundDetectorOptions(selectedPreset),
-          );
-          console.log(
-            "Detector has detect method:",
-            !!detectorRef.current?.detect,
-          );
-          setLibraryLoaded(true);
-          analytics.playgroundPageView(true);
-        } catch (err) {
-          console.error("Failed to load OpenRedaction library:", err);
-          setError(
-            "Failed to load OpenRedaction library. Please refresh the page and try again.",
-          );
-          analytics.playgroundError("library_load", "regex");
-        }
-      };
-      loadLibrary();
+    if (typeof window === "undefined") {
+      return;
     }
-  }, [selectedPreset, libraryLoaded]);
 
-  // Update detector when preset changes
-  useEffect(() => {
-    if (libraryLoaded && detectorRef.current && typeof window !== "undefined") {
-      const updateDetector = async () => {
-        try {
-          const version =
-            typeof process.env.NEXT_PUBLIC_OPENREDACTION_VERSION !== "undefined"
-              ? process.env.NEXT_PUBLIC_OPENREDACTION_VERSION
-              : "0";
-          const response = await fetch(`/lib/openredaction.js?v=${version}`);
-          const code = await response.text();
+    let cancelled = false;
 
-          const moduleObj = { exports: {} };
-          const exports = moduleObj.exports;
-          const fn = new Function("module", "exports", "require", code);
-          fn(moduleObj, exports, () => {});
+    const loadLibrary = async () => {
+      try {
+        const version =
+          process.env.NEXT_PUBLIC_OPENREDACTION_VERSION !== undefined
+            ? process.env.NEXT_PUBLIC_OPENREDACTION_VERSION
+            : "0";
+        const url = `${window.location.origin}/lib/openredaction-lite.mjs?v=${encodeURIComponent(version)}`;
+        const mod = (await import(
+          /* webpackIgnore: true */ url
+        )) as typeof import("@openredaction/core/lite");
+        const { LiteOpenRedaction } = mod;
 
-          const { OpenRedaction } = moduleObj.exports as any;
-
-          detectorRef.current = new OpenRedaction(
-            playgroundDetectorOptions(selectedPreset) as any,
-          );
-        } catch (err) {
-          console.error("Failed to update detector:", err);
+        if (cancelled) {
+          return;
         }
-      };
-      updateDetector();
-    }
-  }, [selectedPreset, libraryLoaded]);
+
+        detectorRef.current = new LiteOpenRedaction(
+          playgroundDetectorOptions(selectedPreset),
+        );
+        setLibraryLoaded(true);
+        setError(null);
+        analytics.playgroundPageView(true);
+      } catch (err) {
+        console.error("Failed to load OpenRedaction library:", err);
+        setLibraryLoaded(false);
+        setError(
+          "Failed to load OpenRedaction library. Please refresh the page and try again.",
+        );
+        analytics.playgroundError("library_load", "regex");
+      }
+    };
+
+    void loadLibrary();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedPreset]);
 
   // API presets: gdpr, hipaa, ccpa, finance, education, transportation
   const apiPresets = {

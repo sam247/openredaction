@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "npm run copy-openredaction && npm run docs:export && next build --turbopack",
-    "copy-openredaction": "mkdir -p public/lib && cp ../packages/compat/dist/index.js public/lib/openredaction.js",
+    "dev": "npm run build:playground-lib && next dev",
+    "build": "npm run build:playground-lib && npm run docs:export && next build --turbopack",
+    "build:playground-lib": "mkdir -p public/lib && bunx esbuild ../packages/core/src/lite.ts --bundle --format=esm --platform=browser --outfile=public/lib/openredaction-lite.mjs",
     "start": "next start",
     "lint": "biome check . --diagnostic-level=error",
     "typecheck": "tsc --noEmit --incremental",
     "docs:export": "cd docs && npm ci && npm run build && rm -rf ../public/docs && mkdir -p ../public && cp -R out ../public/docs"
   },
   "dependencies": {
+    "@openredaction/core": "workspace:*",
     "botid": "^1.5.10",
     "clsx": "^2.1.0",
     "lucide-react": "^0.344.0",
@@ -29,6 +30,7 @@
     "@types/nodemailer": "^8.0.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "esbuild": "^0.25.0",
     "postcss": "^8.4.33",
     "tailwindcss": "^4.1.11"
   }
