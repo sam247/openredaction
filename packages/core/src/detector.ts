@@ -24,6 +24,11 @@ import { createDocumentProcessor } from "./document";
 import type { DocumentOptions, DocumentResult } from "./document/types";
 import { createExplainAPI, type ExplainAPI } from "./explain/ExplainAPI.js";
 import { HealthChecker, type HealthCheckResult } from "./health/HealthCheck.js";
+import type {
+  LearningData,
+  LocalLearningStore,
+} from "./learning/LocalLearningStore.js";
+import type { PriorityOptimizer } from "./optimizer/PriorityOptimizer.js";
 import {
   createReportGenerator,
   type ReportOptions,
@@ -213,10 +218,7 @@ export class OpenRedaction implements IDetector {
     return this.learningManager.exportLearnings(options);
   }
 
-  importLearnings(
-    data: import("./learning/LocalLearningStore.js").LearningData,
-    merge: boolean = true,
-  ): void {
+  importLearnings(data: LearningData, merge: boolean = true): void {
     this.learningManager.importLearnings(data, merge);
   }
 
@@ -228,15 +230,11 @@ export class OpenRedaction implements IDetector {
     this.learningManager.removeFromWhitelist(pattern);
   }
 
-  getLearningStore():
-    | import("./learning/LocalLearningStore.js").LocalLearningStore
-    | undefined {
+  getLearningStore(): LocalLearningStore | undefined {
     return this.learningManager.getStore();
   }
 
-  getPriorityOptimizer():
-    | import("./optimizer/PriorityOptimizer.js").PriorityOptimizer
-    | undefined {
+  getPriorityOptimizer(): PriorityOptimizer | undefined {
     return this.optimizerManager.getOptimizer();
   }
 

@@ -31,6 +31,116 @@
         "types": "./dist/lite.d.ts",
         "default": "./dist/lite.js"
       }
+    },
+    "./audit": {
+      "import": {
+        "types": "./dist/audit.d.mts",
+        "default": "./dist/audit.mjs"
+      },
+      "require": {
+        "types": "./dist/audit.d.ts",
+        "default": "./dist/audit.js"
+      }
+    },
+    "./batch": {
+      "import": {
+        "types": "./dist/batch.d.mts",
+        "default": "./dist/batch.mjs"
+      },
+      "require": {
+        "types": "./dist/batch.d.ts",
+        "default": "./dist/batch.js"
+      }
+    },
+    "./documents": {
+      "import": {
+        "types": "./dist/documents.d.mts",
+        "default": "./dist/documents.mjs"
+      },
+      "require": {
+        "types": "./dist/documents.d.ts",
+        "default": "./dist/documents.js"
+      }
+    },
+    "./health": {
+      "import": {
+        "types": "./dist/health.d.mts",
+        "default": "./dist/health.mjs"
+      },
+      "require": {
+        "types": "./dist/health.d.ts",
+        "default": "./dist/health.js"
+      }
+    },
+    "./metrics": {
+      "import": {
+        "types": "./dist/metrics.d.mts",
+        "default": "./dist/metrics.mjs"
+      },
+      "require": {
+        "types": "./dist/metrics.d.ts",
+        "default": "./dist/metrics.js"
+      }
+    },
+    "./rbac": {
+      "import": {
+        "types": "./dist/rbac.d.mts",
+        "default": "./dist/rbac.mjs"
+      },
+      "require": {
+        "types": "./dist/rbac.d.ts",
+        "default": "./dist/rbac.js"
+      }
+    },
+    "./reports": {
+      "import": {
+        "types": "./dist/reports.d.mts",
+        "default": "./dist/reports.mjs"
+      },
+      "require": {
+        "types": "./dist/reports.d.ts",
+        "default": "./dist/reports.js"
+      }
+    },
+    "./streaming": {
+      "import": {
+        "types": "./dist/streaming.d.mts",
+        "default": "./dist/streaming.mjs"
+      },
+      "require": {
+        "types": "./dist/streaming.d.ts",
+        "default": "./dist/streaming.js"
+      }
+    },
+    "./tenancy": {
+      "import": {
+        "types": "./dist/tenancy.d.mts",
+        "default": "./dist/tenancy.mjs"
+      },
+      "require": {
+        "types": "./dist/tenancy.d.ts",
+        "default": "./dist/tenancy.js"
+      }
+    },
+    "./webhooks": {
+      "import": {
+        "types": "./dist/webhooks.d.mts",
+        "default": "./dist/webhooks.mjs"
+      },
+      "require": {
+        "types": "./dist/webhooks.d.ts",
+        "default": "./dist/webhooks.js"
+      }
+    },
+    "./workers": {
+      "import": {
+        "types": "./dist/workers.d.mts",
+        "default": "./dist/workers.mjs"
+      },
+      "require": {
+        "types": "./dist/workers.d.ts",
+        "default": "./dist/workers.js"
+      }
     }
   },
   "main": "./dist/index.js",

@@ -1,4 +1,8 @@
-import { allPatterns, getPatternsByCategory } from "../patterns";
+import {
+  allPatterns,
+  defaultPatterns,
+  getPatternsByCategory,
+} from "../patterns";
 import type { PIIPattern } from "../types";
 import { validatePattern } from "../utils/safe-regex.js";
 import type { DetectorOptions } from "./types";
@@ -52,7 +56,7 @@ export class PatternManager {
         );
       }
     } else {
-      patterns = allPatterns.filter((pattern) => {
+      patterns = defaultPatterns.filter((pattern) => {
         if (pattern.type === "NAME" && !options.includeNames) return false;
         if (pattern.type.startsWith("EMAIL") && !options.includeEmails)
           return false;

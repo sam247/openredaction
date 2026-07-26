@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { InMemoryAuditLogger, OpenRedaction } from "../src/index";
+import { InMemoryAuditLogger } from "../src/audit";
+import { OpenRedaction } from "../src/index";
 import { LiteOpenRedaction } from "../src/lite";
 
 describe("profile and feature resolution", () => {

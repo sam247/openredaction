@@ -80,6 +80,22 @@ export const allPatterns: PIIPattern[] = [
   ...digitalIdentityPatterns,
 ];
 
+/**
+ * Default detection set: core PII categories plus credentials.
+ * Industry verticals and international ID patterns are opt-in via
+ * `categories` / `patterns` options.
+ */
+export const defaultPatterns: PIIPattern[] = [
+  ...personalPatterns,
+  ...financialPatterns,
+  ...cryptoExtendedPatterns,
+  ...governmentPatterns,
+  ...contactPatterns,
+  ...networkPatterns,
+  ...digitalIdentityPatterns,
+  ...technologyPatterns,
+];
+
 registerPatternCategory("personal", () => personalPatterns);
 registerPatternCategory(
   "financial",
