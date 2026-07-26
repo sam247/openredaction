@@ -28,51 +28,53 @@ const INSTALL_COMMAND = "npm install openredaction";
 
 const USAGE_SNIPPET = `import { OpenRedaction } from "openredaction";
 
-const redactor = new OpenRedaction();
+const redactor = new OpenRedaction({ preset: "hipaa" });
 const { redacted } = await redactor.detect(
-  "Email me at jane@acme.com or call 555-0100"
+  "Email me at jane@acme.com or call 415-555-2671"
 );
 
 console.log(redacted);
-// Email me at [EMAIL_…] or call [PHONE_…]`;
+// Email me at [EMAIL_…] or call [PHONE_US_…]`;
 
 const API_PRESETS: Record<string, string> = {
-  gdpr: "GDPR",
   hipaa: "HIPAA",
   ccpa: "CCPA",
+  gdpr: "GDPR",
   finance: "Finance",
   education: "Education",
   transportation: "Transport",
 };
 
+/**
+ * Samples are curated so every sensitive value redacts under the default HIPAA
+ * preset. Person names are omitted on purpose — NAME matching is context-sensitive
+ * and looks “broken” in a 30-second demo when a line like “Customer: Sarah Johnson”
+ * does not redact.
+ */
 const SAMPLE_TEXTS = {
-  support:
-    "Customer: Sarah Johnson\nEmail: sarah.j@company.com\nPhone: (555) 987-6543\nIssue: Account access problem\nSSN: 123-45-6789",
-  chat: "Hi, my name is John Doe and my email is john.doe@acmecorp.io. You can reach me at 555-123-4567.",
-  json: JSON.stringify(
-    {
-      user: {
-        name: "Jane Smith",
-        email: "jane.smith@acmecorp.io",
-        phone: "555-111-2222",
-      },
-      metadata: {
-        ip: "10.0.0.1",
-        ssn: "987-65-4321",
-      },
-    },
-    null,
-    2,
-  ),
+  support: `From: alex.rivera@northwind.io
+Phone: 415-555-2671
+SSN: 457-55-5462
+Card: 4242424242424242
+IP: 203.0.113.42`,
+  chat: `Hi — email jordan.lee@acmecorp.io or call 415-555-2671. Card 4242424242424242.`,
+  json: `{
+  "email": "jane.smith@acmecorp.io",
+  "phone": "415-555-2671",
+  "ssn_note": "SSN: 457-55-5462",
+  "card": "4242424242424242",
+  "ip": "203.0.113.42"
+}`,
 } as const;
 
 type SampleKey = keyof typeof SAMPLE_TEXTS;
 
-/** Default sample: email, phone, SSN — reliable regex hits for first-load “aha”. */
+/** Default: multi-field ticket that HIPAA regex patterns fully redact. */
 const DEFAULT_SAMPLE_KEY: SampleKey = "support";
+const DEFAULT_PRESET = "hipaa";
 
 function playgroundPreset(selected: string): PresetName {
-  return (selected in API_PRESETS ? selected : "gdpr") as PresetName;
+  return (selected in API_PRESETS ? selected : DEFAULT_PRESET) as PresetName;
 }
 
 function playgroundDetectorOptions(preset: string) {
@@ -213,7 +215,9 @@ function InstallPath({ compact = false }: { compact?: boolean }) {
 }
 
 export default function Playground() {
-  const [inputText, setInputText] = useState(SAMPLE_TEXTS[DEFAULT_SAMPLE_KEY]);
+  const [inputText, setInputText] = useState<string>(
+    SAMPLE_TEXTS[DEFAULT_SAMPLE_KEY],
+  );
   const [activeSample, setActiveSample] = useState<SampleKey | null>(
     DEFAULT_SAMPLE_KEY,
   );
@@ -224,7 +228,7 @@ export default function Playground() {
     "redacted",
   );
   const [copiedOutput, setCopiedOutput] = useState(false);
-  const [selectedPreset, setSelectedPreset] = useState("gdpr");
+  const [selectedPreset, setSelectedPreset] = useState(DEFAULT_PRESET);
   const [libraryLoaded, setLibraryLoaded] = useState(false);
   const [libraryLoading, setLibraryLoading] = useState(true);
 
@@ -451,6 +455,15 @@ export default function Playground() {
                       ))}
                     </div>
                   </fieldset>
+                  <p className="mt-2 text-xs leading-relaxed text-gray-500">
+                    Every value in these samples is chosen because the{" "}
+                    <span className="text-gray-400">HIPAA</span> regex preset
+                    redacts it (email, US phone, SSN, card, IP). Person names
+                    are omitted on purpose — name detection is context-sensitive
+                    and easy to misread in a quick demo. Switch preset to see
+                    coverage change (e.g. GDPR prioritises UK/EU identifiers and
+                    will not redact US SSN).
+                  </p>
                 </div>
 
                 <div>
