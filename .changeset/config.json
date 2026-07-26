@@ -14,10 +14,7 @@
       "@openredaction/express",
       "openredaction"
     ],
-    [
-      "@openredaction/hono",
-      "@openredaction/elysia"
-    ]
+    ["@openredaction/hono", "@openredaction/elysia"]
   ],
   "linked": [],
   "access": "public",

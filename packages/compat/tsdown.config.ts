@@ -8,6 +8,9 @@ export default defineConfig([
     dts: true,
     sourcemap: true,
     outDir: "dist",
+    attw: {
+      profile: "node16",
+    },
     external: [
       "@openredaction/core",
       "@openredaction/express",
@@ -35,6 +38,9 @@ export default defineConfig([
     clean: false,
     external: ["@openredaction/react", "react"],
     fixedExtension: false,
+    attw: {
+      profile: "node16",
+    },
     outputOptions: {
       codeSplitting: false,
     },
@@ -53,6 +59,9 @@ export default defineConfig([
     sourcemap: true,
     outDir: "dist",
     clean: false,
+    attw: {
+      profile: "node16",
+    },
     external: ["@openredaction/server"],
     fixedExtension: false,
     outputOptions: {

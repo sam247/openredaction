@@ -5,6 +5,9 @@ export default defineConfig([
   {
     entry: ["src/index.ts", "src/lite.ts"],
     format: ["esm", "cjs"],
+    attw: {
+      profile: "node16",
+    },
     dts: true,
     sourcemap: true,
     outDir: "dist",
@@ -22,6 +25,9 @@ export default defineConfig([
     entry: ["src/workers/worker.ts"],
     format: ["cjs"],
     outDir: "dist/workers",
+    attw: {
+      profile: "node16",
+    },
     dts: false,
     outputOptions: {
       codeSplitting: false,
