@@ -62,9 +62,19 @@ When your PR is merged to `main`, the **Release** workflow runs automatically. I
 
 Review the version bump and changelog entries, then merge the Version Packages PR. This triggers the Release workflow again — this time it publishes all 6 packages to npm and creates a git tag `v{version}`.
 
-**Bun note:** this repo uses Bun workspaces. Unlike pnpm, Bun/`changeset publish` does not rewrite `workspace:` protocol ranges into semver before packing. The `release` script therefore runs `scripts/resolve-workspace-protocol.mjs` (then `assert-no-workspace-protocol.mjs`) immediately before `changeset publish`. Do not commit the rewritten `package.json` files from a local dry-run.
+**Bun note:** this repo uses Bun workspaces. Unlike pnpm, Bun/`changeset publish` does not rewrite `workspace:` protocol ranges into semver before packing. The `release` script therefore runs three guards immediately before `changeset publish`:
+
+1. `resolve-workspace-protocol.mjs` — rewrite `workspace:*` → `^version`
+2. `assert-no-workspace-protocol.mjs` — refuse publish if any `workspace:` remain (issue #103 class)
+3. `assert-package-entrypoints.mjs` — refuse publish if `main`/`exports`/`bin` paths are missing (CLI bin class)
+
+Do not commit the rewritten `package.json` files from a local dry-run.
+
+Maintainer checklist: [`MAINTAINER_RELEASE_CHECKLIST.md`](../MAINTAINER_RELEASE_CHECKLIST.md).
 
 **Note:** npm never allows republishing the same version. If publish fails with "cannot publish over previously published versions", add a new changeset with a bump and go through the flow again.
+
+**OIDC vs deprecate:** Trusted publishing can publish with provenance. It cannot run `npm deprecate`. Deprecations need an owner login or an Automation token (see [#108](https://github.com/sam247/openredaction/issues/108)).
 
 ## Install for users
 

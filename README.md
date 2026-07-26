@@ -1,8 +1,8 @@
 # OpenRedaction
 
-[![Version](https://img.shields.io/badge/version-1.1.2-brightgreen.svg)](https://www.npmjs.com/package/openredaction)
+[![npm](https://img.shields.io/npm/v/openredaction.svg)](https://www.npmjs.com/package/openredaction)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-471%20passing-brightgreen.svg)](https://github.com/sam247/openredaction)
+[![CI](https://github.com/sam247/openredaction/actions/workflows/ci.yml/badge.svg)](https://github.com/sam247/openredaction/actions/workflows/ci.yml)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
 
 OpenRedaction is an open-source JavaScript/TypeScript library for detecting and
