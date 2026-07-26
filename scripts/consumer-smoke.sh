@@ -69,32 +69,42 @@ install_from_packs() {
   local dir="$SMOKE_ROOT/$mgr"
   mkdir -p "$dir"
   cd "$dir"
-  npm init -y >/dev/null 2>&1
+
+  # Pin every published package to the local tarball. After a Version Packages
+  # bump, resolved deps are ^X.Y.Z which are not on the registry yet — pnpm/yarn
+  # would otherwise fetch from npm and fail (npm's multi-tgz install is more
+  # forgiving). file: deps keep the smoke pre-publish accurate.
+  local core_tgz express_tgz react_tgz server_tgz umbrella_tgz
+  core_tgz="$(echo "$STAGING"/openredaction-core-*.tgz)"
+  express_tgz="$(echo "$STAGING"/openredaction-express-*.tgz)"
+  react_tgz="$(echo "$STAGING"/openredaction-react-*.tgz)"
+  server_tgz="$(echo "$STAGING"/openredaction-server-*.tgz)"
+  umbrella_tgz="$(echo "$STAGING"/openredaction-1.*.tgz)"
+
+  cat > package.json <<EOF
+{
+  "name": "openredaction-consumer-smoke",
+  "private": true,
+  "type": "commonjs",
+  "dependencies": {
+    "@openredaction/core": "file:${core_tgz}",
+    "@openredaction/express": "file:${express_tgz}",
+    "@openredaction/react": "file:${react_tgz}",
+    "@openredaction/server": "file:${server_tgz}",
+    "openredaction": "file:${umbrella_tgz}"
+  }
+}
+EOF
 
   case "$mgr" in
     npm)
-      npm install \
-        "$STAGING"/openredaction-core-*.tgz \
-        "$STAGING"/openredaction-express-*.tgz \
-        "$STAGING"/openredaction-react-*.tgz \
-        "$STAGING"/openredaction-server-*.tgz \
-        "$STAGING"/openredaction-1.*.tgz
+      npm install
       ;;
     pnpm)
-      pnpm add \
-        "$STAGING"/openredaction-core-*.tgz \
-        "$STAGING"/openredaction-express-*.tgz \
-        "$STAGING"/openredaction-react-*.tgz \
-        "$STAGING"/openredaction-server-*.tgz \
-        "$STAGING"/openredaction-1.*.tgz
+      pnpm install
       ;;
     yarn)
-      yarn add \
-        "$STAGING"/openredaction-core-*.tgz \
-        "$STAGING"/openredaction-express-*.tgz \
-        "$STAGING"/openredaction-react-*.tgz \
-        "$STAGING"/openredaction-server-*.tgz \
-        "$STAGING"/openredaction-1.*.tgz
+      yarn install
       ;;
     *)
       echo "unknown manager: $mgr" >&2
