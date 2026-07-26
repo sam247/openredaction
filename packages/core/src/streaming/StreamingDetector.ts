@@ -4,8 +4,7 @@
  */
 
 import { Readable } from "stream";
-import type { OpenRedaction } from "../detector";
-import type { DetectionResult, PIIDetection } from "../types";
+import type { DetectionResult, IDetector, PIIDetection } from "../types";
 
 /**
  * Chunk result for streaming detection
@@ -39,10 +38,10 @@ export interface StreamingOptions {
  * Streaming detector for large documents
  */
 export class StreamingDetector {
-  private detector: OpenRedaction;
+  private detector: IDetector;
   private options: Required<StreamingOptions>;
 
-  constructor(detector: OpenRedaction, options: StreamingOptions = {}) {
+  constructor(detector: IDetector, options: StreamingOptions = {}) {
     this.detector = detector;
     this.options = {
       chunkSize: options.chunkSize || 2048,
@@ -295,7 +294,7 @@ export class StreamingDetector {
  * Helper to create a streaming detector from OpenRedaction instance
  */
 export function createStreamingDetector(
-  detector: OpenRedaction,
+  detector: IDetector,
   options?: StreamingOptions,
 ): StreamingDetector {
   return new StreamingDetector(detector, options);

@@ -3,7 +3,21 @@ import { defineConfig } from "tsdown";
 export default defineConfig([
   // Library build: ESM (.mjs) + CJS (.js), dual types via outExtensions
   {
-    entry: ["src/index.ts", "src/lite.ts"],
+    entry: {
+      index: "src/index.ts",
+      lite: "src/lite.ts",
+      audit: "src/audit/index.ts",
+      batch: "src/batch/BatchProcessor.ts",
+      documents: "src/document/index.ts",
+      health: "src/health/HealthCheck.ts",
+      metrics: "src/metrics/index.ts",
+      rbac: "src/rbac/index.ts",
+      reports: "src/reports/ReportGenerator.ts",
+      streaming: "src/streaming/StreamingDetector.ts",
+      tenancy: "src/tenancy/index.ts",
+      webhooks: "src/webhooks/index.ts",
+      workers: "src/workers/index.ts",
+    },
     format: ["esm", "cjs"],
     attw: {
       profile: "node16",

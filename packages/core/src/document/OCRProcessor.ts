@@ -2,23 +2,38 @@
  * OCR (Optical Character Recognition) processor using Tesseract.js
  */
 
+import type { PSM, Scheduler } from "tesseract.js";
+import { errorMessage } from "../utils/errors";
+import {
+  isModuleAvailable,
+  loadOptionalModule,
+} from "../utils/optional-require";
 import type { IOCRProcessor, OCROptions, OCRResult } from "./types";
+
+type TesseractModule = typeof import("tesseract.js");
+
+const INSTALL_HINT =
+  "[OCRProcessor] OCR support requires tesseract.js. Install with: npm install tesseract.js";
 
 /**
  * OCR processor with optional Tesseract.js support
- * Requires peer dependency: tesseract.js
+ * Requires peer dependency: tesseract.js — loaded lazily on first use
  */
 export class OCRProcessor implements IOCRProcessor {
-  private tesseract?: any;
-  private scheduler?: any;
+  private tesseract?: TesseractModule | null;
+  private scheduler?: Scheduler;
 
-  constructor() {
-    // Try to load optional dependency
-    try {
-      this.tesseract = require("tesseract.js");
-    } catch {
-      // tesseract.js not installed
+  private loadTesseract(): TesseractModule {
+    if (this.tesseract === undefined) {
+      this.tesseract =
+        loadOptionalModule<TesseractModule>("tesseract.js") ?? null;
     }
+
+    if (!this.tesseract) {
+      throw new Error(INSTALL_HINT);
+    }
+
+    return this.tesseract;
   }
 
   /**
@@ -28,36 +43,25 @@ export class OCRProcessor implements IOCRProcessor {
     buffer: Buffer,
     options?: OCROptions,
   ): Promise<OCRResult> {
-    if (!this.tesseract) {
-      throw new Error(
-        "[OCRProcessor] OCR support requires tesseract.js. Install with: npm install tesseract.js",
-      );
-    }
-
+    const tesseract = this.loadTesseract();
     const startTime = performance.now();
 
     try {
-      // Configure worker
       const language = Array.isArray(options?.language)
         ? options.language.join("+")
         : options?.language || "eng";
 
-      const worker = await this.tesseract.createWorker(
-        language,
-        options?.oem || 3,
-      );
+      const worker = await tesseract.createWorker(language, options?.oem ?? 3);
 
-      // Set page segmentation mode if specified
       if (options?.psm !== undefined) {
         await worker.setParameters({
-          tessedit_pageseg_mode: options.psm,
+          // PSM is a string enum of "0".."13"; OCROptions.psm carries the same modes numerically
+          tessedit_pageseg_mode: String(options.psm) as PSM,
         });
       }
 
-      // Perform OCR
       const result = await worker.recognize(buffer);
 
-      // Clean up worker
       await worker.terminate();
 
       const endTime = performance.now();
@@ -68,9 +72,9 @@ export class OCRProcessor implements IOCRProcessor {
         confidence: result.data.confidence || 0,
         processingTime,
       };
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(
-        `[OCRProcessor] OCR recognition failed: ${error.message}`,
+        `[OCRProcessor] OCR recognition failed: ${errorMessage(error)}`,
       );
     }
   }
@@ -79,32 +83,25 @@ export class OCRProcessor implements IOCRProcessor {
    * Check if OCR is available (tesseract.js installed)
    */
   isAvailable(): boolean {
-    return !!this.tesseract;
+    return isModuleAvailable("tesseract.js");
   }
 
   /**
    * Create a scheduler for batch OCR processing
    * More efficient for processing multiple images
    */
-  async createScheduler(workerCount: number = 4): Promise<any> {
-    if (!this.tesseract) {
-      throw new Error(
-        "[OCRProcessor] OCR support requires tesseract.js. Install with: npm install tesseract.js",
-      );
-    }
+  async createScheduler(workerCount: number = 4): Promise<Scheduler> {
+    const tesseract = this.loadTesseract();
 
     if (this.scheduler) {
       await this.scheduler.terminate();
     }
 
-    this.scheduler = this.tesseract.createScheduler();
+    this.scheduler = tesseract.createScheduler();
 
-    // Create workers
-    const workers = [];
     for (let i = 0; i < workerCount; i++) {
-      const worker = await this.tesseract.createWorker("eng");
+      const worker = await tesseract.createWorker("eng");
       this.scheduler.addWorker(worker);
-      workers.push(worker);
     }
 
     return this.scheduler;
@@ -117,13 +114,6 @@ export class OCRProcessor implements IOCRProcessor {
     buffers: Buffer[],
     _options?: OCROptions,
   ): Promise<OCRResult[]> {
-    if (!this.tesseract) {
-      throw new Error(
-        "[OCRProcessor] OCR support requires tesseract.js. Install with: npm install tesseract.js",
-      );
-    }
-
-    // Use scheduler for batch processing
     const scheduler = await this.createScheduler();
 
     try {
@@ -141,18 +131,16 @@ export class OCRProcessor implements IOCRProcessor {
         }),
       );
 
-      // Clean up scheduler
       await scheduler.terminate();
       this.scheduler = undefined;
 
       return results;
-    } catch (error: any) {
-      // Clean up on error
-      if (scheduler) {
-        await scheduler.terminate();
-        this.scheduler = undefined;
-      }
-      throw new Error(`[OCRProcessor] Batch OCR failed: ${error.message}`);
+    } catch (error) {
+      await scheduler.terminate();
+      this.scheduler = undefined;
+      throw new Error(
+        `[OCRProcessor] Batch OCR failed: ${errorMessage(error)}`,
+      );
     }
   }
 

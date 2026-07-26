@@ -46,7 +46,7 @@ export interface OCROptions {
   /** OCR engine mode (0-3, default: 3 for best accuracy) */
   oem?: 0 | 1 | 2 | 3;
   /** Page segmentation mode (0-13, default: 3 for automatic) */
-  psm?: number;
+  psm?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13;
 }
 
 /**

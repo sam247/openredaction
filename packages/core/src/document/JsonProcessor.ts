@@ -2,8 +2,8 @@
  * JSON document processor for PII detection and redaction in structured data
  */
 
-import type { OpenRedaction } from "../detector";
-import type { DetectionResult, PIIDetection } from "../types";
+import type { DetectionResult, IDetector, PIIDetection } from "../types";
+import { errorMessage } from "../utils/errors";
 
 /**
  * JSON processing options
@@ -34,18 +34,17 @@ export interface JsonDetectionResult extends DetectionResult {
 }
 
 /**
- * Redacted JSON value types
+ * JSON value types
  */
-type RedactedValue =
+export type JsonValue =
   | string
   | number
   | boolean
   | null
-  | RedactedObject
-  | RedactedValue[];
-interface RedactedObject {
-  [key: string]: RedactedValue;
-}
+  | JsonValue[]
+  | { [key: string]: JsonValue };
+
+type JsonPrimitive = string | number | boolean;
 
 /**
  * Processor for JSON documents
@@ -96,12 +95,12 @@ export class JsonProcessor {
   /**
    * Parse JSON from buffer or string
    */
-  parse(input: Buffer | string): any {
+  parse(input: Buffer | string): JsonValue {
     try {
       const text = typeof input === "string" ? input : input.toString("utf-8");
       return JSON.parse(text);
-    } catch (error: any) {
-      throw new Error(`[JsonProcessor] Invalid JSON: ${error.message}`);
+    } catch (error) {
+      throw new Error(`[JsonProcessor] Invalid JSON: ${errorMessage(error)}`);
     }
   }
 
@@ -109,8 +108,8 @@ export class JsonProcessor {
    * Detect PII in JSON data
    */
   async detect(
-    data: any,
-    detector: OpenRedaction,
+    data: unknown,
+    detector: IDetector,
     options?: JsonProcessorOptions,
   ): Promise<JsonDetectionResult> {
     const opts = { ...this.defaultOptions, ...options };
@@ -193,7 +192,7 @@ export class JsonProcessor {
         stats: { piiCount: allDetections.length },
         pathsDetected,
         matchesByPath,
-      } as JsonDetectionResult,
+      },
       opts,
     );
 
@@ -221,10 +220,10 @@ export class JsonProcessor {
    * Redact PII in JSON data
    */
   redact(
-    data: any,
+    data: unknown,
     detectionResult: JsonDetectionResult,
     options?: JsonProcessorOptions,
-  ): any {
+  ): JsonValue {
     const opts = { ...this.defaultOptions, ...options };
 
     if (!opts.preserveStructure) {
@@ -242,10 +241,13 @@ export class JsonProcessor {
   /**
    * Redact specific paths in JSON while preserving structure
    */
-  private redactPreservingStructure(data: any, pathsToRedact: string[]): any {
+  private redactPreservingStructure(
+    data: unknown,
+    pathsToRedact: string[],
+  ): JsonValue {
     const pathSet = new Set(pathsToRedact);
 
-    const redactValue = (value: any, currentPath: string): RedactedValue => {
+    const redactValue = (value: unknown, currentPath: string): JsonValue => {
       // Check if current path should be redacted
       if (pathSet.has(currentPath)) {
         if (typeof value === "string") {
@@ -273,7 +275,7 @@ export class JsonProcessor {
 
       // Recursively process objects
       if (value !== null && typeof value === "object") {
-        const result: RedactedObject = {};
+        const result: { [key: string]: JsonValue } = {};
         for (const [key, val] of Object.entries(value)) {
           const newPath = currentPath ? `${currentPath}.${key}` : key;
           result[key] = redactValue(val, newPath);
@@ -281,8 +283,8 @@ export class JsonProcessor {
         return result;
       }
 
-      // Primitive values (not in redaction list)
-      return value as RedactedValue;
+      // Remaining values are JSON primitives (data originates from JSON.parse)
+      return value as JsonPrimitive;
     };
 
     return redactValue(data, "");
@@ -310,10 +312,10 @@ export class JsonProcessor {
    * Traverse JSON structure and call callback for each value
    */
   private traverse(
-    obj: any,
+    obj: unknown,
     path: string,
     options: Required<JsonProcessorOptions>,
-    callback: (path: string, value: any, key?: string) => void,
+    callback: (path: string, value: JsonPrimitive, key?: string) => void,
     depth = 0,
   ): void {
     if (depth > options.maxDepth) {
@@ -361,7 +363,7 @@ export class JsonProcessor {
   /**
    * Check if value is primitive (string, number, boolean)
    */
-  private isPrimitive(value: any): boolean {
+  private isPrimitive(value: unknown): value is JsonPrimitive {
     return (
       typeof value === "string" ||
       typeof value === "number" ||
@@ -428,7 +430,7 @@ export class JsonProcessor {
   /**
    * Extract all text values from JSON for simple text-based detection
    */
-  extractText(data: any, options?: JsonProcessorOptions): string {
+  extractText(data: unknown, options?: JsonProcessorOptions): string {
     const opts = { ...this.defaultOptions, ...options };
     const textParts: string[] = [];
 
@@ -459,16 +461,16 @@ export class JsonProcessor {
   /**
    * Get JSON Lines (JSONL) support - split by newlines and parse each line
    */
-  parseJsonLines(input: Buffer | string): any[] {
+  parseJsonLines(input: Buffer | string): JsonValue[] {
     const text = typeof input === "string" ? input : input.toString("utf-8");
     const lines = text.split("\n").filter((line) => line.trim().length > 0);
 
     return lines.map((line, index) => {
       try {
         return JSON.parse(line);
-      } catch (error: any) {
+      } catch (error) {
         throw new Error(
-          `[JsonProcessor] Invalid JSON at line ${index + 1}: ${error.message}`,
+          `[JsonProcessor] Invalid JSON at line ${index + 1}: ${errorMessage(error)}`,
         );
       }
     });
@@ -479,7 +481,7 @@ export class JsonProcessor {
    */
   async detectJsonLines(
     input: Buffer | string,
-    detector: OpenRedaction,
+    detector: IDetector,
     options?: JsonProcessorOptions,
   ): Promise<JsonDetectionResult[]> {
     const documents = this.parseJsonLines(input);

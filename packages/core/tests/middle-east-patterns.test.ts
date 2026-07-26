@@ -189,7 +189,7 @@ describe("Middle East National ID Detection", () => {
 
   describe("Integration: Multiple Middle East IDs", () => {
     it("should detect multiple Middle East IDs in one text", async () => {
-      const detector = new OpenRedaction();
+      const detector = new OpenRedaction({ categories: ["government"] });
       const text = `
         UAE Emirates ID: 784-1990-1234567-1
         Saudi Arabia national ID: 1234567890

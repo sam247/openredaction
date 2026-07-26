@@ -4,6 +4,28 @@
  */
 
 import type { PIIMatch } from "../types";
+import { loadOptionalModule } from "../utils/optional-require";
+
+/**
+ * Minimal view surface used from compromise. dates()/money() ship in optional
+ * compromise plugins, so they are typed (and called) as optional.
+ */
+interface NerView {
+  text(): string;
+  tags?(): string[];
+  forEach(callback: (match: NerView) => void): void;
+}
+
+interface NerDocument extends NerView {
+  people(): NerView;
+  organizations(): NerView;
+  places(): NerView;
+  match(pattern: string): NerView;
+  dates?(): NerView;
+  money?(): NerView;
+}
+
+type CompromiseFn = (text: string) => NerDocument;
 
 /**
  * NER entity types supported
@@ -54,33 +76,24 @@ export interface HybridMatch extends PIIMatch {
  * Lightweight NLP library (7KB) for English text analysis
  */
 export class NERDetector {
-  private nlp?: any;
-  private available: boolean = false;
+  private nlp: CompromiseFn | null;
 
   constructor() {
-    // Try to load compromise.js (optional peer dependency)
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      this.nlp = require("compromise");
-      this.available = true;
-    } catch {
-      // compromise not installed - NER features disabled
-      this.available = false;
-    }
+    this.nlp = loadOptionalModule<CompromiseFn>("compromise") ?? null;
   }
 
   /**
    * Check if NER is available (compromise.js installed)
    */
   isAvailable(): boolean {
-    return this.available;
+    return this.nlp !== null;
   }
 
   /**
    * Detect named entities in text
    */
   detect(text: string): NERMatch[] {
-    if (!this.available || !this.nlp) {
+    if (!this.nlp) {
       return [];
     }
 
@@ -91,7 +104,7 @@ export class NERDetector {
 
       // Extract person names
       const people = doc.people();
-      people.forEach((person: any) => {
+      people.forEach((person) => {
         const personText = person.text();
         const offset = text.indexOf(personText);
 
@@ -104,7 +117,7 @@ export class NERDetector {
             confidence: 0.85, // Base confidence for NER detection
             context: {
               sentence: this.getSentence(text, offset),
-              tags: person.tags(),
+              tags: person.tags?.(),
             },
           });
         }
@@ -112,7 +125,7 @@ export class NERDetector {
 
       // Extract organizations
       const orgs = doc.organizations();
-      orgs.forEach((org: any) => {
+      orgs.forEach((org) => {
         const orgText = org.text();
         const offset = text.indexOf(orgText);
 
@@ -125,7 +138,7 @@ export class NERDetector {
             confidence: 0.8,
             context: {
               sentence: this.getSentence(text, offset),
-              tags: org.tags(),
+              tags: org.tags?.(),
             },
           });
         }
@@ -133,7 +146,7 @@ export class NERDetector {
 
       // Extract places
       const places = doc.places();
-      places.forEach((place: any) => {
+      places.forEach((place) => {
         const placeText = place.text();
         const offset = text.indexOf(placeText);
 
@@ -146,15 +159,15 @@ export class NERDetector {
             confidence: 0.75,
             context: {
               sentence: this.getSentence(text, offset),
-              tags: place.tags(),
+              tags: place.tags?.(),
             },
           });
         }
       });
 
-      // Extract dates
-      const dates = doc.dates();
-      dates.forEach((date: any) => {
+      // Extract dates (compromise-dates plugin; skipped when absent)
+      const dates = doc.dates?.();
+      dates?.forEach((date) => {
         const dateText = date.text();
         const offset = text.indexOf(dateText);
 
@@ -167,15 +180,15 @@ export class NERDetector {
             confidence: 0.9,
             context: {
               sentence: this.getSentence(text, offset),
-              tags: date.tags(),
+              tags: date.tags?.(),
             },
           });
         }
       });
 
-      // Extract money/currency
-      const money = doc.money();
-      money.forEach((m: any) => {
+      // Extract money/currency (plugin-provided; skipped when absent)
+      const money = doc.money?.();
+      money?.forEach((m) => {
         const moneyText = m.text();
         const offset = text.indexOf(moneyText);
 
@@ -188,7 +201,7 @@ export class NERDetector {
             confidence: 0.85,
             context: {
               sentence: this.getSentence(text, offset),
-              tags: m.tags(),
+              tags: m.tags?.(),
             },
           });
         }
@@ -196,7 +209,7 @@ export class NERDetector {
 
       // Extract emails (compromise.js supports this)
       const emails = doc.match("#Email");
-      emails.forEach((email: any) => {
+      emails.forEach((email) => {
         const emailText = email.text();
         const offset = text.indexOf(emailText);
 
@@ -216,7 +229,7 @@ export class NERDetector {
 
       // Extract phone numbers (compromise.js supports this)
       const phones = doc.match("#PhoneNumber");
-      phones.forEach((phone: any) => {
+      phones.forEach((phone) => {
         const phoneText = phone.text();
         const offset = text.indexOf(phoneText);
 
@@ -236,7 +249,7 @@ export class NERDetector {
 
       // Extract URLs (compromise.js supports this)
       const urls = doc.match("#Url");
-      urls.forEach((url: any) => {
+      urls.forEach((url) => {
         const urlText = url.text();
         const offset = text.indexOf(urlText);
 
@@ -295,7 +308,7 @@ export class NERDetector {
    * Boost confidence of regex matches that are confirmed by NER
    */
   hybridDetection(regexMatches: PIIMatch[], text: string): HybridMatch[] {
-    if (!this.available) {
+    if (!this.nlp) {
       // NER not available, return regex matches as-is with nerConfirmed: false
       return regexMatches.map((match) => ({
         ...match,

@@ -312,7 +312,9 @@ describe("Emergency Services Pattern Detection", () => {
 
   describe("Integration: Multiple Emergency Services", () => {
     it("should detect multiple emergency service identifiers", async () => {
-      const detector = new OpenRedaction();
+      const detector = new OpenRedaction({
+        categories: ["emergency-services"],
+      });
       const text = `
         Emergency 911 call: EMERGENCY-2024-123456
         Police report number: PR-2024-0012345
