@@ -62,6 +62,8 @@ When your PR is merged to `main`, the **Release** workflow runs automatically. I
 
 Review the version bump and changelog entries, then merge the Version Packages PR. This triggers the Release workflow again — this time it publishes all 6 packages to npm and creates a git tag `v{version}`.
 
+**Bun note:** this repo uses Bun workspaces. Unlike pnpm, Bun/`changeset publish` does not rewrite `workspace:` protocol ranges into semver before packing. The `release` script therefore runs `scripts/resolve-workspace-protocol.mjs` (then `assert-no-workspace-protocol.mjs`) immediately before `changeset publish`. Do not commit the rewritten `package.json` files from a local dry-run.
+
 **Note:** npm never allows republishing the same version. If publish fails with "cannot publish over previously published versions", add a new changeset with a bump and go through the flow again.
 
 ## Install for users
