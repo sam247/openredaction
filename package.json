@@ -31,7 +31,9 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "prepare": "husky",
-    "release": "turbo run build --filter=./packages/* && changeset publish",
+    "release": "turbo run build --filter=./packages/* && bun run scripts/resolve-workspace-protocol.mjs && bun run scripts/assert-no-workspace-protocol.mjs && changeset publish",
+    "resolve-workspace-protocol": "bun run scripts/resolve-workspace-protocol.mjs",
+    "assert-no-workspace-protocol": "bun run scripts/assert-no-workspace-protocol.mjs",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "version-packages": "changeset version"
