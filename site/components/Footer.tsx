@@ -274,7 +274,7 @@ export default function Footer() {
                 </div>
               </div>
               <span className="text-gray-400 text-sm">
-                © 2026 OpenRedaction. All rights reserved.
+                © {new Date().getFullYear()} OpenRedaction. All rights reserved.
               </span>
             </div>
           </div>
