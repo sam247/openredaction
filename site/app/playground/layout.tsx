@@ -4,7 +4,7 @@ import { generatePageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = generatePageMetadata({
   title: "Playground - Try PII Detection Free",
   description:
-    "Try OpenRedaction for free. Paste text and see how our pattern-based detection redacts personally identifiable information in real-time. No signup required.",
+    "Try OpenRedaction in your browser — paste text, see redaction instantly, then install with npm. No signup. Your text never leaves your device.",
   path: "/playground",
 });
 
