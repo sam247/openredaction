@@ -8,6 +8,9 @@ export default defineConfig({
   outDir: "dist",
   external: ["@openredaction/core"],
   fixedExtension: false,
+  attw: {
+    profile: "node16",
+  },
   outputOptions: {
     codeSplitting: false,
   },
