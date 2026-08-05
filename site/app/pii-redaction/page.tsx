@@ -200,14 +200,14 @@ export default function PiiRedactionPage() {
 
       <main className="pt-[116px] pb-20">
         <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
-          <header className="max-w-3xl">
+          <header>
             <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
               Implementation guide
             </p>
             <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-balance">
               PII Redaction for AI Systems
             </h1>
-            <p className="mt-5 text-lg text-gray-300 max-w-2xl leading-relaxed">
+            <p className="mt-5 text-lg text-gray-300 leading-relaxed">
               Protecting personally identifiable information is a core
               requirement for any AI system that handles real-world data—
               especially when prompts, logs, traces, embeddings, and citations
@@ -241,7 +241,7 @@ export default function PiiRedactionPage() {
 
           <nav
             aria-label="Table of contents"
-            className="mt-10 max-w-3xl rounded-xl border border-gray-800 bg-gray-950 p-5 sm:p-6"
+            className="mt-10 rounded-xl border border-gray-800 bg-gray-950 p-5 sm:p-6"
           >
             <h2 className="text-sm uppercase tracking-[0.18em] text-gray-500">
               On this page
@@ -260,7 +260,7 @@ export default function PiiRedactionPage() {
             </ol>
           </nav>
 
-          <div className="mt-14 max-w-3xl space-y-14 text-gray-300 leading-relaxed">
+          <div className="mt-14 space-y-14 text-gray-300 leading-relaxed">
             <section id="what-is-pii-redaction" className="scroll-mt-28">
               <h2 className="text-2xl sm:text-3xl font-semibold text-white">
                 What PII redaction really is
@@ -489,7 +489,7 @@ export default function PiiRedactionPage() {
 
           <section
             id="how-to-implement"
-            className="mt-16 scroll-mt-28 max-w-3xl"
+            className="mt-16 scroll-mt-28"
           >
             <h2 className="text-2xl sm:text-3xl font-semibold text-white">
               How to implement PII redaction with OpenRedaction
@@ -668,7 +668,7 @@ const restored = redactor.restore(redactedCitation, map);`}
             </div>
           </section>
 
-          <div className="mt-14 max-w-3xl space-y-14 text-gray-300 leading-relaxed">
+          <div className="mt-14 space-y-14 text-gray-300 leading-relaxed">
             <section id="placement" className="scroll-mt-28">
               <h2 className="text-2xl sm:text-3xl font-semibold text-white">
                 Placement: where to redact in AI pipelines
@@ -907,14 +907,14 @@ service:
             </section>
           </div>
 
-          <section id="faq" className="mt-16 scroll-mt-28 max-w-3xl">
+          <section id="faq" className="mt-16 scroll-mt-28">
             <h2 className="text-2xl sm:text-3xl font-semibold text-white mb-6">
               FAQ
             </h2>
             <FAQAccordion items={faqItems} />
           </section>
 
-          <section className="mt-16 max-w-3xl rounded-xl border border-gray-800 bg-gray-950 p-6 sm:p-8">
+          <section className="mt-16 rounded-xl border border-gray-800 bg-gray-950 p-6 sm:p-8">
             <h2 className="text-xl font-semibold text-white">
               Related guides
             </h2>
