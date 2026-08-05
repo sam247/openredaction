@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { TrackedDocsGettingStartedLink } from "@/components/TrackedLinks";
 import { generatePageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generatePageMetadata({
@@ -35,13 +36,22 @@ export default function NodejsRedaction() {
               >
                 Try Playground
               </Link>
-              <Link
-                href="/docs/getting-started"
+              <TrackedDocsGettingStartedLink
+                location="nodejs_redaction_hero"
                 className="bg-gray-900 text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-gray-800 transition-colors border border-gray-800"
               >
                 View Docs
-              </Link>
+              </TrackedDocsGettingStartedLink>
             </div>
+            <p className="mt-6 text-sm text-gray-400">
+              Full pipeline guide:{" "}
+              <Link
+                href="/pii-redaction"
+                className="text-white underline underline-offset-4 hover:text-gray-200"
+              >
+                PII redaction for AI systems
+              </Link>
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 mb-16">
@@ -91,14 +101,20 @@ export default function NodejsRedaction() {
                 <div>
                   <h2 className="text-2xl font-semibold mb-3">Simple API</h2>
                   <p className="text-gray-300 mb-4">
-                    Clean, intuitive API that fits naturally into your Node.js
-                    workflows.
+                    Create an <code className="text-gray-200">OpenRedaction</code>{" "}
+                    instance and call <code className="text-gray-200">detect()</code>{" "}
+                    (async). Works in Express, Fastify, NestJS, and plain Node.
                   </p>
                   <pre className="bg-black rounded p-4 text-sm overflow-x-auto">
-                    <code>{`import { redact } from 'openredaction';
+                    <code>{`import { OpenRedaction } from "openredaction";
 
-const result = await redact(text);
-console.log(result.redacted_text);`}</code>
+const redactor = new OpenRedaction({
+  preset: "gdpr",
+  redactionMode: "placeholder",
+});
+
+const result = await redactor.detect(text);
+console.log(result.redacted);`}</code>
                   </pre>
                 </div>
               </div>
@@ -119,6 +135,34 @@ console.log(result.redacted_text);`}</code>
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="bg-gray-900 rounded-lg p-8 border border-gray-800 mb-12">
+            <h2 className="text-3xl font-semibold mb-4">
+              Express middleware
+            </h2>
+            <p className="text-gray-300 mb-4">
+              Scrub request bodies at the gateway so every route inherits the
+              same policy:
+            </p>
+            <pre className="bg-black rounded p-4 text-sm overflow-x-auto mb-2">
+              <code>{`import express from "express";
+import { openredactionMiddleware } from "@openredaction/express";
+
+const app = express();
+app.use(express.json());
+app.use(openredactionMiddleware({ autoRedact: true }));`}</code>
+            </pre>
+            <p className="text-sm text-gray-400">
+              Need LLM gateways, RAG, logs, and citations? See the{" "}
+              <Link
+                href="/pii-redaction"
+                className="text-white underline underline-offset-4"
+              >
+                PII redaction guide
+              </Link>
+              .
+            </p>
           </div>
 
           <div className="bg-gray-900 rounded-lg p-8 border border-gray-800 mb-12">
@@ -174,12 +218,12 @@ console.log(result.redacted_text);`}</code>
               open-source library is free and works entirely offline.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                href="/docs/getting-started"
+              <TrackedDocsGettingStartedLink
+                location="nodejs_redaction_cta"
                 className="bg-white text-black px-6 py-3 rounded-md font-semibold hover:bg-gray-100 transition-colors text-center"
               >
                 Installation Guide →
-              </Link>
+              </TrackedDocsGettingStartedLink>
               <Link
                 href="/docs/api-reference"
                 className="bg-gray-800 text-white px-6 py-3 rounded-md font-semibold hover:bg-gray-700 transition-colors border border-gray-700 text-center"
@@ -199,16 +243,22 @@ console.log(result.redacted_text);`}</code>
             <p className="text-gray-400 mb-4">Related Resources</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
+                href="/pii-redaction"
+                className="text-gray-300 hover:text-white underline"
+              >
+                PII Redaction Guide
+              </Link>
+              <Link
+                href="/redact-pii-before-openai"
+                className="text-gray-300 hover:text-white underline"
+              >
+                Redact Before OpenAI
+              </Link>
+              <Link
                 href="/pii-detection"
                 className="text-gray-300 hover:text-white underline"
               >
                 PII Detection Guide
-              </Link>
-              <Link
-                href="/docs/tutorials"
-                className="text-gray-300 hover:text-white underline"
-              >
-                Integration Tutorials
               </Link>
               <Link
                 href="/blog/pii-detection-for-ai"

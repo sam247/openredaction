@@ -6,7 +6,11 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { analytics } from "@/lib/analytics";
+import {
+  TrackedDocsGettingStartedLink,
+  TrackedGitHubLink,
+} from "@/components/TrackedLinks";
+import { analytics, trackEvent } from "@/lib/analytics";
 
 interface Detection {
   type: string;
@@ -194,21 +198,19 @@ function InstallPath({ compact = false }: { compact?: boolean }) {
       </div>
 
       <p className="mt-3 text-xs text-gray-500">
-        <a
-          href="https://github.com/sam247/openredaction"
-          target="_blank"
-          rel="noopener noreferrer"
+        <TrackedGitHubLink
+          location="playground_install_path"
           className="underline hover:text-gray-300"
         >
           View source on GitHub
-        </a>
+        </TrackedGitHubLink>
         {" · "}
-        <Link
-          href="/docs/getting-started"
+        <TrackedDocsGettingStartedLink
+          location="playground_install_path"
           className="underline hover:text-gray-300"
         >
           Docs
-        </Link>
+        </TrackedDocsGettingStartedLink>
       </p>
     </div>
   );
@@ -238,6 +240,8 @@ export default function Playground() {
   >(null);
   const autoDemoRan = useRef(false);
   const pageViewTracked = useRef(false);
+  const pendingDetectRef = useRef<string | null>(null);
+  const loadFailureTracked = useRef(false);
   const inputTextRef = useRef(inputText);
   const selectedPresetRef = useRef(selectedPreset);
 
@@ -265,16 +269,23 @@ export default function Playground() {
       setError(
         `Input is over the ${MAX_INPUT_REGEX.toLocaleString()}-character demo limit (${text.length.toLocaleString()} characters). Shorten the text to continue.`,
       );
-      analytics.playgroundError("text_too_long", "regex");
+      // Limit hits are expected UX — do not inflate playground_error.
+      trackEvent("playground_limit_hit", "playground", {
+        mode: "regex",
+        input_length: text.length,
+        limit: MAX_INPUT_REGEX,
+      });
       return;
     }
 
     if (!detectorRef.current) {
-      setError("Library is still loading. Please wait a moment.");
-      analytics.playgroundError("library_load", "regex");
+      // Queue until the lite bundle finishes loading — avoid noisy library_load errors.
+      pendingDetectRef.current = text;
+      setError(null);
       return;
     }
 
+    pendingDetectRef.current = null;
     setLoading(true);
     setError(null);
 
@@ -299,7 +310,11 @@ export default function Playground() {
           ? err.message
           : "An error occurred while redacting text";
       setError(errorMessage);
-      analytics.playgroundError("other", "regex");
+      analytics.playgroundError(
+        "detect_throw",
+        "regex",
+        errorMessage.slice(0, 80),
+      );
     } finally {
       setLoading(false);
     }
@@ -340,7 +355,10 @@ export default function Playground() {
         setError(null);
         analytics.playgroundPageView(true);
 
-        void runDetect(inputTextRef.current);
+        const queuedOrCurrent =
+          pendingDetectRef.current ?? inputTextRef.current;
+        pendingDetectRef.current = null;
+        void runDetect(queuedOrCurrent);
       } catch (err) {
         console.error("Failed to load OpenRedaction library:", err);
         if (!cancelled) {
@@ -349,7 +367,10 @@ export default function Playground() {
           setError(
             "Failed to load OpenRedaction library. Please refresh the page and try again.",
           );
-          analytics.playgroundError("library_load", "regex");
+          if (!loadFailureTracked.current) {
+            loadFailureTracked.current = true;
+            analytics.playgroundError("library_load", "regex");
+          }
         }
       }
     };
@@ -759,24 +780,22 @@ export default function Playground() {
             <p>
               This demo uses the browser build of the open-source library (regex
               patterns). Self-hosting has no character limit —{" "}
-              <Link
-                href="/docs/getting-started"
+              <TrackedDocsGettingStartedLink
+                location="playground_footer"
                 className="text-gray-300 underline hover:text-white"
               >
                 get started in the docs
-              </Link>
+              </TrackedDocsGettingStartedLink>
               .
             </p>
             <p className="mt-3">
-              <a
-                href="https://github.com/sam247/openredaction"
-                target="_blank"
-                rel="noopener noreferrer"
+              <TrackedGitHubLink
+                location="playground_footer"
                 className="inline-flex items-center gap-1 text-gray-300 underline hover:text-white"
               >
                 GitHub repository
                 <ArrowRight size={14} aria-hidden />
-              </a>
+              </TrackedGitHubLink>
             </p>
           </div>
         </div>
