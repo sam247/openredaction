@@ -3,9 +3,7 @@ import Link from "next/link";
 import FAQAccordion from "@/components/FAQAccordion";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import {
-  TrackedDocsGettingStartedLink,
-} from "@/components/TrackedLinks";
+import { TrackedDocsGettingStartedLink } from "@/components/TrackedLinks";
 import { generatePageMetadata } from "@/lib/metadata";
 
 const pageTitle =
@@ -98,11 +96,13 @@ const entityGroups = [
   },
   {
     title: "Health identifiers",
-    items: "Patient IDs, clinical record IDs, insurance member IDs (HIPAA-bound systems)",
+    items:
+      "Patient IDs, clinical record IDs, insurance member IDs (HIPAA-bound systems)",
   },
   {
     title: "Online / device identifiers",
-    items: "IP addresses, device IDs, cookies where regulations treat them as personal data",
+    items:
+      "IP addresses, device IDs, cookies where regulations treat them as personal data",
   },
   {
     title: "Free-text personal details",
@@ -273,9 +273,7 @@ export default function PiiRedactionPage() {
                 logs, traces, embeddings, analytics, and any citation that
                 points back to user data.
               </p>
-              <p className="mt-4">
-                PII broadly covers two categories:
-              </p>
+              <p className="mt-4">PII broadly covers two categories:</p>
               <ul className="mt-4 list-disc space-y-2 pl-5">
                 <li>
                   <strong className="text-white">Direct identifiers:</strong>{" "}
@@ -487,10 +485,7 @@ export default function PiiRedactionPage() {
             </section>
           </div>
 
-          <section
-            id="how-to-implement"
-            className="mt-16 scroll-mt-28"
-          >
+          <section id="how-to-implement" className="mt-16 scroll-mt-28">
             <h2 className="text-2xl sm:text-3xl font-semibold text-white">
               How to implement PII redaction with OpenRedaction
             </h2>
@@ -684,7 +679,9 @@ const restored = redactor.restore(redactedCitation, map);`}
                   scrub inputs and tool results before third-party LLMs
                 </li>
                 <li>
-                  <strong className="text-white">Application / RAG layer:</strong>{" "}
+                  <strong className="text-white">
+                    Application / RAG layer:
+                  </strong>{" "}
                   integrate into middleware and chunking so embeddings never
                   store raw identifiers
                 </li>
@@ -772,8 +769,8 @@ service:
                   <strong className="text-white">Stable placeholders:</strong>{" "}
                   replace PII with consistent tokens (
                   <code className="text-green-400">[PERSON_1]</code>,{" "}
-                  <code className="text-green-400">[EMAIL_1]</code>) so citations
-                  remain meaningful
+                  <code className="text-green-400">[EMAIL_1]</code>) so
+                  citations remain meaningful
                 </li>
                 <li>
                   <strong className="text-white">
@@ -786,7 +783,9 @@ service:
                   titles, IDs, and document labels must not encode PII
                 </li>
                 <li>
-                  <strong className="text-white">Constraint-based outputs:</strong>{" "}
+                  <strong className="text-white">
+                    Constraint-based outputs:
+                  </strong>{" "}
                   prevent the model from reconstructing raw identifiers from
                   context
                 </li>
@@ -915,9 +914,7 @@ service:
           </section>
 
           <section className="mt-16 rounded-xl border border-gray-800 bg-gray-950 p-6 sm:p-8">
-            <h2 className="text-xl font-semibold text-white">
-              Related guides
-            </h2>
+            <h2 className="text-xl font-semibold text-white">Related guides</h2>
             <ul className="mt-4 space-y-2 text-sm text-gray-300">
               <li>
                 <TrackedDocsGettingStartedLink

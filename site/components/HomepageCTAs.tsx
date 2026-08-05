@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { analytics } from "@/lib/analytics";
 import { TrackedGitHubLink } from "@/components/TrackedLinks";
+import { analytics } from "@/lib/analytics";
 
 export default function HomepageCTAs() {
   return (

@@ -101,9 +101,11 @@ export default function NodejsRedaction() {
                 <div>
                   <h2 className="text-2xl font-semibold mb-3">Simple API</h2>
                   <p className="text-gray-300 mb-4">
-                    Create an <code className="text-gray-200">OpenRedaction</code>{" "}
-                    instance and call <code className="text-gray-200">detect()</code>{" "}
-                    (async). Works in Express, Fastify, NestJS, and plain Node.
+                    Create an{" "}
+                    <code className="text-gray-200">OpenRedaction</code>{" "}
+                    instance and call{" "}
+                    <code className="text-gray-200">detect()</code> (async).
+                    Works in Express, Fastify, NestJS, and plain Node.
                   </p>
                   <pre className="bg-black rounded p-4 text-sm overflow-x-auto">
                     <code>{`import { OpenRedaction } from "openredaction";
@@ -138,9 +140,7 @@ console.log(result.redacted);`}</code>
           </div>
 
           <div className="bg-gray-900 rounded-lg p-8 border border-gray-800 mb-12">
-            <h2 className="text-3xl font-semibold mb-4">
-              Express middleware
-            </h2>
+            <h2 className="text-3xl font-semibold mb-4">Express middleware</h2>
             <p className="text-gray-300 mb-4">
               Scrub request bodies at the gateway so every route inherits the
               same policy:
