@@ -710,7 +710,7 @@ export default async function BlogPost(props: {
                 prose-a:text-white prose-a:underline prose-a:hover:text-gray-300
                 prose-strong:text-white prose-strong:font-semibold
                 prose-code:text-green-400 prose-code:bg-gray-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
-                prose-pre:bg-gray-900 prose-pre:border prose-pre:border-gray-800 prose-pre:rounded prose-pre:p-4
+                prose-pre:bg-black prose-pre:border prose-pre:border-gray-800 prose-pre:rounded-lg prose-pre:p-4 prose-pre:font-mono prose-pre:text-sm prose-pre:leading-6 prose-pre:text-green-400
                 prose-ul:text-gray-300 prose-ul:my-6 prose-ul:pl-6 prose-ul:space-y-2
                 prose-li:text-gray-300 prose-li:my-1 prose-li:leading-7 prose-li:text-base
                 prose-hr:border-gray-800 prose-hr:my-10 prose-hr:border-t

@@ -113,7 +113,7 @@ const entityGroups = [
 
 function CodeBlock({ code }: { code: string }) {
   return (
-    <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 text-sm leading-6 text-gray-200">
+    <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 font-mono text-sm leading-6 text-green-400">
       <code>{code}</code>
     </pre>
   );

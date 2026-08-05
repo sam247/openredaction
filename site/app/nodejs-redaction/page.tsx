@@ -69,7 +69,7 @@ export default function NodejsRedaction() {
                     Install with a single command. Works with Express, Fastify,
                     NestJS, and any Node.js framework.
                   </p>
-                  <pre className="bg-black rounded p-4 text-sm overflow-x-auto">
+                  <pre className="overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 font-mono text-sm text-green-400">
                     <code>npm install openredaction</code>
                   </pre>
                 </div>
@@ -107,7 +107,7 @@ export default function NodejsRedaction() {
                     <code className="text-gray-200">detect()</code> (async).
                     Works in Express, Fastify, NestJS, and plain Node.
                   </p>
-                  <pre className="bg-black rounded p-4 text-sm overflow-x-auto">
+                  <pre className="overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 font-mono text-sm leading-6 text-green-400">
                     <code>{`import { OpenRedaction } from "openredaction";
 
 const redactor = new OpenRedaction({
@@ -145,7 +145,7 @@ console.log(result.redacted);`}</code>
               Scrub request bodies at the gateway so every route inherits the
               same policy:
             </p>
-            <pre className="bg-black rounded p-4 text-sm overflow-x-auto mb-2">
+            <pre className="mb-2 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 font-mono text-sm leading-6 text-green-400">
               <code>{`import express from "express";
 import { openredactionMiddleware } from "@openredaction/express";
 

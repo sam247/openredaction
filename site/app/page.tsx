@@ -412,7 +412,7 @@ export default function Home() {
                 <Code2 size={16} />
                 Before / after
               </div>
-              <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 text-sm leading-6 text-gray-200">
+              <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 font-mono text-sm leading-6 text-green-400">
                 {`import { OpenRedaction } from "openredaction";
 
 const redactor = new OpenRedaction({ redactionMode: "placeholder" });
@@ -437,7 +437,7 @@ console.log(redacted);
               <div className="mt-5 inline-flex rounded-md border border-gray-800 bg-black px-3 py-2 font-mono text-sm text-green-400">
                 npm install openredaction
               </div>
-              <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 text-sm leading-6 text-gray-200">
+              <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 font-mono text-sm leading-6 text-green-400">
                 {`import { OpenRedaction } from "openredaction";
 
 const redactor = new OpenRedaction();

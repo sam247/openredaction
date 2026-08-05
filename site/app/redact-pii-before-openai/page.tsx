@@ -104,7 +104,7 @@ await openai.chat.completions.create({
           <div className="rounded-xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
             <h2 className="text-2xl font-semibold">Install OpenRedaction</h2>
             <p className="mt-3 text-gray-400">Install the library:</p>
-            <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 text-sm text-green-400">
+            <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 font-mono text-sm text-green-400">
               {`npm install openredaction openai`}
             </pre>
           </div>
@@ -118,7 +118,7 @@ await openai.chat.completions.create({
               one <code className="text-gray-300">OpenRedaction</code> instance
               across requests.
             </p>
-            <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 text-sm leading-6 text-gray-200">
+            <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 font-mono text-sm leading-6 text-green-400">
               {`import OpenAI from "openai";
 import { OpenRedaction } from "openredaction";
 
