@@ -49,7 +49,7 @@ export default function NodejsRedaction() {
                 href="/pii-redaction"
                 className="text-white underline underline-offset-4 hover:text-gray-200"
               >
-                PII redaction for AI systems
+                PII redaction
               </Link>
             </p>
           </div>
@@ -261,10 +261,10 @@ app.use(openredactionMiddleware({ autoRedact: true }));`}</code>
                 PII Detection Guide
               </Link>
               <Link
-                href="/blog/pii-detection-for-ai"
+                href="/pii-redaction"
                 className="text-gray-300 hover:text-white underline"
               >
-                PII Detection for AI
+                PII Redaction
               </Link>
               <Link
                 href="/gdpr-redaction"
