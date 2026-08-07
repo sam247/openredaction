@@ -4,7 +4,8 @@ import corePkg from "../packages/core/package.json";
 
 /** Soft-404 / retired blog URLs → nearest live guide (not a dump to /blog). */
 const removedBlogRedirects: Record<string, string> = {
-  "understanding-pii-detection": "/blog/pii-detection-for-ai",
+  "understanding-pii-detection": "/pii-redaction",
+  "pii-detection-for-ai": "/pii-redaction",
   "10-common-pii-redaction-mistakes": "/pii-redaction",
   "7-pii-redaction-best-practices": "/pii-redaction",
   "data-redaction-vs-masking": "/pii-redaction",

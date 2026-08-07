@@ -6,10 +6,9 @@ import Header from "@/components/Header";
 import { TrackedDocsGettingStartedLink } from "@/components/TrackedLinks";
 import { generatePageMetadata } from "@/lib/metadata";
 
-const pageTitle =
-  "PII Redaction for AI Systems: Detection, Logs, Citations & Node.js";
+const pageTitle = "PII Redaction";
 const pageDescription =
-  "What PII redaction is, where it belongs in AI pipelines, and how to implement it locally in Node.js—prompts, RAG, citations, logs, and OpenTelemetry.";
+  "PII redaction detects and masks personally identifiable information before text is stored, logged, embedded, or sent to an LLM. Local Node.js patterns for prompts, RAG, and logs.";
 
 export const metadata: Metadata = {
   ...generatePageMetadata({
@@ -19,8 +18,10 @@ export const metadata: Metadata = {
   }),
   keywords: [
     "PII redaction",
-    "PII redaction AI",
+    "what is PII redaction",
+    "redact PII",
     "personally identifiable information redaction",
+    "PII redaction AI",
     "redact PII before LLM",
     "PII redaction Node.js",
     "AI citation redaction",
@@ -33,13 +34,15 @@ export const metadata: Metadata = {
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://openredaction.com";
 
 const toc = [
-  { id: "what-is-pii-redaction", label: "What PII redaction really is" },
-  { id: "why-pii-redaction", label: "Why it is critical for AI systems" },
+  { id: "what-is-pii-redaction", label: "What is PII redaction?" },
+  { id: "why-pii-redaction", label: "Why it matters" },
   { id: "entities", label: "Core PII entities" },
   { id: "redaction-vs-anonymization", label: "Redaction vs anonymization" },
+  { id: "pattern-vs-ml", label: "Pattern-first vs ML detection" },
   { id: "defense-in-depth", label: "Defense-in-depth strategy" },
   { id: "how-to-implement", label: "How to implement with OpenRedaction" },
-  { id: "placement", label: "Where to redact in AI pipelines" },
+  { id: "placement", label: "Where to redact" },
+  { id: "redaction-styles", label: "Redaction styles" },
   { id: "telemetry", label: "Logs, traces, and telemetry" },
   { id: "ai-citations", label: "Redaction for AI citations" },
   { id: "governance", label: "Policies and governance" },
@@ -52,6 +55,17 @@ const faqItems = [
     question: "What is PII redaction?",
     answer:
       "PII redaction is the practice of detecting and masking personally identifiable information before text is stored, logged, embedded, or sent to an LLM or third-party API. Typical targets include emails, phone numbers, national IDs, and other identifiers that can single someone out.",
+  },
+  {
+    question:
+      "How do you detect and redact PII from LLM inputs before they reach the model?",
+    answer:
+      "Redact at the first hop—typically your API gateway or Express middleware—with local pattern-based detection before prompts leave your network. Optionally add NER inside a private VPC for unstructured names and entities, then merge spans in a single pass.",
+  },
+  {
+    question: "How do you detect PII in LLM outputs?",
+    answer:
+      "Scan generated replies on the response path before storage or display. Models can echo user inputs or retrieved snippets; suppression filters prevent identifiers from resurfacing in completions, logs, or caches.",
   },
   {
     question: "Is PII redaction the same as anonymization?",
@@ -126,7 +140,8 @@ export default function PiiRedactionPage() {
     headline: pageTitle,
     description: pageDescription,
     url: `${siteUrl}/pii-redaction`,
-    dateModified: "2026-08-05",
+    datePublished: "2025-12-05",
+    dateModified: "2026-08-07",
     author: {
       "@type": "Organization",
       name: "OpenRedaction",
@@ -205,15 +220,14 @@ export default function PiiRedactionPage() {
               Implementation guide
             </p>
             <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-balance">
-              PII Redaction for AI Systems
+              PII Redaction
             </h1>
             <p className="mt-5 text-lg text-gray-300 leading-relaxed">
-              Protecting personally identifiable information is a core
-              requirement for any AI system that handles real-world data—
-              especially when prompts, logs, traces, embeddings, and citations
-              can unintentionally leak who the data is about. This guide covers
-              how to design, implement, and operate PII redaction across modern
-              AI pipelines.
+              PII redaction is how you stop personally identifiable information
+              from reaching models, logs, vector stores, and citations. This
+              guide explains what it is, where it belongs in AI pipelines, and
+              how to implement it locally in Node.js before prompts ever leave
+              your process.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-gray-400">
               <TrackedDocsGettingStartedLink
@@ -263,15 +277,21 @@ export default function PiiRedactionPage() {
           <div className="mt-14 space-y-14 text-gray-300 leading-relaxed">
             <section id="what-is-pii-redaction" className="scroll-mt-28">
               <h2 className="text-2xl sm:text-3xl font-semibold text-white">
-                What PII redaction really is
+                What is PII redaction?
               </h2>
               <p className="mt-4">
-                PII redaction is the practice of detecting and masking
-                information that can directly or indirectly identify an
-                individual before that data is stored, processed, or exposed
-                downstream. In AI systems, that includes prompts, model outputs,
-                logs, traces, embeddings, analytics, and any citation that
-                points back to user data.
+                <strong className="text-white">PII redaction</strong> is the
+                practice of detecting and masking information that can directly
+                or indirectly identify an individual before that data is stored,
+                processed, or exposed downstream. In AI systems, that includes
+                prompts, model outputs, logs, traces, embeddings, analytics, and
+                any citation that points back to user data.
+              </p>
+              <p className="mt-4">
+                Unlike a one-off filter, effective PII redaction is a control
+                plane: the same entity taxonomy and masking policy applied at
+                every trust boundary so a single prompt cannot fan out into
+                vendor APIs, RAG indexes, and observability tools unchanged.
               </p>
               <p className="mt-4">PII broadly covers two categories:</p>
               <ul className="mt-4 list-disc space-y-2 pl-5">
@@ -290,13 +310,13 @@ export default function PiiRedactionPage() {
               </ul>
               <p className="mt-4">
                 What matters most is not only what counts as PII, but{" "}
-                <em>where</em> it can appear across your AI stack. For a
-                detection-focused treatment of prompts and RAG surfaces, see{" "}
+                <em>where</em> it can appear. For detection primitives and
+                pattern coverage, see the{" "}
                 <Link
-                  href="/blog/pii-detection-for-ai"
+                  href="/pii-detection"
                   className="text-white underline underline-offset-4"
                 >
-                  PII detection for AI workflows
+                  PII detection overview
                 </Link>
                 .
               </p>
@@ -304,7 +324,7 @@ export default function PiiRedactionPage() {
 
             <section id="why-pii-redaction" className="scroll-mt-28">
               <h2 className="text-2xl sm:text-3xl font-semibold text-white">
-                Why PII redaction is critical for AI systems
+                Why PII redaction matters
               </h2>
               <p className="mt-4">
                 AI systems amplify traditional privacy risks because they copy,
@@ -312,11 +332,34 @@ export default function PiiRedactionPage() {
                 redaction, a single prompt can end up in model vendor logs,
                 vector stores, observability platforms, and audit trails.
               </p>
+              <h3 className="mt-6 text-lg font-medium text-white">
+                Common injection points
+              </h3>
               <ul className="mt-4 list-disc space-y-2 pl-5">
                 <li>
+                  <strong className="text-white">Inbound streams:</strong> user
+                  prompts, uploads, and pasted exports (CSV, DOCX, CRM
+                  snapshots)
+                </li>
+                <li>
+                  <strong className="text-white">Processing layers:</strong>{" "}
+                  system logs, traces, APM instrumentation, and replay tools
+                </li>
+                <li>
+                  <strong className="text-white">Storage:</strong> vector
+                  databases, embeddings, RAG indexes, and training sets
+                </li>
+                <li>
+                  <strong className="text-white">Outbound channels:</strong>{" "}
+                  model responses that echo prompts, retrieved snippets, or
+                  internal context
+                </li>
+              </ul>
+              <ul className="mt-6 list-disc space-y-2 pl-5">
+                <li>
                   <strong className="text-white">Regulatory compliance:</strong>{" "}
-                  GDPR, CCPA, HIPAA, and sector rules increasingly expect
-                  proactive controls on personal data (see{" "}
+                  GDPR, CCPA, HIPAA, and sector rules expect proactive controls
+                  on personal data (see{" "}
                   <Link
                     href="/gdpr-redaction"
                     className="text-white underline underline-offset-4"
@@ -343,10 +386,6 @@ export default function PiiRedactionPage() {
                   controls are concrete and inspectable
                 </li>
               </ul>
-              <p className="mt-4">
-                For AI citations specifically, redaction keeps references
-                informative without leaking who the underlying data is about.
-              </p>
             </section>
 
             <section id="entities" className="scroll-mt-28">
@@ -447,6 +486,45 @@ export default function PiiRedactionPage() {
                 citations should not leak real identifiers, but privileged
                 services may still need to resolve a placeholder back to a
                 record.
+              </p>
+            </section>
+
+            <section id="pattern-vs-ml" className="scroll-mt-28">
+              <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+                Pattern-first vs machine learning detection
+              </h2>
+              <p className="mt-4">
+                There are two dominant paradigms for detecting sensitive text:
+                pattern-first (regex-based) and ML/NLP-based. Production systems
+                usually combine both—starting with the layer you can deploy
+                everywhere without shipping raw text to another processor.
+              </p>
+              <h3 className="mt-6 text-lg font-medium text-white">
+                Pattern-first (regex / rule-based)
+              </h3>
+              <p className="mt-3">
+                Regex-driven detectors catch structured identifiers—emails,
+                phone numbers, credit cards, postal codes, and national IDs—
+                with deterministic precision. They are fast, local, and
+                auditable, which makes them the right first hop before content
+                reaches an LLM API.
+              </p>
+              <h3 className="mt-6 text-lg font-medium text-white">
+                ML / named entity recognition (NER)
+              </h3>
+              <p className="mt-3">
+                NER expands coverage to unstructured narrative—names,
+                organisations, and contextual references that rigid patterns
+                miss. Trade-offs are latency, cost, and data residency if
+                inference runs outside your boundary.
+              </p>
+              <p className="mt-4">
+                <strong className="text-white">Optimal architecture:</strong>{" "}
+                run high-precision pattern redaction locally, optionally apply
+                NER inside a private VPC, then merge spans in a single pass.
+                OpenRedaction focuses on the deterministic layer you can ship in
+                every Node process; optional local NER sits behind the same
+                boundary when you need free-text name coverage.
               </p>
             </section>
 
@@ -666,10 +744,11 @@ const restored = redactor.restore(redactedCitation, map);`}
           <div className="mt-14 space-y-14 text-gray-300 leading-relaxed">
             <section id="placement" className="scroll-mt-28">
               <h2 className="text-2xl sm:text-3xl font-semibold text-white">
-                Placement: where to redact in AI pipelines
+                Where to redact in AI pipelines
               </h2>
               <p className="mt-4">
-                Placement is as important as detection quality.
+                Placement is as important as detection quality. Treat every hop
+                where text leaves a trust boundary as a redaction checkpoint.
               </p>
               <ul className="mt-4 list-disc space-y-2 pl-5">
                 <li>
@@ -682,13 +761,18 @@ const restored = redactor.restore(redactedCitation, map);`}
                   <strong className="text-white">
                     Application / RAG layer:
                   </strong>{" "}
-                  integrate into middleware and chunking so embeddings never
-                  store raw identifiers
+                  redact early in chunking so embeddings never store raw
+                  identifiers
                 </li>
                 <li>
                   <strong className="text-white">Observability layer:</strong>{" "}
                   use collectors and span processors to scrub attributes before
                   export
+                </li>
+                <li>
+                  <strong className="text-white">Response path:</strong> scan
+                  generated replies before storage or display—models can echo
+                  user inputs or retrieved snippets
                 </li>
                 <li>
                   <strong className="text-white">Storage and analytics:</strong>{" "}
@@ -698,6 +782,43 @@ const restored = redactor.restore(redactedCitation, map);`}
               <p className="mt-4">
                 In practice, many teams combine a model gateway with
                 collector-level redaction for logs and traces.
+              </p>
+            </section>
+
+            <section id="redaction-styles" className="scroll-mt-28">
+              <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+                Redaction styles and consistency
+              </h2>
+              <p className="mt-4">
+                How you represent scrubbed values matters as much as catching
+                them. Pick a style, document it, and apply it globally—auditors
+                prefer a stable schema over clever one-offs.
+              </p>
+              <ul className="mt-4 list-disc space-y-2 pl-5">
+                <li>
+                  <strong className="text-white">Full placeholders</strong>{" "}
+                  (e.g. <code className="text-green-400">[EMAIL_9619]</code>)
+                  for external model traffic and vendor APIs
+                </li>
+                <li>
+                  <strong className="text-white">Partial masking</strong> (e.g.{" "}
+                  <code className="text-green-400">jo***@domain.com</code>) only
+                  for internal dashboards or controlled analytics
+                </li>
+                <li>
+                  <strong className="text-white">Token replace</strong> when a
+                  privileged service must restore the original later
+                </li>
+              </ul>
+              <p className="mt-4">
+                OpenRedaction supports{" "}
+                <code className="text-gray-200">placeholder</code>,{" "}
+                <code className="text-gray-200">mask-middle</code>,{" "}
+                <code className="text-gray-200">mask-all</code>,{" "}
+                <code className="text-gray-200">format-preserving</code>, and{" "}
+                <code className="text-gray-200">token-replace</code> modes so
+                you can use irreversible placeholders for vendors and softer
+                masking for internal tools.
               </p>
             </section>
 
@@ -831,8 +952,9 @@ service:
                 Evaluation: precision, recall, and quality
               </h2>
               <p className="mt-4">
-                Redaction pipelines need continuous evaluation or they rot
-                quietly.
+                Privacy assurance is not theoretical—it needs continuous,
+                automated proof. Treat redaction checks as part of CI/CD, not a
+                post-incident cleanup.
               </p>
               <ul className="mt-4 list-disc space-y-2 pl-5">
                 <li>
@@ -840,15 +962,20 @@ service:
                   sensitive reaches models or logs
                 </li>
                 <li>
+                  Inject canary values (e.g. a unique test email) into prompts
+                  and verify they never appear in logs, embeddings, or LLM
+                  responses
+                </li>
+                <li>
                   Prioritise recall for high-risk entities even when that means
                   some over-redaction
                 </li>
                 <li>
-                  Tune confidence thresholds and human-review queues per entity
-                  type
+                  Track latency budgets (for example under 50ms per prompt)—if
+                  redaction slows the path, teams will bypass it under pressure
                 </li>
                 <li>
-                  Periodically scan prompts, logs, and citation stores for
+                  Periodically scan vector stores and citation indexes for
                   regressions
                 </li>
               </ul>
@@ -930,14 +1057,6 @@ service:
                   className="text-white underline underline-offset-4"
                 >
                   How to redact PII before OpenAI
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/blog/pii-detection-for-ai"
-                  className="text-white underline underline-offset-4"
-                >
-                  Detect &amp; redact PII in LLM prompts and outputs
                 </Link>
               </li>
               <li>

@@ -66,6 +66,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(),
     changeFrequency:
       route === "" ? "daily" : route.startsWith("/blog") ? "weekly" : "monthly",
-    priority: route === "" ? 1 : route.startsWith("/blog") ? 0.7 : 0.8,
+    priority:
+      route === ""
+        ? 1
+        : route === "/pii-redaction"
+          ? 0.9
+          : route.startsWith("/blog")
+            ? 0.7
+            : 0.8,
   }));
 }

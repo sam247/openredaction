@@ -92,7 +92,7 @@ await openai.chat.completions.create({
                   href="/pii-redaction"
                   className="text-white underline underline-offset-4"
                 >
-                  PII redaction for AI systems
+                  PII redaction
                 </Link>{" "}
                 guide.
               </p>
