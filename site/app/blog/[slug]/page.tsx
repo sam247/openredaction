@@ -322,6 +322,57 @@ export default async function BlogPost(props: {
     url: pageUrl,
   };
 
+  // Question-form GSC queries for this URL had impressions with near-zero CTR;
+  // FAQ rich results improve snippet eligibility without changing page intent.
+  const supportFaqSchema =
+    params.slug === "pii-in-support-tickets"
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "How do you handle PII in customer support tickets?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Assume every inbound channel will receive sensitive data. Collect the minimum needed to resolve the ticket, redact at ingest before indexing, mask identifiers in agent views, and keep short retention on unredacted transcripts.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "What PII commonly appears in support emails and chat?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Support threads often include names, emails, phones, account references, government or financial IDs, passwords and OTPs pasted to debug, and sometimes health or regulated context in attachments and screenshots.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "How should agents respond when a customer pastes a card number or password?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Redact immediately (for cards, keep only the last four digits if needed), remove the value from searchable ticket history, log a brief remediation note, and route the user to a secure upload or verification path instead of asking for secrets in free text.",
+              },
+            },
+          ],
+        }
+      : null;
+
+  const pageFaqSchema = supportFaqSchema;
+
+  // Process content - ensure links have proper styling
+  const processedContent = post.content
+    .replace(/<a href="([^"]+)">/g, (_match: string, href: string) => {
+      if (
+        href.startsWith("/") ||
+        href.startsWith("https://openredaction.com")
+      ) {
+        return `<a href="${href}" style="color: #fff; text-decoration: underline; hover:color: #d1d5db;">`;
+      }
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;">`;
+    })
+    .trim();
+
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />
@@ -333,6 +384,15 @@ export default async function BlogPost(props: {
           __html: JSON.stringify(blogPostingSchema),
         }}
       />
+      {pageFaqSchema ? (
+        <script
+          type="application/ld+json"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: FAQ JSON-LD from static answers grounded in page content
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(pageFaqSchema),
+          }}
+        />
+      ) : null}
       <main className="pt-[148px] pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
