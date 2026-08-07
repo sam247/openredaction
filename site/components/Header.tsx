@@ -52,6 +52,13 @@ export default function Header() {
                 Playground
               </Link>
               <Link
+                href="/pii-redaction"
+                className="text-gray-300 hover:text-white transition-colors"
+                onClick={() => analytics.navClick("/pii-redaction", "header")}
+              >
+                PII Redaction
+              </Link>
+              <Link
                 href="/pricing"
                 className="text-gray-300 hover:text-white transition-colors"
                 onClick={() => analytics.navClick("/pricing", "header")}
@@ -238,6 +245,16 @@ export default function Header() {
               }}
             >
               Playground
+            </Link>
+            <Link
+              href="/pii-redaction"
+              className="block text-gray-300 hover:text-white transition-colors"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                analytics.navClick("/pii-redaction", "mobile");
+              }}
+            >
+              PII Redaction
             </Link>
             <Link
               href="/pricing"
