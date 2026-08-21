@@ -22,7 +22,7 @@ export default function About() {
             About OpenRedaction
           </h1>
 
-          <div className="prose prose-invert max-w-none space-y-6">
+          <div className="prose prose-invert max-w-3xl space-y-6">
             <p className="text-xl text-gray-300">
               OpenRedaction is an open-source library for detecting and
               redacting personally identifiable information (PII) from text.

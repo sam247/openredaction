@@ -22,7 +22,7 @@ export default function Privacy() {
             Privacy Policy
           </h1>
 
-          <div className="prose prose-invert max-w-none">
+          <div className="prose prose-invert max-w-3xl">
             <p className="text-xl text-gray-300 mb-8">
               OpenRedaction is designed with privacy and data minimization at
               its core. This policy explains how we handle your data.
