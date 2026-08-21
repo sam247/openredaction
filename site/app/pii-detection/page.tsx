@@ -222,10 +222,10 @@ export default function PiiDetection() {
                 Installation Guide →
               </Link>
               <Link
-                href="/blog/pii-detection-for-ai"
+                href="/pii-redaction"
                 className="bg-gray-800 text-white px-6 py-3 rounded-md font-semibold hover:bg-gray-700 transition-colors border border-gray-700 text-center"
               >
-                PII &amp; LLMs →
+                PII Redaction →
               </Link>
             </div>
           </div>
@@ -252,10 +252,10 @@ export default function PiiDetection() {
                 HIPAA Redaction
               </Link>
               <Link
-                href="/blog/pii-detection-for-ai"
+                href="/pii-redaction"
                 className="text-gray-300 hover:text-white underline"
               >
-                PII Detection for AI
+                PII Redaction
               </Link>
             </div>
           </div>

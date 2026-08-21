@@ -5,30 +5,35 @@ description: 'Code examples and use cases for OpenRedaction. Learn how to redact
 
 # Examples
 
-Common use cases and code examples for OpenRedaction.
+Common use cases and code examples for OpenRedaction. All samples use the
+current API: create an `OpenRedaction` instance and call async `detect()`.
+
+For pipeline design (LLM gateways, RAG, citations, telemetry), see the
+[PII redaction guide](https://openredaction.com/pii-redaction).
 
 ## Basic Examples
 
 ### Redacting Email Addresses
 
 ```javascript
-import { redact } from 'openredaction';
+import { OpenRedaction } from 'openredaction';
 
-const text = "Contact us at support@example.com";
-const result = await redact(text);
+const redactor = new OpenRedaction();
+const text = 'Contact us at support@example.com';
+const result = await redactor.detect(text);
 
-console.log(result.redacted_text);
-// "Contact us at [REDACTED]"
+console.log(result.redacted);
+// e.g. "Contact us at [EMAIL_…]"
 ```
 
 ### Redacting Phone Numbers
 
 ```javascript
-const text = "Call me at (555) 123-4567";
-const result = await redact(text);
+const text = 'Call me at (555) 123-4567';
+const result = await redactor.detect(text);
 
-console.log(result.redacted_text);
-// "Call me at [REDACTED]"
+console.log(result.redacted);
+// e.g. "Call me at [PHONE_…]"
 ```
 
 ### Redacting Multiple PII Types
@@ -41,8 +46,9 @@ const text = `
   SSN: 123-45-6789
 `;
 
-const result = await redact(text);
-console.log(result.redacted_text);
+const result = await redactor.detect(text);
+console.log(result.redacted);
+console.log(result.detections.map((d) => d.type));
 ```
 
 ## Advanced Examples
@@ -50,41 +56,80 @@ console.log(result.redacted_text);
 ### Custom Redaction Mode
 
 ```javascript
-// Mask mode - shows partial information
-const result = await redact(text, {
-  redactionMode: 'mask',
+import { OpenRedaction } from 'openredaction';
+
+// Mask middle characters — useful for internal dashboards
+const redactor = new OpenRedaction({
+  redactionMode: 'mask-middle',
 });
 
-// "Contact j***@example.com"
+const result = await redactor.detect('Contact john@example.com');
+console.log(result.redacted);
+// e.g. partial mask of the email value
+```
+
+Other modes: `placeholder` (default), `mask-all`, `format-preserving`,
+`token-replace`.
+
+### Compliance Preset
+
+```javascript
+const redactor = new OpenRedaction({
+  preset: 'gdpr',
+  redactionMode: 'placeholder',
+  deterministic: true,
+});
+
+const result = await redactor.detect(text);
 ```
 
 ### Processing Files
 
 ```javascript
 import fs from 'fs';
-import { redact } from 'openredaction';
+import { OpenRedaction } from 'openredaction';
 
+const redactor = new OpenRedaction({ preset: 'gdpr' });
 const fileContent = fs.readFileSync('document.txt', 'utf8');
-const result = await redact(fileContent);
+const result = await redactor.detect(fileContent);
 
-fs.writeFileSync('redacted.txt', result.redacted_text);
+fs.writeFileSync('redacted.txt', result.redacted);
 ```
 
 ## Integration Examples
 
 ### Express.js Middleware
 
+Prefer the dedicated package when you want automatic body scrubbing:
+
 ```javascript
 import express from 'express';
-import { redact } from 'openredaction';
+import { openredactionMiddleware } from '@openredaction/express';
 
 const app = express();
+app.use(express.json());
+app.use(openredactionMiddleware({ autoRedact: true }));
+
+app.post('/api/submit', (req, res) => {
+  // req.body fields are redacted in-place; req.pii has detection metadata
+  res.json({ body: req.body, pii: req.pii });
+});
+```
+
+Or call the core library on a single route:
+
+```javascript
+import express from 'express';
+import { OpenRedaction } from 'openredaction';
+
+const app = express();
+const redactor = new OpenRedaction({ preset: 'gdpr' });
 
 app.use(express.json());
 
 app.post('/api/redact', async (req, res) => {
   const { text } = req.body;
-  const result = await redact(text);
+  const result = await redactor.detect(text);
   res.json(result);
 });
 ```
@@ -92,15 +137,17 @@ app.post('/api/redact', async (req, res) => {
 ### Log Processing
 
 ```javascript
-import { redact } from 'openredaction';
+import { OpenRedaction } from 'openredaction';
+
+const redactor = new OpenRedaction({ preset: 'gdpr' });
 
 async function processLog(logEntry) {
-  const redacted = await redact(logEntry.message);
-  
+  const result = await redactor.detect(logEntry.message);
+
   return {
     ...logEntry,
-    message: redacted.redacted_text,
-    piiDetected: redacted.detections.length > 0,
+    message: result.redacted,
+    piiDetected: result.detections.length > 0,
   };
 }
 ```
@@ -108,20 +155,24 @@ async function processLog(logEntry) {
 ### Batch Processing
 
 ```javascript
+import { OpenRedaction } from 'openredaction';
+
+const redactor = new OpenRedaction();
 const texts = [
-  "Email: user1@example.com",
-  "Phone: 555-111-2222",
-  "Name: Jane Smith",
+  'Email: user1@example.com',
+  'Phone: 555-111-2222',
+  'Name: Jane Smith',
 ];
 
-const results = await Promise.all(
-  texts.map(text => redact(text))
-);
+const results = await Promise.all(texts.map((text) => redactor.detect(text)));
 
 results.forEach((result, index) => {
-  console.log(`Text ${index + 1}:`, result.redacted_text);
+  console.log(`Text ${index + 1}:`, result.redacted);
 });
 ```
+
+You can also use `OpenRedaction.detectBatch(...)` or `createBatchProcessor`
+for larger jobs — see the package API reference.
 
 ## Use Cases
 
@@ -132,11 +183,9 @@ Redact PII from chat messages before storing or displaying:
 ```javascript
 app.post('/api/messages', async (req, res) => {
   const { message } = req.body;
-  const redacted = await redact(message);
-  
-  // Store redacted version
-  await saveMessage(redacted.redacted_text);
-  
+  const { redacted } = await redactor.detect(message);
+
+  await saveMessage(redacted);
   res.json({ success: true });
 });
 ```
@@ -148,25 +197,24 @@ Redact PII before exporting data:
 ```javascript
 async function exportUserData(userId) {
   const data = await getUserData(userId);
-  
-  const redacted = await redact(JSON.stringify(data));
-  
-  return JSON.parse(redacted.redacted_text);
+  const { redacted } = await redactor.detect(JSON.stringify(data));
+  return JSON.parse(redacted);
 }
 ```
 
-### API Gateway
+### API Gateway / LLM Proxy
 
-Redact PII from API requests/responses:
+Redact free-text fields before they leave your network:
 
 ```javascript
-app.use(async (req, res, next) => {
-  if (req.body && typeof req.body === 'object') {
-    const bodyString = JSON.stringify(req.body);
-    const redacted = await redact(bodyString);
-    req.body = JSON.parse(redacted.redacted_text);
+app.use(async (req, _res, next) => {
+  if (req.body?.prompt && typeof req.body.prompt === 'string') {
+    const { redacted } = await redactor.detect(req.body.prompt);
+    req.body.prompt = redacted;
   }
   next();
 });
 ```
 
+For a full OpenAI walkthrough, see
+[Redact PII before OpenAI](https://openredaction.com/redact-pii-before-openai).

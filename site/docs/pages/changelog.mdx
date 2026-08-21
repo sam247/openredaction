@@ -61,10 +61,14 @@ The following applied to a previously offered hosted API, which is no longer ava
 - Rate limiting and usage tracking (deprecated)
 
 ### Library Features
-- `redact()` function for simple text redaction
-- `OpenRedaction` class for advanced usage
+- `OpenRedaction` class with async `detect()` for text redaction (current API)
+- `openredactionMiddleware` via `@openredaction/express` for request-body scrubbing
 - TypeScript type definitions
 - Browser and Node.js support
+
+> Note: Older docs and pre-release sketches mentioned a top-level `redact()`
+> helper. Use `new OpenRedaction()` + `await redactor.detect(text)` instead;
+> the result field is `redacted` (not `redacted_text` / `redactedText`).
 
 ### Detection Types
 - Email addresses
