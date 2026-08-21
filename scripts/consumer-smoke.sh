@@ -122,7 +122,9 @@ EOF
       npm install
       ;;
     pnpm)
-      pnpm install
+      # Hoist so openredaction's nested @openredaction/core resolves to the
+      # local file: tarball (with subpath exports), not a registry copy.
+      pnpm install --node-linker=hoisted
       ;;
     yarn)
       yarn install
