@@ -81,6 +81,7 @@ install_from_packs() {
   server_tgz="$(echo "$STAGING"/openredaction-server-*.tgz)"
   umbrella_tgz="$(echo "$STAGING"/openredaction-1.*.tgz)"
 
+  # Override nested deps so pnpm does not pull registry core without subpaths.
   cat > package.json <<EOF
 {
   "name": "openredaction-consumer-smoke",
@@ -92,6 +93,26 @@ install_from_packs() {
     "@openredaction/react": "file:${react_tgz}",
     "@openredaction/server": "file:${server_tgz}",
     "openredaction": "file:${umbrella_tgz}"
+  },
+  "overrides": {
+    "@openredaction/core": "file:${core_tgz}",
+    "@openredaction/express": "file:${express_tgz}",
+    "@openredaction/react": "file:${react_tgz}",
+    "@openredaction/server": "file:${server_tgz}"
+  },
+  "pnpm": {
+    "overrides": {
+      "@openredaction/core": "file:${core_tgz}",
+      "@openredaction/express": "file:${express_tgz}",
+      "@openredaction/react": "file:${react_tgz}",
+      "@openredaction/server": "file:${server_tgz}"
+    }
+  },
+  "resolutions": {
+    "@openredaction/core": "file:${core_tgz}",
+    "@openredaction/express": "file:${express_tgz}",
+    "@openredaction/react": "file:${react_tgz}",
+    "@openredaction/server": "file:${server_tgz}"
   }
 }
 EOF
