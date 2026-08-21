@@ -3,7 +3,7 @@
  * Verify detector is working correctly and get system status
  */
 
-import type { OpenRedaction } from "../detector";
+import type { IDetector } from "../types";
 
 export interface HealthCheckResult {
   status: "healthy" | "degraded" | "unhealthy";
@@ -40,10 +40,10 @@ export interface HealthCheckOptions {
 }
 
 export class HealthChecker {
-  private detector: OpenRedaction;
+  private detector: IDetector;
   private initTime: number;
 
-  constructor(detector: OpenRedaction) {
+  constructor(detector: IDetector) {
     this.detector = detector;
     this.initTime = Date.now();
   }
@@ -367,14 +367,14 @@ export class HealthChecker {
 /**
  * Create health checker for a detector
  */
-export function createHealthChecker(detector: OpenRedaction): HealthChecker {
+export function createHealthChecker(detector: IDetector): HealthChecker {
   return new HealthChecker(detector);
 }
 
 /**
  * Express middleware for health check endpoint
  */
-export function healthCheckMiddleware(detector: OpenRedaction) {
+export function healthCheckMiddleware(detector: IDetector) {
   const checker = new HealthChecker(detector);
 
   return async (_req: any, res: any) => {

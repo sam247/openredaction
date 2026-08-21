@@ -8,6 +8,7 @@ import type {
   OpenRedactionOptions,
 } from "@openredaction/core";
 import { OpenRedaction } from "@openredaction/core";
+import { createReportGenerator } from "@openredaction/core/reports";
 import { Elysia, t } from "elysia";
 
 /**
@@ -236,7 +237,7 @@ export function generateReportPlugin(options: OpenRedactionOptions = {}) {
       const result = await detector.detect(body.text);
 
       if (format === "html") {
-        const html = detector.generateReport(result, {
+        const html = createReportGenerator(detector).generate(result, {
           format: "html",
           title,
         });
@@ -245,7 +246,7 @@ export function generateReportPlugin(options: OpenRedactionOptions = {}) {
       }
 
       if (format === "markdown") {
-        const md = detector.generateReport(result, {
+        const md = createReportGenerator(detector).generate(result, {
           format: "markdown",
           title,
         });

@@ -43,6 +43,7 @@
     "@openredaction/core": "workspace:*"
   },
   "peerDependencies": {
+    "@openredaction/core": "^2.0.0",
     "hono": "^4.0.0"
   },
   "devDependencies": {

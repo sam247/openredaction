@@ -131,7 +131,7 @@ export function createLearningDisabledError(): OpenRedactionError {
       message:
         "Enable learning to use recordFalsePositive, recordFalseNegative, and other learning features",
       code: `const redactor = new OpenRedaction({
-  enableLearning: true,
+  features: { learning: true },
   learningStorePath: '.openredaction/learnings.json'
 });`,
       docs: "https://github.com/sam247/openredaction#learning-system",
@@ -147,7 +147,7 @@ export function createOptimizationDisabledError(): OpenRedactionError {
       message:
         "Enable priority optimization to use dynamic priority adjustment features",
       code: `const redactor = new OpenRedaction({
-  enablePriorityOptimization: true,
+  features: { priorityOptimization: true },
   optimizerOptions: {
     learningWeight: 0.3,
     minSampleSize: 10,

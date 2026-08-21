@@ -2,8 +2,7 @@
  * CSV document processor for PII detection and redaction in tabular data
  */
 
-import type { OpenRedaction } from "../detector";
-import type { DetectionResult, PIIDetection } from "../types";
+import type { DetectionResult, IDetector, PIIDetection } from "../types";
 
 /**
  * CSV processing options
@@ -234,7 +233,7 @@ export class CsvProcessor {
    */
   async detect(
     input: Buffer | string,
-    detector: OpenRedaction,
+    detector: IDetector,
     options?: CsvProcessorOptions,
   ): Promise<CsvDetectionResult> {
     const opts = { ...this.defaultOptions, ...options };

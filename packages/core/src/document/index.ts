@@ -13,9 +13,14 @@ export {
   createDocumentProcessor,
   DocumentProcessor,
 } from "./DocumentProcessor";
+export {
+  detectDocument,
+  detectDocumentFile,
+} from "./detectDocument";
 export type {
   JsonDetectionResult,
   JsonProcessorOptions,
+  JsonValue,
 } from "./JsonProcessor";
 export { createJsonProcessor, JsonProcessor } from "./JsonProcessor";
 export { createOCRProcessor, OCRProcessor } from "./OCRProcessor";

@@ -3,8 +3,7 @@
  * Generates static HTML and Markdown reports - 100% offline, zero dependencies
  */
 
-import type { OpenRedaction } from "../detector";
-import type { DetectionResult } from "../types";
+import type { DetectionResult, IDetector } from "../types";
 
 /**
  * Report format options
@@ -46,7 +45,7 @@ export interface ReportOptions {
  * Report generator for PII detection results
  */
 export class ReportGenerator {
-  constructor(_detector: OpenRedaction) {
+  constructor(_detector?: IDetector) {
     // Detector not currently used, reserved for future features
   }
 
@@ -509,8 +508,6 @@ export class ReportGenerator {
 /**
  * Helper to create report generator
  */
-export function createReportGenerator(
-  detector: OpenRedaction,
-): ReportGenerator {
+export function createReportGenerator(detector?: IDetector): ReportGenerator {
   return new ReportGenerator(detector);
 }

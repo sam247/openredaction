@@ -8,6 +8,7 @@ import type {
   OpenRedactionOptions,
 } from "@openredaction/core";
 import { OpenRedaction } from "@openredaction/core";
+import { createReportGenerator } from "@openredaction/core/reports";
 import type { NextFunction, Request, Response } from "express";
 
 /**
@@ -231,14 +232,14 @@ export function generateReport(options: OpenRedactionOptions = {}) {
       const result = await detector.detect(text);
 
       if (format === "html") {
-        const html = detector.generateReport(result, {
+        const html = createReportGenerator(detector).generate(result, {
           format: "html",
           title,
         });
         res.setHeader("Content-Type", "text/html");
         res.send(html);
       } else if (format === "markdown") {
-        const md = detector.generateReport(result, {
+        const md = createReportGenerator(detector).generate(result, {
           format: "markdown",
           title,
         });

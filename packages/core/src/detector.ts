@@ -5,112 +5,99 @@
 import { ConfigExporter } from "./config/ConfigExporter.js";
 import { ConfigLoader } from "./config/ConfigLoader.js";
 import { AuditManager } from "./detector/AuditManager";
-import { CacheManager } from "./detector/CacheManager";
-import { DetectionEngine } from "./detector/DetectionEngine";
+import type { CacheManager } from "./detector/CacheManager";
+import {
+  createDetectionCore,
+  resolveOptions,
+} from "./detector/createDetectionCore";
+import type { DetectionEngine } from "./detector/DetectionEngine";
+import { type DetectorFeatures, resolveFeatures } from "./detector/features";
 import { LearningManager } from "./detector/LearningManager";
 import { OptimizerManager } from "./detector/OptimizerManager";
-import { PatternManager } from "./detector/PatternManager";
-import { PlaceholderGenerator } from "./detector/PlaceholderGenerator";
+import type { PatternManager } from "./detector/PatternManager";
 import { restoreRedacted } from "./detector/RedactionUtils";
-import {
-  type DetectorOptions,
-  mergeOptions,
-  type OpenRedactionConstructorOptions,
+import type {
+  DetectorOptions,
+  OpenRedactionConstructorOptions,
 } from "./detector/types";
-import { createDocumentProcessor } from "./document";
-import type { DocumentOptions, DocumentResult } from "./document/types";
 import { createExplainAPI, type ExplainAPI } from "./explain/ExplainAPI.js";
-import { HealthChecker, type HealthCheckResult } from "./health/HealthCheck.js";
-import {
-  createReportGenerator,
-  type ReportOptions,
-} from "./reports/ReportGenerator.js";
-import { SeverityClassifier } from "./severity/SeverityClassifier.js";
+import type {
+  LearningData,
+  LocalLearningStore,
+} from "./learning/LocalLearningStore.js";
+import type { PriorityOptimizer } from "./optimizer/PriorityOptimizer.js";
 import type {
   DetectionResult,
   IAuditLogger,
+  IDetector,
   IMetricsCollector,
   IRBACManager,
-  OpenRedactionOptions,
   PIIDetection,
   PIIPattern,
 } from "./types";
-import { getPreset } from "./utils/presets";
-import { createWorkerPool } from "./workers";
 
-export class OpenRedaction {
+export class OpenRedaction implements IDetector {
   options: DetectorOptions;
+  private features: DetectorFeatures;
   private patternManager: PatternManager;
-  private placeholderGenerator: PlaceholderGenerator;
   private cacheManager: CacheManager;
   private auditManager: AuditManager;
   private learningManager: LearningManager;
   private optimizerManager: OptimizerManager;
   private detectionEngine: DetectionEngine;
-  private severityClassifier: SeverityClassifier;
 
   constructor(options: OpenRedactionConstructorOptions = {}) {
-    const presetOptions = options.preset
-      ? getPreset(options.preset)
-      : ({} as Partial<DetectorOptions>);
+    this.features = resolveFeatures(options.profile, options.features);
+    this.options = resolveOptions(options);
 
-    this.options = mergeOptions(options, presetOptions);
-
-    this.cacheManager = new CacheManager(this.options);
-    this.placeholderGenerator = new PlaceholderGenerator(this.options);
-
-    const enableLearning = options.enableLearning ?? true;
     this.learningManager = new LearningManager(
       this.options,
-      enableLearning,
+      this.features.learning,
       options.learningStorePath,
     );
 
     this.optimizerManager = OptimizerManager.create(
-      this.options.enablePriorityOptimization,
+      this.features.priorityOptimization,
       this.learningManager.getStore(),
       this.options.optimizerOptions,
     );
 
-    let patterns = PatternManager.buildPatternList(this.options);
-
-    const optimizer = this.optimizerManager.getOptimizer();
-    if (optimizer) {
-      patterns = optimizer.optimizePatterns(patterns);
-    }
-
-    this.severityClassifier = new SeverityClassifier();
-    patterns = this.severityClassifier.ensureAllSeverity(patterns);
-    patterns.sort((a, b) => b.priority - a.priority);
-
-    this.patternManager = new PatternManager(this.options, patterns);
-
+    // Providing a collaborator implies enabling its subsystem
     this.auditManager = new AuditManager({
-      enableAuditLog: options.enableAuditLog,
+      enableAuditLog:
+        this.features.auditLog || options.auditLogger !== undefined,
       auditLogger: options.auditLogger,
       auditUser: options.auditUser,
       auditSessionId: options.auditSessionId,
       auditMetadata: options.auditMetadata,
-      enableMetrics: options.enableMetrics,
+      enableMetrics:
+        this.features.metrics || options.metricsCollector !== undefined,
       metricsCollector: options.metricsCollector,
-      enableRBAC: options.enableRBAC,
+      enableRBAC:
+        this.features.rbac ||
+        options.rbacManager !== undefined ||
+        options.role !== undefined,
       rbacManager: options.rbacManager,
       role: options.role,
     });
 
-    this.detectionEngine = new DetectionEngine(
-      this.options,
-      this.patternManager,
-      this.placeholderGenerator,
-      this.cacheManager,
-      this.auditManager,
-    );
+    const optimizer = this.optimizerManager.getOptimizer();
+    const core = createDetectionCore(this.options, {
+      audit: this.auditManager,
+      transformPatterns: optimizer
+        ? (patterns) => optimizer.optimizePatterns(patterns)
+        : undefined,
+    });
 
-    if (options.enableNER) {
+    this.cacheManager = core.cacheManager;
+    this.patternManager = core.patternManager;
+    this.detectionEngine = core.detectionEngine;
+
+    if (this.features.ner) {
       this.detectionEngine.initNER();
     }
 
-    if (options.enableContextRules !== false) {
+    if (this.features.contextRules) {
       this.detectionEngine.initContextRules(options.contextRulesConfig);
     }
   }
@@ -127,7 +114,7 @@ export class OpenRedaction {
 
     return new OpenRedaction({
       ...resolved,
-      enableLearning: true,
+      features: { learning: true },
       learningStorePath: config.learnedPatterns,
     });
   }
@@ -222,10 +209,7 @@ export class OpenRedaction {
     return this.learningManager.exportLearnings(options);
   }
 
-  importLearnings(
-    data: import("./learning/LocalLearningStore.js").LearningData,
-    merge: boolean = true,
-  ): void {
+  importLearnings(data: LearningData, merge: boolean = true): void {
     this.learningManager.importLearnings(data, merge);
   }
 
@@ -237,15 +221,11 @@ export class OpenRedaction {
     this.learningManager.removeFromWhitelist(pattern);
   }
 
-  getLearningStore():
-    | import("./learning/LocalLearningStore.js").LocalLearningStore
-    | undefined {
+  getLearningStore(): LocalLearningStore | undefined {
     return this.learningManager.getStore();
   }
 
-  getPriorityOptimizer():
-    | import("./optimizer/PriorityOptimizer.js").PriorityOptimizer
-    | undefined {
+  getPriorityOptimizer(): PriorityOptimizer | undefined {
     return this.optimizerManager.getOptimizer();
   }
 
@@ -287,136 +267,11 @@ export class OpenRedaction {
     return createExplainAPI(this);
   }
 
-  generateReport(result: DetectionResult, options: ReportOptions): string {
-    const generator = createReportGenerator(this);
-    return generator.generate(result, options);
-  }
-
   exportConfig(metadata?: {
     description?: string;
     author?: string;
     tags?: string[];
   }): string {
     return ConfigExporter.exportToString(this.options, metadata, true);
-  }
-
-  async healthCheck(options?: {
-    testDetection?: boolean;
-    checkPerformance?: boolean;
-    performanceThreshold?: number;
-    memoryThreshold?: number;
-  }): Promise<HealthCheckResult> {
-    const checker = new HealthChecker(this);
-    return checker.check(options);
-  }
-
-  async quickHealthCheck(): Promise<{
-    status: "healthy" | "unhealthy";
-    message: string;
-  }> {
-    const checker = new HealthChecker(this);
-    return checker.quickCheck();
-  }
-
-  async detectDocument(
-    buffer: Buffer,
-    options?: DocumentOptions,
-  ): Promise<DocumentResult> {
-    if (!this.auditManager.checkPermission("detection:detect")) {
-      throw new Error(
-        "[OpenRedaction] Permission denied: detection:detect required",
-      );
-    }
-
-    const processor = createDocumentProcessor();
-
-    const extractionStart = performance.now();
-
-    const text = await processor.extractText(buffer, options);
-    const metadata = await processor.getMetadata(buffer, options);
-
-    const extractionEnd = performance.now();
-    const extractionTime =
-      Math.round((extractionEnd - extractionStart) * 100) / 100;
-
-    const detection = await this.detect(text);
-
-    return {
-      text,
-      metadata,
-      detection,
-      fileSize: buffer.length,
-      extractionTime,
-    };
-  }
-
-  async detectDocumentFile(
-    filePath: string,
-    options?: DocumentOptions,
-  ): Promise<DocumentResult> {
-    if (!this.auditManager.checkPermission("detection:detect")) {
-      throw new Error(
-        "[OpenRedaction] Permission denied: detection:detect required",
-      );
-    }
-
-    const fs = await import("fs/promises");
-    const buffer = await fs.readFile(filePath);
-
-    return this.detectDocument(buffer, options);
-  }
-
-  static async detectBatch(
-    texts: string[],
-    options?: OpenRedactionOptions & { numWorkers?: number },
-  ): Promise<DetectionResult[]> {
-    const pool = createWorkerPool({ numWorkers: options?.numWorkers });
-
-    try {
-      await pool.initialize();
-
-      const tasks = texts.map((text, index) => ({
-        type: "detect" as const,
-        id: `detect_${index}`,
-        text,
-        options,
-      }));
-
-      const results = await Promise.all(
-        tasks.map((task) => pool.execute<DetectionResult>(task)),
-      );
-
-      return results;
-    } finally {
-      await pool.terminate();
-    }
-  }
-
-  static async detectDocumentsBatch(
-    buffers: Buffer[],
-    options?: DocumentOptions & {
-      numWorkers?: number;
-    },
-  ): Promise<DocumentResult[]> {
-    const pool = createWorkerPool({ numWorkers: options?.numWorkers });
-
-    try {
-      await pool.initialize();
-
-      const tasks = buffers.map((buffer, index) => ({
-        type: "document" as const,
-        id: `document_${index}`,
-        buffer,
-        options,
-      }));
-
-      const results = await Promise.all(
-        tasks.map((task) => pool.execute(task)),
-      );
-
-      return results;
-    } finally {
-      await pool.terminate();
-    }
   }
 }

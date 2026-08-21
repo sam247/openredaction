@@ -7,9 +7,8 @@ import {
   analyzeFullContext,
   type ContextAnalysis,
 } from "../context/ContextAnalyzer";
-import type { OpenRedaction } from "../detector";
 import { isFalsePositive } from "../filters/FalsePositiveFilter";
-import type { PIIDetection, PIIPattern } from "../types";
+import type { IDetector, PIIDetection, PIIPattern } from "../types";
 
 /**
  * Pattern match result for explain
@@ -66,7 +65,7 @@ export interface TextExplanation {
  * Explain API for debugging
  */
 export class ExplainAPI {
-  private detector: OpenRedaction;
+  private detector: IDetector;
   private patterns: PIIPattern[];
   private options: {
     enableContextAnalysis: boolean;
@@ -76,7 +75,7 @@ export class ExplainAPI {
     whitelist: string[];
   };
 
-  constructor(detector: OpenRedaction) {
+  constructor(detector: IDetector) {
     this.detector = detector;
     this.patterns = detector.getPatterns();
 
@@ -417,6 +416,6 @@ export class ExplainAPI {
 /**
  * Helper to create explain API from detector
  */
-export function createExplainAPI(detector: OpenRedaction): ExplainAPI {
+export function createExplainAPI(detector: IDetector): ExplainAPI {
   return new ExplainAPI(detector);
 }

@@ -83,6 +83,22 @@ export interface DetectionResult {
 }
 
 /**
+ * Core detection contract implemented by OpenRedaction and LiteOpenRedaction.
+ * Subsystems (batch, streaming, documents, health, explain, reports) depend on
+ * this interface rather than a concrete class.
+ */
+export interface IDetector {
+  /** Detect and redact PII in text */
+  detect(text: string): Promise<DetectionResult>;
+  /** Restore redacted text using a redaction map */
+  restore(redactedText: string, redactionMap: Record<string, string>): string;
+  /** Currently active patterns */
+  getPatterns(): PIIPattern[];
+  /** Detection cache statistics */
+  getCacheStats(): { size: number; maxSize: number; enabled: boolean };
+}
+
+/**
  * Redaction mode - controls how PII is replaced
  */
 export type RedactionMode =
@@ -152,9 +168,7 @@ export interface OpenRedactionOptions {
   cacheSize?: number;
   /** Enable debug logging (default: false) */
   debug?: boolean;
-  /** Enable audit logging (default: false) */
-  enableAuditLog?: boolean;
-  /** Audit logger instance (optional, default: in-memory logger) */
+  /** Audit logger instance — providing one enables audit logging */
   auditLogger?: IAuditLogger;
   /** User context for audit logs */
   auditUser?: string;
@@ -162,15 +176,11 @@ export interface OpenRedactionOptions {
   auditSessionId?: string;
   /** Additional metadata for audit logs */
   auditMetadata?: Record<string, unknown>;
-  /** Enable metrics collection (default: false) */
-  enableMetrics?: boolean;
-  /** Metrics collector instance (optional, default: in-memory collector) */
+  /** Metrics collector instance — providing one enables metrics collection */
   metricsCollector?: IMetricsCollector;
-  /** Enable RBAC (Role-Based Access Control) (default: false) */
-  enableRBAC?: boolean;
-  /** RBAC manager instance (optional, default: admin role) */
+  /** RBAC manager instance — providing one enables RBAC */
   rbacManager?: IRBACManager;
-  /** Predefined role name (admin, analyst, operator, viewer) */
+  /** Predefined role name (admin, analyst, operator, viewer) — enables RBAC */
   role?: RoleName;
 }
 

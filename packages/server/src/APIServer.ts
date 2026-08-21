@@ -6,11 +6,11 @@
 import type {
   DetectionResult,
   OpenRedactionOptions,
-  PersistentAuditLogger,
-  TenantManager,
-  WebhookManager,
 } from "@openredaction/core";
 import { OpenRedaction } from "@openredaction/core";
+import type { PersistentAuditLogger } from "@openredaction/core/audit";
+import type { TenantManager } from "@openredaction/core/tenancy";
+import type { WebhookManager } from "@openredaction/core/webhooks";
 
 /**
  * API Server configuration

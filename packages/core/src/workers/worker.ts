@@ -4,6 +4,10 @@
 
 import { parentPort } from "worker_threads";
 import { OpenRedaction } from "../detector";
+import { detectDocument } from "../document/detectDocument";
+import type { DocumentResult } from "../document/types";
+import type { DetectionResult } from "../types";
+import { errorMessage } from "../utils/errors";
 import type { WorkerResult, WorkerTask } from "./types";
 
 // Initialize OpenRedaction instance
@@ -16,11 +20,10 @@ parentPort?.on("message", async (task: WorkerTask) => {
   const startTime = performance.now();
 
   try {
-    let result: any;
+    let result: DetectionResult | DocumentResult;
 
     switch (task.type) {
       case "detect":
-        // Initialize redactor if needed
         if (!redactor) {
           redactor = new OpenRedaction(task.options);
         }
@@ -28,15 +31,16 @@ parentPort?.on("message", async (task: WorkerTask) => {
         break;
 
       case "document":
-        // Initialize redactor if needed
         if (!redactor) {
           redactor = new OpenRedaction();
         }
-        result = await redactor.detectDocument(task.buffer, task.options);
+        result = await detectDocument(redactor, task.buffer, task.options);
         break;
 
       default:
-        throw new Error(`Unknown task type: ${(task as any).type}`);
+        throw new Error(
+          `Unknown task type: ${(task as { type: string }).type}`,
+        );
     }
 
     const endTime = performance.now();
@@ -49,14 +53,14 @@ parentPort?.on("message", async (task: WorkerTask) => {
     };
 
     parentPort?.postMessage(workerResult);
-  } catch (error: any) {
+  } catch (error) {
     const endTime = performance.now();
     const processingTime = Math.round((endTime - startTime) * 100) / 100;
 
     const workerResult: WorkerResult = {
       id: task.id,
       result: null,
-      error: error.message,
+      error: errorMessage(error),
       processingTime,
     };
 
