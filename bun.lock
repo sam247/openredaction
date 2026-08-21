@@ -22,10 +22,10 @@
     },
     "packages/cli": {
       "name": "@openredaction/cli",
-      "version": "1.1.3",
+      "version": "1.1.5",
       "bin": {
-        "openredaction": "./dist/index.cli.js",
-        "openredaction-test-pattern": "./dist/test-pattern.js",
+        "openredaction": "./dist/index.cli.cjs",
+        "openredaction-test-pattern": "./dist/test-pattern.cjs",
       },
       "dependencies": {
         "@openredaction/core": "workspace:*",
@@ -37,7 +37,7 @@
     },
     "packages/compat": {
       "name": "openredaction",
-      "version": "1.1.3",
+      "version": "1.1.5",
       "dependencies": {
         "@openredaction/core": "workspace:*",
         "@openredaction/express": "workspace:*",
@@ -66,7 +66,7 @@
     },
     "packages/core": {
       "name": "@openredaction/core",
-      "version": "1.1.3",
+      "version": "1.1.5",
       "devDependencies": {
         "@types/node": "^26.0.1",
         "mitata": "latest",
@@ -85,7 +85,7 @@
     },
     "packages/elysia": {
       "name": "@openredaction/elysia",
-      "version": "1.0.1",
+      "version": "1.0.3",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -100,7 +100,7 @@
     },
     "packages/express": {
       "name": "@openredaction/express",
-      "version": "1.1.3",
+      "version": "1.1.5",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -116,7 +116,7 @@
     },
     "packages/hono": {
       "name": "@openredaction/hono",
-      "version": "1.0.1",
+      "version": "1.0.3",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -131,7 +131,7 @@
     },
     "packages/react": {
       "name": "@openredaction/react",
-      "version": "1.1.3",
+      "version": "1.1.5",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -151,7 +151,7 @@
     },
     "packages/server": {
       "name": "@openredaction/server",
-      "version": "1.1.3",
+      "version": "1.1.5",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -172,7 +172,7 @@
         "next": "16.2.9",
         "nodemailer": "^9.0.1",
         "openredaction": "workspace:*",
-        "react": "^19.0.0",
+        "react": "^19.2.8",
         "react-dom": "^19.0.0",
         "resend": "^6.4.2",
         "tailwind-merge": "^3.6.0",
@@ -1359,6 +1359,8 @@
     "micromatch/picomatch": ["picomatch@2.3.2", "", {}, "sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA=="],
 
     "openredaction-site/@types/node": ["@types/node@20.19.43", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA=="],
+
+    "openredaction-site/react": ["react@19.2.8", "", {}, "sha512-PWaYA1L/q9u2u7xYQi+Y3L3Yfnie7XyLeaJICV1MGD6LprsBxcAqGjYyr0eY3p+QdsA+x/Irkt4Qif8D63+Sbw=="],
 
     "read-yaml-file/js-yaml": ["js-yaml@3.15.0", "", { "dependencies": { "argparse": "^1.0.7", "esprima": "^4.0.0" }, "bin": { "js-yaml": "bin/js-yaml.js" } }, "sha512-ttBQIIQPDeLjpPOohtUdXuXUVoA2uIB6fEH9HyJ7234s5mBJ5wTx20njxplLZQgLaOfpmPQA7X2t5AX6tIPbog=="],
 
