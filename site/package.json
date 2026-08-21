@@ -30,7 +30,7 @@
     "@types/nodemailer": "^8.0.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.28.1",
     "postcss": "^8.4.33",
     "tailwindcss": "^4.1.11"
   }
