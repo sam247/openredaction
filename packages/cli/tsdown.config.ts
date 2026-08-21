@@ -10,6 +10,9 @@ export default defineConfig([
     outDir: "dist",
     external: ["@openredaction/core"],
     fixedExtension: false,
+    attw: {
+      profile: "node16",
+    },
     outputOptions: {
       codeSplitting: false,
     },
@@ -25,6 +28,9 @@ export default defineConfig([
     entry: { "index.cli": "src/cli.ts" },
     format: ["cjs"],
     outDir: "dist",
+    attw: {
+      profile: "node16",
+    },
     dts: false,
     banner: "#!/usr/bin/env node",
     external: ["@openredaction/core"],
@@ -37,6 +43,9 @@ export default defineConfig([
     entry: ["src/test-pattern.ts"],
     format: ["cjs"],
     outDir: "dist",
+    attw: {
+      profile: "node16",
+    },
     dts: false,
     banner: "#!/usr/bin/env node",
     external: ["@openredaction/core"],
