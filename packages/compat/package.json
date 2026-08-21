@@ -1,6 +1,6 @@
 {
   "name": "openredaction",
-  "version": "1.1.3",
+  "version": "1.1.5",
   "homepage": "https://openredaction.com",
   "bugs": {
     "url": "https://github.com/sam247/openredaction/issues"
@@ -96,5 +96,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "description": "Production-ready PII detection and redaction for JavaScript/TypeScript. Regex-first, local-by-default, 570+ patterns."
 }

@@ -11,7 +11,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup-bun
 
       - name: Lint
@@ -25,7 +25,7 @@ jobs:
       matrix:
         node-version: ['20', '22', '24', '26']
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup-bun
         with:
           node-version: ${{ matrix.node-version }}
@@ -38,8 +38,34 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup-bun
 
       - name: Build
         run: bun run build
+
+      # Guard: package.json main/module/types/exports/bin must exist after build.
+      # Catches silent packaging bugs (e.g. CLI bin pointing at .js while emit is .cjs).
+      - name: Assert package entrypoints exist
+        run: bun run assert-package-entrypoints
+
+  # Guard: pack tarballs and install into clean projects with npm/pnpm/yarn.
+  # Catches workspace: leaks, broken exports, and install-time failures that
+  # monorepo unit tests never see (class of bug in issue #103).
+  consumer-smoke:
+    name: Consumer smoke (pack + npm/pnpm/yarn)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-bun
+        with:
+          node-version: "22"
+
+      - name: Enable Corepack package managers
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+          corepack prepare yarn@1.22.22 --activate
+
+      - name: Consumer smoke
+        run: bun run consumer-smoke

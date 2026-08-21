@@ -14,6 +14,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import {
+  TrackedDocsGettingStartedLink,
+  TrackedGitHubLink,
+} from "@/components/TrackedLinks";
 import { generatePageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generatePageMetadata({
@@ -313,21 +317,19 @@ export default function Home() {
               </p>
 
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                <a
-                  href="https://github.com/sam247/openredaction"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <TrackedGitHubLink
+                  location="home_hero"
                   className="inline-flex items-center justify-center gap-2 rounded-md bg-white px-5 py-3 font-medium text-black transition-colors hover:bg-gray-100"
                 >
                   View on GitHub
                   <ArrowRight size={16} />
-                </a>
-                <Link
-                  href="/docs/getting-started"
+                </TrackedGitHubLink>
+                <TrackedDocsGettingStartedLink
+                  location="home_hero"
                   className="inline-flex items-center justify-center rounded-md border border-gray-800 bg-gray-950 px-5 py-3 font-medium text-white transition-colors hover:bg-gray-900"
                 >
                   Get Started
-                </Link>
+                </TrackedDocsGettingStartedLink>
               </div>
             </div>
 
@@ -410,14 +412,16 @@ export default function Home() {
                 <Code2 size={16} />
                 Before / after
               </div>
-              <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 text-sm leading-6 text-gray-200">
-                {`import { redact } from "openredaction";
+              <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 font-mono text-sm leading-6 text-green-400">
+                {`import { OpenRedaction } from "openredaction";
 
-const input = "helpdesk reply: reach me at alice@company.com, mobile 555-123-4567";
-const { redactedText } = redact(input);
+const redactor = new OpenRedaction({ redactionMode: "placeholder" });
+const input =
+  "helpdesk reply: reach me at alice@company.com, mobile 555-123-4567";
 
-console.log(redactedText);
-// helpdesk reply: reach me at [REDACTED], mobile [REDACTED]`}
+const { redacted } = await redactor.detect(input);
+console.log(redacted);
+// helpdesk reply: reach me at [EMAIL_…], mobile [PHONE_…]`}
               </pre>
             </div>
 
@@ -433,13 +437,14 @@ console.log(redactedText);
               <div className="mt-5 inline-flex rounded-md border border-gray-800 bg-black px-3 py-2 font-mono text-sm text-green-400">
                 npm install openredaction
               </div>
-              <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 text-sm leading-6 text-gray-200">
-                {`import { redact } from "openredaction";
+              <pre className="mt-4 overflow-x-auto rounded-lg border border-gray-800 bg-black p-4 font-mono text-sm leading-6 text-green-400">
+                {`import { OpenRedaction } from "openredaction";
 
+const redactor = new OpenRedaction();
 const text = "ticket: user said call me on 555-0199 after lunch";
-const { redactedText } = redact(text);
 
-console.log(redactedText);`}
+const { redacted } = await redactor.detect(text);
+console.log(redacted);`}
               </pre>
             </div>
           </div>
@@ -673,20 +678,18 @@ console.log(redactedText);`}
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 lg:justify-end">
-                <a
-                  href="https://github.com/sam247/openredaction"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <TrackedGitHubLink
+                  location="home_bottom_cta"
                   className="inline-flex items-center justify-center rounded-md bg-white px-5 py-3 font-medium text-black transition-colors hover:bg-gray-100"
                 >
                   View on GitHub
-                </a>
-                <Link
-                  href="/docs/getting-started"
+                </TrackedGitHubLink>
+                <TrackedDocsGettingStartedLink
+                  location="home_bottom_cta"
                   className="inline-flex items-center justify-center rounded-md border border-gray-700 bg-black/50 px-5 py-3 font-medium text-white transition-colors hover:bg-black/70"
                 >
                   Install
-                </Link>
+                </TrackedDocsGettingStartedLink>
               </div>
             </div>
           </div>

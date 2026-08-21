@@ -17,7 +17,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/sam247/redactit.git"
+    "url": "https://github.com/sam247/openredaction.git"
   },
   "license": "MIT",
   "workspaces": [
@@ -31,7 +31,11 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "prepare": "husky",
-    "release": "turbo run build --filter=./packages/* && changeset publish",
+    "release": "turbo run build --filter=./packages/* && bun run scripts/resolve-workspace-protocol.mjs && bun run scripts/assert-no-workspace-protocol.mjs && bun run scripts/assert-package-entrypoints.mjs && changeset publish",
+    "resolve-workspace-protocol": "bun run scripts/resolve-workspace-protocol.mjs",
+    "assert-no-workspace-protocol": "bun run scripts/assert-no-workspace-protocol.mjs",
+    "assert-package-entrypoints": "bun run scripts/assert-package-entrypoints.mjs",
+    "consumer-smoke": "bash scripts/consumer-smoke.sh",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "version-packages": "changeset version"

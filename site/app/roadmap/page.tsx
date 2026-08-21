@@ -6,6 +6,7 @@ import RoadmapViewTracker from "@/components/RoadmapViewTracker";
 import WordPressWaitlistTrigger from "@/components/WordPressWaitlistTrigger";
 import { generatePageMetadata } from "@/lib/metadata";
 import {
+  type RoadmapItem,
   roadmapInProgress,
   roadmapPlanned,
   roadmapRecentlyShipped,
@@ -23,18 +24,29 @@ function RoadmapList({
   items,
 }: {
   title: string;
-  items: readonly string[];
+  items: readonly RoadmapItem[];
 }) {
   return (
     <section className="bg-gray-900 rounded-lg border border-gray-800 p-6 md:p-8 h-full">
       <h2 className="text-xl font-semibold text-white mb-4">{title}</h2>
       <ul className="space-y-3 text-gray-300 text-sm leading-relaxed">
         {items.map((item) => (
-          <li key={item} className="flex gap-2">
+          <li key={item.label} className="flex gap-2">
             <span className="text-gray-500 shrink-0 mt-0.5" aria-hidden>
               •
             </span>
-            <span>{item}</span>
+            {item.href ? (
+              <a
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 underline decoration-gray-700 underline-offset-2 hover:text-white hover:decoration-gray-500"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <span>{item.label}</span>
+            )}
           </li>
         ))}
       </ul>
@@ -62,7 +74,7 @@ export default function RoadmapPage() {
               feedback, contributions, and real-world use.
             </p>
             <p className="text-gray-400 text-sm mt-4">
-              Shaped by{" "}
+              Planned tracks open{" "}
               <a
                 href="https://github.com/sam247/openredaction/issues"
                 target="_blank"
@@ -71,14 +83,23 @@ export default function RoadmapPage() {
               >
                 Issues
               </a>{" "}
-              and{" "}
+              (currently{" "}
               <a
-                href="https://github.com/sam247/openredaction/discussions"
+                href="https://github.com/sam247/openredaction/issues/75"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white underline hover:text-gray-300"
               >
-                Discussions
+                #75
+              </a>
+              ). Recently shipped tracks recent{" "}
+              <a
+                href="https://github.com/sam247/openredaction/pulls?q=is%3Apr+is%3Amerged"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white underline hover:text-gray-300"
+              >
+                merged PRs
               </a>
               .
             </p>

@@ -92,7 +92,7 @@ export default function OpenSourceAiRedactionToolsPage() {
       <Header />
 
       <main className="pt-[116px] pb-20">
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
           <div className="max-w-3xl">
             <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
               Comparison page
@@ -123,7 +123,7 @@ export default function OpenSourceAiRedactionToolsPage() {
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {tools.map((tool) => (
               <article
@@ -156,7 +156,7 @@ export default function OpenSourceAiRedactionToolsPage() {
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
           <div className="rounded-xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
             <h2 className="text-2xl font-semibold">Quick comparison</h2>
             <div className="mt-5 overflow-x-auto">
@@ -199,7 +199,7 @@ export default function OpenSourceAiRedactionToolsPage() {
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
           <div className="grid gap-6 lg:grid-cols-2">
             <div className="rounded-xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
               <h2 className="text-2xl font-semibold">When to use each</h2>
@@ -239,7 +239,7 @@ export default function OpenSourceAiRedactionToolsPage() {
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
           <div className="grid gap-6 lg:grid-cols-2">
             <div className="rounded-xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
               <h2 className="text-2xl font-semibold">Self-hosted</h2>
@@ -260,7 +260,7 @@ export default function OpenSourceAiRedactionToolsPage() {
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
           <div className="rounded-xl border border-gray-800 bg-gray-950 p-5 sm:p-6">
             <h2 className="text-2xl font-semibold">
               Why open source redaction is growing
@@ -274,7 +274,7 @@ export default function OpenSourceAiRedactionToolsPage() {
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
           <div className="rounded-xl border border-gray-800 bg-gray-950 p-6 sm:p-8">
             <p className="text-lg text-gray-200">Use it locally in your app.</p>
             <div className="mt-5 flex flex-col sm:flex-row gap-3">

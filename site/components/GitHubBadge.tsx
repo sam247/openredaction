@@ -2,7 +2,7 @@
 
 import { Github } from "lucide-react";
 import { useEffect, useState } from "react";
-import { analytics } from "@/lib/analytics";
+import { TrackedGitHubLink } from "@/components/TrackedLinks";
 
 interface GitHubBadgeProps {
   repo: string; // e.g., "sam247/openredaction"
@@ -34,14 +34,9 @@ export default function GitHubBadge({
   }, [repo, showStars]);
 
   return (
-    <a
-      href={`https://github.com/${repo}`}
-      target="_blank"
-      rel="noopener noreferrer"
+    <TrackedGitHubLink
+      location="header_badge"
       className={`inline-flex items-center space-x-2 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-md px-3 py-2 transition-colors ${className}`}
-      onClick={() =>
-        analytics.externalLinkClick("github", "header", "GitHub Badge")
-      }
     >
       <Github size={18} />
       <span className="text-sm font-medium">GitHub</span>
@@ -50,6 +45,6 @@ export default function GitHubBadge({
           ⭐ {stars.toLocaleString()}
         </span>
       )}
-    </a>
+    </TrackedGitHubLink>
   );
 }

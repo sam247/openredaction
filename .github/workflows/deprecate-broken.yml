@@ -1,0 +1,42 @@
+name: Deprecate broken releases
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  deprecate:
+    name: Deprecate workspace:* releases
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          registry-url: https://registry.npmjs.org
+
+      - name: Upgrade npm for OIDC trusted publishing
+        run: npm install -g npm@latest
+
+      - name: Deprecate broken versions
+        run: |
+          set -euo pipefail
+          MSG='Broken workspace:* dependencies in published package.json; use 1.1.4 or later (or 1.0.2 for @openredaction/hono and @openredaction/elysia).'
+
+          npm deprecate openredaction@1.1.3 "$MSG"
+          npm deprecate @openredaction/cli@1.1.3 "$MSG"
+          npm deprecate @openredaction/express@1.1.3 "$MSG"
+          npm deprecate @openredaction/react@1.1.3 "$MSG"
+          npm deprecate @openredaction/server@1.1.3 "$MSG"
+          npm deprecate @openredaction/hono@1.0.1 "$MSG"
+          npm deprecate @openredaction/elysia@1.0.1 "$MSG"
+
+          echo "Deprecated broken releases. Left @openredaction/core@1.1.3 alone."

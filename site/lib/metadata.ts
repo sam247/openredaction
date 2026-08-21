@@ -99,38 +99,35 @@ export function generatePageMetadata({
   const url = `${siteUrl}${path}`;
   const ogImage = image || `${siteUrl}/og-image.png`;
 
-  // Ensure description is within SEO limits (155-160 chars recommended)
+  // Meta descriptions: keep under ~160 chars. Do not ellipsis-truncate titles —
+  // injecting "..." into <title> tanks CTR (SERP shows the literal ellipsis).
   const truncatedDescription =
     description.length > 160
       ? `${description.substring(0, 157)}...`
       : description;
 
-  // Ensure title is within SEO limits (50-60 chars recommended)
-  const truncatedTitle =
-    title.length > 60 ? `${title.substring(0, 57)}...` : title;
-
   return {
-    title: truncatedTitle,
+    title,
     description: truncatedDescription,
     openGraph: {
       type: "website",
       locale: "en_US",
       url,
       siteName,
-      title: truncatedTitle,
+      title,
       description: truncatedDescription,
       images: [
         {
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: truncatedTitle,
+          alt: title,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: truncatedTitle,
+      title,
       description: truncatedDescription,
       images: [ogImage],
       creator: "@openredaction",

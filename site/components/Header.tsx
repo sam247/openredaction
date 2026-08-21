@@ -52,6 +52,13 @@ export default function Header() {
                 Playground
               </Link>
               <Link
+                href="/pii-redaction"
+                className="text-gray-300 hover:text-white transition-colors"
+                onClick={() => analytics.navClick("/pii-redaction", "header")}
+              >
+                PII Redaction
+              </Link>
+              <Link
                 href="/pricing"
                 className="text-gray-300 hover:text-white transition-colors"
                 onClick={() => analytics.navClick("/pricing", "header")}
@@ -118,11 +125,7 @@ export default function Header() {
                             className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-900 transition-colors group"
                             onClick={() => {
                               setResourcesOpen(false);
-                              analytics.externalLinkClick(
-                                "github",
-                                "header",
-                                "GitHub",
-                              );
+                              analytics.githubRepoClick("header");
                             }}
                           >
                             <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center group-hover:bg-gray-800 transition-colors">
@@ -244,6 +247,16 @@ export default function Header() {
               Playground
             </Link>
             <Link
+              href="/pii-redaction"
+              className="block text-gray-300 hover:text-white transition-colors"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                analytics.navClick("/pii-redaction", "mobile");
+              }}
+            >
+              PII Redaction
+            </Link>
+            <Link
               href="/pricing"
               className="block text-gray-300 hover:text-white transition-colors"
               onClick={() => {
@@ -290,7 +303,7 @@ export default function Header() {
               className="block text-gray-300 hover:text-white transition-colors"
               onClick={() => {
                 setMobileMenuOpen(false);
-                analytics.externalLinkClick("github", "mobile", "GitHub");
+                analytics.githubRepoClick("mobile");
               }}
             >
               GitHub

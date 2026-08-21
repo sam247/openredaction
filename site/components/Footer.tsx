@@ -230,13 +230,7 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-white transition-colors"
                     aria-label="GitHub"
-                    onClick={() =>
-                      analytics.externalLinkClick(
-                        "github",
-                        "footer_social",
-                        "GitHub",
-                      )
-                    }
+                    onClick={() => analytics.githubRepoClick("footer_social")}
                   >
                     <Github size={20} />
                   </a>
@@ -274,7 +268,7 @@ export default function Footer() {
                 </div>
               </div>
               <span className="text-gray-400 text-sm">
-                © 2025 OpenRedaction. All rights reserved.
+                © {new Date().getFullYear()} OpenRedaction. All rights reserved.
               </span>
             </div>
           </div>
