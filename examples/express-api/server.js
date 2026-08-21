@@ -4,7 +4,8 @@
  */
 
 const express = require("express");
-const { OpenRedaction, createBatchProcessor } = require("@openredaction/core");
+const { OpenRedaction } = require("@openredaction/core");
+const { createBatchProcessor } = require("@openredaction/core/batch");
 const {
   openredactionMiddleware,
   detectPII,

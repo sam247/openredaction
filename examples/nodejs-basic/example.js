@@ -4,11 +4,10 @@
  */
 
 const fs = require("node:fs");
-const {
-  OpenRedaction,
-  createBatchProcessor,
-  createStreamingDetector,
-} = require("@openredaction/core");
+const { OpenRedaction } = require("@openredaction/core");
+const { createBatchProcessor } = require("@openredaction/core/batch");
+const { createReportGenerator } = require("@openredaction/core/reports");
+const { createStreamingDetector } = require("@openredaction/core/streaming");
 
 async function main() {
   const detector = new OpenRedaction({
@@ -82,7 +81,7 @@ async function main() {
 `;
 
   const result4 = await detector.detect(text4);
-  const htmlReport = detector.generateReport(result4, {
+  const htmlReport = createReportGenerator(detector).generate(result4, {
     format: "html",
     title: "PII Detection Report",
     organizationName: "Example Corp",

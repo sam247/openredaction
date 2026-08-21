@@ -17,7 +17,7 @@
  * - `@openredaction/core/workers` — worker-thread pools
  *
  * Node `http` listeners (`APIServer`, `PrometheusServer`) live under
- * `openredaction/server`, not this package.
+ * `@openredaction/server`, not this package.
  *
  * @packageDocumentation
  */
