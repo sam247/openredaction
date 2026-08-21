@@ -191,6 +191,22 @@ export const analytics = {
     trackEvent("enterprise_page_view", "conversion");
   },
 
+  /** Primary conversion: click to github.com/sam247/openredaction */
+  githubRepoClick: (location: string) => {
+    trackEvent("github_repo_click", "conversion", {
+      link_location: location,
+      destination: "https://github.com/sam247/openredaction",
+    });
+  },
+
+  /** Primary conversion: click to /docs/getting-started */
+  docsGettingStartedClick: (location: string) => {
+    trackEvent("docs_getting_started_click", "conversion", {
+      link_location: location,
+      destination: "/docs/getting-started",
+    });
+  },
+
   // External link events
   externalLinkClick: (
     destination: string,
