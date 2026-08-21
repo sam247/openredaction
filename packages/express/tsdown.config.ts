@@ -11,6 +11,9 @@ export default defineConfig({
   outputOptions: {
     codeSplitting: false,
   },
+  attw: {
+    profile: "node16",
+  },
   outExtensions({ format }) {
     return {
       js: format === "cjs" ? ".js" : ".mjs",

@@ -9,6 +9,9 @@ export default defineConfig({
   clean: true,
   outDir: "dist",
   external: ["elysia", "@openredaction/core"],
+  attw: {
+    profile: "node16",
+  },
   fixedExtension: false,
   outputOptions: {
     codeSplitting: false,

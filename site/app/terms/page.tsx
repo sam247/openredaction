@@ -22,7 +22,7 @@ export default function Terms() {
             Terms of Service
           </h1>
 
-          <div className="prose prose-invert max-w-none">
+          <div className="prose prose-invert max-w-3xl">
             <p className="text-xl text-gray-300 mb-8">
               Last updated: January 2025
             </p>
