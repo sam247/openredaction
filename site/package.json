@@ -32,6 +32,6 @@
     "@types/react-dom": "^19.0.0",
     "esbuild": "^0.28.1",
     "postcss": "^8.4.33",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "^4.3.3"
   }
 }
