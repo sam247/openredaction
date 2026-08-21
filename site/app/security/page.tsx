@@ -23,7 +23,7 @@ export default function Security() {
             Security
           </h1>
 
-          <div className="prose prose-invert max-w-none space-y-8">
+          <div className="prose prose-invert max-w-3xl space-y-8">
             <p className="text-xl text-gray-300">
               Security and privacy are fundamental to OpenRedaction. Our
               architecture is designed to minimize data risk and give you

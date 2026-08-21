@@ -1,7 +1,7 @@
 {
   "name": "OpenRedaction",
   "short_name": "OpenRedaction",
-  "description": "Open source AI-powered PII detection and redaction",
+  "description": "Open-source PII detection and redaction",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
@@ -11,6 +11,11 @@
       "src": "/favicon.ico",
       "sizes": "any",
       "type": "image/x-icon"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
     }
   ]
 }

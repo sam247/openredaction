@@ -23,16 +23,19 @@ describe("useDeepMemo", () => {
         ],
       ],
       ["mixed", { a: [1, { b: 2 }], c: "x" }],
-    ])("preserves value reference across rerenders with equal %s deps", (_label, depsValue) => {
-      const { result, rerender } = renderHook(
-        ({ deps }) => useDeepMemo(deps, [deps]),
-        { initialProps: { deps: depsValue } },
-      );
+    ])(
+      "preserves value reference across rerenders with equal %s deps",
+      (_label, depsValue) => {
+        const { result, rerender } = renderHook(
+          ({ deps }) => useDeepMemo(deps, [deps]),
+          { initialProps: { deps: depsValue } },
+        );
 
-      const first = result.current;
-      rerender({ deps: structuredClone(depsValue) });
-      expect(result.current).toBe(first);
-    });
+        const first = result.current;
+        rerender({ deps: structuredClone(depsValue) });
+        expect(result.current).toBe(first);
+      },
+    );
 
     it.each([
       ["object", { a: 1 }, { a: 2 }],

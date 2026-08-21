@@ -1,6 +1,6 @@
 {
   "name": "@openredaction/hono",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "homepage": "https://openredaction.com",
   "bugs": {
     "url": "https://github.com/sam247/openredaction/issues"
@@ -48,9 +48,7 @@
   "devDependencies": {
     "@openredaction/core": "workspace:*",
     "@types/node": "^26.0.1",
-    "hono": "^4.12.27",
-    "tsdown": "^0.22.3",
-    "typescript": "^6.0.3"
+    "hono": "^4.12.27"
   },
   "engines": {
     "node": ">=20.0.0"
