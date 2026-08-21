@@ -1,80 +1,119 @@
 # Publishing to npm
 
-All 6 packages are published to npm using [Changesets](https://github.com/changesets/changesets):
+Packages are published to npm with [Changesets](https://github.com/changesets/changesets) and **GitHub OIDC Trusted Publishing**. There is no `NPM_TOKEN` (or any long-lived npm secret) in this repository.
 
-- `@openredaction/core`
-- `@openredaction/cli`
-- `@openredaction/compat` (published as `openredaction` — the umbrella package)
-- `@openredaction/server`
-- `@openredaction/express`
-- `@openredaction/react`
+Published packages:
 
-All packages share a single version (fixed mode). The `openredaction-site` package is private and never published.
+| Package | Notes |
+| --- | --- |
+| `@openredaction/core` | Shared core |
+| `@openredaction/cli` | CLI |
+| `@openredaction/react` | React |
+| `@openredaction/server` | Server helpers |
+| `@openredaction/express` | Express middleware |
+| `openredaction` | Umbrella / compat (`packages/compat`) |
+| `@openredaction/hono` | Hono adapter |
+| `@openredaction/elysia` | Elysia adapter |
 
-## One-time setup
+Versioning uses two Changesets **fixed** groups (see `.changeset/config.json`):
 
-### 1. Create an npm account (if needed)
+1. Core group — `openredaction`, `@openredaction/{core,cli,react,server,express}` share one version
+2. Adapters — `@openredaction/{hono,elysia}` share one version
 
-- Sign up at [npmjs.com](https://www.npmjs.com/signup).
+`openredaction-site` is private and never published.
 
-### 2. Create an Automation token
+## How publishing works
 
-- **npm requires 2FA** (or a granular token with "bypass 2FA") to publish. Enable 2FA first: npm → Profile → Account → Two-factor authentication.
-- Log in at [npmjs.com](https://www.npmjs.com/).
-- Profile (top right) → **Access Tokens** → **Generate New Token** → **Automation** (or **Classic** → "Automation").
-- Copy the token (starts with `npm_`). You won't see it again.
+Two workflows on `main`:
 
-### 3. Add the token to GitHub
+| Workflow | Role |
+| --- | --- |
+| [`.github/workflows/release.yml`](../.github/workflows/release.yml) | Opens / updates the **Version Packages** PR from pending changesets |
+| [`.github/workflows/publish.yml`](../.github/workflows/publish.yml) | Publishes to npm after a real version bump (or manual dispatch) |
 
-- Repo → **Settings** → **Secrets and variables** → **Actions**.
-- **New repository secret**: name = `NPM_TOKEN`, value = the token you copied (no trailing newline).
-- Save.
+Auth is **OIDC Trusted Publishing** (`id-token: write`). npm issues a short-lived token for the workflow; provenance (SLSA) attestations are attached automatically.
 
-**Token expiry:** npm Automation tokens expire after **90 days**. When publish fails with auth errors, create a new token at npmjs.com and update the `NPM_TOKEN` secret in this repo.
+### `npm-publish` environment
+
+The publish job uses the GitHub Environment **`npm-publish`**, which:
+
+- Restricts deploys to the `main` branch
+- Requires a required reviewer (repo owner) before the job runs
+
+Routine pushes to `main` do **not** request approval. A lightweight `decide` job runs first and only continues to the publish job when:
+
+- `packages/*/package.json` versions changed in the push (typical Version Packages merge), or
+- someone ran **Publish → workflow_dispatch** with a reason
+
+### Approval flow
+
+1. Merge a feature PR that includes a changeset
+2. Merge the **Version Packages** PR (`chore: version packages`)
+3. Publish workflow detects version bumps → publish job waits on **`npm-publish`**
+4. Approve the pending environment deployment in GitHub Actions
+5. Packages publish via OIDC with provenance
+
+Do **not** re-add an `NPM_TOKEN` Actions secret. Trusted Publishing is the only supported path.
+
+## One-time setup (already done for existing packages)
+
+For each package on npm:
+
+1. Package exists on the registry (see [Adding a new package](#adding-a-new-package) if it does not)
+2. npm → package → **Settings** → **Trusted Publisher** → GitHub Actions:
+   - Repository: `sam247/openredaction`
+   - Workflow: `publish.yml`
+   - Environment: `npm-publish`
+3. GitHub → **Settings** → **Environments** → `npm-publish` with required reviewers and `main` only
+
+Confirm provenance after a publish:
+
+```bash
+npm view @openredaction/core@<version> dist.attestations
+```
+
+You should see a provenance attestation (`predicateType` includes `slsa.dev/provenance`).
 
 ## Releasing a new version
 
 ### Step 1: Add a changeset to your PR
 
-Before opening a PR that changes package behavior, run:
-
 ```bash
 bunx changeset
 ```
 
-This prompts you to:
+1. Select affected packages  
+2. Choose bump type — patch, minor, or major  
+3. Write a changelog summary  
 
-1. **Select packages** affected by your change
-2. **Choose bump type** — patch (bug fix), minor (feature), or major (breaking change)
-3. **Write a summary** — a human-readable description that will appear in the changelog
-
-Commit the generated `.changeset/*.md` file alongside your code changes.
+Commit the generated `.changeset/*.md` with your code.
 
 ### Step 2: Merge your PR
 
-When your PR is merged to `main`, the **Release** workflow runs automatically. If there are pending changesets, it creates (or updates) a **"Version Packages" PR** that:
+On merge to `main`, the **Release** workflow creates or updates a **Version Packages** PR that bumps `package.json` versions, updates changelogs, and removes consumed changesets.
 
-- Bumps versions in all `package.json` files (all packages share one version)
-- Updates `CHANGELOG.md` in each package
-- Consumes (deletes) the pending changeset files
+Version commits are created **without** `[skip ci]` so CI and `publish.yml` can run after that PR merges.
 
 ### Step 3: Merge the Version Packages PR
 
-Review the version bump and changelog entries, then merge the Version Packages PR. This triggers the Release workflow again — this time it publishes all 6 packages to npm and creates a git tag `v{version}`.
+Review bumps and changelogs, then merge. That triggers **Publish**, which waits for **`npm-publish`** approval, then publishes changed packages and creates git tags.
 
-**Bun note:** this repo uses Bun workspaces. Unlike pnpm, Bun/`changeset publish` does not rewrite `workspace:` protocol ranges into semver before packing. The `release` script therefore runs three guards immediately before `changeset publish`:
+**Note:** npm never allows republishing the same version. If publish fails with “cannot publish over previously published versions”, add a new changeset and go through the flow again (do not force-republish).
 
-1. `resolve-workspace-protocol.mjs` — rewrite `workspace:*` → `^version`
-2. `assert-no-workspace-protocol.mjs` — refuse publish if any `workspace:` remain (issue #103 class)
-3. `assert-package-entrypoints.mjs` — refuse publish if `main`/`exports`/`bin` paths are missing (CLI bin class)
+### Manual publish
 
-Do not commit the rewritten `package.json` files from a local dry-run.
+**Actions → Publish → Run workflow**, provide a reason. Still requires `npm-publish` approval. Use only for recovery / deliberate OIDC checks — prefer the Version Packages path for normal releases.
 
-Maintainer checklist: [`MAINTAINER_RELEASE_CHECKLIST.md`](../MAINTAINER_RELEASE_CHECKLIST.md).
+## Adding a new package
 
-**Note:** npm never allows republishing the same version. If publish fails with "cannot publish over previously published versions", add a new changeset with a bump and go through the flow again.
+Trusted Publisher can only be attached to a package that **already exists** on npm. For a brand-new scoped package:
 
-**OIDC vs deprecate:** Trusted publishing can publish with provenance. It cannot run `npm deprecate`. Deprecations need an owner login or an Automation token (see [#108](https://github.com/sam247/openredaction/issues/108)).
+1. **Bootstrap once** from a trusted machine (owner/maintainer with npm 2FA), publishing the first version (e.g. `1.0.0`) so the package exists on the registry
+2. Add that package to Changesets (`.changeset/config.json` fixed/linked groups as appropriate) and the monorepo build/release scripts
+3. Configure **Trusted Publisher** on npm for `sam247/openredaction` → `publish.yml` → environment `npm-publish`
+4. Subsequent releases go through Changesets + the GitHub approval flow only — no token
+
+Until Trusted Publisher is configured, CI cannot publish that package via OIDC.
 
 ## Install for users
 
