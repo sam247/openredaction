@@ -1,5 +1,16 @@
 # @openredaction/hono
 
+## 2.0.0
+
+### Major Changes
+
+- [#112](https://github.com/sam247/openredaction/pull/112) [`2cee61b`](https://github.com/sam247/openredaction/commit/2cee61b9633ae3194cc7275b26015fb9d814cab9) Thanks [@atomicpages](https://github.com/atomicpages)! - Require `@openredaction/core` ^2.0.0 (peer) so report helpers resolve via `@openredaction/core/reports`. Stale 1.x core packages lack that subpath.
+
+### Patch Changes
+
+- Updated dependencies [[`2cee61b`](https://github.com/sam247/openredaction/commit/2cee61b9633ae3194cc7275b26015fb9d814cab9)]:
+  - @openredaction/core@2.0.0
+
 ## 1.0.3
 
 ### Patch Changes

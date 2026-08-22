@@ -1,5 +1,12 @@
 # @openredaction/react
 
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`2cee61b`](https://github.com/sam247/openredaction/commit/2cee61b9633ae3194cc7275b26015fb9d814cab9)]:
+  - @openredaction/core@2.0.0
+
 ## 1.1.5
 
 ### Patch Changes
