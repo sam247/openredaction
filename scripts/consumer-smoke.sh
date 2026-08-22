@@ -79,7 +79,14 @@ install_from_packs() {
   express_tgz="$(echo "$STAGING"/openredaction-express-*.tgz)"
   react_tgz="$(echo "$STAGING"/openredaction-react-*.tgz)"
   server_tgz="$(echo "$STAGING"/openredaction-server-*.tgz)"
-  umbrella_tgz="$(echo "$STAGING"/openredaction-1.*.tgz)"
+  # Umbrella is `openredaction-<semver>.tgz` (not openredaction-core/…).
+  # Do not hardcode major — v2 packs as openredaction-2.0.0.tgz.
+  umbrella_tgz="$(echo "$STAGING"/openredaction-[0-9]*.tgz)"
+  if [ ! -f "$umbrella_tgz" ]; then
+    echo "umbrella tarball not found under $STAGING (looked for openredaction-<semver>.tgz)" >&2
+    ls -la "$STAGING" >&2 || true
+    exit 1
+  fi
 
   # Override nested deps so pnpm does not pull registry core without subpaths.
   cat > package.json <<EOF
