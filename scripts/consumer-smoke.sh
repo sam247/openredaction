@@ -107,14 +107,6 @@ install_from_packs() {
     "@openredaction/react": "file:${react_tgz}",
     "@openredaction/server": "file:${server_tgz}"
   },
-  "pnpm": {
-    "overrides": {
-      "@openredaction/core": "file:${core_tgz}",
-      "@openredaction/express": "file:${express_tgz}",
-      "@openredaction/react": "file:${react_tgz}",
-      "@openredaction/server": "file:${server_tgz}"
-    }
-  },
   "resolutions": {
     "@openredaction/core": "file:${core_tgz}",
     "@openredaction/express": "file:${express_tgz}",
@@ -129,6 +121,16 @@ EOF
       npm install
       ;;
     pnpm)
+      # pnpm no longer reads package.json "pnpm.overrides" — put them in
+      # pnpm-workspace.yaml. "$name" pins nested deps to the root file: tarball
+      # so pre-publish ^X.Y.Z ranges are not fetched from the registry.
+      cat > pnpm-workspace.yaml <<EOF
+overrides:
+  "@openredaction/core": "\$@openredaction/core"
+  "@openredaction/express": "\$@openredaction/express"
+  "@openredaction/react": "\$@openredaction/react"
+  "@openredaction/server": "\$@openredaction/server"
+EOF
       # Hoist so openredaction's nested @openredaction/core resolves to the
       # local file: tarball (with subpath exports), not a registry copy.
       pnpm install --node-linker=hoisted
