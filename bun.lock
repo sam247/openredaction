@@ -22,7 +22,7 @@
     },
     "packages/cli": {
       "name": "@openredaction/cli",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "bin": {
         "openredaction": "./dist/index.cli.cjs",
         "openredaction-test-pattern": "./dist/test-pattern.cjs",
@@ -37,7 +37,7 @@
     },
     "packages/compat": {
       "name": "openredaction",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
         "@openredaction/express": "workspace:*",
@@ -66,7 +66,7 @@
     },
     "packages/core": {
       "name": "@openredaction/core",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "devDependencies": {
         "@types/node": "^26.0.1",
         "@types/pdf-parse": "^1.1.5",
@@ -96,7 +96,7 @@
     },
     "packages/elysia": {
       "name": "@openredaction/elysia",
-      "version": "1.0.3",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -112,7 +112,7 @@
     },
     "packages/express": {
       "name": "@openredaction/express",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -128,7 +128,7 @@
     },
     "packages/hono": {
       "name": "@openredaction/hono",
-      "version": "1.0.3",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -144,7 +144,7 @@
     },
     "packages/react": {
       "name": "@openredaction/react",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -164,7 +164,7 @@
     },
     "packages/server": {
       "name": "@openredaction/server",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -181,7 +181,7 @@
         "@openredaction/core": "workspace:*",
         "botid": "^1.5.10",
         "clsx": "^2.1.0",
-        "lucide-react": "^0.344.0",
+        "lucide-react": "^1.33.0",
         "next": "16.2.12",
         "nodemailer": "^9.0.3",
         "openredaction": "workspace:*",
@@ -1013,7 +1013,7 @@
 
     "lru-cache": ["lru-cache@11.5.2", "", {}, "sha512-4pfM1Ff0x50o0tQwb5ucw/RzNyD0/YJME6IVcStalZuMWxdt3sR3huStTtxz4PUmvZfRguvDejasvQ2kifR11g=="],
 
-    "lucide-react": ["lucide-react@0.344.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0" } }, "sha512-6YyBnn91GB45VuVT96bYCOKElbJzUHqp65vX8cDcu55MQL9T969v4dhGClpljamuI/+KMO9P6w9Acq1CVQGvIQ=="],
+    "lucide-react": ["lucide-react@1.33.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-MTRwMy0ZlL8Ur/vOAiJ9XGHE+kFPC7brq6MxAm0GiGXEBj0qy0jA/pG4N675oSzciO/UCdX8T+5yUQdmDeTLxg=="],
 
     "lz-string": ["lz-string@1.5.0", "", { "bin": { "lz-string": "bin/bin.js" } }, "sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ=="],
 
