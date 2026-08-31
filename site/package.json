@@ -29,7 +29,7 @@
     "@types/node": "^20.11.0",
     "@types/nodemailer": "^8.0.1",
     "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react-dom": "^19.2.5",
     "esbuild": "^0.28.1",
     "postcss": "^8.4.33",
     "tailwindcss": "^4.3.3"
