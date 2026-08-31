@@ -22,7 +22,7 @@
     },
     "packages/cli": {
       "name": "@openredaction/cli",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "bin": {
         "openredaction": "./dist/index.cli.cjs",
         "openredaction-test-pattern": "./dist/test-pattern.cjs",
@@ -37,7 +37,7 @@
     },
     "packages/compat": {
       "name": "openredaction",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
         "@openredaction/express": "workspace:*",
@@ -66,9 +66,9 @@
     },
     "packages/core": {
       "name": "@openredaction/core",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "devDependencies": {
-        "@types/node": "^26.0.1",
+        "@types/node": "^26.4.0",
         "@types/pdf-parse": "^1.1.5",
         "compromise": "^14.16.0",
         "mammoth": "^1.11.0",
@@ -96,7 +96,7 @@
     },
     "packages/elysia": {
       "name": "@openredaction/elysia",
-      "version": "1.0.3",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -112,7 +112,7 @@
     },
     "packages/express": {
       "name": "@openredaction/express",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -128,7 +128,7 @@
     },
     "packages/hono": {
       "name": "@openredaction/hono",
-      "version": "1.0.3",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -144,7 +144,7 @@
     },
     "packages/react": {
       "name": "@openredaction/react",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -164,7 +164,7 @@
     },
     "packages/server": {
       "name": "@openredaction/server",
-      "version": "1.1.5",
+      "version": "2.0.0",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -1355,6 +1355,18 @@
 
     "@manypkg/get-packages/fs-extra": ["fs-extra@8.1.0", "", { "dependencies": { "graceful-fs": "^4.2.0", "jsonfile": "^4.0.0", "universalify": "^0.1.0" } }, "sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g=="],
 
+    "@openredaction/core/@types/node": ["@types/node@26.4.0", "", { "dependencies": { "undici-types": "~8.3.0" } }, "sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ=="],
+
+    "@openredaction/elysia/@types/node": ["@types/node@26.4.0", "", { "dependencies": { "undici-types": "~8.3.0" } }, "sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ=="],
+
+    "@openredaction/express/@types/node": ["@types/node@26.4.0", "", { "dependencies": { "undici-types": "~8.3.0" } }, "sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ=="],
+
+    "@openredaction/hono/@types/node": ["@types/node@26.4.0", "", { "dependencies": { "undici-types": "~8.3.0" } }, "sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ=="],
+
+    "@openredaction/react/@types/node": ["@types/node@26.4.0", "", { "dependencies": { "undici-types": "~8.3.0" } }, "sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ=="],
+
+    "@openredaction/server/@types/node": ["@types/node@26.4.0", "", { "dependencies": { "undici-types": "~8.3.0" } }, "sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ=="],
+
     "@quansync/fs/quansync": ["quansync@1.0.0", "", {}, "sha512-5xZacEEufv3HSTPQuchrvV6soaiACMFnq1H8wkVioctoH3TRha9Sz66lOxRwPK/qZj7HPiSveih9yAyh98gvqA=="],
 
     "@tailwindcss/node/lightningcss": ["lightningcss@1.32.0", "", { "dependencies": { "detect-libc": "^2.0.3" }, "optionalDependencies": { "lightningcss-android-arm64": "1.32.0", "lightningcss-darwin-arm64": "1.32.0", "lightningcss-darwin-x64": "1.32.0", "lightningcss-freebsd-x64": "1.32.0", "lightningcss-linux-arm-gnueabihf": "1.32.0", "lightningcss-linux-arm64-gnu": "1.32.0", "lightningcss-linux-arm64-musl": "1.32.0", "lightningcss-linux-x64-gnu": "1.32.0", "lightningcss-linux-x64-musl": "1.32.0", "lightningcss-win32-arm64-msvc": "1.32.0", "lightningcss-win32-x64-msvc": "1.32.0" } }, "sha512-NXYBzinNrblfraPGyrbPoD19C1h9lfI/1mzgWYvXUTe414Gz/X1FD2XBZSZM7rRTrMA8JL3OtAaGifrIKhQ5yQ=="],
@@ -1384,6 +1396,8 @@
     "micromatch/picomatch": ["picomatch@2.3.2", "", {}, "sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA=="],
 
     "negotiator/content-type": ["content-type@2.1.0", "", {}, "sha512-mj7UPXE0jaqaOsukNZRUEfEi2AcL7C/vwmwcHV0O97eO1E1pxBZuyjlZrx5seTaNBg1U6+o35wpa35Qfcc+7ag=="],
+
+    "openredaction/@types/node": ["@types/node@26.4.0", "", { "dependencies": { "undici-types": "~8.3.0" } }, "sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ=="],
 
     "openredaction-site/@types/node": ["@types/node@20.19.43", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA=="],
 
