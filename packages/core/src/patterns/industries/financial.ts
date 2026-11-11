@@ -516,18 +516,7 @@ export const UK_BANK_ACCOUNT_IBAN: PIIPattern = {
     // Must have banking context
     const bankingKeywords =
       /iban|account|bank|uk|gb|financial|payment|transfer/i;
-    if (!bankingKeywords.test(context)) {
-      return false;
-    }
-
-    // Reject test/example keywords
-    const rejectKeywords =
-      /example\s+iban|test\s+iban|sample\s+iban|demo\s+iban|fake\s+iban/i;
-    if (rejectKeywords.test(context)) {
-      return false;
-    }
-
-    return true;
+    return bankingKeywords.test(context);
   },
 };
 

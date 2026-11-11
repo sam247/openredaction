@@ -4,11 +4,36 @@
 
 import type { PIIPattern } from "../types";
 import {
+  IBAN_LENGTHS,
   validateIBAN,
   validateLuhn,
   validateRoutingNumber,
   validateSortCode,
 } from "../validators";
+
+/**
+ * Builds an IBAN regex where each country matches exactly its registered length.
+ *
+ * Validators cannot shrink a match, so a length-agnostic regex that greedily
+ * swallows following words ("DE89… by Friday") loses the IBAN entirely.
+ * Separators (space, NBSP, dot, hyphen) are allowed before any BBAN character.
+ */
+function buildIbanRegex(): RegExp {
+  const countriesByBbanLength = new Map<number, string[]>();
+
+  for (const [country, length] of Object.entries(IBAN_LENGTHS)) {
+    const bbanLength = length - 4;
+    const countries = countriesByBbanLength.get(bbanLength) ?? [];
+    countriesByBbanLength.set(bbanLength, [...countries, country]);
+  }
+
+  const alternatives = [...countriesByBbanLength].map(
+    ([bbanLength, countries]) =>
+      `(?:${countries.join("|")})\\d{2}(?:[ \\u00A0.-]?[A-Z0-9]){${bbanLength}}`,
+  );
+
+  return new RegExp(`\\b(${alternatives.join("|")})\\b`, "gi");
+}
 
 export const financialPatterns: PIIPattern[] = [
   {
@@ -49,31 +74,9 @@ export const financialPatterns: PIIPattern[] = [
   },
   {
     type: "IBAN",
-    regex: /\b([A-Z]{2}\d{2}(?:[ \u00A0.-]?[A-Z0-9]){11,30})\b/gi,
+    regex: buildIbanRegex(),
     priority: 95,
-    validator: (match: string, context: string) => {
-      // Normalize separators before IBAN validation
-      const cleaned = match.replace(/[\s\u00A0.-]/g, "").toUpperCase();
-
-      // Must start with 2 letters (country code) and 2 digits (check digits)
-      if (!/^[A-Z]{2}\d{2}/.test(cleaned)) {
-        return false;
-      }
-
-      // Validate with MOD-97 checksum
-      if (!validateIBAN(cleaned)) {
-        return false;
-      }
-
-      // Reject test/example keywords
-      const rejectKeywords =
-        /example\s+iban|test\s+iban|sample\s+iban|demo\s+iban|fake\s+iban/i;
-      if (rejectKeywords.test(context)) {
-        return false;
-      }
-
-      return true;
-    },
+    validator: validateIBAN,
     placeholder: "[IBAN_{n}]",
     description: "IBAN bank account",
     severity: "high",
