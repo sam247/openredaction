@@ -1,5 +1,7 @@
+import { getCountrySpecifications } from "ibantools";
 import { describe, expect, it } from "vitest";
 import {
+  IBAN_LENGTHS,
   validateAustralianTFN,
   validateCanadianSIN,
   validateEmail,
@@ -48,6 +50,7 @@ describe("Validators", () => {
       expect(validateIBAN("GB82 WEST 1234 5698 7654 32")).toBe(true);
       expect(validateIBAN("DE89370400440532013000")).toBe(true);
       expect(validateIBAN("FR1420041010050500013M02606")).toBe(true);
+      expect(validateIBAN("SC18SSCB11010000000000001497USD")).toBe(true); // Letters in BBAN
     });
 
     it("should reject invalid IBANs", () => {
@@ -57,6 +60,16 @@ describe("Validators", () => {
 
     it("should reject incorrect length IBANs", () => {
       expect(validateIBAN("GB82WEST123456987654")).toBe(false); // Too short for GB
+    });
+
+    it("should match the official IBAN registry countries in ibantools", () => {
+      const registryLengths = Object.fromEntries(
+        Object.entries(getCountrySpecifications())
+          .filter(([, spec]) => spec.IBANRegistry)
+          .map(([country, spec]) => [country, spec.chars]),
+      );
+
+      expect(IBAN_LENGTHS).toEqual(registryLengths);
     });
   });
 

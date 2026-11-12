@@ -167,6 +167,7 @@
     "@types/node": "^26.4.0",
     "@types/pdf-parse": "^1.1.5",
     "compromise": "^14.19.0",
+    "ibantools": "^4.5.4",
     "mammoth": "^1.11.0",
     "mitata": "latest",
     "tesseract.js": "^7.0.0",
