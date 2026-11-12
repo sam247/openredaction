@@ -18,6 +18,28 @@ describe("OpenRedaction", () => {
       expect(result.redacted).toContain("[EMAIL_");
     });
 
+    it.each([
+      "installed lodash@4.17.21 yesterday",
+      "bump types/node@1.2.3 in the lockfile",
+      "see icon@2x.png in assets",
+      "price=5@3.50 for the order",
+      "login as user@acme.123 failed",
+    ])("should not detect an email in: %s", async (text) => {
+      const result = await shield.detect(text);
+
+      expect(result.detections.some((d) => d.type === "EMAIL")).toBe(false);
+    });
+
+    it("should detect an email next to a package version", async () => {
+      const result = await shield.detect(
+        "lodash@4.17.21 was added by jane.doe@mail.example.org",
+      );
+
+      expect(
+        result.detections.filter((d) => d.type === "EMAIL").map((d) => d.value),
+      ).toEqual(["jane.doe@mail.example.org"]);
+    });
+
     it("should detect multiple PII types", async () => {
       const text = "Email john@example.com or call 07700900123";
       const result = await shield.detect(text);
