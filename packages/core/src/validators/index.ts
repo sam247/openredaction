@@ -455,5 +455,16 @@ export function validateEmail(email: string, _context?: string): boolean {
     return false;
   }
 
+  // TLD must be alphabetic or punycode
+  const tld = domain.substring(domain.lastIndexOf(".") + 1);
+  if (!/^(?:[a-zA-Z]{2,}|xn--[a-zA-Z0-9-]+)$/.test(tld)) {
+    return false;
+  }
+
+  // Reject image file names such as icon@2x.png
+  if (/^(?:png|jpe?g|gif|svg|webp|ico|bmp|avif|tiff?)$/i.test(tld)) {
+    return false;
+  }
+
   return true;
 }
