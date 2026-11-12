@@ -158,6 +158,28 @@ describe("Validators", () => {
       expect(validateEmail("test@")).toBe(false);
       expect(validateEmail("test@domain")).toBe(false); // No TLD
     });
+
+    it.each([
+      "jane.doe@mail.example.org",
+      "j.doe+billing@sub.example.co.uk",
+      "user@xn--bcher-kva.xn--p1ai", // Punycode domain and TLD
+      "user@123.example.com", // Numeric label below the TLD
+      "user@example.photography",
+    ])("should accept %s", (email) => {
+      expect(validateEmail(email)).toBe(true);
+    });
+
+    it.each([
+      "lodash@4.17.21", // npm package version
+      "types/node@1.2.3", // Scoped package version
+      "icon@2x.png", // Retina image file name
+      "logo@3x.JPG",
+      "price=5@3.50", // Quantity at price
+      "user@acme.123", // Numeric TLD
+      "user@example.c", // One-letter TLD
+    ])("should reject %s", (value) => {
+      expect(validateEmail(value)).toBe(false);
+    });
   });
 
   describe("validateName", () => {
