@@ -1,6 +1,6 @@
 {
   "name": "@openredaction/hono",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "homepage": "https://openredaction.com",
   "bugs": {
     "url": "https://github.com/sam247/openredaction/issues"
@@ -43,7 +43,7 @@
     "@openredaction/core": "workspace:*"
   },
   "peerDependencies": {
-    "@openredaction/core": "^2.0.0",
+    "@openredaction/core": "^2.0.1",
     "hono": "^4.0.0"
   },
   "devDependencies": {

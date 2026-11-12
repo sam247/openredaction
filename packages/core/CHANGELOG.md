@@ -1,5 +1,17 @@
 # @openredaction/core
 
+## 2.0.1
+
+### Patch Changes
+
+- [#168](https://github.com/sam247/openredaction/pull/168) [`6b98c19`](https://github.com/sam247/openredaction/commit/6b98c191d8ceda0030cf71ab798e78dd2f522693) Thanks [@BilliamBaSH](https://github.com/BilliamBaSH)! - Email pattern no longer matches package versions (`lodash@4.17.21`), image file names (`icon@2x.png`), prices (`price=5@3.50`) or domains with a numeric TLD (`user@acme.123`).
+
+- [#167](https://github.com/sam247/openredaction/pull/167) [`5ee9eee`](https://github.com/sam247/openredaction/commit/5ee9eeef85a17d619ee1bc887ac5130c09775c9a) Thanks [@undsoft](https://github.com/undsoft)! - Fix IBAN detection.
+
+  - IBANs followed by other text (e.g. `DE89370400440532013000 by Friday`, `GB82 WEST 1234 5698 7654 32 and thanks`) were not detected: the regex greedily consumed following words and validation then rejected the whole match. The IBAN regex is now generated from per-country lengths, so each country matches exactly its registered length.
+  - Valid IBANs are no longer suppressed when phrases like "test iban" or "example iban" appear nearby.
+  - Added the missing IBAN registry countries (e.g. BY, EG, IQ, LC, LY, RU, SC, SV, YE and French overseas territories) and corrected the Costa Rica length (22).
+
 ## 2.0.0
 
 ### Major Changes

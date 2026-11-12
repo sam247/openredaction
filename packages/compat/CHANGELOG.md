@@ -1,5 +1,15 @@
 # openredaction
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`6b98c19`](https://github.com/sam247/openredaction/commit/6b98c191d8ceda0030cf71ab798e78dd2f522693), [`5ee9eee`](https://github.com/sam247/openredaction/commit/5ee9eeef85a17d619ee1bc887ac5130c09775c9a)]:
+  - @openredaction/core@2.0.1
+  - @openredaction/express@2.0.1
+  - @openredaction/react@2.0.1
+  - @openredaction/server@2.0.1
+
 ## 2.0.0
 
 ### Patch Changes
