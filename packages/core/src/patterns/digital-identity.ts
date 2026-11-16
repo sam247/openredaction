@@ -114,7 +114,9 @@ export const FACEBOOK_ID: PIIPattern = {
     if (length < 15 || length > 17) return false;
 
     // Context validation required
-    return /facebook|fb|profile|meta|user[-_]?id/i.test(context);
+    return /facebook|(?<![a-z])fb(?:id)?(?![a-z])|profile|meta|user[-_]?id/i.test(
+      context,
+    );
   },
 };
 
@@ -136,7 +138,9 @@ export const INSTAGRAM_USERNAME: PIIPattern = {
     if (!/^[a-zA-Z0-9._]+$/.test(value)) return false;
 
     // Context validation strongly required (avoid matching email parts)
-    return /instagram|ig|insta|profile|handle|username|follow/i.test(context);
+    return /instagram|(?<![a-z])ig(?![a-z])|insta|profile|handle|username|follow/i.test(
+      context,
+    );
   },
 };
 
@@ -156,7 +160,7 @@ export const TIKTOK_USERNAME: PIIPattern = {
     if (value.length < 2 || value.length > 24) return false;
 
     // Context validation
-    return /tiktok|tt|video|profile|creator/i.test(context);
+    return /tiktok|(?<![a-z])tt(?![a-z])|video|profile|creator/i.test(context);
   },
 };
 
@@ -196,7 +200,9 @@ export const YOUTUBE_CHANNEL_ID: PIIPattern = {
     if (!value.startsWith("UC") || value.length !== 24) return false;
 
     // Context validation
-    return /youtube|yt|channel|video|creator|subscriber/i.test(context);
+    return /youtube|(?<![a-z])yt(?![a-z])|channel|video|creator|subscriber/i.test(
+      context,
+    );
   },
 };
 
@@ -349,7 +355,9 @@ export const TELEGRAM_USER_ID: PIIPattern = {
     if (length < 6 || length > 10) return false;
 
     // Context validation required
-    return /telegram|tg|chat|user[-_]?id|messenger/i.test(context);
+    return /telegram|(?<![a-z])tg(?![a-z])|chat|user[-_]?id|messenger/i.test(
+      context,
+    );
   },
 };
 
