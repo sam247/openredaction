@@ -83,7 +83,7 @@ export const personalPatterns: PIIPattern[] = [
   {
     type: "EMPLOYEE_ID",
     regex:
-      /\b(?:EMP|EMPL|EMPLOYEE)[_\s-]?(?:ID|NUM(?:BER)?)?[:\s-]*([A-Z0-9]{4,10})\b/gi,
+      /\b(?:EMPLOYEE|EMPL|EMP)[_\s-]?(?:ID|NUM(?:BER)?)?[:\s-]*(?=[A-Z]*\d)([A-Z0-9]{4,10})\b/gi,
     priority: 90,
     placeholder: "[EMPLOYEE_ID_{n}]",
     description: "Employee ID",

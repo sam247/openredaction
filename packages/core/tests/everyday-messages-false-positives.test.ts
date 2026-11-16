@@ -31,7 +31,6 @@ const broadFalsePositives: Record<string, number> = {
 };
 
 const knownFalsePositives = new Set([
-  "en-061", // EMPLOYEE_ID
   "en-109", // ZIP_CODE_US
   "en-113", // ZIP_CODE_US, PHONE_UK
   "en-114", // PHONE_UK
@@ -45,7 +44,6 @@ const knownFalsePositives = new Set([
   "en-227", // XBOX_GAMERTAG
   "en-231", // PHONE_UK
   "en-233", // ZIP_CODE_US
-  "en-240", // EMPLOYEE_ID
   "en-271", // XBOX_GAMERTAG
   "en-273", // USERNAME
   "en-288", // GENERIC_SECRET
@@ -87,8 +85,6 @@ const knownFalsePositives = new Set([
   "en-505", // ZIP_CODE_US
   "en-507", // ZIP_CODE_US
   "en-512", // DATE
-  "es-009", // EMPLOYEE_ID
-  "es-089", // EMPLOYEE_ID
   "es-090", // PHONE_UK
   "es-118", // XBOX_GAMERTAG
   "es-129", // ZIP_CODE_US
