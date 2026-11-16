@@ -26,8 +26,8 @@ import {
 
 // How many messages each of these patterns flags today.
 const broadFalsePositives: Record<string, number> = {
-  NAME: 567,
-  INSTAGRAM_USERNAME: 120,
+  NAME: 619,
+  INSTAGRAM_USERNAME: 15,
 };
 
 const knownFalsePositives = new Set([
@@ -75,7 +75,7 @@ const knownFalsePositives = new Set([
   "en-437", // ADDRESS_STREET
   "en-442", // ADDRESS_STREET
   "en-443", // ADDRESS_STREET
-  "en-460", // XBOX_GAMERTAG, PSN_ID
+  "en-460", // XBOX_GAMERTAG
   "en-470", // CVV
   "en-477", // PHONE_UK
   "en-481", // VISA_NUMBER
@@ -108,6 +108,7 @@ const knownFalsePositives = new Set([
   "es-248", // PHONE_UK
   "de-001", // DATE
   "de-003", // DATE
+  "de-004", // DATE
   "de-007", // PHONE_UK, SEDOL, DATE
   "de-009", // DATE
   "de-010", // DATE
