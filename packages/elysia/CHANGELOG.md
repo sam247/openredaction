@@ -1,5 +1,12 @@
 # @openredaction/elysia
 
+## 2.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`12a57e8`](https://github.com/sam247/openredaction/commit/12a57e8570250ce7539a84f7167d28651d224c02), [`12a57e8`](https://github.com/sam247/openredaction/commit/12a57e8570250ce7539a84f7167d28651d224c02)]:
+  - @openredaction/core@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes

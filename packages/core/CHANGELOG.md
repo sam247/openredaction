@@ -1,5 +1,13 @@
 # @openredaction/core
 
+## 2.0.2
+
+### Patch Changes
+
+- [#172](https://github.com/sam247/openredaction/pull/172) [`12a57e8`](https://github.com/sam247/openredaction/commit/12a57e8570250ce7539a84f7167d28651d224c02) Thanks [@BilliamBaSH](https://github.com/BilliamBaSH)! - Employee ID pattern no longer matches the rest of a word that starts with "emp" (`employer`, `employees`, `empiezo`), and now finds the ID in `Employee ID: AB1234` and `Employee12345` instead of `loyee` and `loyee12345`.
+
+- [#172](https://github.com/sam247/openredaction/pull/172) [`12a57e8`](https://github.com/sam247/openredaction/commit/12a57e8570250ce7539a84f7167d28651d224c02) Thanks [@BilliamBaSH](https://github.com/BilliamBaSH)! - Instagram, Facebook, TikTok, YouTube and Telegram patterns no longer treat the letters inside longer words (`big`, `offboarding`, `settings`, `analytics`, `mortgage`) as their `ig`, `fb`, `tt`, `yt` or `tg` context word.
+
 ## 2.0.1
 
 ### Patch Changes
