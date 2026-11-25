@@ -12,6 +12,16 @@ updates:
     labels:
       - dependencies
       - github-actions
+    ignore:
+      # changesets/action v2 requires the Changesets CLI v3 and renames its
+      # inputs (version -> version-script, commit -> commit-message,
+      # title -> pr-title). This repo stays on @changesets/cli ^2.31.1 and
+      # action v1 (see .github/workflows/release.yml), so major bumps here
+      # would break the Release workflow again. Remove this ignore only as
+      # part of a CLI v3 migration.
+      - dependency-name: 'changesets/action'
+        update-types:
+          - version-update:semver-major
     groups:
       codeql-action:
         patterns:
