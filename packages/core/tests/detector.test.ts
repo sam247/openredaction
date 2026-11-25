@@ -40,6 +40,34 @@ describe("OpenRedaction", () => {
       ).toEqual(["jane.doe@mail.example.org"]);
     });
 
+    it.each([
+      "Does my employer match 401(k) contributions?",
+      "Employees get the day off on Friday.",
+      "Quiero aprender Python, ¿por dónde empiezo?",
+      "La empresa abre a las nueve.",
+    ])("should not detect an employee ID in: %s", async (text) => {
+      const result = await shield.detect(text);
+
+      expect(result.detections.some((d) => d.type === "EMPLOYEE_ID")).toBe(
+        false,
+      );
+    });
+
+    it.each([
+      ["EMP12345", "12345"],
+      ["Employee12345", "12345"],
+      ["Employee ID: AB1234", "AB1234"],
+      ["employee number 004521", "004521"],
+    ])("should detect the employee ID in: %s", async (text, id) => {
+      const result = await shield.detect(text);
+
+      expect(
+        result.detections
+          .filter((d) => d.type === "EMPLOYEE_ID")
+          .map((d) => d.value),
+      ).toEqual([id]);
+    });
+
     it("should detect multiple PII types", async () => {
       const text = "Email john@example.com or call 07700900123";
       const result = await shield.detect(text);

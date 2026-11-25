@@ -396,4 +396,41 @@ describe("Digital Identity Pattern Detection", () => {
       expect(result.detections.length).toBeGreaterThan(5);
     });
   });
+
+  // Short context words (ig, fb, tt, yt, tg) only count when no letter sits next
+  // to them, so "big", "offboarding", "settings", "analytics" and "mortgage"
+  // don't count, while field names like fb_id and tg123 still do.
+  describe("Short context words", () => {
+    it.each([
+      ["INSTAGRAM_USERNAME", "That was a big improvement over last year."],
+      ["FACEBOOK_ID", "Offboarding ticket 100012345678901 is closed."],
+      ["TIKTOK_USERNAME", "Ask @dev.team to update the settings page."],
+      [
+        "YOUTUBE_CHANNEL_ID",
+        "Analytics export UC1234567890abcdefghijkl failed.",
+      ],
+      ["TELEGRAM_USER_ID", "My mortgage balance is 350000 after this year."],
+    ])("%s ignores the letters inside a longer word", async (type, text) => {
+      const detector = new OpenRedaction({ patterns: [type] });
+      const result = await detector.detect(text);
+      expect(result.detections.some((d) => d.type === type)).toBe(false);
+    });
+
+    it.each([
+      ["INSTAGRAM_USERNAME", "IG: user.name_123"],
+      ["FACEBOOK_ID", "fb 100012345678901"],
+      ["TIKTOK_USERNAME", "tt @user.name123"],
+      ["YOUTUBE_CHANNEL_ID", "yt UC1234567890abcdefghijkl"],
+      ["TELEGRAM_USER_ID", "tg 12345678"],
+      ["FACEBOOK_ID", "fb_id 100012345678901"],
+      ["FACEBOOK_ID", "fbid=100012345678901"],
+      ["FACEBOOK_ID", "(fb) 100012345678901"],
+      ["TELEGRAM_USER_ID", "tg_id 12345678"],
+      ["YOUTUBE_CHANNEL_ID", "yt_id UC1234567890abcdefghijkl"],
+    ])("%s still uses the short word on its own", async (type, text) => {
+      const detector = new OpenRedaction({ patterns: [type] });
+      const result = await detector.detect(text);
+      expect(result.detections.some((d) => d.type === type)).toBe(true);
+    });
+  });
 });
