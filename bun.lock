@@ -22,7 +22,7 @@
     },
     "packages/cli": {
       "name": "@openredaction/cli",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "bin": {
         "openredaction": "./dist/index.cli.cjs",
         "openredaction-test-pattern": "./dist/test-pattern.cjs",
@@ -37,7 +37,7 @@
     },
     "packages/compat": {
       "name": "openredaction",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "dependencies": {
         "@openredaction/core": "workspace:*",
         "@openredaction/express": "workspace:*",
@@ -66,11 +66,11 @@
     },
     "packages/core": {
       "name": "@openredaction/core",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "devDependencies": {
         "@types/node": "^26.4.0",
         "@types/pdf-parse": "^1.1.5",
-        "compromise": "^14.19.0",
+        "compromise": "^14.20.0",
         "ibantools": "^4.5.4",
         "mammoth": "^1.11.0",
         "mitata": "latest",
@@ -97,7 +97,7 @@
     },
     "packages/elysia": {
       "name": "@openredaction/elysia",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -107,13 +107,13 @@
         "elysia": "^1.4.29",
       },
       "peerDependencies": {
-        "@openredaction/core": "^2.0.0",
+        "@openredaction/core": "^2.0.1",
         "elysia": "^1.0.0",
       },
     },
     "packages/express": {
       "name": "@openredaction/express",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -129,7 +129,7 @@
     },
     "packages/hono": {
       "name": "@openredaction/hono",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -139,13 +139,13 @@
         "hono": "^4.12.27",
       },
       "peerDependencies": {
-        "@openredaction/core": "^2.0.0",
+        "@openredaction/core": "^2.0.1",
         "hono": "^4.0.0",
       },
     },
     "packages/react": {
       "name": "@openredaction/react",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -165,7 +165,7 @@
     },
     "packages/server": {
       "name": "@openredaction/server",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "dependencies": {
         "@openredaction/core": "workspace:*",
       },
@@ -448,13 +448,13 @@
 
     "@next/swc-darwin-x64": ["@next/swc-darwin-x64@16.3.1", "", { "os": "darwin", "cpu": "x64" }, "sha512-gNG21e/UnrroeScbY/QndUEdl0mF1FRibW7BBeYUz/5ABCepjqDdEdgr592vpzMtCn/m7FTjYq3TN4TpyDnutw=="],
 
-    "@next/swc-linux-arm64-gnu": ["@next/swc-linux-arm64-gnu@16.3.1", "", { "os": "linux", "cpu": "arm64", "libc": "glibc" }, "sha512-6B6Lw016iwNUQuaJoraMMTLh6TwHzFUtxipSScD1F3YyymcrRWkobodRS2ftIOkF5vrs4zNlyUrTC5YZQ9Lz5w=="],
+    "@next/swc-linux-arm64-gnu": ["@next/swc-linux-arm64-gnu@16.3.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-6B6Lw016iwNUQuaJoraMMTLh6TwHzFUtxipSScD1F3YyymcrRWkobodRS2ftIOkF5vrs4zNlyUrTC5YZQ9Lz5w=="],
 
-    "@next/swc-linux-arm64-musl": ["@next/swc-linux-arm64-musl@16.3.1", "", { "os": "linux", "cpu": "arm64", "libc": "musl" }, "sha512-JUiPXZKK9wOhjf4MgDiH29GZLxfqOesbLtHq2pDxwH/WwscTRV2ToymnOTh1egzaZf0ueUf8T2+CeYTGHjW0Iw=="],
+    "@next/swc-linux-arm64-musl": ["@next/swc-linux-arm64-musl@16.3.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-JUiPXZKK9wOhjf4MgDiH29GZLxfqOesbLtHq2pDxwH/WwscTRV2ToymnOTh1egzaZf0ueUf8T2+CeYTGHjW0Iw=="],
 
-    "@next/swc-linux-x64-gnu": ["@next/swc-linux-x64-gnu@16.3.1", "", { "os": "linux", "cpu": "x64", "libc": "glibc" }, "sha512-Uog9jsrmIRIL/lfvIp9htmskSNC7JcQsMVucXL2V2YY1y/D9IUN3LPEafqy0zRJ2cIU1SQ0V6F6TlffQ+pLAGg=="],
+    "@next/swc-linux-x64-gnu": ["@next/swc-linux-x64-gnu@16.3.1", "", { "os": "linux", "cpu": "x64" }, "sha512-Uog9jsrmIRIL/lfvIp9htmskSNC7JcQsMVucXL2V2YY1y/D9IUN3LPEafqy0zRJ2cIU1SQ0V6F6TlffQ+pLAGg=="],
 
-    "@next/swc-linux-x64-musl": ["@next/swc-linux-x64-musl@16.3.1", "", { "os": "linux", "cpu": "x64", "libc": "musl" }, "sha512-6yy3FT13KgUFOj5H8bl8w/6nKiJwHIvbtwh1V+1acsu+7y4tJjnemSa6mhsh53BeoVrlozE+fMgZhXH46WmjMA=="],
+    "@next/swc-linux-x64-musl": ["@next/swc-linux-x64-musl@16.3.1", "", { "os": "linux", "cpu": "x64" }, "sha512-6yy3FT13KgUFOj5H8bl8w/6nKiJwHIvbtwh1V+1acsu+7y4tJjnemSa6mhsh53BeoVrlozE+fMgZhXH46WmjMA=="],
 
     "@next/swc-win32-arm64-msvc": ["@next/swc-win32-arm64-msvc@16.3.1", "", { "os": "win32", "cpu": "arm64" }, "sha512-iOoN1QecUoGNZik536U/vtK43YwgyrCsGIkth52yIkl612n+0C9MjSnJbQAikISpb+WYRooBVhaDlUW7iZoKog=="],
 
@@ -760,7 +760,7 @@
 
     "codepage": ["codepage@1.15.0", "", {}, "sha512-3g6NUTPd/YtuuGrhMnOMRjFc+LJw/bnMp3+0r/Wcz3IXUuCosKRJvMphm5+Q+bvTVGcJJuRvVLuYba+WojaFaA=="],
 
-    "compromise": ["compromise@14.19.0", "", { "dependencies": { "efrt": "2.9.0", "suffix-thumb": "6.0.0" } }, "sha512-nA/ClpXt0PaS2Ne389wClhxFBBxV0el3nv6V7XFpoRRQBr8eCnV3Iv4ZY6C5H06UHq1k7bqth73nVc/hv/rrCg=="],
+    "compromise": ["compromise@14.20.0", "", { "dependencies": { "efrt": "2.9.0", "suffix-thumb": "6.1.0" }, "bin": { "compromise": "./bin/compromise.js" } }, "sha512-XFtjCI4hs8jde5uY/3KqlKQ12dt4h1mAYVPnss0o91ia0971VdluY4ZN9GlxbV9zI8DW2YP+NzGqpnsFFidenA=="],
 
     "content-disposition": ["content-disposition@1.1.0", "", {}, "sha512-5jRCH9Z/+DRP7rkvY83B+yGIGX96OYdJmzngqnw2SBSxqCFPd0w2km3s5iawpGX8krnwSGmF0FW5Nhr0Hfai3g=="],
 
@@ -1230,7 +1230,7 @@
 
     "styled-jsx": ["styled-jsx@5.1.6", "", { "dependencies": { "client-only": "0.0.1" }, "peerDependencies": { "@babel/core": "*", "babel-plugin-macros": "*", "react": ">= 16.8.0 || 17.x.x || ^18.0.0-0 || ^19.0.0-0" }, "optionalPeers": ["@babel/core", "babel-plugin-macros"] }, "sha512-qSVyDTeMotdvQYoHWLNGwRFJHC+i+ZvdBRYosOFgC+Wg1vx4frN2/RG/NA7SYqqvKNLf39P2LSRA2pu6n0XYZA=="],
 
-    "suffix-thumb": ["suffix-thumb@6.0.0", "", {}, "sha512-HsCTMLaupbob5ZG//ZW6PSj446tHT5kSJ1qXS5F/qO2Nt13uAn6ZLPhJQ/H6bN/jVQCb+pcqe2psEwy4Mp5+Vw=="],
+    "suffix-thumb": ["suffix-thumb@6.1.0", "", {}, "sha512-Lh1ZP+tj1TWnlw3RsR6eY/ARhZ3fIPrquE2Xts/wnGB7j1od2OZbCrWYsahkuaLqY7omsNKDUA6JITtE4elhfw=="],
 
     "supports-color": ["supports-color@7.2.0", "", { "dependencies": { "has-flag": "^4.0.0" } }, "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw=="],
 
