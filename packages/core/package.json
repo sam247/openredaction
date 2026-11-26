@@ -164,7 +164,7 @@
     "test:watch": "vitest watch"
   },
   "devDependencies": {
-    "@types/node": "^26.4.0",
+    "@types/node": "^26.6.6",
     "@types/pdf-parse": "^1.1.5",
     "compromise": "^14.20.0",
     "ibantools": "^4.5.4",
