@@ -260,11 +260,11 @@ export const NPI_NUMBER: PIIPattern = {
       return false;
     }
 
-    // Luhn checksum validation
+    // Luhn checksum validation, with the "80840" prefix CMS adds (worth a constant 24)
     const digits = value.replace(/\D/g, "").split("").map(Number);
     if (digits.length !== 10) return false;
 
-    let sum = 0;
+    let sum = 24;
     for (let i = digits.length - 2; i >= 0; i--) {
       let digit = digits[i];
       if ((digits.length - i) % 2 === 0) {
